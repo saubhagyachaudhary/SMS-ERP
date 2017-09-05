@@ -1,0 +1,116 @@
+﻿@model IEnumerable<SMS.Models.std_registration>
+
+@{
+    ViewBag.Title = "AllRegistrationList";
+}
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+
+<div class="right_col" role="main">
+    <p>
+        @Html.ActionLink("New Registration", "AddRegistration")
+    </p>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+                    <h2>All Registration List</h2>
+
+                   
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.session)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.reg_no)
+                                </th>
+
+                                <th>
+                                    @Html.DisplayNameFor(model => model.reg_date)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.std_first_name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.std_last_name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.std_father_name)
+                                </th>
+                                
+                                <th>
+                                    @Html.DisplayNameFor(model => model.class_name)
+                                </th>
+                                <th>Control Panel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.session)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.reg_no)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.reg_date)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_first_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_last_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_father_name)
+                                    </td>
+                                    
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.class_name)
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "EditRegistration", new { sess = item.session,reg = item.reg_no, dt = item.reg_date }) |
+                                      
+                                         @Html.ActionLink("Admit", "AddStudent", "sr_register", new { sess = item.session, reg = item.reg_no, dt = item.reg_date },null) |
+                                         @Html.ActionLink("Delete", "DeleteRegistration", new { sess = item.session, reg = item.reg_no, dt = item.reg_date })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    </div>
+</div>
+</div>
+</div>
+</div>
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="~/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
+    <script src="~/vendors/jszip/dist/jszip.min.js"></script>
+    <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+}
+
+

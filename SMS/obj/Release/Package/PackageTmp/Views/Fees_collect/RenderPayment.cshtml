@@ -1,0 +1,284 @@
+﻿@using SMS.Models;
+@model List<fees_payment>
+
+
+@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post))
+{
+    <table id="datatable" class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Fees Type
+                </th>
+                <th>
+                    Due Amount
+                </th>
+                <th>
+                    Amount to be Paid
+                </th>
+                <th>
+                    Fine
+                </th>
+                <th>
+                    Discount
+                </th>
+                <th>
+                    Select
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @for (int i = 0; i < Model.Count(); i++)
+            {
+                
+                <tr>
+                    <td>
+                        <div class="form-group">
+                             @Html.DisplayFor(model => model[i].Fees_type)
+
+                            @Html.HiddenFor(model => model[i].Fees_type)
+
+                            @Html.HiddenFor(model => model[i].sr_num)
+
+                            @Html.HiddenFor(model => model[i].Narration, new { id = i.ToString() })
+
+                            @Html.HiddenFor(model => model[i].Bank_name, new { id = "bnk"+i.ToString() })
+
+                            @Html.HiddenFor(model => model[i].cheque_no, new { id = "chk"+i.ToString() })
+
+                            @Html.HiddenFor(model => model[i].cheque_date, new { id = "dt"+i.ToString() })
+
+                            @Html.HiddenFor(model => model[i].acc_id)
+
+                            @Html.HiddenFor(model => model[i].serial)
+                            @Html.HiddenFor(model => model[i].dt_date)
+                            @Html.HiddenFor(model => model[i].month_no)
+                            @Html.HiddenFor(model => model[i].month_name)
+                            @Html.HiddenFor(model => model[i].reg_num)
+                            @Html.HiddenFor(model => model[i].reg_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            @Html.DisplayFor(model => model[i].due_amount)
+
+                            @Html.HiddenFor(model => model[i].due_amount)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            @Html.EditorFor(model => model[i].amount_to_be_paid, new { htmlAttributes = new { @class = "form-control", @onchange= "recalculate()", @id = "amt" + i.ToString() } })
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            @Html.EditorFor(model => model[i].fine, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "fin" + i.ToString() } } )
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            @Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })
+                        </div>
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(model => model[i].check, new { @class = "form-control", @onclick = "recalculate()", @id = "c" + i.ToString() })
+
+                       
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div id="Tab" role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active">
+                <a href="#cash" aria-controls="cash" role="tab" data-toggle="tab">
+                    Cash Payment
+                </a>
+            </li>
+            <li>
+                <a href="#cheque" aria-controls="cheque" role="tab" data-toggle="tab">
+                    Cheque Payment
+                </a>
+            </li>
+            <li>
+                <a href="#online" aria-controls="online" role="tab" data-toggle="tab">
+                    Online Payment
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="cash">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <h4>Cash Payment Window</h4>
+                            <hr />
+
+                            <div class="form-group">
+                                <label>Narration</label>
+                                <input type="text" class="form-control" id="narration" placeholder="Narration">
+                                
+                            </div>
+
+                            <div class="form-group">
+                                <label>Total Amount Payable</label>
+
+                                <div id="grandTotalDiv">
+
+
+                                </div>
+                            </div>
+                                <div class="col-md-10">
+                                    <input type="submit" value="Save" class="btn btn-default" onclick="addItem()" />
+                                </div>
+
+
+                                <div class="col-md-6">
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="cheque">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <h4>Cheque Payment Window</h4>
+                            <hr />
+
+                            <div class="form-group">
+                                <label>Narration</label>
+                                <input type="text" class="form-control" id="chq_narration" placeholder="Narration">
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Cheque Number</label>
+                                <input type="text" class="form-control" id="chq_number" placeholder="Cheque Number">
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Cheque Date</label>
+                                <input type="text" class="form-control" id="chq_date" placeholder="Cheque Date">
+                               
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Bank Name</label>
+                                <input type="text" class="form-control" id="bnk_name" placeholder="Bank Name">
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Total Amount Payable</label>
+
+                                <div id="grandTotalDiv1">
+
+
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="submit" value="Save" class="btn btn-default" onclick="addchkItem()" />
+                            </div>
+
+
+                            <div class="col-md-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="online">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <h4>Online Payment Window</h4>
+                            <hr />
+
+                            <div class="col-md-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <script>
+
+        function recalculate() {
+
+
+
+
+            var total = 0.00;
+            var amt = 0.00;
+            var fin = 0.00;
+
+            for (i = 0; i < @Model.Count() ; i++)
+            {
+                var ch = document.getElementById("c"+i.toString());
+               // window.alert(ch.id);
+
+                if(document.getElementById("c"+i.toString()).checked)
+                {
+
+                   amt = document.getElementById("amt"+i.toString()).value
+
+                   fin = document.getElementById('fin'+i.toString()).value
+
+                    dis = document.getElementById('dis'+i.toString()).value
+
+                    total = total + (parseFloat(amt)+parseFloat(fin)) - parseFloat(dis);
+
+
+                }
+
+
+
+
+            }
+           // window.alert(total);
+
+            $('#grandTotalDiv').html(total);
+            $('#grandTotalDiv1').html(total);
+
+      
+    }
+
+        function addchkItem()
+        {
+            for (i = 0; i < @Model.Count() ; i++)
+            {
+                document.getElementById(i.toString()).value = document.getElementById("chq_narration").value;
+
+                document.getElementById("bnk"+i.toString()).value = document.getElementById("bnk_name").value;
+                document.getElementById("chk"+i.toString()).value = document.getElementById("chq_number").value;
+                document.getElementById("dt"+i.toString()).value = document.getElementById("chq_date").value;
+
+                //window.alert(document.getElementById(i.toString()).value);
+            }
+        }
+
+        function addItem()
+        {
+            for (i = 0; i < @Model.Count() ; i++)
+            {
+                document.getElementById(i.toString()).value = document.getElementById("narration").value;
+
+                //window.alert(document.getElementById(i.toString()).value);
+            }
+        }
+
+       
+
+    </script>
+
+   
+}

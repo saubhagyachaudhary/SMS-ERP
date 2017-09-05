@@ -1,0 +1,146 @@
+﻿@using SMS.Models;
+@model List<fees_payment>
+
+
+@using (Html.BeginForm("FeesStatement", "Fees_collect"))
+{
+<table id="datatable" class="table table-condensed table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                Session
+            </th>
+            <th>
+                Rcpt No
+            </th>
+            <th>
+                Rcpt Date
+            </th>
+            <th>
+                Fees Type
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Fine
+            </th>
+            <th>
+                Discount
+            </th>
+            
+           
+            <th>
+                Mode
+            </th>
+
+            <th>
+                Status
+            </th>
+
+
+            <th>
+                Select
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@for (int i = 0; i < Model.Count(); i++)
+{
+
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model[i].fin_id)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].receipt_no)
+
+                @Html.HiddenFor(model => model[i].receipt_no, new { id = "rect_no" + i.ToString() })
+                @Html.HiddenFor(model => model[i].sr_num, new { id = "sr_no" + i.ToString() })
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].receipt_date)
+                @Html.HiddenFor(model => model[i].receipt_date, new { id = "rect_dt" + i.ToString() })
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].Fees_type)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].amount_to_be_paid)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].fine)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].discount)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(model => model[i].mode_flag)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model[i].chq_reject)
+            </td>
+            <td>
+                @Html.CheckBoxFor(model => model[i].check, new { id = "check_" + i.ToString() })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <input type="button" value="Display" class="btn btn-default" onclick="combine()"/>
+    </div>
+</div>
+}
+
+<script >
+    function combine()
+    {
+        
+        var str;
+        var dt;
+        var flag = true;
+        for (var i = 0; i < @Model.Count(); i++)
+        {
+            var che = document.getElementById("check_"+i.toString()).checked; 
+            if(che)
+            {
+             
+                if(flag)
+                {
+                    flag = false;
+                    str = document.getElementById("rect_no"+i.toString()).value;
+                   
+                    dt = document.getElementById("rect_dt"+i.toString()).value;
+
+                    dt = dt.split(' ')[0];
+                }
+                else
+                {
+                    str = str + ',' + document.getElementById("rect_no"+i.toString()).value;
+
+                    var d = document.getElementById("rect_dt"+i.toString()).value;
+                    dt = dt+','+d.split(' ')[0];
+                    
+                }
+                
+            }
+            
+        }
+        
+        var url = '@Html.Raw(@Url.Action("FeesStatement", "Fees_collect"))' + '?sr_num=' + document.getElementById("sr_no0").value + '&rcpt_no='+str+ '&rcpt_dt='+dt
+        window.open(url);
+    }
+
+</script>
+
+
+
+
+
+
+
+

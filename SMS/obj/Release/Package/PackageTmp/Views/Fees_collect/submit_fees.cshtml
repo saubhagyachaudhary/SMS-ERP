@@ -1,0 +1,156 @@
+﻿@model SMS.Models.fees_collect
+
+@{
+    ViewBag.Title = "submit_fees";
+}
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                 <h4>Fees Collection</h4>
+                        <hr />
+                        <div class="col-md-6">
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.sr_num)
+
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.sr_num)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_Name)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_Name)
+                                </dd>
+
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_father_name)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_father_name)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_mother_name)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_mother_name)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_contact)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_contact)
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_Email)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_Email)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_Class)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_Class)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_Section)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_Section)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_Pickup_point)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_Pickup_point)
+                                </dd>
+
+                            </dl>
+                        </div>
+                </div>
+            <div id="Tab" role="tabpanel">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active">
+                        <a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab">
+                            Fee Payment
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab">
+                            Paid Details
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="tab1">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="x_panel">
+                                    <h4>Payment Window</h4>
+                                    <hr />
+                                    @{ 
+                                       
+                                            Html.RenderAction("RenderPayment", new { sr_num = Model.sr_num, reg_num = Model.reg_num });
+                                       
+                                    }
+                                    <div class="col-md-6">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+             
+                    <div role="tabpanel" class="tab-pane" id="tab2">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="x_panel">
+                                    <h4>Paid List</h4>
+                                    <hr />
+                                    @{
+
+                                        Html.RenderAction("RenderPaid", new { sr_num = Model.sr_num});
+
+                                    }
+                                    
+                                    <div class="col-md-6">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+           
+            </div>
+
+        <p>
+            @Html.ActionLink("Back to Search", "fees_collect")
+        </p>
+        </div>
+    </div>

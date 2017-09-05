@@ -1,0 +1,48 @@
+﻿@model SMS.Models.fees_collect
+
+@{
+    ViewBag.Title = "fees_collect";
+}
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.sr_num, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.sr_num, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.sr_num, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                           </div>
+
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.reg_num, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.reg_num, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.reg_num, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Search" class="btn btn-default" />
+                                </div>
+                            </div>
+
+                            }
+                        </div>
+            </div>
+        </div>
+       
+
+    </div>
+</div>

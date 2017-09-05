@@ -1,0 +1,50 @@
+﻿@model SMS.Models.mst_transport
+
+@{
+    ViewBag.Title = "DeleteTransport";
+}
+
+<div class="right_col" role="main">
+    <h2>Delete Transport</h2>
+
+    <h3>Are you sure you want to delete this?</h3>
+    <div>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.pickup_point)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.pickup_point)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.transport_fees)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.transport_fees)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.transport_number)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.transport_number)
+            </dd>
+
+        </dl>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-actions no-color">
+                <input type="submit" value="Delete" class="btn btn-default" /> |
+                @Html.ActionLink("Back to List", "AllTransportList")
+            </div>
+        }
+    </div>
+    </div>

@@ -1,0 +1,79 @@
+﻿@using SMS.Models;
+@model List<fees_payment>
+
+
+<table id="datatable" class="table table-condensed table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                Session
+            </th>
+            <th>
+                Receipt No
+            </th>
+            <th>
+                Receipt Date
+            </th>
+            <th>
+                Fees Type
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Fine
+            </th>
+            <th>
+                Discount
+            </th>
+            <th>
+                Narration
+            </th>
+           
+            <th>
+                Select
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (fees_payment val in Model)
+{
+
+        <tr>
+            <td>
+                @Html.DisplayFor(model => val.fin_id)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.receipt_no)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.receipt_date)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.Fees_type)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.amount_to_be_paid)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.fine)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.discount)
+            </td>
+            <td>
+                @Html.DisplayFor(model => val.Narration)
+            </td>
+            <td>
+                d8
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+
+
+
+
