@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 
@@ -10,17 +10,17 @@ namespace SMS.Models
 {
     public class mst_finMain
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         public void AddFin(mst_fin mst)
         {
             try
             {
-                 string query = @"INSERT INTO [dbo].[mst_fin]
-                               ([fin_id]
-		                       ,[fin_start_date]
-                               ,[fin_end_date]
-                               ,[fin_close])
+                 string query = @"INSERT INTO sms.mst_fin
+                               (fin_id
+		                       ,fin_start_date
+                               ,fin_end_date
+                               ,fin_close)
                                 VALUES
                                (@fin_id
 		                       ,@fin_start_date
@@ -45,11 +45,11 @@ namespace SMS.Models
 
         public IEnumerable<mst_fin> AllFinList()
         {
-            String query = @"SELECT [fin_id]
-                          ,[fin_start_date]
-                          ,[fin_end_date]
-                          ,[fin_close]
-                          FROM [dbo].[mst_fin]";
+            String query = @"SELECT fin_id
+                          ,fin_start_date
+                          ,fin_end_date
+                          ,fin_close
+                          FROM sms.mst_fin";
 
             var result = con.Query<mst_fin>(query);
 
@@ -58,11 +58,11 @@ namespace SMS.Models
 
         public mst_fin FindFin(String id)
         {
-            String Query = @"SELECT [fin_id]
-                          ,[fin_start_date]
-                          ,[fin_end_date]
-                          ,[fin_close]
-                           FROM[dbo].[mst_fin]
+            String Query = @"SELECT fin_id
+                          ,fin_start_date
+                          ,fin_end_date
+                          ,fin_close
+                           FROM sms.mst_fin
                            where fin_id = @fin_id";
 
             return con.Query<mst_fin>(Query, new { fin_id = id }).SingleOrDefault();
@@ -73,7 +73,7 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE [dbo].[mst_fin] SET [fin_close] = @fin_close WHERE fin_id = @fin_id";
+                string query = "UPDATE sms.mst_fin SET fin_close = @fin_close WHERE fin_id = @fin_id";
 
                 con.Execute(query, mst);
             }
@@ -87,7 +87,7 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM [dbo].[mst_fin] WHERE fin_id = @fin_id";
+                String Query = "DELETE FROM sms.mst_fin WHERE fin_id = @fin_id";
 
                 return con.Query<mst_fin>(Query, new { fin_id = id }).SingleOrDefault();
             }

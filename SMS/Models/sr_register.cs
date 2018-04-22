@@ -146,5 +146,6 @@ namespace SMS.Models
 
         [Display(Name = "Admission Fees")]
         public virtual decimal fees_amount { get; set; }
+
     }
 }

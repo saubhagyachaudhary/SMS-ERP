@@ -15,7 +15,13 @@ namespace SMS.Controllers
         [HttpGet]
         public ActionResult fees_collect()
         {
-            return View();
+            fees_collect fee = new fees_collect();
+
+            sr_registerMain stdMain = new sr_registerMain();
+
+            fee.list = stdMain.AllStudentList();
+
+            return View(fee);
         }
 
         [HttpGet]
@@ -55,7 +61,8 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult fees_collect(fees_collect col)
         {
-           
+            try
+            {
                 if (col.sr_num > 0)
                 {
                     sr_registerMain reg = new sr_registerMain();
@@ -79,7 +86,7 @@ namespace SMS.Controllers
 
                     col.std_Pickup_point = register.pickup_point;
 
-                   
+
                     return View("submit_fees", col);
                 }
                 else
@@ -87,13 +94,9 @@ namespace SMS.Controllers
                     std_registrationMain reg = new std_registrationMain();
                     std_registration registration = new std_registration();
 
-                    //out_standing std = new out_standing();
-
-                    //out_standingMain stdMain = new out_standingMain();
 
                     registration = reg.FindRegistrationForFees(col.reg_num);
 
-                   // registration = reg.FindRegistration(std.fin_id, std.reg_num, std.dt_date);
 
                     col.std_Name = registration.std_first_name + " " + registration.std_last_name;
 
@@ -113,7 +116,18 @@ namespace SMS.Controllers
 
                     return View("submit_fees", col);
                 }
-                
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty, "Student record not found");
+                fees_collect fee = new fees_collect();
+
+                sr_registerMain stdMain = new sr_registerMain();
+
+                fee.list = stdMain.AllStudentList();
+
+                return View(fee);
+            }  
           
         }
         [HttpPost]
@@ -141,7 +155,7 @@ namespace SMS.Controllers
                             out_std.month_name = fee.month_name;
                             out_std.clear_flag = fee.clear_flag;
                             out_stdMain.AddOutStanding(out_std);
-                      
+
 
                         rec.Add(new fees_receipt
                         {
@@ -158,8 +172,9 @@ namespace SMS.Controllers
                             chq_no = fee.cheque_no,
                             chq_date = fee.cheque_date,
                             mode_flag = fee.mode_flag,
-                            month_no = fee.month_no
-                            
+                            month_no = fee.month_no,
+                            user_id = Int32.Parse(Session["loginUserId"].ToString())
+
                         });
                     }
                     else
@@ -180,7 +195,8 @@ namespace SMS.Controllers
                     bnk_name = fee.Bank_name,
                     chq_no = fee.cheque_no,
                     chq_date = fee.cheque_date,
-                    mode_flag = fee.mode_flag
+                    mode_flag = fee.mode_flag,
+                        user_id = Int32.Parse(Session["loginUserId"].ToString())
                     } );
 
                     }
@@ -190,7 +206,7 @@ namespace SMS.Controllers
             }
 
             
-
+            
             main.AddReceipt(rec);
 
             return RedirectToAction("fees_collect");
@@ -203,686 +219,104 @@ namespace SMS.Controllers
           
 
             out_standingMain outstd = new out_standingMain();
+            std_discount discount = new std_discount();
+            std_discountMain discountMain = new std_discountMain();
 
             IEnumerable<out_standing> std = new List<out_standing>();
 
             std = outstd.AllOutStanding(sr_num);
 
-
-            //if (std.Count() == 0)
-            //{
-
-
-
-            //    mst_feesMain fees_main = new mst_feesMain();
-
-            //    IEnumerable<mst_fees> fees_details = new List<mst_fees>();
-
-            //    fees_details = fees_main.FindFeesDetails(sr_num);
-
-            //    int year = outstd.GetlatestFeesYear(sr_num);
-            //    int mon = outstd.GetlatestFeesMonth(sr_num);
-            //    int mon1;
-
-            //    if (mon <= 3)
-            //        mon1 = mon + 12;
-            //    else
-            //    {
-            //        mon1 = mon + 1;
-            //        mon = 0;
-            //    }
-
-            //    mst_transport transport = new mst_transport();
-
-            //    mst_transportMain transportMain = new mst_transportMain();
-
-            //    transport = transportMain.FindTransportBySr(sr_num);
-
-            //    //  out_standing outstd = new out_standing();
-
-            //    out_standingMain outstdMain = new out_standingMain();
-
-            //    IEnumerable<out_standing> advoutstd = new List<out_standing>();
-
-            //    IEnumerable<out_standing> advTransOutStd = new List<out_standing>();
-
-            //    int flag = 0;
-
-            //    int transFlag = 0;
-
-            //    for (int i = mon1; i <= 12; i++)
-            //    {
-            //        foreach (mst_fees val in fees_details)
-            //        {
-
-            //            advoutstd = outstdMain.GetAdvanceMonth(sr_num, val.acc_id);
-            //            advTransOutStd = outstdMain.GetAdvanceTransportMonth(sr_num, 3);
-
-            //            if (val.bl_apr && i == 4)
-            //            {
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_apr && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_apr = false;
-            //                }
-
-            //            }
-
-
-
-
-            //            if (val.bl_may && i == 5)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_may && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_may = false;
-            //                }
-            //            }
-
-
-            //            if (val.bl_jun && i == 6)
-            //            {
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_jun && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_jun = false;
-            //                }
-
-            //            }
-
-
-            //            if (val.bl_jul && i == 7)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_jul && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_jul = false;
-            //                }
-            //            }
-
-
-            //            if (val.bl_aug && i == 8)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_aug && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_aug = false;
-            //                }
-            //            }
-
-
-            //            if (val.bl_sep && i == 9)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_sep && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_sep = false;
-            //                }
-            //            }
-
-
-            //            if (val.bl_oct && i == 10)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_oct && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_oct = false;
-            //                }
-
-            //            }
-
-
-
-            //            if (val.bl_nov && i == 11)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    //flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_nov && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_nov = false;
-            //                }
-
-            //            }
-
-
-            //            if (val.bl_dec && i == 12)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    // flag = 0;
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_dec && transFlag == 0)
-            //                {
-            //                    payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-
-            //                    transport.bl_dec = false;
-            //                }
-
-            //            }
-
-
-
-
-
-            //        }
-            //    }
-
-            //    flag = 0;
-
-            //    for (int i = mon + 1; i <= 3; i++)
-            //    {
-            //        foreach (mst_fees val in fees_details)
-            //        {
-            //            advoutstd = outstdMain.GetAdvanceMonth(sr_num, val.acc_id);
-            //            advTransOutStd = outstdMain.GetAdvanceTransportMonth(sr_num, 3);
-
-            //            if (val.bl_jan && i == 1)
-            //            {
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    if (System.DateTime.Now.Month == 1 || System.DateTime.Now.Month == 2 || System.DateTime.Now.Month == 3)
-            //                        payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year).ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    else
-            //                        payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString() });
-
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_jan && transFlag == 0)
-            //                {
-
-            //                    if (System.DateTime.Now.Month == 1 || System.DateTime.Now.Month == 2 || System.DateTime.Now.Month == 3)
-            //                        payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year).ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    else
-            //                        payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString() });
-
-
-            //                    transport.bl_jan = false;
-            //                }
-
-
-
-            //            }
-
-
-
-            //            if (val.bl_feb && i == 2)
-            //            {
-
-
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    if (System.DateTime.Now.Month == 1 || System.DateTime.Now.Month == 2 || System.DateTime.Now.Month == 3)
-            //                        payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year).ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    else
-            //                        payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString() });
-
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_feb && transFlag == 0)
-            //                {
-
-            //                    if (System.DateTime.Now.Month == 1 || System.DateTime.Now.Month == 2 || System.DateTime.Now.Month == 3)
-            //                        payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year).ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    else
-            //                        payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString() });
-
-
-            //                    transport.bl_feb = false;
-            //                }
-            //            }
-
-
-
-            //            if (val.bl_mar && i == 3)
-            //            {
-            //                foreach (out_standing o in advoutstd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        flag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        flag = 0;
-            //                    }
-
-            //                }
-
-            //                if (flag == 0)
-            //                {
-            //                    if (System.DateTime.Now.Month == 1 || System.DateTime.Now.Month == 2 || System.DateTime.Now.Month == 3)
-            //                        payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year).ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    else
-            //                        payment.Add(new fees_payment { acc_id = val.acc_id, sr_num = sr_num, Fees_type = val.acc_name + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString(), amount_to_be_paid = val.fees_amount, due_amount = val.fees_amount, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString() });
-
-            //                }
-
-            //                foreach (out_standing o in advTransOutStd)
-            //                {
-            //                    if (o.month_no == i)
-            //                    {
-            //                        transFlag = 1;
-            //                        break;
-            //                    }
-            //                    else
-            //                    {
-            //                        transFlag = 0;
-            //                    }
-
-            //                }
-
-            //                if (transport.bl_mar && transFlag == 0)
-            //                {
-
-            //                    if (System.DateTime.Now.Month == 1 || System.DateTime.Now.Month == 2 || System.DateTime.Now.Month == 3)
-            //                        payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year).ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + year.ToString() });
-            //                    else
-            //                        payment.Add(new fees_payment { acc_id = 3, sr_num = sr_num, Fees_type = "Transport Fees" + ' ' + CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString(), amount_to_be_paid = transport.transport_fees, due_amount = transport.transport_fees, month_no = i, month_name = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) + ' ' + (year + 1).ToString() });
-
-
-            //                    transport.bl_mar = false;
-            //                }
-
-            //            }
-
-
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    foreach (out_standing val in std)
-            //    {
-            //        payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial,sr_num = val.sr_number });
-            //    }
-            //}
-
+            
+            
                 foreach (out_standing val in std)
                 {
-                    payment.Add(new fees_payment {acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial,sr_num = val.sr_number });
+                    discount = discountMain.FindDiscount(sr_num,val.acc_id);
+
+                if (discount != null)
+                {
+                        if (discount.acc_id == val.acc_id && discount.bl_apr && val.month_no == 4)
+                        {
+                            if(discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_may && val.month_no == 5)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_jun && val.month_no == 6)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_jul && val.month_no == 7)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_aug && val.month_no == 8)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_sep && val.month_no == 9)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_oct && val.month_no == 10)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_nov && val.month_no == 11)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_dec && val.month_no == 12)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_jan && val.month_no == 1)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_feb && val.month_no == 2)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        if (discount.acc_id == val.acc_id && discount.bl_mar && val.month_no == 3)
+                        {
+                            if (discount.percent != 100)
+                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                        else
+                        {
+                            payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                        }
+                    }
+                
+                else
+                {
+                    payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
+                }
+
+                
                 }
 
             return payment;
@@ -894,15 +328,6 @@ namespace SMS.Controllers
         private IEnumerable<fees_payment> GetFeesPaymentByReg(int reg_num)
         {
             List<fees_payment> payment = new List<fees_payment>();
-
-            /* payment.Add(new fees_payment { Fees_type = "Tution Fees", amount_to_be_paid = 4000, due_amount = 4000 });
-             payment.Add(new fees_payment { Fees_type = "Annual", amount_to_be_paid = 3000, due_amount = 3000 });
-             payment.Add(new fees_payment { Fees_type = "IT", amount_to_be_paid = 2000, due_amount = 2000 });
-             payment.Add(new fees_payment { Fees_type = "Development", amount_to_be_paid = 1000, due_amount = 1000 });
-
-              */
-
-            //fees_paymentMain feesMain = new fees_paymentMain();
 
             out_standingMain outstd = new out_standingMain();
 
@@ -944,7 +369,31 @@ namespace SMS.Controllers
 
         }
 
-       
+        private IEnumerable<fees_payment> GetFeesPaidByReg(int reg)
+        {
+            List<fees_payment> payment = new List<fees_payment>();
+
+
+
+            fees_receiptMain outrect = new fees_receiptMain();
+
+            IEnumerable<fees_receipt> rect = new List<fees_receipt>();
+
+            rect = outrect.AllPaidFeesReg(reg);
+
+            foreach (fees_receipt val in rect)
+            {
+
+                payment.Add(new fees_payment { sr_num = reg, mode_flag = val.mode_flag, fin_id = val.fin_id, receipt_no = val.receipt_no, receipt_date = val.receipt_date, Fees_type = val.fees_name, amount_to_be_paid = val.amount, fine = val.dc_fine, discount = val.dc_discount, Narration = val.narration, acc_id = val.acc_id, chq_reject = val.chq_reject });
+            }
+
+
+
+            return payment;
+
+        }
+
+
 
         public PartialViewResult RenderPayment(int sr_num, int reg_num)
         {
@@ -958,11 +407,18 @@ namespace SMS.Controllers
             }
         }
 
-        public PartialViewResult RenderPaid(int sr_num)
+        public PartialViewResult RenderPaid(int sr_num, int reg_num)
         {
-          
+            if (sr_num > 0)
+            {
                 return PartialView(GetFeesPaid(sr_num));
-          
+            }
+            else
+            {
+                return PartialView(GetFeesPaidByReg(reg_num));
+            }
+
+
         }
 
 

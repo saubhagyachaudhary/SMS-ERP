@@ -3,7 +3,7 @@ using SMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class sr_registerController : Controller
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         [HttpGet]
         public ActionResult AddStudent(string sess,int reg,DateTime dt)
@@ -60,13 +60,25 @@ namespace SMS.Controllers
             {
                 sr_registerMain stdMain = new sr_registerMain();
 
-                string query = "select class_id from mst_class where class_name = @std_admission_class";
+                string query = "select class_id from sms.mst_class where class_name = @std_admission_class";
 
                 int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
                 if (std.class_id < id)
                 {
                     ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
+
+
+                    DDclass_name(std);
+
+                    DDtransport_id(std);
+
+                    return View(std);
+                }
+
+                if (std.std_pickup_id == null)
+                {
+                    ModelState.AddModelError(String.Empty, "Avail Transport cannot be blank.");
 
 
                     DDclass_name(std);
@@ -92,8 +104,8 @@ namespace SMS.Controllers
         {
             
 
-            string query = @" SELECT [fees_amount]
-                          FROM [SMS].[dbo].[mst_fees] a, [SMS].[dbo].[mst_class] b
+            string query = @" SELECT fees_amount
+                          FROM sms.mst_fees a, sms.mst_class b
                           where
                           a.class_id = b.class_id
                           and
@@ -135,9 +147,11 @@ namespace SMS.Controllers
             ViewData["pickup_id"] = list2;
         }
 
+      
+
         public JsonResult GetSections(int id)
         {
-            string query = "select section_id,section_name from mst_section where class_id = @class_id";
+            string query = "select section_id,section_name from sms.mst_section where class_id = @class_id";
 
           
            var section_list = con.Query<mst_section>(query,new { class_id = id});
@@ -150,7 +164,7 @@ namespace SMS.Controllers
 
         public void DDSections(sr_register obj)
         {
-            string query = "select section_id,section_name from mst_section where class_id = @class_id";
+            string query = "select section_id,section_name from sms.mst_section where class_id = @class_id";
 
 
             var section_list = con.Query<mst_section>(query, new { class_id = obj.class_id});
@@ -186,6 +200,7 @@ namespace SMS.Controllers
             DDclass_name(obj);
             DDtransport_id(obj);
             DDSections(obj);
+          
 
             if (obj.std_active == "Y")
             {
@@ -196,6 +211,7 @@ namespace SMS.Controllers
                 obj.active = false;
             }
 
+
             return View(obj);
         }
 
@@ -204,7 +220,7 @@ namespace SMS.Controllers
         {
             sr_registerMain stdMain = new sr_registerMain();
 
-            string query = "select class_id from mst_class where class_name = @std_admission_class";
+            string query = "select class_id from sms.mst_class where class_name = @std_admission_class";
 
             int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
@@ -220,6 +236,33 @@ namespace SMS.Controllers
                 DDSections(std);
 
                 return View(std);
+            }
+
+            query = @"select class_id from sms.sr_register a, sms.mst_batch b
+where
+a.std_batch_id = b.batch_id
+and sr_number = @sr_num";
+
+            int changedclassid = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
+
+             query = @"select ifnull(count(rmt_amount),0) from sms.out_standing where sr_number = @sr_num  and serial != 0  and fin_id = (select fin_id from sms.mst_fin where fin_close = 'N') and acc_id not in (1,2,6)";
+
+            int error = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
+
+
+
+            if (error != 0 && changedclassid != std.class_id)
+            {
+                ModelState.AddModelError(String.Empty, "Cannot change, class fees already paid");
+
+                DDclass_name(std);
+
+                DDtransport_id(std);
+
+                DDSections(std);
+
+                return View(std);
+
             }
 
             if (std.active)

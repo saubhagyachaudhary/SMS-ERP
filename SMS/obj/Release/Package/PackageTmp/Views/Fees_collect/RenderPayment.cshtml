@@ -1,284 +1,294 @@
 ﻿@using SMS.Models;
 @model List<fees_payment>
 
-
-@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post))
+<link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
+@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post, new { id = "submit" }))
 {
-    <table id="datatable" class="table table-condensed table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>
-                    Fees Type
-                </th>
-                <th>
-                    Due Amount
-                </th>
-                <th>
-                    Amount to be Paid
-                </th>
-                <th>
-                    Fine
-                </th>
-                <th>
-                    Discount
-                </th>
-                <th>
-                    Select
-                </th>
-            </tr>
-        </thead>
-        <tbody>
+    <div style="overflow-x:auto;">
 
-            @for (int i = 0; i < Model.Count(); i++)
-            {
-                
+        <table class="table table-condensed table-bordered table-striped table-hover">
+            <thead>
                 <tr>
-                    <td>
-                        <div class="form-group">
-                             @Html.DisplayFor(model => model[i].Fees_type)
 
-                            @Html.HiddenFor(model => model[i].Fees_type)
-
-                            @Html.HiddenFor(model => model[i].sr_num)
-
-                            @Html.HiddenFor(model => model[i].Narration, new { id = i.ToString() })
-
-                            @Html.HiddenFor(model => model[i].Bank_name, new { id = "bnk"+i.ToString() })
-
-                            @Html.HiddenFor(model => model[i].cheque_no, new { id = "chk"+i.ToString() })
-
-                            @Html.HiddenFor(model => model[i].cheque_date, new { id = "dt"+i.ToString() })
-
-                            @Html.HiddenFor(model => model[i].acc_id)
-
-                            @Html.HiddenFor(model => model[i].serial)
-                            @Html.HiddenFor(model => model[i].dt_date)
-                            @Html.HiddenFor(model => model[i].month_no)
-                            @Html.HiddenFor(model => model[i].month_name)
-                            @Html.HiddenFor(model => model[i].reg_num)
-                            @Html.HiddenFor(model => model[i].reg_date)
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            @Html.DisplayFor(model => model[i].due_amount)
-
-                            @Html.HiddenFor(model => model[i].due_amount)
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            @Html.EditorFor(model => model[i].amount_to_be_paid, new { htmlAttributes = new { @class = "form-control", @onchange= "recalculate()", @id = "amt" + i.ToString() } })
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            @Html.EditorFor(model => model[i].fine, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "fin" + i.ToString() } } )
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            @Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })
-                        </div>
-                    </td>
-                    <td>
-                        @Html.CheckBoxFor(model => model[i].check, new { @class = "form-control", @onclick = "recalculate()", @id = "c" + i.ToString() })
-
-                       
-                    </td>
+                    <th>
+                        Fees Type
+                    </th>
+                    <th>
+                        Due Amt
+                    </th>
+                    <th>
+                        Amount to be Paid
+                    </th>
+                    <th>
+                        Fine
+                    </th>
+                    <th>
+                        Discount
+                    </th>
+                    <th>
+                        Select
+                    </th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
 
-    <div id="Tab" role="tabpanel">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="active">
-                <a href="#cash" aria-controls="cash" role="tab" data-toggle="tab">
-                    Cash Payment
-                </a>
-            </li>
-            <li>
-                <a href="#cheque" aria-controls="cheque" role="tab" data-toggle="tab">
-                    Cheque Payment
-                </a>
-            </li>
-            <li>
-                <a href="#online" aria-controls="online" role="tab" data-toggle="tab">
-                    Online Payment
-                </a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="cash">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="x_panel">
-                            <h4>Cash Payment Window</h4>
-                            <hr />
+                @for (int i = 0; i < Model.Count(); i++)
+                {
 
+                    <tr>
+
+                        <td>
                             <div class="form-group">
-                                <label>Narration</label>
-                                <input type="text" class="form-control" id="narration" placeholder="Narration">
-                                
+                                @Html.DisplayFor(model => model[i].Fees_type)
+
+                                @Html.HiddenFor(model => model[i].Fees_type)
+
+                                @Html.HiddenFor(model => model[i].sr_num)
+
+                                @Html.HiddenFor(model => model[i].Narration, new { id = i.ToString() })
+
+                                @Html.HiddenFor(model => model[i].Bank_name, new { id = "bnk" + i.ToString() })
+
+                                @Html.HiddenFor(model => model[i].cheque_no, new { id = "chk" + i.ToString() })
+
+                                @Html.HiddenFor(model => model[i].cheque_date, new { id = "dt" + i.ToString() })
+
+                                @Html.HiddenFor(model => model[i].acc_id)
+
+                                @Html.HiddenFor(model => model[i].serial)
+                                @Html.HiddenFor(model => model[i].dt_date)
+                                @Html.HiddenFor(model => model[i].month_no)
+                                @Html.HiddenFor(model => model[i].month_name)
+                                @Html.HiddenFor(model => model[i].reg_num)
+                                @Html.HiddenFor(model => model[i].reg_date)
+                                @Html.HiddenFor(model => model[i].clear_flag, new { id = "cl" + i.ToString() })
+                                @Html.HiddenFor(model => model[i].mode_flag, new { id = "mdf" + i.ToString() })
                             </div>
-
+                        </td>
+                        <td>
                             <div class="form-group">
-                                <label>Total Amount Payable</label>
+                                @Html.DisplayFor(model => model[i].due_amount)
 
-                                <div id="grandTotalDiv">
+                                @Html.HiddenFor(model => model[i].due_amount)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
 
+                                @if (Model[i].discount == 0)
+                                {
+                                    @Html.EditorFor(model => model[i].amount_to_be_paid, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "amt" + i.ToString() } })
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(model => model[i].amount_to_be_paid, new { @class = "form-control", @onchange = "recalculate()", @readonly = "readonly", @id = "amt" + i.ToString() })
+                                }
+
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                @Html.EditorFor(model => model[i].fine, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "fin" + i.ToString() } })
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                @if (Model[i].discount == 0)
+                                {
+                                    @Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(model => model[i].discount, new { @class = "form-control", @onchange = "recalculate()", @readonly = "readonly", @id = "dis" + i.ToString() })
+                                }
+                                @*@Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })*@
+                            </div>
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model[i].check, new { @class = "form-control", @onclick = "recalculate()", @id = "c" + i.ToString() })
+
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </div>
+        <div id="Tab" role="tabpanel">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active">
+                    <a href="#cash" aria-controls="cash" role="tab" data-toggle="tab">
+                        Cash Payment
+                    </a>
+                </li>
+                <li>
+                    <a href="#cheque" aria-controls="cheque" role="tab" data-toggle="tab">
+                        Bank Payment
+                    </a>
+                </li>
+
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="cash">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <h4>Cash Payment Window</h4>
+                                <hr />
+
+                                <div class="form-group">
+                                    <label>Narration</label>
+                                    <input type="text" class="form-control" id="narration" placeholder="Narration">
 
                                 </div>
-                            </div>
+
+                                <div class="form-group">
+                                    <label>Total Amount Payable</label>
+
+                                    <div id="grandTotalDiv">
+
+
+                                    </div>
+                                </div>
                                 <div class="col-md-10">
-                                    <input type="submit" value="Save" class="btn btn-default" onclick="addItem()" />
+                                    <input type="submit" id="cash" value="Save" class="btn btn-default" onclick="addItem()" />
                                 </div>
 
 
                                 <div class="col-md-6">
                                 </div>
                             </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="cheque">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="x_panel">
-                            <h4>Cheque Payment Window</h4>
-                            <hr />
+                <div role="tabpanel" class="tab-pane" id="cheque">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <h4>Bank Payment Window</h4>
+                                <hr />
 
-                            <div class="form-group">
-                                <label>Narration</label>
-                                <input type="text" class="form-control" id="chq_narration" placeholder="Narration">
+                                <div class="form-group">
+                                    <label>Narration</label>
+                                    <input type="text" class="form-control" id="chq_narration" placeholder="Narration">
 
-                            </div>
+                                </div>
 
-                            <div class="form-group">
-                                <label>Cheque Number</label>
-                                <input type="text" class="form-control" id="chq_number" placeholder="Cheque Number">
+                                <div class="form-group">
+                                    <label>Inst Number</label>
+                                    <input type="text" class="form-control" name="cheque_no" id="chq_number" placeholder="Cheque Number">
 
-                            </div>
+                                </div>
 
-                            <div class="form-group">
-                                <label>Cheque Date</label>
-                                <input type="text" class="form-control" id="chq_date" placeholder="Cheque Date">
-                               
-
-                            </div>
-
-                            <div class="form-group">
-                                <label>Bank Name</label>
-                                <input type="text" class="form-control" id="bnk_name" placeholder="Bank Name">
-
-                            </div>
-
-                            <div class="form-group">
-                                <label>Total Amount Payable</label>
-
-                                <div id="grandTotalDiv1">
+                                <div class="form-group">
+                                    <label>Inst Date</label>
+                                    <input type="text" class="form-control" name="cheque_date" id="chq_date" placeholder="Cheque Date">
 
 
                                 </div>
-                            </div>
-                            <div class="col-md-10">
-                                <input type="submit" value="Save" class="btn btn-default" onclick="addchkItem()" />
-                            </div>
+
+                                <div class="form-group">
+                                    <label>Bank Name</label>
+                                    <input type="text" class="form-control" name="bank_name" id="bnk_name" placeholder="Bank Name">
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Total Amount Payable</label>
+
+                                    <div id="grandTotalDiv1">
 
 
-                            <div class="col-md-6">
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <input type="submit" value="Save" class="btn btn-default" onclick="addchkItem()" />
+                                </div>
+
+
+                                <div class="col-md-6">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="online">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="x_panel">
-                            <h4>Online Payment Window</h4>
-                            <hr />
 
-                            <div class="col-md-6">
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
 
-   
-    <script>
+        }
+        <script type="text/javascript">
+            function recalculate() {
+                var total = 0.00;
+                var amt = 0.00;
+                var fin = 0.00;
 
-        function recalculate() {
-
-
-
-
-            var total = 0.00;
-            var amt = 0.00;
-            var fin = 0.00;
-
-            for (i = 0; i < @Model.Count() ; i++)
-            {
-                var ch = document.getElementById("c"+i.toString());
-               // window.alert(ch.id);
-
-                if(document.getElementById("c"+i.toString()).checked)
+                for (i = 0; i < @Model.Count() ; i++)
                 {
+                    var ch = document.getElementById("c"+i.toString());
+                    // window.alert(ch.id);
 
-                   amt = document.getElementById("amt"+i.toString()).value
+                    if(document.getElementById("c"+i.toString()).checked)
+                    {
 
-                   fin = document.getElementById('fin'+i.toString()).value
+                        amt = document.getElementById("amt"+i.toString()).value
 
-                    dis = document.getElementById('dis'+i.toString()).value
+                        fin = document.getElementById('fin'+i.toString()).value
 
-                    total = total + (parseFloat(amt)+parseFloat(fin)) - parseFloat(dis);
+                        dis = document.getElementById('dis'+i.toString()).value
+
+                        total = total + (parseFloat(amt)+parseFloat(fin)) - parseFloat(dis);
+
+
+                    }
+
+
 
 
                 }
+                // window.alert(total);
 
-
+                $('#grandTotalDiv').html(total);
+                $('#grandTotalDiv1').html(total);
 
 
             }
-           // window.alert(total);
 
-            $('#grandTotalDiv').html(total);
-            $('#grandTotalDiv1').html(total);
-
-      
-    }
-
-        function addchkItem()
-        {
-            for (i = 0; i < @Model.Count() ; i++)
+            function addchkItem()
             {
-                document.getElementById(i.toString()).value = document.getElementById("chq_narration").value;
+                for (i = 0; i < @Model.Count() ; i++)
+                {
+                    document.getElementById(i.toString()).value = document.getElementById("chq_narration").value;
 
-                document.getElementById("bnk"+i.toString()).value = document.getElementById("bnk_name").value;
-                document.getElementById("chk"+i.toString()).value = document.getElementById("chq_number").value;
-                document.getElementById("dt"+i.toString()).value = document.getElementById("chq_date").value;
+                    document.getElementById("bnk"+i.toString()).value = document.getElementById("bnk_name").value;
+                    document.getElementById("chk"+i.toString()).value = document.getElementById("chq_number").value;
+                    document.getElementById("dt"+i.toString()).value = document.getElementById("chq_date").value;
+                    document.getElementById("cl"+i.toString()).value = false;
+                    document.getElementById("mdf"+i.toString()).value = 'Cheque';
+                    //window.alert(document.getElementById(i.toString()).value);
+                }
 
-                //window.alert(document.getElementById(i.toString()).value);
+                var x = document.forms["submit_fees"]["bank_name"].value;
+                if (x == "") {
+                    alert("Bank Name must be filled out");
+                    return false;
+                }
             }
-        }
 
-        function addItem()
-        {
-            for (i = 0; i < @Model.Count() ; i++)
+            function addItem()
             {
-                document.getElementById(i.toString()).value = document.getElementById("narration").value;
-
-                //window.alert(document.getElementById(i.toString()).value);
+                for (i = 0; i < @Model.Count() ; i++)
+                {
+                    document.getElementById(i.toString()).value = document.getElementById("narration").value;
+                    document.getElementById("cl"+i.toString()).value = true;
+                    //window.alert(document.getElementById(i.toString()).value);
+                    document.getElementById("mdf"+i.toString()).value = 'Cash';
+                }
             }
-        }
 
-       
 
-    </script>
 
-   
-}
+        </script>
+
+
+

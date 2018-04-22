@@ -8,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>School Management System | </title>
     <!-- Bootstrap -->
-    
+  
+
     <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
     
@@ -41,7 +42,8 @@
             <div class="col-md-3 left_col">
                 <div class="left_col scroll-view">
                     <div class="navbar nav_title" style="border: 0;">
-                        <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Hariti (SMS)</span></a>
+                        <a href="~/Home/Dashboard" class="site_title"><i class="fa fa-paw"></i> <span>Hariti (SMS)</span></a>
+                        
                     </div>
                     <div class="clearfix"></div>
                     <!-- menu profile quick info -->
@@ -65,7 +67,7 @@
                             <ul class="nav side-menu">
                                 <li>
                                     <a><i class="fa fa-home"></i> Masters <span class="fa fa-chevron-down"></span></a>
-                                    <ul class="nav child_menu">
+                                    <ul class="nav child_menu open">
                                        @if (User.IsInRole("superadmin"))
                                        {
                                         <li>@Html.ActionLink("Class Master", "AllClassList", "mst_class")</li>
@@ -75,6 +77,7 @@
                                             <li>@Html.ActionLink("Transport Master", "AllTransportList", "mst_transport")</li>
                                             <li>@Html.ActionLink("Account Master", "AllAccountList", "mst_acc_head")</li>
                                             <li>@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
+                                            <li>@Html.ActionLink("Discount Master", "AllStdDiscountList", "std_discount")</li>
 
                                        }
                                        
@@ -306,6 +309,8 @@
                     <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
                 </footer>
             </div>
+            </div>
+        </div>
             <!-- jQuery -->
             
             <script src="~/vendors/jquery/dist/jquery.min.js"></script>
@@ -358,9 +363,10 @@
             @*<script src="~/vendors/starrr/dist/starrr.js"></script>*@
             <!-- Custom Theme Scripts -->
            
-            <script src="~/build/js/custom.min.js"></script>
+
+            <script src="~/build/js/custom.js"></script>
             <!-- bootstrap-daterangepicker -->
-          
+    
             @Scripts.Render("~/bundles/jquery")
             @Scripts.Render("~/bundles/bootstrap")
             @RenderSection("scripts", required: false)

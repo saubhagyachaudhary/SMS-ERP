@@ -1,0 +1,98 @@
+﻿@model IEnumerable<SMS.Models.std_discount>
+
+@{
+    ViewBag.Title = "AllStdDiscountList";
+}
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+
+
+<div class="right_col" role="main">
+    <p>
+        @Html.ActionLink("Create New", "AddDiscount")
+    </p>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+
+                    <h2>AlL Discount Student</h2>
+
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.stdName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.stdclass)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.account_name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.per)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.std_remarks)
+                                </th>
+                                <th>
+                                    Control Panel
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.stdName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.stdclass)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.account_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.per)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_remarks)
+                                    </td>
+
+                                    <td>
+                                        @Html.ActionLink("Edit", "EditDiscount", new { sr_num = item.sr_num, acc_id = item.acc_id }) |
+                                        @Html.ActionLink("Delete", "DeleteDiscount", new { sr_num = item.sr_num, acc_id = item.acc_id })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="~/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
+    <script src="~/vendors/jszip/dist/jszip.min.js"></script>
+    <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+}

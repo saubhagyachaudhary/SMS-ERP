@@ -8,28 +8,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>School Management System | </title>
     <!-- Bootstrap -->
-    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
     <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
     
     <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <!-- NProgress -->
-    
-    <link href="~/vendors/nprogress/nprogress.css" rel="stylesheet" />
+    <link href="~/Content/checkbox.css" rel="stylesheet" />
+    @*<link href="~/vendors/nprogress/nprogress.css" rel="stylesheet" />*@
     <!-- iCheck -->
     
-    <link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet" />
+   @* <link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet" />*@
     <!-- bootstrap-wysiwyg -->
-    <link href="~/vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet" />
+    @*<link href="~/vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet" />*@
     <!-- Select2 -->
   
-    <link href="~/vendors/select2/dist/css/select2.min.css" rel="stylesheet" />
+  @*  <link href="~/vendors/select2/dist/css/select2.min.css" rel="stylesheet" />*@
     <!-- Switchery -->
    
-    <link href="~/vendors/switchery/dist/switchery.min.css" rel="stylesheet" />
+    @*<link href="~/vendors/switchery/dist/switchery.min.css" rel="stylesheet" />*@
     <!-- starrr -->
    
-    <link href="~/vendors/starrr/dist/starrr.css" rel="stylesheet" />
+    @*<link href="~/vendors/starrr/dist/starrr.css" rel="stylesheet" />*@
     <!-- Custom Theme Style -->
   
     <link href="~/build/css/custom.min.css" rel="stylesheet" />
@@ -41,17 +43,20 @@
             <div class="col-md-3 left_col">
                 <div class="left_col scroll-view">
                     <div class="navbar nav_title" style="border: 0;">
-                        <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Hariti (SMS)</span></a>
+                        <a href="~/Home/Dashboard" class="site_title"><i class="fa fa-paw"></i> <span>Hariti (SMS)</span></a>
+                        
                     </div>
                     <div class="clearfix"></div>
                     <!-- menu profile quick info -->
                     <div class="profile">
                         <div class="profile_pic">
-                            <img src="~/images/img.jpg" alt="..." class="img-circle profile_img">
+                            @*<img src="~/images/img.jpg" alt="..." class="img-circle profile_img">*@
+                            <img  src="~/images/users/@Session["profilepicture"].ToString()" alt="..." class="img-circle profile_img" width="60" height="60">
+                         
                         </div>
                         <div class="profile_info">
                             <span>Welcome,</span>
-                            <h2>John Doe</h2>
+                            <h2>@Session["loginUserFullName"].ToString()</h2>
                         </div>
                     </div>
                     <!-- /menu profile quick info -->
@@ -59,25 +64,31 @@
                     <!-- sidebar menu -->
                     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section">
-                            <h3>General</h3>
+                            <h3>Menu</h3>
                             <ul class="nav side-menu">
                                 <li>
                                     <a><i class="fa fa-home"></i> Masters <span class="fa fa-chevron-down"></span></a>
-                                    <ul class="nav child_menu">
+                                    <ul class="nav child_menu open">
+                                       @if (User.IsInRole("superadmin"))
+                                       {
+                                        <li>@Html.ActionLink("Class Master", "AllClassList", "mst_class")</li>
+                                            <li>@Html.ActionLink("Financial Year", "AllFinList", "mst_fin")</li>
+                                            <li>@Html.ActionLink("Session Master", "AllSessionList", "mst_session")</li>
+                                            <li>@Html.ActionLink("Section Master", "AllSectionList", "mst_section")</li>
+                                            <li>@Html.ActionLink("Transport Master", "AllTransportList", "mst_transport")</li>
+                                            <li>@Html.ActionLink("Account Master", "AllAccountList", "mst_acc_head")</li>
+                                            <li>@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
+                                            <li>@Html.ActionLink("Discount Master", "AllStdDiscountList", "std_discount")</li>
+
+                                       }
                                        
-                                        <li>@Html.ActionLink("Class Master","AllClassList", "mst_class")</li>
-                                        <li>@Html.ActionLink("Financial Year", "AllFinList", "mst_fin")</li>
-                                        <li>@Html.ActionLink("Session Master", "AllSessionList", "mst_session")</li>
-                                        <li>@Html.ActionLink("Section Master", "AllSectionList","mst_section")</li>
-                                        <li>@Html.ActionLink("Transport Master", "AllTransportList", "mst_transport")</li>
                                         <li>@Html.ActionLink("Registration Master", "AllRegistrationList", "std_registration")</li>
                                         <li>@Html.ActionLink("Student Master", "AllStudentList", "sr_register")</li>
-                                        <li>@Html.ActionLink("Account Master", "AllAccountList", "mst_acc_head")</li>
-                                        <li>@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
                                         <li>@Html.ActionLink("Fees Collection", "fees_collect", "Fees_collect")</li>
+                                        <li>@Html.ActionLink("Uncleared Cheque", "AllUnclearedChequeList", "uncleared_cheque")</li>
                                     </ul>
                                 </li>
-                                <li>
+                                @*<li>
                                     <a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         <li><a href="form.html">General Form</a></li>
@@ -125,10 +136,10 @@
                                         <li><a href="fixed_sidebar.html">Fixed Sidebar</a></li>
                                         <li><a href="fixed_footer.html">Fixed Footer</a></li>
                                     </ul>
-                                </li>
+                                </li>*@
                             </ul>
                         </div>
-                        <div class="menu_section">
+                        @*<div class="menu_section">
                             <h3>Live On</h3>
                             <ul class="nav side-menu">
                                 <li>
@@ -177,11 +188,11 @@
                                 </li>
                                 <li><a href="javascript:void(0)"><i class="fa fa-laptop"></i> Landing Page <span class="label label-success pull-right">Coming Soon</span></a></li>
                             </ul>
-                        </div>
+                        </div>*@
                     </div>
                     <!-- /sidebar menu -->
                     <!-- /menu footer buttons -->
-                    <div class="sidebar-footer hidden-small">
+                    @*<div class="sidebar-footer hidden-small">
                         <a data-toggle="tooltip" data-placement="top" title="Settings">
                             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                         </a>
@@ -194,7 +205,7 @@
                         <a data-toggle="tooltip" data-placement="top" title="Logout">
                             <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                         </a>
-                    </div>
+                    </div>*@
                     <!-- /menu footer buttons -->
                 </div>
             </div>
@@ -208,26 +219,27 @@
                         <ul class="nav navbar-nav navbar-right">
                             <li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <img src="~/images/img.jpg" alt="">John Doe
+                                    <img src="~/images/users/@Session["profilepicture"].ToString()" alt="" width="128" height="128">@Session["loginUserFullName"].ToString()
+                                    
                                     <span class=" fa fa-angle-down"></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                    <li><a href="javascript:;"> Profile</a></li>
+                                    <li><a href="javascript:;">@Html.ActionLink("Profile Settings", "ProfileSetting","Profile")</a></li>
                                     <li>
                                         <a href="javascript:;">
-                                            <span class="badge bg-red pull-right">50%</span>
-                                            <span>Settings</span>
+                                            @*<span class="badge bg-red pull-right">50%</span>*@
+                                            <span>Change Password</span>
                                         </a>
                                     </li>
-                                    <li><a href="javascript:;">Help</a></li>
-                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                   
+                                    <li>@Html.ActionLink("Log Out","Logout","Login")<i class="fa fa-sign-out pull-right"></i></li>
                                 </ul>
                             </li>
                             <li role="presentation" class="dropdown">
-                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                @*<a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-envelope-o"></i>
                                     <span class="badge bg-green">6</span>
-                                </a>
+                                </a>*@
                                 <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                                     <li>
                                         <a>
@@ -298,61 +310,64 @@
                     <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
                 </footer>
             </div>
+            </div>
+        </div>
             <!-- jQuery -->
             
             <script src="~/vendors/jquery/dist/jquery.min.js"></script>
             <!-- Bootstrap -->
             
-            <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+           @* <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>*@
             <!-- FastClick -->
             
-            <script src="~/vendors/fastclick/lib/fastclick.js"></script>
+            @*<script src="~/vendors/fastclick/lib/fastclick.js"></script>*@
             <!-- NProgress -->
          
-            <script src="~/vendors/nprogress/nprogress.js"></script>
+            @*<script src="~/vendors/nprogress/nprogress.js"></script>*@
 
             <!-- bootstrap-progressbar -->
             
-            <script src="~/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+            @*<script src="~/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>*@
             <!-- iCheck -->
            
-            <script src="~/vendors/iCheck/icheck.min.js"></script>
+            @*<script src="~/vendors/iCheck/icheck.min.js"></script>*@
 
             <!-- bootstrap-daterangepicker -->
             
            
             
-            <script src="~/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
+            @*<script src="~/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>*@
             
-            <script src="~/vendors/jquery.hotkeys/jquery.hotkeys.js"></script>
+            @*<script src="~/vendors/jquery.hotkeys/jquery.hotkeys.js"></script>*@
            
-            <script src="~/vendors/google-code-prettify/src/prettify.js"></script>
+            @*<script src="~/vendors/google-code-prettify/src/prettify.js"></script>*@
             <!-- jQuery Tags Input -->
            
-            <script src="~/vendors/jquery.tagsinput/src/jquery.tagsinput.js"></script>
+            @*<script src="~/vendors/jquery.tagsinput/src/jquery.tagsinput.js"></script>*@
             <!-- Switchery -->
            
-            <script src="~/vendors/switchery/dist/switchery.min.js"></script>
+            @*<script src="~/vendors/switchery/dist/switchery.min.js"></script>*@
             <!-- Select2 -->
            
-            <script src="~/vendors/select2/dist/js/select2.full.min.js"></script>
+            @*<script src="~/vendors/select2/dist/js/select2.full.min.js"></script>*@
             <!-- Parsley -->
            
-            <script src="~/vendors/parsleyjs/dist/parsley.min.js"></script>
+            @*<script src="~/vendors/parsleyjs/dist/parsley.min.js"></script>*@
             <!-- Autosize -->
-            <script src="~/vendors/autosize/dist/autosize.min.js"></script>
+            @*<script src="~/vendors/autosize/dist/autosize.min.js"></script>*@
            
             <!-- jQuery autocomplete -->
             
-            <script src="~/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js"></script>
+            @*<script src="~/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js"></script>*@
             <!-- starrr -->
            
-            <script src="~/vendors/starrr/dist/starrr.js"></script>
+            @*<script src="~/vendors/starrr/dist/starrr.js"></script>*@
             <!-- Custom Theme Scripts -->
            
+
             <script src="~/build/js/custom.min.js"></script>
             <!-- bootstrap-daterangepicker -->
-          
+    
             @Scripts.Render("~/bundles/jquery")
             @Scripts.Render("~/bundles/bootstrap")
             @RenderSection("scripts", required: false)

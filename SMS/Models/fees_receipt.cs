@@ -79,5 +79,7 @@ namespace SMS.Models
         public string mode_flag { get; set; }
         public int month_no{ get; set; }
         public string chq_reject { get; set; }
+        public int user_id{ get; set; }
+
     }
 }

@@ -24,6 +24,8 @@ namespace SMS.Models
         [Display(Name = "Frequency")]
         public String frequency { get; set; }
 
+        //public int Rank { get; set; }
+
         [Required]
         public int acc_id { get; set; }
 

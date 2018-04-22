@@ -3,7 +3,7 @@ using SMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -12,12 +12,12 @@ namespace SMS.Controllers
 {
     public class mst_finController : Controller
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         [HttpGet]
         public ActionResult AddFin()
         {
-            String query = "select count(*) from mst_fin where fin_close = 'N'";
+            String query = "select count(*) from sms.mst_fin where fin_close = 'N'";
 
             int id = con.ExecuteScalar<int>(query);
 
@@ -33,7 +33,7 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult AddFin(mst_fin mst)
         {
-            String query = "select count(*) from mst_fin where fin_close = 'N'";
+            String query = "select count(*) from sms.mst_fin where fin_close = 'N'";
 
             int id = con.ExecuteScalar<int>(query);
 
@@ -43,7 +43,7 @@ namespace SMS.Controllers
                 return View();
             }
 
-            if (mst.fin_end_date < System.DateTime.Now && mst.fin_close == "N")
+            if (mst.fin_end_date < System.DateTime.Now.AddMinutes(750) && mst.fin_close == "N")
             {
                 ModelState.AddModelError(String.Empty, "You cannot open financial year in previous year");
                 return View(mst);
@@ -76,7 +76,7 @@ namespace SMS.Controllers
         public ActionResult EditFin(mst_fin mst)
         {
 
-            if (mst.fin_end_date < System.DateTime.Now && mst.fin_close == "N")
+            if (mst.fin_end_date < System.DateTime.Now.AddMinutes(750) && mst.fin_close == "N")
             {
                 ModelState.AddModelError(String.Empty, "Financial year already expire");
                 return View(mst);

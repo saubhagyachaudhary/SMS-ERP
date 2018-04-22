@@ -33,40 +33,9 @@
                                 @Html.DisplayFor(model => model.fees_amount)
                             </dd>
 
-                            <dt>
-                                @Html.DisplayNameFor(model => model.period)
-                            </dt>
+                         
 
-                            <dd>
-                                
-                                @if (Model.period == "M")
-                                {
-                                    @("Monthly")
-
-                                }
-                                else if (Model.period == "Q")
-                                {
-                                    @("Quarterly")
-
-                                }
-                                else if (Model.period == "H")
-                                {
-                                    @("Half yearly")
-
-                                }
-                                else if (Model.period == "A")
-                                {
-                                    @("Annually")
-
-                                }
-                                else if (Model.period == "O")
-                                {
-                                    @("One Time")
-
-                                }
-
-
-                            </dd>
+                         
 
                         </dl>
 

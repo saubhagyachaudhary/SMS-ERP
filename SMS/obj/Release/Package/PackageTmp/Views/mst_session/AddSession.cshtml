@@ -87,6 +87,11 @@
                  changeYear: true
              });
 
+             $.validator.addMethod("date",
+    function (value, element) {
+        return this.optional(element) || parseDate(value, "dd-MM-yyyy") !== null;
+    });
+
          });
 
          $(function () {
@@ -96,6 +101,11 @@
                  changeYear: true,
                 
              });
+
+             $.validator.addMethod("date",
+    function (value, element) {
+        return this.optional(element) || parseDate(value, "dd-MM-yyyy") !== null;
+    });
 
          });
 </script>

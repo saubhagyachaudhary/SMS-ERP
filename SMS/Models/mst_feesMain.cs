@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 
@@ -10,30 +10,30 @@ namespace SMS.Models
 {
     public class mst_feesMain
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         public void AddFees(mst_fees mst)
         {
             try
             {
               
-                string query = @"INSERT INTO [dbo].[mst_fees]
-                                   ([class_id]
-                                   ,[acc_id]
-                                   ,[fees_amount]                                 
-                                   ,[bl_onetime]
-                                   ,[bl_apr]
-                                   ,[bl_may]
-                                   ,[bl_jun]
-                                   ,[bl_jul]
-                                   ,[bl_aug]
-                                   ,[bl_sep]
-                                   ,[bl_oct]
-                                   ,[bl_nov]
-                                   ,[bl_dec]
-                                   ,[bl_jan]
-                                   ,[bl_feb]
-                                   ,[bl_mar])
+                string query = @"INSERT INTO sms.mst_fees
+                                   (class_id
+                                   ,acc_id
+                                   ,fees_amount                                 
+                                   ,bl_onetime
+                                   ,bl_apr
+                                   ,bl_may
+                                   ,bl_jun
+                                   ,bl_jul
+                                   ,bl_aug
+                                   ,bl_sep
+                                   ,bl_oct
+                                   ,bl_nov
+                                   ,bl_dec
+                                   ,bl_jan
+                                   ,bl_feb
+                                   ,bl_mar)
                                      VALUES
                                    (@class_id,
                                    @acc_id,
@@ -89,8 +89,8 @@ namespace SMS.Models
                            ,a.acc_id 
                            ,b.class_name
                           ,c.acc_name
-                          ,[fees_amount]
-                           FROM [dbo].[mst_fees] a,[dbo].[mst_class] b, [dbo].[mst_acc_head] c
+                          ,fees_amount
+                           FROM sms.mst_fees a,sms.mst_class b, sms.mst_acc_head c
                            where 
                            a.class_id = b.class_id
                            and
@@ -106,21 +106,21 @@ namespace SMS.Models
             String query = @"SELECT a.class_id
 	                       ,a.acc_id
 	                       ,c.acc_name
-                          ,[fees_amount]
-                          ,[bl_onetime]
-                          ,[bl_apr]
-                          ,[bl_may]
-                          ,[bl_jun]
-                          ,[bl_jul]
-                          ,[bl_aug]
-                          ,[bl_sep]
-                          ,[bl_oct]
-                          ,[bl_nov]
-                          ,[bl_dec]
-                          ,[bl_jan]
-                          ,[bl_feb]
-                          ,[bl_mar]
-                          FROM [dbo].[mst_fees] a, [dbo].[mst_acc_head] c,[dbo].[sr_register] d,[dbo].[mst_batch] e
+                          ,fees_amount
+                          ,bl_onetime
+                          ,bl_apr
+                          ,bl_may
+                          ,bl_jun
+                          ,bl_jul
+                          ,bl_aug
+                          ,bl_sep
+                          ,bl_oct
+                          ,bl_nov
+                          ,bl_dec
+                          ,bl_jan
+                          ,bl_feb
+                          ,bl_mar
+                          FROM sms.mst_fees a, sms.mst_acc_head c,sms.sr_register d,sms.mst_batch e
                           where 
                           a.acc_id = c.acc_id
 						  and
@@ -138,7 +138,7 @@ namespace SMS.Models
 
         public IEnumerable<mst_acc_head> account_head()
         {
-            String query = "SELECT [acc_id],[acc_name],[nature] FROM [dbo].[mst_acc_head] where nature = 'A'";
+            String query = "SELECT acc_id,acc_name,nature FROM sms.mst_acc_head where nature = 'A'";
 
             var result = con.Query<mst_acc_head>(query);
 
@@ -151,21 +151,21 @@ namespace SMS.Models
 	                       ,a.acc_id
 	                       ,b.class_name
                           ,c.acc_name
-                          ,[fees_amount]
-                          ,[bl_onetime]
-                          ,[bl_apr]
-                          ,[bl_may]
-                          ,[bl_jun]
-                          ,[bl_jul]
-                          ,[bl_aug]
-                          ,[bl_sep]
-                          ,[bl_oct]
-                          ,[bl_nov]
-                          ,[bl_dec]
-                          ,[bl_jan]
-                          ,[bl_feb]
-                          ,[bl_mar]
-                          FROM [dbo].[mst_fees] a,[dbo].[mst_class] b, [dbo].[mst_acc_head] c
+                          ,fees_amount
+                          ,bl_onetime
+                          ,bl_apr
+                          ,bl_may
+                          ,bl_jun
+                          ,bl_jul
+                          ,bl_aug
+                          ,bl_sep
+                          ,bl_oct
+                          ,bl_nov
+                          ,bl_dec
+                          ,bl_jan
+                          ,bl_feb
+                          ,bl_mar
+                          FROM sms.mst_fees a,sms.mst_class b, sms.mst_acc_head c
                           where 
                           a.class_id = b.class_id
                           and
@@ -185,21 +185,21 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE [dbo].[mst_fees]
-                               SET[fees_amount] = @fees_amount
-                                  ,[bl_onetime] = @bl_onetime
-                                  ,[bl_apr] = @bl_apr
-                                  ,[bl_may] = @bl_may
-                                  ,[bl_jun] = @bl_jun
-                                  ,[bl_jul] = @bl_jul
-                                  ,[bl_aug] = @bl_aug
-                                  ,[bl_sep] = @bl_sep
-                                  ,[bl_oct] = @bl_oct
-                                  ,[bl_nov] = @bl_nov
-                                  ,[bl_dec] = @bl_dec
-                                  ,[bl_jan] = @bl_jan
-                                  ,[bl_feb] = @bl_feb
-                                  ,[bl_mar] = @bl_mar
+                string query = @"UPDATE sms.mst_fees
+                               SET fees_amount = @fees_amount
+                                  ,bl_onetime = @bl_onetime
+                                  ,bl_apr = @bl_apr
+                                  ,bl_may = @bl_may
+                                  ,bl_jun = @bl_jun
+                                  ,bl_jul = @bl_jul
+                                  ,bl_aug = @bl_aug
+                                  ,bl_sep = @bl_sep
+                                  ,bl_oct = @bl_oct
+                                  ,bl_nov = @bl_nov
+                                  ,bl_dec = @bl_dec
+                                  ,bl_jan = @bl_jan
+                                  ,bl_feb = @bl_feb
+                                  ,bl_mar = @bl_mar
                             WHERE class_id = @class_id and acc_id = @acc_id";
 
                 con.Execute(query, mst);
@@ -212,7 +212,7 @@ namespace SMS.Models
 
         public mst_fees DeleteFees(int cls_id, int ac_id)
         {
-            String Query = "DELETE FROM [dbo].[mst_fees] WHERE class_id = @class_id and acc_id = @acc_id";
+            String Query = "DELETE FROM sms.mst_fees WHERE class_id = @class_id and acc_id = @acc_id";
 
             return con.Query<mst_fees>(Query, new { class_id = cls_id, acc_id = ac_id }).SingleOrDefault();
         }

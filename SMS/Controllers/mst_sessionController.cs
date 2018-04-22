@@ -3,7 +3,7 @@ using SMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -12,12 +12,12 @@ namespace SMS.Controllers
 {
     public class mst_sessionController : Controller
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         [HttpGet]
         public ActionResult AddSession()
         {
-            String query = "select count(*) from mst_session where session_active = 'Y'";
+            String query = "select count(*) from sms.mst_session where session_active = 'Y'";
 
             int id = con.ExecuteScalar<int>(query);
 
@@ -33,7 +33,7 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult AddSession(mst_session mst)
         {
-            String query = "select count(*) from mst_session where session_active = 'Y'";
+            String query = "select count(*) from sms.mst_session where session_active = 'Y'";
 
             int id = con.ExecuteScalar<int>(query);
 
@@ -43,7 +43,7 @@ namespace SMS.Controllers
                 return View();
             }
 
-            if (mst.session_end_date < System.DateTime.Now && mst.session_active == "Y") 
+            if (mst.session_end_date < System.DateTime.Now.AddMinutes(750) && mst.session_active == "Y") 
             {
                 ModelState.AddModelError(String.Empty, "You cannot open admission in expired session");
                 return View(mst);
@@ -76,7 +76,7 @@ namespace SMS.Controllers
         public ActionResult EditSession(mst_session mst)
         {
            
-                if (mst.session_end_date < System.DateTime.Now && mst.session_active == "Y")
+                if (mst.session_end_date < System.DateTime.Now.AddMinutes(750) && mst.session_active == "Y")
                 {
                     ModelState.AddModelError(String.Empty, "Session " + mst.session + " already expire you cannot open admission");
                     return View(mst);

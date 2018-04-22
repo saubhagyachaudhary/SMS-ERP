@@ -40,6 +40,8 @@ namespace SMS.Models
         [Display(Name = "Pickup Point")]
         public String std_Pickup_point { get; set; }
 
+        public IEnumerable<sr_register> list { get; set; }
 
+        
     }
 }

@@ -60,6 +60,8 @@ namespace SMS.Models
 
         public string chq_reject { get; set; }
 
+        
+
     }
 
 }

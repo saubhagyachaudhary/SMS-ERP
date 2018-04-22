@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 
@@ -10,7 +10,7 @@ namespace SMS.Models
 {
     public class uncleared_chequeMain
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         public IEnumerable<uncleared_cheque> AllUnclearedChequeList()
         {
@@ -21,7 +21,7 @@ namespace SMS.Models
                                chq_no,
                                chq_date,
                                (SUM(amount) + SUM(dc_fine)) - SUM(dc_discount) Amount
-                               from fees_receipt
+                               from sms.fees_receipt
                                where
                                clear_flag = 0
 							   and
@@ -38,24 +38,24 @@ namespace SMS.Models
 
             try
             {
-                String query = @"UPDATE [dbo].[fees_receipt]
-                               SET [chq_reject] = @chq_reject,
-                                    [nt_clear_reason] = @narration,
-                                    [clear_flag] = 1
+                String query = @"UPDATE sms.fees_receipt
+                               SET chq_reject = @chq_reject,
+                                    nt_clear_reason = @narration,
+                                    clear_flag = 1
                              WHERE bnk_name = @bnk_name
-                             and chq_date = CONVERT(datetime,@chq_date,105)
+                             and chq_date = date_format(@chq_date,'%Y-%m-%d')
                              and chq_no = @chq_no
-                             and [clear_flag] = 0";
+                             and clear_flag = 0";
 
                 con.Execute(query, unclear);
 
                 // fees_receipt fee = new fees_receipt();
 
-                query = @"select
+                query = @"select DISTINCT
                                serial,amount
-							   from [SMS].[dbo].[fees_receipt]
+							   from sms.fees_receipt
                                WHERE bnk_name = @bnk_name
-                                and chq_date = CONVERT(datetime,@chq_date,105)
+                                and chq_date = date_format(@chq_date,'%Y-%m-%d')
                                 and chq_no = @chq_no";
 
                 var result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
@@ -64,7 +64,7 @@ namespace SMS.Models
 
                 foreach (uncleared_cheque val in result)
                 {
-                    query = @"update[SMS].[dbo].[out_standing]
+                    query = @"update sms.out_standing
                             set rmt_amount = rmt_amount - @rmt_amount
                             where serial = @serial ";
 
@@ -75,9 +75,9 @@ namespace SMS.Models
                 {
                     query = @"select
                                DISTINCT sr_number,reg_no
-							   from [SMS].[dbo].[fees_receipt]
+							   from sms.fees_receipt
                                WHERE bnk_name = @bnk_name
-                                and chq_date = CONVERT(datetime,@chq_date,105)
+                                and chq_date = date_format(@chq_date,'%Y-%m-%d')
                                 and chq_no = @chq_no";
 
                     result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
@@ -98,7 +98,28 @@ namespace SMS.Models
                         std.reg_num = val.reg_no;
                         outstd.AddOutStanding(std);
                     }
+
+                    if (unclear.chq_reject == "Bounce")
+                    {
+                        string text = @"Your Cheque No "+ unclear.chq_no + " is unfortunately Bounce INR "+ unclear.bnk_charges + " will be charged against it. kindly make the payment as soon as possible. Thank You. Hariti Public School ";
+                        SMSMessage sms = new SMSMessage();
+
+                        query = @"select coalesce(std_contact, std_contact1, std_contact2) from sms.sr_register where sr_number = @sr_number";
+
+
+                        string phone = con.Query<string>(query, new { sr_number = std.sr_number }).SingleOrDefault();
+
+
+                       sms.SendSMS(text,phone);
+
+                        text = @"आपका चेक नंबर " + unclear.chq_no + " बाउंस हो गया है। जिसका बाउंस शुल्क " + unclear.bnk_charges + " देय होगा। कृपया जितनी जल्दी हो सके भुगतान करें।  धन्यवाद। Hariti Public School.";
+
+                        sms.SendSMS(text, phone);
+
+                    }
                 }
+
+               
                 
             }
             catch (Exception ex)
@@ -113,10 +134,10 @@ namespace SMS.Models
 
             try
             {
-                String query = @"UPDATE [dbo].[fees_receipt]
-                               SET [chq_reject] = @chq_reject,[clear_flag] = 1, [nt_clear_reason] = @narration
+                String query = @"UPDATE sms.fees_receipt
+                               SET chq_reject = @chq_reject,clear_flag = 1, nt_clear_reason = @narration
                              WHERE bnk_name = @bnk_name
-                             and chq_date = CONVERT(datetime,@chq_date,105)
+                             and chq_date = date_format(@chq_date,'%Y-%m-%d')
                              and chq_no = @chq_no
                              and clear_flag = 0";
 

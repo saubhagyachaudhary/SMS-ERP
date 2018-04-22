@@ -4,7 +4,7 @@ using SMS.report;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,7 +13,7 @@ namespace SMS.Controllers
 {
     public class std_registrationController : Controller
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         [HttpGet]
         public ActionResult AddRegistration()
@@ -38,7 +38,7 @@ namespace SMS.Controllers
             std_registrationMain mstMain = new std_registrationMain();
            
 
-            mst.reg_date = System.DateTime.Now;
+            mst.reg_date = System.DateTime.Now.AddMinutes(750);
 
            
                 mstMain.AddRegistration(mst);
@@ -54,7 +54,7 @@ namespace SMS.Controllers
 
         public JsonResult GetFees(int id)
         {
-            string query = "select fees_amount from mst_fees where class_id = @class_id and acc_id = 1";
+            string query = "select fees_amount from sms.mst_fees where class_id = @class_id and acc_id = 1";
 
 
             decimal fees = con.Query<decimal>(query, new { class_id = id }).SingleOrDefault();

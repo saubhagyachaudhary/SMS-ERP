@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 
@@ -10,15 +10,15 @@ namespace SMS.Models
 {
     public class mst_transportMain
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         public void AddTransport(mst_transport mst)
         {
             try
             {
-                string query = "INSERT INTO [dbo].[mst_transport] ([pickup_id],[pickup_point],[transport_fees],[transport_number],[bl_apr],[bl_may],[bl_jun],[bl_jul],[bl_aug],[bl_sep],[bl_oct],[bl_nov],[bl_dec],[bl_jan],[bl_feb],[bl_mar]) VALUES (@pickup_id,@pickup_point,@transport_fees,@transport_number,@bl_apr,@bl_may,@bl_jun,@bl_jul,@bl_aug,@bl_sep,@bl_oct,@bl_nov,@bl_dec,@bl_jan,@bl_feb,@bl_mar)";
+                string query = "INSERT INTO sms.mst_transport (pickup_id,pickup_point,transport_fees,transport_number,bl_apr,bl_may,bl_jun,bl_jul,bl_aug,bl_sep,bl_oct,bl_nov,bl_dec,bl_jan,bl_feb,bl_mar) VALUES (@pickup_id,@pickup_point,@transport_fees,@transport_number,@bl_apr,@bl_may,@bl_jun,@bl_jul,@bl_aug,@bl_sep,@bl_oct,@bl_nov,@bl_dec,@bl_jan,@bl_feb,@bl_mar)";
 
-                string maxid = "select isnull(MAX(pickup_id),0)+1 from mst_transport";
+                string maxid = "select ifnull(MAX(pickup_id),0)+1 from mst_transport";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -60,7 +60,7 @@ namespace SMS.Models
 
         public IEnumerable<mst_transport> AllTransportList()
         {
-            String query = "SELECT [pickup_id],[pickup_point],[transport_fees],[transport_number] FROM [dbo].[mst_transport]";
+            String query = "SELECT pickup_id,pickup_point,transport_fees,transport_number FROM sms.mst_transport";
 
             var result = con.Query<mst_transport>(query);
 
@@ -69,30 +69,30 @@ namespace SMS.Models
 
         public mst_transport FindTransport(int? id)
         {
-            String Query = "SELECT [pickup_id],[pickup_point],[transport_fees],[transport_number],[bl_apr],[bl_may],[bl_jun],[bl_jul],[bl_aug],[bl_sep],[bl_oct],[bl_nov],[bl_dec],[bl_jan],[bl_feb],[bl_mar] FROM [dbo].[mst_transport] where pickup_id = @pickup_id";
+            String Query = "SELECT pickup_id,pickup_point,transport_fees,transport_number,bl_apr,bl_may,bl_jun,bl_jul,bl_aug,bl_sep,bl_oct,bl_nov,bl_dec,bl_jan,bl_feb,bl_mar FROM sms.mst_transport where pickup_id = @pickup_id";
 
             return con.Query<mst_transport>(Query, new { pickup_id = id }).SingleOrDefault();
         }
 
         public mst_transport FindTransportBySr(int id)
         {
-            String Query = @"SELECT [pickup_id]
-                          ,[pickup_point]
-                          ,[transport_fees]
-                          ,[transport_number]
-                          ,[bl_apr]
-                          ,[bl_may]
-                          ,[bl_jun]
-                          ,[bl_jul]
-                          ,[bl_aug]
-                          ,[bl_sep]
-                          ,[bl_oct]
-                          ,[bl_nov]
-                          ,[bl_dec]
-                          ,[bl_jan]
-                          ,[bl_feb]
-                          ,[bl_mar]
-                      FROM [SMS].[dbo].[mst_transport] a,[SMS].[dbo].sr_register b
+            String Query = @"SELECT pickup_id
+                          ,pickup_point
+                          ,transport_fees
+                          ,transport_number
+                          ,bl_apr
+                          ,bl_may
+                          ,bl_jun
+                          ,bl_jul
+                          ,bl_aug
+                          ,bl_sep
+                          ,bl_oct
+                          ,bl_nov
+                          ,bl_dec
+                          ,bl_jan
+                          ,bl_feb
+                          ,bl_mar
+                      FROM sms.mst_transport a,sms.sr_register b
                       where a.pickup_id = b.std_pickup_id
                       and b.sr_number = @sr_num";
 
@@ -104,7 +104,7 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE [dbo].[mst_transport] SET [pickup_point] = @pickup_point,[transport_fees] = @transport_fees,[transport_number] = @transport_number,[bl_apr] = @bl_apr,[bl_may]= @bl_may,[bl_jun]= @bl_jun,[bl_jul]= @bl_jul,[bl_aug]= @bl_aug,[bl_sep]= @bl_sep,[bl_oct]= @bl_oct,[bl_nov]= @bl_nov,[bl_dec]= @bl_dec,[bl_jan]= @bl_jan,[bl_feb]= @bl_feb,[bl_mar]= @bl_mar WHERE pickup_id = @pickup_id";
+                string query = "UPDATE sms.mst_transport SET pickup_point = @pickup_point,transport_fees = @transport_fees,transport_number = @transport_number,bl_apr = @bl_apr,bl_may= @bl_may,bl_jun= @bl_jun,bl_jul= @bl_jul,bl_aug= @bl_aug,bl_sep= @bl_sep,bl_oct= @bl_oct,bl_nov= @bl_nov,bl_dec= @bl_dec,bl_jan= @bl_jan,bl_feb= @bl_feb,bl_mar= @bl_mar WHERE pickup_id = @pickup_id";
 
                 con.Execute(query, mst);
             }
@@ -118,7 +118,7 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM [dbo].[mst_transport] WHERE pickup_id = @pickup_id";
+                String Query = "DELETE FROM sms.mst_transport WHERE pickup_id = @pickup_id";
 
                 return con.Query<mst_transport>(Query, new { pickup_id = id }).SingleOrDefault();
             }

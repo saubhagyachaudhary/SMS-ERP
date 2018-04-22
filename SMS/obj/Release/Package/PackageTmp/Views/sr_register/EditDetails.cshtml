@@ -5,8 +5,8 @@
     List<SelectListItem> category = new List<SelectListItem>();
     category.Add(new SelectListItem
     {
-        Value = "Genral",
-        Text = "Genral"
+        Value = "General",
+        Text = "General"
     });
     category.Add(new SelectListItem
     {
@@ -440,6 +440,11 @@
                                     changeMonth: true,
                                     changeYear: true
                                 });
+                                $.validator.addMethod("date",
+  function (value, element) {
+      return this.optional(element) || parseDate(value, "dd-MM-yyyy") !== null;
+  });
+
 
                             });
 
@@ -450,6 +455,11 @@
                                     changeYear: true,
                                     yearRange: "2000:2999"
                                 });
+                                $.validator.addMethod("date",
+  function (value, element) {
+      return this.optional(element) || parseDate(value, "dd-MM-yyyy") !== null;
+  });
+
 
                             });
                         </script>
