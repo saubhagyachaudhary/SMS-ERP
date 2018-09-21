@@ -1,152 +1,248 @@
-﻿using Microsoft.Reporting.WebForms;
+﻿using Dapper;
+using MySql.Data.MySqlClient;
 using SMS.Models;
+using SMS.report;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
 namespace SMS.Controllers
 {
-    public class Fees_collectController : Controller
+    public class Fees_collectController : BaseController
     {
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
         [HttpGet]
-        public ActionResult fees_collect()
+        public ActionResult fees_collect(int? rcpt_no)
         {
+            mst_finMain fin = new mst_finMain();
             fees_collect fee = new fees_collect();
 
-            sr_registerMain stdMain = new sr_registerMain();
+            if (fin.checkFYnotExpired())
+            {
+                
+                sr_registerMain stdMain = new sr_registerMain();
 
-            fee.list = stdMain.AllStudentList();
 
-            return View(fee);
+                fee.list = stdMain.AllStudentList(GetDefaultSection());
+
+
+
+                DDClassWiseSection();
+
+                //fee.list = stdMain.AllStudentList(0);
+
+                ViewBag.recpt_no = rcpt_no;
+                return View(fee);
+
+            }
+            else
+            {
+                ModelState.AddModelError(String.Empty, "Financial Year Expired cannot submit fees create new Financial  year.");
+                sr_registerMain stdMain = new sr_registerMain();
+
+                fee.list = stdMain.AllStudentList(GetDefaultSection());
+                DDClassWiseSection();
+
+                ViewBag.recpt_no = rcpt_no;
+                return View(fee);
+            }
         }
 
         [HttpGet]
-        public ActionResult FeesStatement(String sr_num, String rcpt_no, String rcpt_dt)
+        public void FeesStatement(int rcpt_no)
         {
-            ReportViewer reportViewer = new ReportViewer();
 
-            reportViewer.ProcessingMode = ProcessingMode.Remote;
-            reportViewer.Width = Unit.Pixel(1200);
-            reportViewer.Height = Unit.Pixel(600);
+             repFees_receipt rept = new repFees_receipt();
 
-            string[] str = rcpt_no.Split(new[] { ',', ' ' },StringSplitOptions.RemoveEmptyEntries); 
+             rept.pdf(rcpt_no);
 
-            // reportViewer.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"Reports\ddd.rdl";
+            
 
-            reportViewer.ServerReport.ReportPath = "/feesReceipt";
-            reportViewer.ServerReport.ReportServerUrl = new Uri("http://saubhagya-pc/ReportServer_MSSQL");
-
-            List<ReportParameter> paramList = new List<ReportParameter>();
-            ReportParameter param = new ReportParameter("rcpt_no");
-
-            paramList.Add(new ReportParameter("sr_num", sr_num, false));
-            param.Values.AddRange(str);
-            paramList.Add(param);
-
-            reportViewer.ServerReport.SetParameters(paramList);
-            //reportViewer.LocalReport.DataSources.Clear();
-            reportViewer.ShowPrintButton = true;
-            reportViewer.ShowParameterPrompts = false;
-            // reportViewer.LocalReport.DataSources.Add(new ReportDataSource("DataSource1", getData()));
-
-            ViewBag.ReportViewer = reportViewer;
-
-            return PartialView("FeesStatement");
         }
 
         [HttpPost]
         public ActionResult fees_collect(fees_collect col)
         {
-            try
+            mst_finMain fin = new mst_finMain();
+            if (fin.checkFYnotExpired())
             {
-                if (col.sr_num > 0)
+                try
                 {
-                    sr_registerMain reg = new sr_registerMain();
-                    sr_register register = new sr_register();
+                    if (col.sr_num > 0)
+                    {
+                        sr_registerMain reg = new sr_registerMain();
+                        sr_register register = new sr_register();
 
-                    register = reg.FindStudent(col.sr_num);
+                        register = reg.FindStudent(col.sr_num);
 
-                    col.std_Name = register.std_first_name + " " + register.std_last_name;
+                        col.std_Name = register.std_first_name + " " + register.std_last_name;
 
-                    col.std_father_name = register.std_father_name;
+                        col.std_father_name = register.std_father_name;
 
-                    col.std_mother_name = register.std_mother_name;
+                        col.std_mother_name = register.std_mother_name;
 
-                    col.std_contact = register.std_contact;
+                        col.std_contact = register.std_contact;
 
-                    col.std_Email = register.std_email;
+                        col.std_Email = register.std_email;
 
-                    col.std_Class = register.class_name;
+                        col.std_Class = register.class_name;
 
-                    col.std_Section = register.section_name;
+                        col.std_Section = register.section_name;
 
-                    col.std_Pickup_point = register.pickup_point;
+                        col.std_Pickup_point = register.pickup_point;
+
+                        col.std_aadhar = register.std_aadhar;
+
+                        return View("submit_fees", col);
+                    }
+                    else if(col.reg_num>0)
+                    {
+                        std_registrationMain reg = new std_registrationMain();
+                        std_registration registration = new std_registration();
 
 
-                    return View("submit_fees", col);
+                        registration = reg.FindRegistrationForFees(col.reg_num);
+
+
+                        col.std_Name = registration.std_first_name + " " + registration.std_last_name;
+
+                        col.std_father_name = registration.std_father_name;
+
+                        col.std_mother_name = registration.std_mother_name;
+
+                        col.std_contact = registration.std_contact;
+
+                        col.std_Email = registration.std_email;
+
+                        col.std_Class = registration.class_name;
+
+                        col.std_Section = "N/A";
+
+                        col.std_Pickup_point = "N/A";
+
+                        return View("submit_fees", col);
+                    }else
+                    {
+                        fees_collect fee = new fees_collect();
+
+                        sr_registerMain stdMain = new sr_registerMain();
+
+                        fee.list = stdMain.AllStudentList(col.section_id);
+
+
+
+                        DDClassWiseSection();
+
+
+
+                        return View(fee);
+                    }
                 }
-                else
+                catch
                 {
-                    std_registrationMain reg = new std_registrationMain();
-                    std_registration registration = new std_registration();
+                   
+                        ModelState.AddModelError(string.Empty, "Student record not found");
+                        fees_collect fee = new fees_collect();
+
+                        sr_registerMain stdMain = new sr_registerMain();
+
+                        fee.list = stdMain.AllStudentList(GetDefaultSection());
 
 
-                    registration = reg.FindRegistrationForFees(col.reg_num);
+
+                        DDClassWiseSection();
 
 
-                    col.std_Name = registration.std_first_name + " " + registration.std_last_name;
 
-                    col.std_father_name = registration.std_father_name;
-
-                    col.std_mother_name = registration.std_mother_name;
-
-                    col.std_contact = registration.std_contact;
-
-                    col.std_Email = registration.std_email;
-
-                    col.std_Class = registration.class_name;
-
-                    col.std_Section = "N/A";
-
-                    col.std_Pickup_point = "N/A";
-
-                    return View("submit_fees", col);
+                        return View(fee);
+                    
                 }
             }
-            catch
+            else
             {
-                ModelState.AddModelError(string.Empty, "Student record not found");
+                ModelState.AddModelError(string.Empty, "Financial Year Expired cannot submit fees create new Financial  year.");
                 fees_collect fee = new fees_collect();
 
                 sr_registerMain stdMain = new sr_registerMain();
 
-                fee.list = stdMain.AllStudentList();
+                fee.list = stdMain.AllStudentList(GetDefaultSection());
+
+
+
+                DDClassWiseSection();
+
+
 
                 return View(fee);
-            }  
+            }
           
         }
-        [HttpPost]
-        public ActionResult submit_fees(List<fees_payment> fees)
+
+        public void DDClassWiseSection()
         {
-            List<fees_receipt> rec = new List<fees_receipt>();
-            fees_receiptMain main = new fees_receiptMain();
-            foreach (fees_payment fee in fees)
-            {
+
+            mst_sessionMain sess = new mst_sessionMain();
+
+            string query = @"select a.section_id,concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) Section_name from mst_section a,mst_class b
+                            where
+                            a.class_id = b.class_id
+                            and 
+                            session = @session
+                            order by b.class_name";
 
 
-                if (fee.check)
+            var section_list = con.Query<mst_section>(query, new { session = sess.findActive_finalSession() });
+
+            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
+
+            ViewData["section_id"] = list;
+
+        }
+
+        public int GetDefaultSection()
+        {
+
+            mst_sessionMain sess = new mst_sessionMain();
+
+            string query = @"select a.section_id from mst_section a
+                            where
+                            session = @session
+                            and
+                            a.class_id = 4";
+
+
+            var dafault = con.Query<int>(query, new { session = sess.findActive_finalSession() }).SingleOrDefault();
+
+            return dafault;
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> submit_fees(List<fees_payment> fees)
+        {
+           
+
+                List<fees_receipt> rec = new List<fees_receipt>();
+                fees_receiptMain main = new fees_receiptMain();
+                foreach (fees_payment fee in fees)
                 {
-                    if(fee.serial == 0)
+
+
+                    if (fee.check)
                     {
-                       
+                        if (fee.serial == 0)
+                        {
+
                             out_standing out_std = new out_standing();
                             out_standingMain out_stdMain = new out_standingMain();
-                        
+
                             out_std.outstd_amount = fee.due_amount;
                             out_std.rmt_amount = fee.due_amount;
                             out_std.sr_number = fee.sr_num;
@@ -154,62 +250,68 @@ namespace SMS.Controllers
                             out_std.month_no = fee.month_no;
                             out_std.month_name = fee.month_name;
                             out_std.clear_flag = fee.clear_flag;
+                            out_std.session = fee.session;
                             out_stdMain.AddOutStanding(out_std);
 
 
-                        rec.Add(new fees_receipt
+                            rec.Add(new fees_receipt
+                            {
+                                acc_id = fee.acc_id,
+                                amount = fee.amount_to_be_paid,
+                                fees_name = fee.Fees_type,
+                                sr_number = fee.sr_num,
+                                dc_fine = fee.fine,
+                                dc_discount = fee.discount,
+                                narration = fee.Narration,
+                                serial = out_std.serial,
+                                clear_flag = fee.clear_flag,
+                                bnk_name = fee.Bank_name,
+                                chq_no = fee.cheque_no,
+                                chq_date = fee.cheque_date,
+                                mode_flag = fee.mode_flag,
+                                month_no = fee.month_no,
+                                session = fee.session,
+                                user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())
+
+                            });
+                        }
+                        else
                         {
-                            acc_id = fee.acc_id,
-                            amount = fee.amount_to_be_paid,
-                            fees_name = fee.Fees_type,
-                            sr_number = fee.sr_num,
-                            dc_fine = fee.fine,
-                            dc_discount = fee.discount,
-                            narration = fee.Narration,
-                            serial = out_std.serial,
-                            clear_flag = fee.clear_flag,
-                            bnk_name = fee.Bank_name,
-                            chq_no = fee.cheque_no,
-                            chq_date = fee.cheque_date,
-                            mode_flag = fee.mode_flag,
-                            month_no = fee.month_no,
-                            user_id = Int32.Parse(Session["loginUserId"].ToString())
 
-                        });
-                    }
-                    else
-                    { 
+                            rec.Add(new fees_receipt
+                            {
+                                acc_id = fee.acc_id,
+                                amount = fee.amount_to_be_paid,
+                                fees_name = fee.Fees_type,
+                                sr_number = fee.sr_num,
+                                dc_fine = fee.fine,
+                                dc_discount = fee.discount,
+                                narration = fee.Narration,
+                                serial = fee.serial,
+                                dt_date = fee.dt_date,
+                                reg_no = fee.reg_num,
+                                reg_date = fee.reg_date,
+                                clear_flag = fee.clear_flag,
+                                bnk_name = fee.Bank_name,
+                                chq_no = fee.cheque_no,
+                                chq_date = fee.cheque_date,
+                                mode_flag = fee.mode_flag,
+                                session = fee.session,
+                                user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())
+                            });
 
-                    rec.Add(new fees_receipt {acc_id = fee.acc_id,
-                    amount = fee.amount_to_be_paid,
-                    fees_name = fee.Fees_type,
-                    sr_number = fee.sr_num,
-                    dc_fine = fee.fine,
-                    dc_discount = fee.discount,
-                    narration = fee.Narration,
-                    serial = fee.serial,
-                    dt_date = fee.dt_date,
-                    reg_no = fee.reg_num,
-                    reg_date = fee.reg_date,
-                    clear_flag = fee.clear_flag,
-                    bnk_name = fee.Bank_name,
-                    chq_no = fee.cheque_no,
-                    chq_date = fee.cheque_date,
-                    mode_flag = fee.mode_flag,
-                        user_id = Int32.Parse(Session["loginUserId"].ToString())
-                    } );
+                        }
 
                     }
 
                 }
-                
-            }
 
-            
-            
-            main.AddReceipt(rec);
 
-            return RedirectToAction("fees_collect");
+
+                int rcpt_no = await main.AddReceipt(rec);
+                return RedirectToAction("fees_collect", new { rcpt_no = rcpt_no });
+          
+            
         }
 
         private IEnumerable<fees_payment> GetFeesPayment(int sr_num)
@@ -230,94 +332,16 @@ namespace SMS.Controllers
             
                 foreach (out_standing val in std)
                 {
-                    discount = discountMain.FindDiscount(sr_num,val.acc_id);
+                    //discount = discountMain.FindDiscount(sr_num,val.acc_id);
 
-                if (discount != null)
-                {
-                        if (discount.acc_id == val.acc_id && discount.bl_apr && val.month_no == 4)
-                        {
-                            if(discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_may && val.month_no == 5)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_jun && val.month_no == 6)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_jul && val.month_no == 7)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_aug && val.month_no == 8)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_sep && val.month_no == 9)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_oct && val.month_no == 10)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_nov && val.month_no == 11)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_dec && val.month_no == 12)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_jan && val.month_no == 1)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_feb && val.month_no == 2)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        if (discount.acc_id == val.acc_id && discount.bl_mar && val.month_no == 3)
-                        {
-                            if (discount.percent != 100)
-                                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, discount = val.outstd_amount * (discount.percent) / 100, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                        else
-                        {
-                            payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                        }
-                    }
+                            payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number, session = val.session });
+                        
+                 }
                 
-                else
-                {
-                    payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number });
-                }
+               
 
                 
-                }
+                
 
             return payment;
 
@@ -337,7 +361,7 @@ namespace SMS.Controllers
 
             foreach (out_standing val in std)
             {
-                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, reg_num = val.reg_num, reg_date = val.dt_date });
+                payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, reg_num = val.reg_num, reg_date = val.dt_date, session = val.session });
             }
 
 

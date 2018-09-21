@@ -9,7 +9,7 @@
 
 <div class="right_col" role="main">
     <p>
-        @Html.ActionLink("Create New", "AddDiscount")
+        @Html.ActionLink("Create New", "AddDiscount", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
 
     <div class="row">
@@ -22,6 +22,12 @@
                     <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.session)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.sr_num)
+                                </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.stdName)
                                 </th>
@@ -47,24 +53,30 @@
                             {
                                 <tr>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.session)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.sr_num)
+                                    </td>
+                                    <td style="text-align:left">
                                         @Html.DisplayFor(modelItem => item.stdName)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.stdclass)
                                     </td>
-                                    <td>
+                                    <td style="text-align:left">
                                         @Html.DisplayFor(modelItem => item.account_name)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.per)
                                     </td>
-                                    <td>
+                                    <td style="text-align:left">
                                         @Html.DisplayFor(modelItem => item.std_remarks)
                                     </td>
 
                                     <td>
-                                        @Html.ActionLink("Edit", "EditDiscount", new { sr_num = item.sr_num, acc_id = item.acc_id }) |
-                                        @Html.ActionLink("Delete", "DeleteDiscount", new { sr_num = item.sr_num, acc_id = item.acc_id })
+                                        @Html.ActionLink("Edit", "EditDiscount", new { sr_num = item.sr_num, acc_id = item.acc_id,session = item.session }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                        @Html.ActionLink("Delete", "DeleteDiscount", new { sr_num = item.sr_num, acc_id = item.acc_id, session = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }

@@ -4,66 +4,166 @@
     ViewBag.Title = "smsSend";
 }
 
+<style>
+    .submit-progress {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 6em;
+  padding-top: 2.3em;
+  /* The following rules are the
+     ones most likely to change */
+  width: 25em;
+  /* Set 'margin-left' to a negative number
+     that is 1/2 of 'width' */
+  margin-left: -10em;
+  padding-left: 2.1em;
+  background-color: black;
+  color: white;
+  -webkit-border-radius: 0.4em;
+  -moz-border-radius: 0.4em;
+  border-radius: 0.4em;
+  box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+  -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+  -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+}
+
+.submit-progress-bg {
+    background-color: lightgray;
+    opacity: .5;
+  }
+</style>
+
 <link href="~/vendors/select2/dist/css/select2.min.css" rel="stylesheet" />
 
 <div class="right_col" role="main">
-    <h2>smsSend</h2>
+    <div class="row">
+        <div class="submit-progress hidden">
+            <i class="fa fa-2x fa-spinner fa-spin"></i>
+            <label> Please wait while sending SMS...</label>
+        </div>
 
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+        <div id="work" class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
 
-        <div class="form-horizontal">
-            <h4>phoneSMS</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(model => model.toNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.toNumber, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.toNumber, "", new { @class = "text-danger" })
-                </div>
-            </div>
+               
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.toText, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.toText, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.toText, "", new { @class = "text-danger" })
-                </div>
-            </div>
 
-            <select class="js-example-basic-multiple" name="state">
-                <option value="AL">Alabama</option>
-                <option value="AL">Alabama</option>
+                <h2>Send SMS</h2>
 
-                <option value="AL">Alabama</option>
+                @using (Html.BeginForm("smsSend", "phoneSMS", FormMethod.Post, new { id = "submit" }))
+                {
+                    @Html.AntiForgeryToken()
 
-                <option value="AL">Alabama</option>
+                    <div class="form-horizontal">
 
-                <option value="AL">Alabama</option>
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                <option value="WY">Wyoming</option>
-            </select>
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2">Select Group</label>
+                            <div class="col-md-10 col-xs-12 col-sm-10">
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" />
-                </div>
+
+                                <select class="form-control js-example-basic-multiple" name="selected_list" multiple="multiple">
+                                    <optgroup label="Whole Staff">
+                                        <option value="997">Whole Staff</option>
+                                    </optgroup>
+                                    <optgroup label="School Classes">
+                                        <option value="998">Whole Classes</option>
+                                        @{
+                                            foreach (var item in Model.class_l)
+                                            {
+
+                                                <option value="@Html.DisplayFor(modelItem => item.class_id)">
+                                                    @Html.DisplayFor(modelItem => item.class_name)
+                                                </option>
+
+                                            }
+
+                                        }
+
+
+
+                                    </optgroup>
+                                    <optgroup label="School Transport">
+                                        <option value="999">Whole Transport</option>
+                                        @{
+                                            foreach (var item in Model.class_p)
+                                            {
+                                                <option value="@Html.DisplayFor(modelItem => item.pickup_id)">
+                                                    @Html.DisplayFor(modelItem => item.pickup_point)
+                                                </option>
+
+                                            }
+
+                                        }
+
+                                    </optgroup>
+
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.toText, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.TextAreaFor(model => model.toText, new { htmlAttributes = new { @class = "form-control"} })
+                                @Html.ValidationMessageFor(model => model.toText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                @*<input type="submit" value="Send Message" class="btn btn-success" />*@
+                                <button type="submit"
+                                        id="submitButton"
+                                        class="btn btn-primary"
+                                        onclick="return DisplayProgressMessage(this, 'Sending SMS...');">
+                                    Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                                            }
+
+                
             </div>
         </div>
-    }
-
-    <div>
-        @Html.ActionLink("Back to List", "Index")
     </div>
-    </div>
+</div>
 
+
+@section Scripts{
     <script src="~/vendors/select2/dist/js/select2.min.js"></script>
+    <script>
+    function DisplayProgressMessage(ctl, msg)
+    {
 
 
+        if(confirm("Are you sure you want to send SMS?"))
+        {
+            $(ctl).prop("disabled", true).text(msg);
+            $(".submit-progress").text(" Please wait while sending SMS...");
+            //$("#work").prop("hidden",true);
+            $(".submit-progress").removeClass("hidden");
+            //window.scrollTo(0,0);
+            $("body").addClass("submit-progress-bg");
+            document.forms["submit"].submit();
+        }
+        else
+            return false;
+
+
+
+        return true;
+    }
+</script>
     <script>
         $(document).ready(function () {
             $('.js-example-basic-multiple').select2();
         });
     </script>
+}
+

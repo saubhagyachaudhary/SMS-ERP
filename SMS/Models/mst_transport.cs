@@ -13,6 +13,10 @@ namespace SMS.Models
         [Key]
         public int pickup_id { get; set; }
 
+        [Key]
+        [Display(Name = "Session")]
+        public string session { get; set; }
+
         [Required]
         [Display(Name = "Pickup Point")]
         public String pickup_point { get; set; }

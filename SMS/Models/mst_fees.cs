@@ -11,6 +11,9 @@ namespace SMS.Models
     public class mst_fees
     {
         [Key]
+        public string session { get; set; }
+
+        [Key]
         public int class_id { get; set; }
 
         [Key]

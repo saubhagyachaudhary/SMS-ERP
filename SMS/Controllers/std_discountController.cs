@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class std_discountController : Controller
+    public class std_discountController : BaseController
     {
         [HttpGet]
         public ActionResult AddDiscount()
@@ -33,7 +33,7 @@ namespace SMS.Controllers
                 main.AddFees(std);
                 return RedirectToAction("AllStdDiscountList");
             }
-            catch (SqlException ex)
+            catch 
             {
                 mst_feesMain mstfess = new mst_feesMain();
 
@@ -43,15 +43,8 @@ namespace SMS.Controllers
 
                 ViewData["acc_id"] = list1;
 
-                if (ex.Number == 2627)
-                {
-                    ModelState.AddModelError(String.Empty, "Discount on Admission number already applied for the particular account head");
-                }
-
-                if (ex.Number == 547)
-                {
-                    ModelState.AddModelError(String.Empty, "Admission number not exist");
-                }
+               
+                ModelState.AddModelError(String.Empty, "Discount on Admission number already applied for the particular account head or Admission number not exist");  
 
                 return View(std);
             }
@@ -66,7 +59,7 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditDiscount(int sr_num, int acc_id)
+        public ActionResult EditDiscount(int sr_num, int acc_id,string session)
         {
             std_discountMain stdMain = new std_discountMain();
 
@@ -76,6 +69,7 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult EditDiscount(std_discount mst)
         {
+
             std_discountMain stdMain = new std_discountMain();
 
             stdMain.EditDiscount(mst);
@@ -85,7 +79,7 @@ namespace SMS.Controllers
 
 
         [HttpGet]
-        public ActionResult DeleteDiscount(int sr_num, int acc_id)
+        public ActionResult DeleteDiscount(int sr_num, int acc_id, string session)
         {
             std_discountMain stdMain = new std_discountMain();
 
@@ -93,11 +87,11 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteDiscount(int sr_num, int acc_id, FormCollection collection)
+        public ActionResult DeleteDiscount(int sr_num, int acc_id, string session, FormCollection collection)
         {
             std_discountMain stdMain = new std_discountMain();
 
-            stdMain.DeleteDiscount(sr_num, acc_id);
+            stdMain.DeleteDiscount(sr_num, acc_id,session);
 
             return RedirectToAction("AllStdDiscountList");
         }

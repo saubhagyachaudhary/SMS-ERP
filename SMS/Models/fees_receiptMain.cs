@@ -8,14 +8,18 @@ using System.Web;
 using System.Text;
 using System.Net;
 using System.IO;
+using SMS.report;
+using System.Web.Routing;
+using System.Web.Mvc;
+using System.Threading.Tasks;
 
 namespace SMS.Models
 {
     public class fees_receiptMain
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-        public void AddReceipt(List<fees_receipt> fees)
+        int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+        public async Task<int> AddReceipt(List<fees_receipt> fees)
         {
             string phone;
             int sr_num =0;
@@ -27,81 +31,82 @@ namespace SMS.Models
                 out_standingMain out_main = new out_standingMain();
                 out_standing ot_std = new out_standing();
 
-                       string query1 = @"SELECT fin_id
-                             FROM sms.mst_fin
-                          where fin_close = 'N'";
 
-                    string fin = con.Query<string>(query1).SingleOrDefault();
+                mst_finMain fin = new mst_finMain();
 
-                   
-
-                string maxid = "select ifnull(MAX(receipt_no),0)+1 from sms.fees_receipt where fin_id = @fin_id";
-
-                int rect_no = con.Query<int>(maxid, new { fin_id = fin }).SingleOrDefault();
-
-                DateTime rect_date = System.DateTime.Now.AddMinutes(750);
-
-
-                foreach (fees_receipt fee in fees)
-                { 
-
-                if (fee.fin_id == null)
+                if (fin.checkFYnotExpired())
                 {
-                   
-                   fee.fin_id = fin;
-                }
 
-                if (fee.class_id == 0)
-                {
-                     query1 = @"SELECT std_section_id
-                                        FROM sms.sr_register
+                    string fin_id = fin.FindActiveFinId();
+                    string query1 = "";
+                    string maxid = "select ifnull(MAX(receipt_no),0)+1 from fees_receipt where fin_id = @fin_id";
+
+                    int rect_no = con.Query<int>(maxid, new { fin_id = fin_id }).SingleOrDefault();
+
+                    DateTime rect_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
+
+
+                    foreach (fees_receipt fee in fees)
+                    {
+
+                        if (fee.fin_id == null)
+                        {
+
+                            fee.fin_id = fin_id;
+                        }
+
+                        if (fee.class_id == 0)
+                        {
+                            query1 = @"SELECT std_section_id
+                                        FROM sr_register
                                         where sr_number = @sr_number";
 
-                    int id = con.Query<int>(query1,new {sr_number = fee.sr_number }).SingleOrDefault();
+                            int id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
-                    fee.section_id = id;
+                            fee.section_id = id;
 
-                     query1 = @"SELECT std_batch_id
-                                        FROM sms.sr_register
+                            query1 = @"SELECT std_batch_id
+                                        FROM sr_register
                                         where sr_number = @sr_number";
 
-                    id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
+                            id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
-                    fee.batch_id = id;
+                            fee.batch_id = id;
 
-                    query1 = @"SELECT b.class_id
-                                FROM sms.sr_register a,sms.mst_batch b
+                            query1 = @"SELECT b.class_id
+                                FROM sr_register a,mst_batch b
                                 where sr_number = @sr_number
                                 and
                                 a.std_batch_id = b.batch_id";
 
-                    id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
-
-                       
-                        fee.class_id = id;
-
-                }
+                            id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
 
-                    fee.receipt_no = rect_no;
+                            fee.class_id = id;
 
-                    fee.receipt_date = rect_date;
-                    
+                        }
 
-                    fee.dt_date = rect_date;
 
-                    if (fee.reg_date == DateTime.MinValue)
-                    {
-                        fee.reg_date = null;
-                    }
+                        fee.receipt_no = rect_no;
 
-                    if (fee.chq_date == DateTime.MinValue)
-                    {
-                        fee.chq_date = null;
-                    }
+                        fee.receipt_date = rect_date;
 
-                    string query = @"INSERT INTO sms.fees_receipt
+
+                        fee.dt_date = rect_date;
+
+                        if (fee.reg_date == DateTime.MinValue)
+                        {
+                            fee.reg_date = null;
+                        }
+
+                        if (fee.chq_date == DateTime.MinValue)
+                        {
+                            fee.chq_date = null;
+                        }
+
+                        string query = @"INSERT INTO fees_receipt
                                (fin_id
+                                ,session
                                ,receipt_no
                                ,receipt_date
                                ,acc_id
@@ -126,6 +131,7 @@ namespace SMS.Models
                                 ,user_id)
                          VALUES
                                (@fin_id
+                                ,@session
                                ,@receipt_no
                                ,@receipt_date
                                ,@acc_id
@@ -148,88 +154,144 @@ namespace SMS.Models
                                ,@mode_flag
                                ,@clear_flag
                                 ,@user_id)";
-                
-                con.Execute(query,
-                        new
-                        {
-                            fee.fin_id,
-                            fee.receipt_no,
-                            fee.receipt_date,
-                            fee.acc_id,
-                            fee.fees_name,
-                            fee.sr_number,
-                            fee.class_id,
-                            fee.section_id,
-                            fee.batch_id,
-                            fee.amount,
-                            fee.reg_no,
-                            fee.reg_date,
-                            fee.dc_fine,
-                            fee.dc_discount,
-                            fee.narration,
-                            fee.serial,
-                            fee.dt_date,
-                            fee.bnk_name,
-                            fee.chq_no,
-                            fee.chq_date,
-                            fee.mode_flag,
-                            fee.clear_flag,
-                            fee.user_id
-                        });
 
-                    ot_std.serial = fee.serial;
-                    ot_std.rmt_amount = fee.amount;
-                    ot_std.receipt_no = fee.receipt_no;
-                    ot_std.receipt_date = fee.receipt_date;
-                    ot_std.fin_id = fee.fin_id;
-                    ot_std.dt_date = fee.dt_date;
-                    ot_std.clear_flag = fee.clear_flag;
-                    ot_std.month_no = fee.month_no;
+                        await con.ExecuteAsync(query,
+                                new
+                                {
+                                    fee.fin_id,
+                                    fee.session,
+                                    fee.receipt_no,
+                                    fee.receipt_date,
+                                    fee.acc_id,
+                                    fee.fees_name,
+                                    fee.sr_number,
+                                    fee.class_id,
+                                    fee.section_id,
+                                    fee.batch_id,
+                                    fee.amount,
+                                    fee.reg_no,
+                                    fee.reg_date,
+                                    fee.dc_fine,
+                                    fee.dc_discount,
+                                    fee.narration,
+                                    fee.serial,
+                                    fee.dt_date,
+                                    fee.bnk_name,
+                                    fee.chq_no,
+                                    fee.chq_date,
+                                    fee.mode_flag,
+                                    fee.clear_flag,
+                                    fee.user_id
+                                });
 
-                    out_main.updateOutstandingReceipt(ot_std);
+                        ot_std.serial = fee.serial;
+                        ot_std.rmt_amount = fee.amount;
+                        ot_std.receipt_no = fee.receipt_no;
+                        ot_std.receipt_date = fee.receipt_date;
+                        ot_std.session = fee.session;
+                        ot_std.dt_date = fee.dt_date;
+                        ot_std.clear_flag = fee.clear_flag;
+                        ot_std.month_no = fee.month_no;
+                        ot_std.dc_fine = fee.dc_fine;
+                        ot_std.dc_discount = fee.dc_discount;
 
-                    sr_num = fee.sr_number;
+                        out_main.updateOutstandingReceipt(ot_std);
 
-                    amount = amount + fee.amount;
-                    amount = amount + fee.dc_fine;
-                    amount = amount - fee.dc_discount;
+                        sr_num = fee.sr_number;
 
-                    flag = fee.mode_flag;
+                        amount = amount + fee.amount;
+                        amount = amount + fee.dc_fine;
+                        amount = amount - fee.dc_discount;
 
-                }
+                        flag = fee.mode_flag;
 
-                query1 = @"select coalesce(std_contact, std_contact1, std_contact2) from sms.sr_register where sr_number = @sr_number";
+                    }
 
-                phone = con.Query<string>(query1, new { sr_number = sr_num }).SingleOrDefault();
 
-                query1 = @"SELECT concat(std_first_name,' ',std_last_name)
-                                FROM sms.sr_register
+                    query1 = @"select coalesce(std_contact, std_contact1, std_contact2) from sr_register where sr_number = @sr_number";
+
+                    phone = con.Query<string>(query1, new { sr_number = sr_num }).SingleOrDefault();
+
+                    if (phone != null && amount != 0)
+                    {
+                        query1 = @"SELECT concat(std_first_name,' ',std_last_name)
+                                FROM sr_register
                                 where sr_number = @sr_number";
 
-                string name = con.Query<string>(query1, new { sr_number = sr_num }).SingleOrDefault();
+                        string name = con.Query<string>(query1, new { sr_number = sr_num }).SingleOrDefault();
 
-                SMSMessage sms = new SMSMessage();
+                        
 
-                //string text = @"Hariti Public School Thank you for you cooperation. Amount INR "+amount+ " Successfully Submitted on "+ DateTime.Now.AddMinutes(750).ToString();
-                if (flag == "Cash")
-                {
-                    string dt = DateTime.Now.AddMinutes(750).ToString();
-                    string text = @"School fees of " + name + " INR " + amount + " is successfully submitted on " + dt + ". Thank you for your cooperation. Hariti Public School";
-                    sms.SendSMS(text, phone);
-                    text = name + @" की स्कूल फीस INR " + amount + " दिनांक "+dt+" को सफलतापूर्वक जमा हो चुकी है। आपके सहयोग के लिए धन्यवाद। Hariti Public School";
-                    sms.SendSMS(text, phone);
+                        if (flag == "Cash")
+                        {
+                            string dt = DateTime.Now.AddMinutes(dateTimeOffSet).ToString();
+
+                            SMSMessage sms = new SMSMessage();
+
+                            foreach (var item in sms.smsbody("cash_fees_submit"))
+                            {
+                                string body = item.Replace("#student_name#", name);
+
+                                body = body.Replace("#current_date#", dt);
+
+                                body = body.Replace("#fees_amount#", amount.ToString());
+
+                                await sms.SendSMS(body, phone);
+                            }
+
+
+                            //string dt = DateTime.Now.AddMinutes(dateTimeOffSet).ToString();
+
+                            //SMSMessage sms = new SMSMessage();
+
+                            //string text = @"School fees of " + name + " INR " + amount + " is successfully submitted on " + dt + ". Thank you for your cooperation. Hariti Public School";
+                            //sms.SendSMS(text, phone);
+
+                            //SMSMessage sms1 = new SMSMessage();
+                            //string text1 = name + @" की स्कूल फीस INR " + amount + " दिनांक " + dt + " को सफलतापूर्वक जमा हो चुकी है। आपके सहयोग के लिए धन्यवाद। Hariti Public School";
+                            //sms1.SendSMS(text1, phone);
+                        }
+                        else
+                        {
+                            string dt = DateTime.Now.AddMinutes(dateTimeOffSet).ToString();
+
+                            SMSMessage sms = new SMSMessage();
+
+                            foreach (var item in sms.smsbody("bank_fees_submit"))
+                            {
+                                string body = item.Replace("#student_name#", name);
+
+                                body = body.Replace("#current_date#", dt);
+
+                                body = body.Replace("#fees_amount#", amount.ToString());
+
+                                await sms.SendSMS(body, phone);
+                            }
+
+
+                            //string dt = DateTime.Now.AddMinutes(dateTimeOffSet).ToString();
+
+                            //SMSMessage sms = new SMSMessage();
+
+                            //string text = @"School fees of " + name + " INR " + amount + " is successfully submitted on " + dt + ". Subject to Bank Clearance. Thank you for your cooperation. Hariti Public School";
+                            //sms.SendSMS(text, phone);
+
+                            //SMSMessage sms1 = new SMSMessage();
+                            //string text1 = name + @" की स्कूल फीस INR " + amount + " दिनांक " + dt + " को सफलतापूर्वक जमा हो चुकी है। राशि बैंक निकासी के अधीन है। आपके सहयोग के लिए धन्यवाद। Hariti Public School";
+                            //sms1.SendSMS(text1, phone);
+
+                        }
+
+
+
+                    }
+
+                    return rect_no;
                 }
                 else
                 {
-                    string dt = DateTime.Now.AddMinutes(750).ToString();
-                    string text = @"School fees of " + name + " INR " + amount + " is successfully submitted on " + dt + ". Subject to Bank Clearance. Thank you for your cooperation. Hariti Public School";
-                    sms.SendSMS(text, phone);
-
-                    text = name + @" की स्कूल फीस INR " + amount + " दिनांक " + dt + " को सफलतापूर्वक जमा हो चुकी है। राशि बैंक निकासी के अधीन है। आपके सहयोग के लिए धन्यवाद। Hariti Public School";
-                    sms.SendSMS(text, phone);
-
+                    throw new System.InvalidOperationException("Financial Year Expired");
                 }
-
             }
             catch (Exception ex)
             {
@@ -243,7 +305,7 @@ namespace SMS.Models
         {
             try
             {
-                string query = @"UPDATE sms.fees_receipt
+                string query = @"UPDATE fees_receipt
                                SET sr_number = @sr_number
                                   ,class_id = @class_id
                                   ,section_id = @section_id
@@ -274,6 +336,8 @@ namespace SMS.Models
 
         public IEnumerable<fees_receipt> AllPaidFees(int sr_num)
         {
+            mst_finMain fin = new mst_finMain();
+
             String query = @"SELECT fin_id
                               ,receipt_no
                               ,receipt_date
@@ -291,11 +355,12 @@ namespace SMS.Models
                               ,narration
                               ,mode_flag
                               ,case mode_flag when 'Cash' then 'Cleared' else case  when chq_reject is NULL then 'Not Cleared' else chq_reject end end as chq_reject
-                          FROM sms.fees_receipt
+                          FROM fees_receipt
                                 where sr_number = @sr_number
+                                and fin_id = @fin
                                 order by receipt_date desc";
 
-            var result = con.Query<fees_receipt>(query, new { sr_number = sr_num});
+            var result = con.Query<fees_receipt>(query, new { sr_number = sr_num,fin = fin.FindActiveFinId()});
 
             return result;
         }
@@ -303,7 +368,7 @@ namespace SMS.Models
         public IEnumerable<fees_receipt> AllPaidFeesReg(int reg_no)
         {
 
-            string query1 = @"SELECT fin_id FROM sms.mst_fin where fin_close = 'N'";
+            string query1 = @"SELECT fin_id FROM mst_fin where fin_close = 'N'";
 
             string fin_id = con.Query<string>(query1).SingleOrDefault();
 
@@ -325,7 +390,7 @@ namespace SMS.Models
                               ,narration
                               ,mode_flag
                               ,case mode_flag when 'Cash' then 'Cleared' else case  when chq_reject is NULL then 'Not Cleared' else chq_reject end end as chq_reject
-                          FROM sms.fees_receipt
+                          FROM fees_receipt
                                 where reg_no = @reg_no
                                 and fin_id = @fin_id";
 

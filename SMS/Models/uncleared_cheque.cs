@@ -36,6 +36,10 @@ namespace SMS.Models
         [Display(Name = "Amount")]
         public decimal amount { get; set; }
 
+        public decimal dc_fine { get; set; }
+
+        public decimal dc_discount { get; set; }
+
         [Display(Name = "Bank Name")]
         public String bnk_name { get; set; }
 
@@ -68,5 +72,9 @@ namespace SMS.Models
         public int sr_number { get; set; }
 
         public int reg_no { get; set; }
+
+        public int class_id { get; set; }
+
+        public string session { get; set; }
     }
 }

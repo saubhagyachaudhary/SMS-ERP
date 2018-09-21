@@ -2,7 +2,7 @@
 @model List<fees_payment>
 
 <link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
-@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post, new { id = "submit" }))
+@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post, new { id = "submit", onsubmit = "return confirm('Are you sure you want to submit fees?');" }))
 {
     <div style="overflow-x:auto;">
 
@@ -43,6 +43,8 @@
 
                                 @Html.HiddenFor(model => model[i].Fees_type)
 
+                                @Html.HiddenFor(model => model[i].session)
+
                                 @Html.HiddenFor(model => model[i].sr_num)
 
                                 @Html.HiddenFor(model => model[i].Narration, new { id = i.ToString() })
@@ -69,7 +71,7 @@
                             <div class="form-group">
                                 @Html.DisplayFor(model => model[i].due_amount)
 
-                                @Html.HiddenFor(model => model[i].due_amount)
+                                @Html.HiddenFor(model => model[i].due_amount, new { id = "due" + i.ToString() })
                             </div>
                         </td>
                         <td>
@@ -150,8 +152,8 @@
 
                                     </div>
                                 </div>
-                                <div class="col-md-10">
-                                    <input type="submit" id="cash" value="Save" class="btn btn-default" onclick="addItem()" />
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    <input type="submit" id="cash" value="Save" class="btn btn-default please_wait" onclick="addItem()" />
                                 </div>
 
 
@@ -201,8 +203,8 @@
 
                                     </div>
                                 </div>
-                                <div class="col-md-10">
-                                    <input type="submit" value="Save" class="btn btn-default" onclick="addchkItem()" />
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    <input type="submit" value="Save" class="btn btn-default please_wait" onclick="addchkItem()" />
                                 </div>
 
 
@@ -222,7 +224,7 @@
                 var total = 0.00;
                 var amt = 0.00;
                 var fin = 0.00;
-
+                var due = 0.00;
                 for (i = 0; i < @Model.Count() ; i++)
                 {
                     var ch = document.getElementById("c"+i.toString());
@@ -230,15 +232,29 @@
 
                     if(document.getElementById("c"+i.toString()).checked)
                     {
+                        
+                        amt = document.getElementById("amt"+i.toString()).value;
 
-                        amt = document.getElementById("amt"+i.toString()).value
+                        fin = document.getElementById('fin'+i.toString()).value;
+                        
+                        dis = document.getElementById('dis'+i.toString()).value;
 
-                        fin = document.getElementById('fin'+i.toString()).value
+                        due = document.getElementById('due'+i.toString()).value;
 
-                        dis = document.getElementById('dis'+i.toString()).value
-
-                        total = total + (parseFloat(amt)+parseFloat(fin)) - parseFloat(dis);
-
+                        if (parseFloat(amt) < 0 )
+                        {
+                            alert("Value cannot be negative");
+                            document.getElementById("c"+i.toString()).checked = false;
+                        }
+                        else if (parseFloat(due) < (parseFloat(amt)))
+                        {
+                            alert("Value should be less then Payable amount");
+                            document.getElementById("c"+i.toString()).checked = false;
+                        }
+                        else
+                        {
+                            total = total + (parseFloat(amt)+parseFloat(fin)) - parseFloat(dis);
+                        }
 
                     }
 

@@ -11,6 +11,9 @@
             <div class="x_panel">
                 <div class="x_title">
                     
+                  
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                     <h3>Are you sure you want to delete this?</h3>
                     <div>
@@ -44,8 +47,8 @@
                             @Html.AntiForgeryToken()
 
                             <div class="form-actions no-color">
-                                <input type="submit" value="Delete" class="btn btn-default" /> |
-                                @Html.ActionLink("Back to List", "AllFeesList")
+                                <input type="submit" value="Delete" class="btn btn-default" /> 
+                                @Html.ActionLink("Back to List", "AllFeesList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
                             </div>
                         }
                     </div>

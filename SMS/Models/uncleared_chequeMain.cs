@@ -5,6 +5,7 @@ using System.Configuration;
 using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
+using System.Threading.Tasks;
 
 namespace SMS.Models
 {
@@ -21,7 +22,7 @@ namespace SMS.Models
                                chq_no,
                                chq_date,
                                (SUM(amount) + SUM(dc_fine)) - SUM(dc_discount) Amount
-                               from sms.fees_receipt
+                               from fees_receipt
                                where
                                clear_flag = 0
 							   and
@@ -33,12 +34,12 @@ namespace SMS.Models
             return result;
         }
 
-        public void Updatefees_Bounce(uncleared_cheque unclear)
+        public async Task Updatefees_Bounce(uncleared_cheque unclear)
         {
 
             try
             {
-                String query = @"UPDATE sms.fees_receipt
+                String query = @"UPDATE fees_receipt
                                SET chq_reject = @chq_reject,
                                     nt_clear_reason = @narration,
                                     clear_flag = 1
@@ -52,8 +53,8 @@ namespace SMS.Models
                 // fees_receipt fee = new fees_receipt();
 
                 query = @"select DISTINCT
-                               serial,amount
-							   from sms.fees_receipt
+                               serial,session,amount,dc_fine,dc_discount
+							   from fees_receipt
                                WHERE bnk_name = @bnk_name
                                 and chq_date = date_format(@chq_date,'%Y-%m-%d')
                                 and chq_no = @chq_no";
@@ -64,18 +65,21 @@ namespace SMS.Models
 
                 foreach (uncleared_cheque val in result)
                 {
-                    query = @"update sms.out_standing
-                            set rmt_amount = rmt_amount - @rmt_amount
-                            where serial = @serial ";
+                    query = @"update out_standing
+                            set rmt_amount = rmt_amount - @rmt_amount,
+                                dc_fine = dc_fine - @dc_fine,
+                                dc_discount = dc_discount - @dc_discount
+                            where serial = @serial 
+                                  and session = @session";
 
-                    con.Execute(query, new { rmt_amount = val.amount, serial = val.serial });
+                    con.Execute(query, new { rmt_amount = val.amount,dc_fine = val.dc_fine,dc_discount = val.dc_discount ,serial = val.serial,session = val.session });
                 }
 
                 if (unclear.bnk_charges != 0)
                 {
                     query = @"select
-                               DISTINCT sr_number,reg_no
-							   from sms.fees_receipt
+                               DISTINCT sr_number,session,reg_no,class_id
+							   from fees_receipt
                                WHERE bnk_name = @bnk_name
                                 and chq_date = date_format(@chq_date,'%Y-%m-%d')
                                 and chq_no = @chq_no";
@@ -96,25 +100,39 @@ namespace SMS.Models
 
                         std.sr_number = val.sr_number;
                         std.reg_num = val.reg_no;
+                        std.class_id = val.class_id;
+                        std.session = val.session;
                         outstd.AddOutStanding(std);
                     }
 
                     if (unclear.chq_reject == "Bounce")
                     {
-                        string text = @"Your Cheque No "+ unclear.chq_no + " is unfortunately Bounce INR "+ unclear.bnk_charges + " will be charged against it. kindly make the payment as soon as possible. Thank You. Hariti Public School ";
-                        SMSMessage sms = new SMSMessage();
-
-                        query = @"select coalesce(std_contact, std_contact1, std_contact2) from sms.sr_register where sr_number = @sr_number";
-
-
+                        query = @"select coalesce(std_contact, std_contact1, std_contact2) from sr_register where sr_number = @sr_number";
                         string phone = con.Query<string>(query, new { sr_number = std.sr_number }).SingleOrDefault();
 
 
-                       sms.SendSMS(text,phone);
+                        SMSMessage sms = new SMSMessage();
 
-                        text = @"आपका चेक नंबर " + unclear.chq_no + " बाउंस हो गया है। जिसका बाउंस शुल्क " + unclear.bnk_charges + " देय होगा। कृपया जितनी जल्दी हो सके भुगतान करें।  धन्यवाद। Hariti Public School.";
+                        foreach (var item in sms.smsbody("cheque_bounce"))
+                        {
+                            string body = item.Replace("#cheque_number#", unclear.chq_no);
 
-                        sms.SendSMS(text, phone);
+                            body = body.Replace("#bounce_charge#", unclear.bnk_charges.ToString());
+
+                            await sms.SendSMS(body, phone);
+                        }
+
+                        // SMSMessage sms = new SMSMessage();
+
+                        // string text = @"Your Cheque No "+ unclear.chq_no + " is unfortunately Bounce INR "+ unclear.bnk_charges + " will be charged against it. kindly make the payment as soon as possible. Thank You. Hariti Public School ";
+
+                        //sms.SendSMS(text,phone);
+
+                        // SMSMessage sms1 = new SMSMessage();
+
+                        // string text1 = @"आपका चेक नंबर " + unclear.chq_no + " बाउंस हो गया है। जिसका बाउंस शुल्क " + unclear.bnk_charges + " देय होगा। कृपया जितनी जल्दी हो सके भुगतान करें।  धन्यवाद। Hariti Public School.";
+
+                        // sms1.SendSMS(text1, phone);
 
                     }
                 }
@@ -134,7 +152,7 @@ namespace SMS.Models
 
             try
             {
-                String query = @"UPDATE sms.fees_receipt
+                String query = @"UPDATE fees_receipt
                                SET chq_reject = @chq_reject,clear_flag = 1, nt_clear_reason = @narration
                              WHERE bnk_name = @bnk_name
                              and chq_date = date_format(@chq_date,'%Y-%m-%d')

@@ -6,6 +6,7 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 using SMS.report;
+using System.Threading.Tasks;
 
 namespace SMS.Models
 {
@@ -13,22 +14,15 @@ namespace SMS.Models
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-        public void AddStudent(sr_register std)
+        public async Task AddStudent(sr_register std)
         {
 
             try
             {
-                mst_fin fin = new mst_fin();
+                mst_sessionMain sess = new mst_sessionMain();
 
-                string query1 = @"SELECT fin_id
-                              ,fin_start_date
-                              ,fin_end_date
-                              ,fin_close
-                          FROM sms.mst_fin
-                          where fin_close = 'N'";
-
-                fin = con.Query<mst_fin>(query1).SingleOrDefault();
-                if (DateTime.Parse(std.std_admission_date_str) > fin.fin_start_date && DateTime.Parse(std.std_admission_date_str) < fin.fin_end_date)
+                
+                if (sess.checkSessionNotExpired())
                 {
 
                     string batch_query = "select batch_id from mst_batch where class_id = @class_id";
@@ -43,7 +37,7 @@ namespace SMS.Models
 
 
 
-                    string query = @"INSERT INTO sms.sr_register
+                    string query = @"INSERT INTO sr_register
            (sr_number
            ,std_first_name
            ,std_last_name
@@ -80,7 +74,8 @@ namespace SMS.Models
            ,std_admission_class
            ,adm_session
            ,reg_no
-           ,reg_date)
+           ,reg_date
+           ,std_aadhar)
      VALUES
            (@sr_number
            ,@std_first_name
@@ -118,14 +113,15 @@ namespace SMS.Models
            ,@std_admission_class
            ,@adm_session
            ,@reg_no
-           ,@reg_date)";
+           ,@reg_date
+           ,@std_aadhar)";
 
                     std.std_batch_id = batch_no;
                     std.std_active = "Y";
                     std.sr_number = id;
                     std.std_admission_date = DateTime.Parse(std.std_admission_date_str);
                     std.std_dob = DateTime.Parse(std.std_dob_str);
-                    con.Execute(query,
+                    await con.ExecuteAsync(query,
                             new
                             {
                                 std.sr_number
@@ -201,12 +197,14 @@ namespace SMS.Models
                                 std.reg_no
                                ,
                                 std.reg_date
+                                ,
+                                std.std_aadhar
 
                             });
 
                     std_registrationMain main = new std_registrationMain();
 
-                    main.DeleteRegistration(std.adm_session, std.reg_no, std.reg_date);
+                    main.DeleteRegistrationOnly(std.adm_session, std.reg_no, std.reg_date);
 
                     fees_receiptMain mstfees = new fees_receiptMain();
                     fees_receipt fees = new fees_receipt();
@@ -231,6 +229,7 @@ namespace SMS.Models
                     out_standingMain out_stdMain = new out_standingMain();
 
                     out_std.sr_number = std.sr_number;
+                    out_std.class_id = std.class_id;
 
                     out_stdMain.AddOutStanding(out_std);
 
@@ -238,28 +237,41 @@ namespace SMS.Models
 
                     out_std.dt_date = std.reg_date;
 
+                    out_std.class_id = std.class_id;
+
                     out_stdMain.updateOutstanding(out_std);
 
                     var p = new DynamicParameters();
 
                     SMSMessage sms = new SMSMessage();
 
+                    foreach (var item in sms.smsbody("admission"))
+                    {
+                        string body = item.Replace("#student_name#", std.std_first_name + " " + std.std_last_name);
 
-                    string text = @"Admission of " + std.std_first_name + " " + std.std_last_name + " is confirmed in class " + std.std_admission_class + " via admission number " + std.sr_number + ". Congratulation for being a part of Hariti family. Thank You. Hariti Public School.";
+                        body = body.Replace("#class#", std.std_admission_class);
 
-                    sms.SendSMS(text, std.std_contact);
+                        body = body.Replace("#sr_number#", std.sr_number.ToString());
 
-                     text =  std.std_first_name + " " + std.std_last_name + " का प्रवेश कक्षा "+std.std_admission_class+" में होना सुनिश्चित हुआ है। जिसका प्रवेश क्रमांक " + std.sr_number + " है। हरिति परिवार से जुड़ने के लिये आपका धन्यवाद। Hariti Public School.";
+                        await sms.SendSMS(body, std.std_contact);
+                    }
 
-                    sms.SendSMS(text, std.std_contact);
+
+                    //string text = @"Admission of " + std.std_first_name + " " + std.std_last_name + " is confirmed in class " + std.std_admission_class + " via admission number " + std.sr_number + ". Congratulation for being a part of hariti family. Thank You. Hariti Public School.";
+
+                    //sms.SendSMS(text, std.std_contact);
+
+                    // text =  std.std_first_name + " " + std.std_last_name + " का प्रवेश कक्षा "+std.std_admission_class+" में होना सुनिश्चित हुआ है। जिसका प्रवेश क्रमांक " + std.sr_number + " है। हरिति परिवार से जुड़ने के लिये आपका धन्यवाद। Hariti Public School.";
+
+                    //sms.SendSMS(text, std.std_contact);
 
 
                     p.Add("@sr_num", std.sr_number);
 
 
-                    con.Execute("sms.MonthlyFeesFullYear", p, commandType: System.Data.CommandType.StoredProcedure);
+                    con.Execute("MonthlyFeesFullYear", p, commandType: System.Data.CommandType.StoredProcedure);
 
-                    con.Execute("sms.MonthlyTransportFullYear", p, commandType: System.Data.CommandType.StoredProcedure);
+                    con.Execute("MonthlyTransportFullYear", p, commandType: System.Data.CommandType.StoredProcedure);
 
                    
 
@@ -272,19 +284,39 @@ namespace SMS.Models
         }
 
        
-        public IEnumerable<sr_register> AllStudentList()
+        public IEnumerable<sr_register> AllStudentList(int section_id)
         {
-            String query = @"select sr_number,std_first_name,std_last_name,std_father_name,c.class_name,b.section_name,std_active 
-                                from sms.sr_register a, sms.mst_section b,sms.mst_class c
+            string query = @"select sr_number,std_first_name,std_last_name,std_father_name,c.class_name,b.section_name,coalesce(a.std_contact,a.std_contact1,a.std_contact2) std_contact
+                                from sr_register a, mst_section b,mst_class c
                                 where
                                 a.std_section_id = b.section_id
                                 and
-                                b.class_id = c.class_id";
+                                b.class_id = c.class_id
+                                and
+                                b.section_id = @section_id
+                                and a.std_active = 'Y'";
 
-            var result = con.Query<sr_register>(query);
+            var result = con.Query<sr_register>(query,new { section_id = section_id });
 
             return result;
         }
+
+        //public IEnumerable<sr_register> AllNSOStudentList(int section_id)
+        //{
+        //    String query = @"select sr_number,std_first_name,std_last_name,std_father_name,c.class_name,b.section_name,coalesce(a.std_contact,a.std_contact1,a.std_contact2) std_contact
+        //                        from sr_register a, mst_section b,mst_class c
+        //                        where
+        //                        a.std_section_id = b.section_id
+        //                        and
+        //                        b.class_id = c.class_id
+        //                        and
+        //                        b.section_id = @section_id
+        //                        and a.std_active = 'N'";
+
+        //    var result = con.Query<sr_register>(query, new { section_id = section_id });
+
+        //    return result;
+        //}
 
         public sr_register FindStudent(int? id)
         {
@@ -329,7 +361,9 @@ namespace SMS.Models
 							  ,reg_no
 							  ,reg_date
                               ,std_active
-                             FROM sms.sr_register a, sms.mst_section b,sms.mst_class c,sms.mst_transport d
+                              ,std_aadhar
+                              ,nso_date
+                             FROM sr_register a, mst_section b,mst_class c,mst_transport d
 							  where
 							 a.std_section_id = b.section_id
 							 and
@@ -347,23 +381,26 @@ namespace SMS.Models
             
             try
             {
-                string query1 = @"select std_pickup_id from sms.sr_register where sr_number = @sr_number";
+                string query1 = @"select std_pickup_id from sr_register where sr_number = @sr_number";
 
                 int pick_id = con.Query<int>(query1, new { sr_number = std.sr_number }).SingleOrDefault();
 
-                query1 = @"select std_batch_id from sms.sr_register where sr_number = @sr_number";
+                query1 = @"select std_batch_id from sr_register where sr_number = @sr_number";
 
                 int batch = con.Query<int>(query1, new { sr_number = std.sr_number }).SingleOrDefault();
 
-                query1 = @"select batch_id from sms.mst_batch where class_id = @class_id";
+                query1 = @"select batch_id from mst_batch where class_id = @class_id";
 
                 std.std_batch_id = con.Query<int>(query1, new { class_id = std.class_id }).SingleOrDefault();
 
-               
+                query1 = @"select std_section_id from sr_register where sr_number = @sr_number";
+
+                int sec_id = con.Query<int>(query1, new { sr_number = std.sr_number }).SingleOrDefault();
 
 
 
-                string query = @"UPDATE sms.sr_register
+
+                string query = @"UPDATE sr_register
    SET std_first_name = @std_first_name
       ,std_last_name = @std_last_name
       ,std_father_name = @std_father_name
@@ -397,36 +434,68 @@ namespace SMS.Models
       ,std_active = @std_active
       ,std_pickup_id = @std_pickup_id
       ,std_admission_class = @std_admission_class
+      ,std_aadhar = @std_aadhar
         WHERE sr_number = @sr_number";
 
                 con.Execute(query, std);
 
 
-
-                if (pick_id != std.std_pickup_id)
+                if(!std.active)
                 {
-                    //call procedure to change the pickup point
-                    var p = new DynamicParameters();
+                    out_standingMain otsd = new out_standingMain();
 
-                    p.Add("@sr_num", std.sr_number);
-
-                    con.Execute("sms.StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
-
+                    otsd.markStdNSO(std.sr_number);
                 }
-
-                if (batch != std.std_batch_id)
+                 else
                 {
-                    //call procedure to change the class
+                    if (pick_id != std.std_pickup_id)
+                    {
+                        //call procedure to change the pickup point
+                        var p = new DynamicParameters();
 
-                    var p = new DynamicParameters();
+                        p.Add("@sr_num", std.sr_number);
 
-                    p.Add("@sr_num", std.sr_number);
+                        con.Execute("StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
 
-                    con.Execute("sms.stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
+                    }
+
+                    if (batch != std.std_batch_id)
+                    {
+                        //call procedure to change the class
+
+                        var p = new DynamicParameters();
+
+                        p.Add("@sr_num", std.sr_number);
+
+                        con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
 
 
+                    }
+
+                    if (sec_id != std.std_section_id)
+                    {
+                        mst_sessionMain sess = new mst_sessionMain();
+
+                        string session = sess.findActive_finalSession();
+
+                        query = @"update attendance_register set section_id = @section_id where `session` = @session AND `user_id` != 0  AND `att_date` != '2001-01-01' AND `class_id` = @class_id AND `section_id` = @sect_id AND `sr_num` = @sr_num AND `roll_no` != 0";
+
+                        con.Execute(query, new { section_id = std.std_section_id,sect_id=sec_id ,sr_num = std.sr_number, session= session, class_id = std.class_id });
+
+                        query = @"DELETE FROM `mst_rollnumber`
+                                    WHERE session = @session
+                                    and
+                                    sr_num = @sr_num
+                                    and
+                                    class_id = @class_id
+                                    and
+                                    section_id = @section_id
+                                    and
+                                    roll_number != 0 ";
+
+                        con.Execute(query, new { section_id = sec_id, sr_num = std.sr_number, session = session,class_id = std.class_id });
+                    }
                 }
-
             }
             catch (Exception ex)
             {
@@ -436,7 +505,7 @@ namespace SMS.Models
 
         public sr_register DeleteStudent(int id)
         {
-            String Query = "DELETE FROM sms.sr_register WHERE sr_number = @sr_number";
+            String Query = "DELETE FROM sr_register WHERE sr_number = @sr_number";
 
             return con.Query<sr_register>(Query, new { sr_number = id }).SingleOrDefault();
         }

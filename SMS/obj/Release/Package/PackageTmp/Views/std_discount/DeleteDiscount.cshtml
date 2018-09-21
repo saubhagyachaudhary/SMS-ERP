@@ -40,8 +40,8 @@
                             @Html.AntiForgeryToken()
 
                             <div class="form-actions no-color">
-                                <input type="submit" value="Delete" class="btn btn-default" /> |
-                                @Html.ActionLink("Back to List", "AllStdDiscountList")
+                                <input type="submit" value="Delete" class="btn btn-default" /> 
+                                @Html.ActionLink("Back to List", "AllStdDiscountList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
                             </div>
                         }
                     </div>

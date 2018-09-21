@@ -6,7 +6,7 @@
 
 <div class="right_col" role="main">
     <p>
-        @Html.ActionLink("Add New Pickup Point", "AddTransport")
+        @Html.ActionLink("Add New Pickup Point", "AddTransport", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
     <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
     @*<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
@@ -24,6 +24,9 @@
                         <thead>
                             <tr>
                                 <th>
+                                    @Html.DisplayNameFor(model => model.session)
+                                </th>
+                                <th>
                                     @Html.DisplayNameFor(model => model.pickup_point)
                                 </th>
                                 <th>
@@ -40,6 +43,9 @@
             {
                                 <tr>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.session)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.pickup_point)
                                     </td>
                                     <td>
@@ -49,8 +55,8 @@
                                         @Html.DisplayFor(modelItem => item.transport_number)
                                     </td>
                                     <td>
-                                        @Html.ActionLink("Edit", "EditTransport", new { id = item.pickup_id }) |
-                                        @Html.ActionLink("Delete", "DeleteTransport", new { id = item.pickup_id })
+                                        @Html.ActionLink("Edit", "EditTransport", new { id = item.pickup_id, session = item.session }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                        @Html.ActionLink("Delete", "DeleteTransport", new { id = item.pickup_id, session = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }

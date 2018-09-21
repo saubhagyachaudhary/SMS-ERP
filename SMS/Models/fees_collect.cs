@@ -42,6 +42,12 @@ namespace SMS.Models
 
         public IEnumerable<sr_register> list { get; set; }
 
-        
+        [Display(Name = "Select Class")]
+        public int section_id { get; set; }
+
+        [Display(Name = "Aadhar Number")]
+        public string std_aadhar { get; set; }
+
+
     }
 }

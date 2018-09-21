@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class ProfileController : Controller
+    public class ProfileController : BaseController
     {
         // GET: Profile
         public ActionResult ProfileSetting()
@@ -16,14 +16,14 @@ namespace SMS.Controllers
             users u = new users();
             usersMain main = new usersMain();
 
-            u = main.GetUserProfileDetails(Session["loginUserName"].ToString());
-            u.password = null;
+            u = main.GetUserProfileDetails(Request.Cookies["loginUserName"].Value.ToString());
+           //u.password = null;
             return View(u);
         }
         [HttpPost]
         public ActionResult ProfileSetting(users user)
         {
-            string fileName = Session["loginUserId"].ToString() + Path.GetExtension(user.profilePicture.FileName);
+            string fileName = Request.Cookies["loginUserId"].Value.ToString() + Path.GetExtension(user.profilePicture.FileName);
             fileName = Path.Combine(Server.MapPath("~/images/users/"),fileName);
             user.profilePicture.SaveAs(fileName);
            

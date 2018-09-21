@@ -20,10 +20,31 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:42</publishTime>
     </File>
     <File Include="bin/Dapper.dll">
-      <publishTime>05/06/2015 13:05:20</publishTime>
+      <publishTime>11/25/2017 18:18:42</publishTime>
+    </File>
+    <File Include="bin/de/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:26:06</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.dll">
+      <publishTime>11/03/2015 17:43:34</publishTime>
+    </File>
+    <File Include="bin/es/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:25:54</publishTime>
+    </File>
+    <File Include="bin/fr/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:27:18</publishTime>
+    </File>
+    <File Include="bin/it/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:26:02</publishTime>
     </File>
     <File Include="bin/itextsharp.dll">
       <publishTime>03/17/2016 11:58:44</publishTime>
+    </File>
+    <File Include="bin/ja/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:25:22</publishTime>
+    </File>
+    <File Include="bin/ko/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:27:16</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
       <publishTime>08/06/2015 12:16:50</publishTime>
@@ -58,6 +79,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/Microsoft.ReportViewer.WebForms.DLL">
       <publishTime>03/05/2013 12:19:28</publishTime>
     </File>
+    <File Include="bin/Microsoft.SqlServer.Types.dll">
+      <publishTime>02/21/2014 06:28:46</publishTime>
+    </File>
     <File Include="bin/Microsoft.Web.Infrastructure.dll">
       <publishTime>04/23/2012 15:23:58</publishTime>
     </File>
@@ -66,6 +90,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>08/03/2014 20:33:56</publishTime>
+    </File>
+    <File Include="bin/pt/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:25:24</publishTime>
     </File>
     <File Include="bin/ReportViewerForMvc.dll">
       <publishTime>04/21/2014 10:23:20</publishTime>
@@ -106,8 +133,11 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/roslyn/VBCSCompiler.exe.config">
       <publishTime>06/18/2015 20:19:46</publishTime>
     </File>
+    <File Include="bin/ru/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:25:46</publishTime>
+    </File>
     <File Include="bin/SMS.dll">
-      <publishTime>04/22/2018 12:02:22</publishTime>
+      <publishTime>06/18/2018 17:26:08</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/28/2015 04:04:30</publishTime>
@@ -132,6 +162,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>09/10/2013 17:28:38</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:27:58</publishTime>
+    </File>
+    <File Include="bin/zh-Hant/Microsoft.SqlServer.Types.resources.dll">
+      <publishTime>02/21/2014 06:28:10</publishTime>
     </File>
     <File Include="bootstrap/checkbox/bootstrap-switch.css">
       <publishTime>04/20/2018 23:23:30</publishTime>
@@ -158,16 +194,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/20/2018 23:23:32</publishTime>
     </File>
     <File Include="build/css/custom.css">
-      <publishTime>04/20/2018 23:23:32</publishTime>
+      <publishTime>04/22/2018 12:24:00</publishTime>
     </File>
     <File Include="build/css/custom.min.css">
-      <publishTime>04/20/2018 23:23:32</publishTime>
+      <publishTime>05/23/2018 11:56:29</publishTime>
     </File>
     <File Include="build/js/custom.js">
-      <publishTime>07/03/2016 14:21:21</publishTime>
+      <publishTime>04/22/2018 12:58:14</publishTime>
     </File>
     <File Include="build/js/custom.min.js">
-      <publishTime>04/20/2018 23:23:32</publishTime>
+      <publishTime>04/22/2018 12:22:48</publishTime>
     </File>
     <File Include="Content/bootstrap.css">
       <publishTime>04/20/2018 23:23:32</publishTime>
@@ -179,7 +215,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/06/2017 08:29:27</publishTime>
     </File>
     <File Include="Content/Site.css">
-      <publishTime>07/03/2016 14:16:14</publishTime>
+      <publishTime>05/19/2018 18:28:18</publishTime>
     </File>
     <File Include="css/animate.min.css">
       <publishTime>09/02/2017 11:40:22</publishTime>
@@ -331,6 +367,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Global.asax">
       <publishTime>07/03/2016 14:16:14</publishTime>
     </File>
+    <File Include="images/favicon.ico">
+      <publishTime>05/23/2018 11:29:58</publishTime>
+    </File>
+    <File Include="images/logo.jpg">
+      <publishTime>05/05/2018 15:49:29</publishTime>
+    </File>
     <File Include="js/bootstrap.min.js">
       <publishTime>09/02/2017 11:41:58</publishTime>
     </File>
@@ -350,7 +392,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/02/2017 11:41:58</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>04/16/2018 18:12:19</publishTime>
+      <publishTime>05/21/2018 16:24:29</publishTime>
+    </File>
+    <File Include="report/repDaily_report.cs">
+      <publishTime>05/23/2018 10:10:39</publishTime>
+    </File>
+    <File Include="report/repDaily_reportMain.cs">
+      <publishTime>05/23/2018 10:10:43</publishTime>
+    </File>
+    <File Include="report/repFees_receipt.cs">
+      <publishTime>05/23/2018 10:10:46</publishTime>
+    </File>
+    <File Include="report/rep_fees.cs">
+      <publishTime>05/23/2018 10:10:37</publishTime>
+    </File>
+    <File Include="report/tmp_pdf/fees_receipt.pdf">
+      <publishTime>05/23/2018 10:10:28</publishTime>
     </File>
     <File Include="ReportViewerWebForm.aspx">
       <publishTime>08/08/2017 21:26:28</publishTime>
@@ -10519,167 +10576,245 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="vendors/validator/validator.js">
       <publishTime>07/03/2016 14:20:24</publishTime>
     </File>
+    <File Include="Views/attendance_register/attendance_class_list.cshtml">
+      <publishTime>06/14/2018 21:35:25</publishTime>
+    </File>
+    <File Include="Views/attendance_register/attendance_class_student_list.cshtml">
+      <publishTime>06/16/2018 09:46:40</publishTime>
+    </File>
+    <File Include="Views/attendance_register/finalize_class_attendance_sheet.cshtml">
+      <publishTime>06/16/2018 13:47:47</publishTime>
+    </File>
+    <File Include="Views/attendance_register/nodatafound.cshtml">
+      <publishTime>06/14/2018 12:49:54</publishTime>
+    </File>
+    <File Include="Views/attendance_register/success.cshtml">
+      <publishTime>06/13/2018 14:33:49</publishTime>
+    </File>
+    <File Include="Views/attendance_register/updateRollNo.cshtml">
+      <publishTime>06/17/2018 12:09:23</publishTime>
+    </File>
+    <File Include="Views/emp_detail/AddEmp.cshtml">
+      <publishTime>06/03/2018 18:21:06</publishTime>
+    </File>
+    <File Include="Views/emp_detail/DetailEmp.cshtml">
+      <publishTime>06/04/2018 10:41:38</publishTime>
+    </File>
+    <File Include="Views/emp_detail/EditEmp.cshtml">
+      <publishTime>06/04/2018 08:14:01</publishTime>
+    </File>
+    <File Include="Views/emp_detail/EmpList.cshtml">
+      <publishTime>06/04/2018 08:12:22</publishTime>
+    </File>
     <File Include="Views/Fees_collect/FeesStatement.cshtml">
       <publishTime>09/03/2017 10:27:03</publishTime>
     </File>
     <File Include="Views/Fees_collect/fees_collect.cshtml">
-      <publishTime>04/18/2018 19:27:54</publishTime>
+      <publishTime>06/15/2018 08:40:33</publishTime>
     </File>
     <File Include="Views/Fees_collect/RenderPaid.cshtml">
-      <publishTime>04/18/2018 19:36:26</publishTime>
+      <publishTime>05/27/2018 19:17:02</publishTime>
     </File>
     <File Include="Views/Fees_collect/RenderPayment.cshtml">
-      <publishTime>04/20/2018 17:18:41</publishTime>
+      <publishTime>06/16/2018 09:51:33</publishTime>
     </File>
     <File Include="Views/Fees_collect/submit_fees.cshtml">
-      <publishTime>04/20/2018 09:59:09</publishTime>
+      <publishTime>05/21/2018 15:14:14</publishTime>
     </File>
     <File Include="Views/Home/Dashboard.cshtml">
-      <publishTime>04/21/2018 15:48:40</publishTime>
+      <publishTime>05/05/2018 15:37:01</publishTime>
+    </File>
+    <File Include="Views/Home/Dashboard1.cshtml">
+      <publishTime>05/05/2018 15:41:05</publishTime>
+    </File>
+    <File Include="Views/Home/Dashboard2.cshtml">
+      <publishTime>05/05/2018 14:17:32</publishTime>
     </File>
     <File Include="Views/Login/Login.cshtml">
-      <publishTime>09/03/2017 11:37:03</publishTime>
+      <publishTime>06/14/2018 12:21:11</publishTime>
+    </File>
+    <File Include="Views/Mentor/addObservation.cshtml">
+      <publishTime>05/05/2018 14:10:16</publishTime>
+    </File>
+    <File Include="Views/Mentor/AllMentorDetailList.cshtml">
+      <publishTime>05/19/2018 17:57:39</publishTime>
+    </File>
+    <File Include="Views/Mentor/AllMentorHeaderList.cshtml">
+      <publishTime>05/19/2018 17:58:22</publishTime>
+    </File>
+    <File Include="Views/Mentor/AssignMentor.cshtml">
+      <publishTime>05/19/2018 17:58:44</publishTime>
+    </File>
+    <File Include="Views/Mentor/deleteObservation.cshtml">
+      <publishTime>05/19/2018 17:59:07</publishTime>
     </File>
     <File Include="Views/mst_acc_head/AddAccount.cshtml">
-      <publishTime>02/23/2017 15:08:10</publishTime>
+      <publishTime>05/19/2018 17:38:01</publishTime>
     </File>
     <File Include="Views/mst_acc_head/AllAccountList.cshtml">
-      <publishTime>04/18/2018 19:29:17</publishTime>
+      <publishTime>06/03/2018 17:37:32</publishTime>
     </File>
     <File Include="Views/mst_acc_head/DeleteAccount.cshtml">
-      <publishTime>07/14/2016 16:03:10</publishTime>
+      <publishTime>05/19/2018 17:38:41</publishTime>
     </File>
     <File Include="Views/mst_acc_head/EditAccount.cshtml">
-      <publishTime>07/13/2016 19:40:19</publishTime>
+      <publishTime>05/19/2018 17:38:49</publishTime>
+    </File>
+    <File Include="Views/mst_attendance/Assign_faculty.cshtml">
+      <publishTime>06/17/2018 08:18:34</publishTime>
+    </File>
+    <File Include="Views/mst_attendance/deleteFaculty.cshtml">
+      <publishTime>06/15/2018 17:54:52</publishTime>
+    </File>
+    <File Include="Views/mst_attendance/list.cshtml">
+      <publishTime>06/15/2018 17:47:41</publishTime>
     </File>
     <File Include="Views/mst_class/AddClass.cshtml">
-      <publishTime>08/05/2017 10:57:46</publishTime>
+      <publishTime>05/19/2018 17:23:27</publishTime>
     </File>
     <File Include="Views/mst_class/AllClassList.cshtml">
-      <publishTime>04/18/2018 19:29:26</publishTime>
+      <publishTime>05/19/2018 18:30:10</publishTime>
     </File>
     <File Include="Views/mst_class/DeleteClass.cshtml">
-      <publishTime>07/05/2016 18:04:50</publishTime>
+      <publishTime>05/19/2018 17:26:07</publishTime>
     </File>
     <File Include="Views/mst_class/EditClass.cshtml">
-      <publishTime>08/05/2017 11:00:44</publishTime>
+      <publishTime>05/19/2018 17:26:20</publishTime>
     </File>
     <File Include="Views/mst_fees/AddFees.cshtml">
-      <publishTime>02/27/2018 09:20:36</publishTime>
+      <publishTime>06/17/2018 08:49:41</publishTime>
     </File>
     <File Include="Views/mst_fees/AllFeesList.cshtml">
-      <publishTime>04/18/2018 19:30:14</publishTime>
+      <publishTime>05/24/2018 17:53:16</publishTime>
     </File>
     <File Include="Views/mst_fees/DeleteFees.cshtml">
-      <publishTime>02/27/2018 14:06:59</publishTime>
+      <publishTime>05/27/2018 16:29:10</publishTime>
     </File>
     <File Include="Views/mst_fees/EditFees.cshtml">
-      <publishTime>04/22/2018 09:28:54</publishTime>
+      <publishTime>05/19/2018 17:41:44</publishTime>
     </File>
     <File Include="Views/mst_fin/AddFin.cshtml">
-      <publishTime>04/01/2017 15:30:12</publishTime>
+      <publishTime>05/19/2018 17:19:53</publishTime>
     </File>
     <File Include="Views/mst_fin/AllFinList.cshtml">
-      <publishTime>04/18/2018 19:30:23</publishTime>
+      <publishTime>05/19/2018 17:15:44</publishTime>
     </File>
     <File Include="Views/mst_fin/DeleteFin.cshtml">
-      <publishTime>07/20/2016 19:11:22</publishTime>
+      <publishTime>05/19/2018 17:22:17</publishTime>
     </File>
     <File Include="Views/mst_fin/EditFin.cshtml">
-      <publishTime>07/20/2016 19:13:26</publishTime>
+      <publishTime>05/19/2018 17:20:51</publishTime>
+    </File>
+    <File Include="Views/mst_rollnumber/rollno_class_student_list.cshtml">
+      <publishTime>06/17/2018 11:17:00</publishTime>
+    </File>
+    <File Include="Views/mst_rollnumber/roll_class_list.cshtml">
+      <publishTime>06/16/2018 11:20:05</publishTime>
     </File>
     <File Include="Views/mst_section/AddSection.cshtml">
-      <publishTime>07/05/2016 17:25:01</publishTime>
+      <publishTime>05/19/2018 17:28:27</publishTime>
     </File>
     <File Include="Views/mst_section/AllSectionList.cshtml">
-      <publishTime>04/18/2018 19:30:32</publishTime>
+      <publishTime>05/19/2018 17:27:43</publishTime>
     </File>
     <File Include="Views/mst_section/DeleteSection.cshtml">
-      <publishTime>07/05/2016 18:05:10</publishTime>
+      <publishTime>06/18/2018 16:03:53</publishTime>
     </File>
     <File Include="Views/mst_section/EditSection.cshtml">
-      <publishTime>07/05/2016 13:45:33</publishTime>
+      <publishTime>05/19/2018 17:29:04</publishTime>
     </File>
     <File Include="Views/mst_session/AddSession.cshtml">
-      <publishTime>07/27/2017 09:58:29</publishTime>
+      <publishTime>05/19/2018 19:06:41</publishTime>
     </File>
     <File Include="Views/mst_session/AllSessionList.cshtml">
-      <publishTime>04/18/2018 19:30:48</publishTime>
+      <publishTime>05/24/2018 18:25:43</publishTime>
     </File>
     <File Include="Views/mst_session/DeleteSession.cshtml">
-      <publishTime>07/16/2016 15:41:50</publishTime>
+      <publishTime>05/27/2018 16:35:29</publishTime>
     </File>
     <File Include="Views/mst_session/EditSession.cshtml">
-      <publishTime>07/16/2016 16:13:17</publishTime>
+      <publishTime>05/24/2018 18:45:53</publishTime>
     </File>
     <File Include="Views/mst_transport/AddTransport.cshtml">
-      <publishTime>04/12/2018 20:13:59</publishTime>
+      <publishTime>05/19/2018 17:34:21</publishTime>
     </File>
     <File Include="Views/mst_transport/AddTransporttemp.cshtml">
       <publishTime>08/05/2017 13:50:18</publishTime>
     </File>
     <File Include="Views/mst_transport/AllTransportList.cshtml">
-      <publishTime>04/18/2018 19:30:57</publishTime>
+      <publishTime>05/31/2018 23:39:29</publishTime>
     </File>
     <File Include="Views/mst_transport/DeleteTransport.cshtml">
-      <publishTime>07/05/2016 23:34:52</publishTime>
+      <publishTime>05/19/2018 17:35:02</publishTime>
     </File>
     <File Include="Views/mst_transport/EditTransport.cshtml">
-      <publishTime>08/06/2017 12:52:57</publishTime>
+      <publishTime>05/19/2018 17:35:19</publishTime>
     </File>
     <File Include="Views/phoneSMS/smsSend.cshtml">
-      <publishTime>04/22/2018 11:44:53</publishTime>
+      <publishTime>04/25/2018 13:24:57</publishTime>
     </File>
     <File Include="Views/Profile/ProfileSetting.cshtml">
       <publishTime>09/03/2017 14:24:45</publishTime>
+    </File>
+    <File Include="Views/report/attendance_sheet.cshtml">
+      <publishTime>06/14/2018 17:44:27</publishTime>
+    </File>
+    <File Include="Views/report/duesList.cshtml">
+      <publishTime>06/14/2018 20:31:33</publishTime>
+    </File>
+    <File Include="Views/report/feesStatement.cshtml">
+      <publishTime>05/23/2018 11:26:17</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>07/03/2016 14:16:14</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>04/22/2018 11:34:34</publishTime>
+      <publishTime>06/18/2018 16:21:48</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
-      <publishTime>04/19/2018 11:11:12</publishTime>
+      <publishTime>06/18/2018 15:53:46</publishTime>
     </File>
     <File Include="Views/sr_register/AllStudentList.cshtml">
-      <publishTime>04/18/2018 19:26:58</publishTime>
+      <publishTime>06/15/2018 08:10:09</publishTime>
     </File>
     <File Include="Views/sr_register/DeleteStudent.cshtml">
       <publishTime>07/10/2016 23:42:07</publishTime>
     </File>
     <File Include="Views/sr_register/EditDetails.cshtml">
-      <publishTime>04/15/2018 15:51:14</publishTime>
+      <publishTime>06/04/2018 08:02:30</publishTime>
     </File>
     <File Include="Views/sr_register/Index.cshtml">
       <publishTime>07/03/2016 14:26:45</publishTime>
     </File>
     <File Include="Views/sr_register/StudentDetails.cshtml">
-      <publishTime>07/17/2016 21:19:01</publishTime>
+      <publishTime>05/19/2018 17:54:27</publishTime>
     </File>
     <File Include="Views/std_discount/AddDiscount.cshtml">
-      <publishTime>02/27/2018 12:27:59</publishTime>
+      <publishTime>05/19/2018 17:44:11</publishTime>
     </File>
     <File Include="Views/std_discount/AllStdDiscountList.cshtml">
-      <publishTime>04/18/2018 19:31:12</publishTime>
+      <publishTime>05/19/2018 17:43:29</publishTime>
     </File>
     <File Include="Views/std_discount/DeleteDiscount.cshtml">
-      <publishTime>02/27/2018 14:18:51</publishTime>
+      <publishTime>05/19/2018 17:44:22</publishTime>
     </File>
     <File Include="Views/std_discount/EditDiscount.cshtml">
-      <publishTime>02/27/2018 14:04:10</publishTime>
+      <publishTime>05/19/2018 17:44:32</publishTime>
     </File>
     <File Include="Views/std_registration/AddRegistration.cshtml">
-      <publishTime>08/20/2017 15:25:55</publishTime>
+      <publishTime>05/19/2018 17:47:56</publishTime>
     </File>
     <File Include="Views/std_registration/AllRegistrationList.cshtml">
-      <publishTime>04/18/2018 19:25:55</publishTime>
+      <publishTime>05/19/2018 17:47:09</publishTime>
+    </File>
+    <File Include="Views/std_registration/cannotdelete.cshtml">
+      <publishTime>06/14/2018 14:48:10</publishTime>
     </File>
     <File Include="Views/std_registration/DeleteRegistration.cshtml">
-      <publishTime>07/16/2016 22:12:06</publishTime>
+      <publishTime>06/14/2018 14:32:47</publishTime>
     </File>
     <File Include="Views/std_registration/EditRegistration.cshtml">
-      <publishTime>07/16/2016 22:01:24</publishTime>
+      <publishTime>05/19/2018 17:48:53</publishTime>
     </File>
     <File Include="Views/uncleared_cheque/AllUnclearedChequeList.cshtml">
       <publishTime>04/18/2018 19:31:32</publishTime>
@@ -10691,7 +10826,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:14</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>04/20/2018 14:11:08</publishTime>
+      <publishTime>06/08/2018 08:48:57</publishTime>
     </File>
   </ItemGroup>
 </Project>

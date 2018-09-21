@@ -7,14 +7,15 @@ using System.Configuration;
 using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
+using System.Threading.Tasks;
 
 namespace SMS.Models
 {
     public class std_registrationMain
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-        public void AddRegistration(std_registration std)
+        int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+        public async Task AddRegistration(std_registration std)
         {
             try
             {
@@ -24,29 +25,29 @@ namespace SMS.Models
                               ,fin_start_date
                               ,fin_end_date
                               ,fin_close
-                          FROM sms.mst_fin
+                          FROM mst_fin
                           where fin_close = 'N'";
 
                 fin = con.Query<mst_fin>(query1).SingleOrDefault();
 
                 if (std.reg_date > fin.fin_start_date && std.reg_date < fin.fin_end_date)
                 {
-                    string sess = "select session from sms.mst_session where session_active = 'Y'";
+                    string sess = "select session from mst_session where session_active = 'Y'";
 
                     string session = con.ExecuteScalar<string>(sess);
 
-                    string maxid = "select ifnull(MAX(reg_no),0)+1 from sms.sr_register where adm_session = @adm_session";
+                    string maxid = "select ifnull(MAX(reg_no),0)+1 from sr_register where adm_session = @adm_session";
 
                     int id = con.Query<int>(maxid, new { adm_session = session }).SingleOrDefault();
 
-                    string max = "select ifnull(MAX(reg_no),0)+1 from sms.std_registration where session = @adm_session";
+                    string max = "select ifnull(MAX(reg_no),0)+1 from std_registration where session = @adm_session";
 
                     int id1 = con.Query<int>(max, new { adm_session = session }).SingleOrDefault();
 
 
 
 
-                    string query = @"INSERT INTO sms.std_registration
+                    string query = @"INSERT INTO std_registration
            (session
            ,reg_no
            ,reg_date
@@ -97,11 +98,11 @@ namespace SMS.Models
                     {
                         std.reg_no = id1;
                     }
-                    std.reg_date = System.DateTime.Now.AddMinutes(750);
+                    std.reg_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
 
 
 
-                    con.Execute(query,
+                    await con.ExecuteAsync(query,
                             new
                             {
                                 std.session
@@ -141,7 +142,7 @@ namespace SMS.Models
                                 std.std_email
                                ,
                                 std.std_class_id
-
+                                
 
                             });
 
@@ -153,21 +154,32 @@ namespace SMS.Models
 
                     out_standingMain out_stdMain = new out_standingMain();
 
+
+
                     out_stdMain.AddOutStanding(out_std);
 
                     SMSMessage sms = new SMSMessage();
 
-                    string qry = "select class_name from sms.mst_class where class_id = @class_id";
+                    string qry = "select class_name from mst_class where class_id = @class_id";
 
                     string className = con.Query<string>(qry, new { class_id = std.std_class_id }).SingleOrDefault();
 
-                    string text =  std.std_first_name+" "+ std.std_last_name+" is successfully registered in class "+ className + @". This registration is valid for 3 days subject to availability of seats. Thank You. Hariti Public School.";
+                    foreach (var item in sms.smsbody("student_registration"))
+                    {
+                        string body = item.Replace("#student_name#", std.std_first_name + " " + std.std_last_name);
 
-                    sms.SendSMS(text, std.std_contact);
+                        body = body.Replace("#class#", className);
 
-                     text = std.std_first_name + " " + std.std_last_name + " का पंजीकरण कक्षा " + className + " में सफलतापूर्वक हो गया है। यह पंजीकरण 3 दिन तक मान्य रहेगा। कक्षा में सीटों की उपलब्धता सीमित हैं। धन्यवाद। Hariti Public School";
+                        await sms.SendSMS(body, std.std_contact);
+                    }
 
-                    sms.SendSMS(text, std.std_contact);
+                    //string text =  std.std_first_name+" "+ std.std_last_name+" is successfully registered in class "+ className + @". This registration is valid for 3 days subject to availability of seats. Thank You. Hariti Public School.";
+
+                    //sms.SendSMS(text, std.std_contact);
+
+                    // text = std.std_first_name + " " + std.std_last_name + " का पंजीकरण कक्षा " + className + " में सफलतापूर्वक हो गया है। यह पंजीकरण 3 दिन तक मान्य रहेगा। कक्षा में सीटों की उपलब्धता सीमित हैं। धन्यवाद। Hariti Public School";
+
+                    //sms.SendSMS(text, std.std_contact);
 
                 }
                 
@@ -182,7 +194,7 @@ namespace SMS.Models
         public IEnumerable<std_registration> AllRegistrationList()
         {
             String query = @"select session,reg_no,reg_date,std_first_name,std_last_name,std_father_name,c.class_name
-                                from sms.std_registration a,sms.mst_class c
+                                from std_registration a,mst_class c
                                 where
                                 a.std_class_id = c.class_id order by reg_date desc";
 
@@ -213,7 +225,7 @@ namespace SMS.Models
                               ,std_email
                               ,c.class_name
                               ,c.class_id std_class_id
-                             FROM sms.std_registration a,sms.mst_class c
+                             FROM std_registration a,mst_class c
 							  where
 							 a.std_class_id = c.class_id 
 							 and
@@ -236,7 +248,7 @@ namespace SMS.Models
                               ,std_contact
                               ,std_email
                               ,c.class_name
-                             FROM sms.std_registration a,sms.mst_class c
+                             FROM std_registration a,mst_class c
 							  where
 							 a.std_class_id = c.class_id 
 							 and
@@ -250,7 +262,7 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE sms.std_registration
+                string query = @"UPDATE std_registration
                            SET std_first_name = @std_first_name
                               ,std_last_name = @std_last_name
                               ,std_father_name = @std_father_name
@@ -282,11 +294,24 @@ namespace SMS.Models
             }
         }
 
-        public std_registration DeleteRegistration(String sess, int reg, DateTime reg_dt)
+        public void DeleteRegistration(string sess, int reg, DateTime reg_dt)
         {
-            String Query = "DELETE FROM sms.std_registration WHERE session = @session and reg_no = @reg_no and reg_date = @reg_date";
+            string Query = "DELETE FROM std_registration WHERE session = @session and reg_no = @reg_no and reg_date = @reg_date";
 
-            return con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
+            con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
+
+            Query = "delete from out_standing where reg_num = @reg and rmt_amount = 0 and session = @session and serial != 0 and acc_id = 1 and ifnull(sr_number,0) = 0 and dt_date = @dt_date";
+
+            con.Query<std_registration>(Query, new { session = sess, reg = reg ,dt_date = reg_dt }).SingleOrDefault();
+        }
+
+        public void DeleteRegistrationOnly(string sess, int reg, DateTime reg_dt)
+        {
+            string Query = "DELETE FROM std_registration WHERE session = @session and reg_no = @reg_no and reg_date = @reg_date";
+
+            con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
+
+           
         }
     }
 }

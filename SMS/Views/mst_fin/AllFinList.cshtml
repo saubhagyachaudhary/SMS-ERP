@@ -12,7 +12,9 @@
 
 
 <div class="right_col" role="main">
-    <h2>Fiscal year List</h2>
+    <p>
+        @Html.ActionLink("Create New FY", "AddFin", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+    </p>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
@@ -20,9 +22,7 @@
 
                     
 
-                    <p>
-                        @Html.ActionLink("Create New FY", "AddFin")
-                    </p>
+                   
                     <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
@@ -67,9 +67,9 @@
                                         }
                                     </td>
                                     <td>
-                                        @Html.ActionLink("Edit", "EditFin", new { id = item.fin_id }) |
+                                        @Html.ActionLink("Edit", "EditFin", new { id = item.fin_id }, new { @class = "btn btn-success btn-sm please_wait" }) 
                                        
-                                        @Html.ActionLink("Delete", "DeleteFin", new { id = item.fin_id })
+                                        @Html.ActionLink("Delete", "DeleteFin", new { id = item.fin_id }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }

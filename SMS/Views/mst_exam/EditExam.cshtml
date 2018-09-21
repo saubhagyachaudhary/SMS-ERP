@@ -1,0 +1,64 @@
+﻿@model SMS.Models.mst_exam
+
+@{
+    ViewBag.Title = "EditExam";
+}
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                
+                    <h2>Edit Exam</h2>
+
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-horizontal">
+
+                            <hr />
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.exam_id)
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.exam_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.exam_name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.exam_name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.max_no, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.max_no, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.max_no, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.convert_to, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.convert_to, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.convert_to, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                    <input type="submit" value="Save" class="btn btn-default please_wait" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        @Html.ActionLink("Back to List", "AllExamList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                    </div>
+                </div>
+                </div></div></div>
+                @section Scripts {
+                    @Scripts.Render("~/bundles/jqueryval")
+                }

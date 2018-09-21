@@ -7,10 +7,11 @@ using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 
 namespace SMS.Controllers
 {
-    public class sr_registerController : Controller
+    public class sr_registerController : BaseController
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
@@ -54,13 +55,24 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddStudent(sr_register std)
+        public async Task<ActionResult> AddStudent(sr_register std)
         {
             try
             {
+                if (std.std_contact == null)
+                {
+                    ModelState.AddModelError(String.Empty, "Primary contact is mandatory.");
+
+
+                    DDclass_name(std);
+
+                    DDtransport_id(std);
+
+                    return View(std);
+                }
                 sr_registerMain stdMain = new sr_registerMain();
 
-                string query = "select class_id from sms.mst_class where class_name = @std_admission_class";
+                string query = "select class_id from mst_class where class_name = @std_admission_class";
 
                 int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
@@ -88,7 +100,7 @@ namespace SMS.Controllers
                     return View(std);
                 }
 
-                stdMain.AddStudent(std);
+                await stdMain.AddStudent(std);
 
                 
 
@@ -105,7 +117,7 @@ namespace SMS.Controllers
             
 
             string query = @" SELECT fees_amount
-                          FROM sms.mst_fees a, sms.mst_class b
+                          FROM mst_fees a, mst_class b
                           where
                           a.class_id = b.class_id
                           and
@@ -151,7 +163,7 @@ namespace SMS.Controllers
 
         public JsonResult GetSections(int id)
         {
-            string query = "select section_id,section_name from sms.mst_section where class_id = @class_id";
+            string query = "select section_id,section_name from mst_section where class_id = @class_id";
 
           
            var section_list = con.Query<mst_section>(query,new { class_id = id});
@@ -164,7 +176,7 @@ namespace SMS.Controllers
 
         public void DDSections(sr_register obj)
         {
-            string query = "select section_id,section_name from sms.mst_section where class_id = @class_id";
+            string query = "select section_id,section_name from mst_section where class_id = @class_id";
 
 
             var section_list = con.Query<mst_section>(query, new { class_id = obj.class_id});
@@ -175,13 +187,63 @@ namespace SMS.Controllers
 
         }
 
+        public void DDClassWiseSection()
+        {
+
+            mst_sessionMain sess = new mst_sessionMain();
+
+           string query = @"select a.section_id,concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) Section_name from mst_section a,mst_class b
+                            where
+                            a.class_id = b.class_id
+                            and 
+                            session = @session
+                            order by b.class_name";
+
+
+            var section_list = con.Query<mst_section>(query,new {session =  sess.findActive_finalSession() });
+
+            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
+
+            ViewData["section_id"] = list;
+
+        }
+
+
         [HttpGet]
         public ActionResult AllStudentList()
         {
             sr_registerMain stdMain = new sr_registerMain();
-            
-            return View(stdMain.AllStudentList());
+            sr_register sr = new sr_register();
+
+            sr.sr_regi = stdMain.AllStudentList(103);
+            DDClassWiseSection();
+            return View(sr);
         }
+
+        [HttpPost]
+        public ActionResult AllStudentList(int section_id)
+        {
+            sr_registerMain stdMain = new sr_registerMain();
+            sr_register sr = new sr_register();
+
+            sr.sr_regi = stdMain.AllStudentList(section_id);
+            DDClassWiseSection();
+            return View(sr);
+        }
+
+        //[HttpGet]
+        //public ActionResult AllNSOStudentList()
+        //{
+        //    sr_registerMain stdMain = new sr_registerMain();
+        //    sr_register sr = new sr_register();
+
+        //    sr.sr_regi = stdMain.AllNSOStudentList(103);
+        //    DDClassWiseSection();
+
+           
+        //    return View("AllStudentList", sr);
+        //}
+
 
         [HttpGet]
         public ActionResult StudentDetails(int id)
@@ -220,7 +282,7 @@ namespace SMS.Controllers
         {
             sr_registerMain stdMain = new sr_registerMain();
 
-            string query = "select class_id from sms.mst_class where class_name = @std_admission_class";
+            string query = "select class_id from mst_class where class_name = @std_admission_class";
 
             int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
@@ -238,14 +300,16 @@ namespace SMS.Controllers
                 return View(std);
             }
 
-            query = @"select class_id from sms.sr_register a, sms.mst_batch b
+            query = @"select class_id from sr_register a, mst_batch b
 where
 a.std_batch_id = b.batch_id
 and sr_number = @sr_num";
 
             int changedclassid = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
 
-             query = @"select ifnull(count(rmt_amount),0) from sms.out_standing where sr_number = @sr_num  and serial != 0  and fin_id = (select fin_id from sms.mst_fin where fin_close = 'N') and acc_id not in (1,2,6)";
+             query = @"select ifnull(count(CASE 
+WHEN rmt_amount = 0.00  THEN null 
+else rmt_amount end),0) from out_standing where sr_number = @sr_num  and serial != 0  and session = (SELECT session FROM mst_session where session_active = 'Y') and acc_id not in (1,2,6)";
 
             int error = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
 

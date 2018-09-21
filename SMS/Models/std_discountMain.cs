@@ -16,9 +16,11 @@ namespace SMS.Models
         {
             try
             {
+                mst_sessionMain sess = new mst_sessionMain();
 
-                string query = @"INSERT INTO sms.std_discount
-                                   (sr_num
+                string query = @"INSERT INTO std_discount
+                                   (session
+                                   ,sr_num
                                    ,acc_id
                                    ,percent
                                    ,bl_exempt
@@ -36,7 +38,8 @@ namespace SMS.Models
                                    ,bl_mar
                                    ,remark)
                                      VALUES
-                                    (@sr_num
+                                    (@session
+                                    ,@sr_num
                                    ,@acc_id
                                    ,@percent
                                    ,@bl_exempt
@@ -54,9 +57,11 @@ namespace SMS.Models
                                    ,@bl_mar
                                    ,@std_remarks)";
 
+                std.session = sess.findActive_finalSession();
+
                 con.Execute(query, new
                 {
-
+                    std.session,
                     std.sr_num,
                     std.acc_id,
                     std.percent,
@@ -76,23 +81,28 @@ namespace SMS.Models
                     std.std_remarks
                 });
 
+                var p = new DynamicParameters();
+                p.Add("@sr_num", std.sr_num);
+                p.Add("@ac_id", std.acc_id);
+                con.Execute("stdMiddiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+
             }
-            catch (Exception ex)
+            catch 
             {
-                throw ex;
+                throw;
             }
         }
 
         public IEnumerable<std_discount> AllStdDiscountList()
         {
-            String query = @"SELECT concat(b.std_first_name,' ',b.std_last_name) stdName
+            String query = @"SELECT a.session,a.sr_num,concat(b.std_first_name,' ',b.std_last_name) stdName
 							  ,d.class_name stdclass
 							  ,e.acc_name account_name
                               ,concat(percent,'%') per
 							  ,a.acc_id
 							  ,a.sr_num
                               ,a.remark std_remarks
-                          FROM sms.std_discount a, sms.sr_register b,sms.mst_batch c,sms.mst_class d,sms.mst_acc_head e
+                          FROM std_discount a, sr_register b,mst_batch c,mst_class d,mst_acc_head e
 								where a.sr_num = b.sr_number
 								and b.std_batch_id = c.batch_id
 								and c.class_id = d.class_id
@@ -122,7 +132,7 @@ namespace SMS.Models
                               ,bl_feb
                               ,bl_mar
                               ,remark std_remarks
-                          FROM sms.std_discount
+                          FROM std_discount
                           where sr_num = @sr_num
                           and acc_id = @acc_id";
 
@@ -136,7 +146,7 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE sms.std_discount
+                string query = @"UPDATE std_discount
                                SET acc_id = @acc_id
                                   ,percent = @percent
                                   ,bl_exempt = @bl_exempt
@@ -157,6 +167,11 @@ namespace SMS.Models
                              and acc_id = @acc_id";
 
                 con.Execute(query, mst);
+
+                var p = new DynamicParameters();
+                p.Add("@sr_num", mst.sr_num);
+                p.Add("@ac_id", mst.acc_id);
+                con.Execute("stdMiddiscount", p, commandType: System.Data.CommandType.StoredProcedure);
             }
             catch (Exception ex)
             {
@@ -164,13 +179,23 @@ namespace SMS.Models
             }
         }
 
-        public mst_fees DeleteDiscount(int sr_num, int acc_id)
+        public void DeleteDiscount(int sr_num, int acc_id, string session)
         {
-            String Query = @"DELETE FROM sms.std_discount
+            String Query = @"DELETE FROM std_discount
                              WHERE sr_num = @sr_num
-                              and acc_id = @acc_id";
+                              and acc_id = @acc_id
+                              and session = @session";
 
-            return con.Query<mst_fees>(Query, new { sr_num = sr_num, acc_id = acc_id }).SingleOrDefault();
+
+
+
+            con.Query<mst_fees>(Query, new { sr_num = sr_num, acc_id = acc_id,session = session }).SingleOrDefault();
+
+            var p = new DynamicParameters();
+            p.Add("@sr_num", sr_num);
+            p.Add("@ac_id", acc_id);
+            con.Execute("sms.DeleteDiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+
         }
     }
 }

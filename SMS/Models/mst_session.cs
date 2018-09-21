@@ -28,5 +28,9 @@ namespace SMS.Models
         [Display(Name = "Admission Open")]
         public String session_active { get; set; }
 
+        [Required]
+        [Display(Name = "Finalize")]
+        public String session_finalize { get; set; }
+
     }
 }

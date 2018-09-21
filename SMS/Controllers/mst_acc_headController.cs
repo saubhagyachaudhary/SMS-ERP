@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class mst_acc_headController : Controller
+    public class mst_acc_headController : BaseController
     {
         [HttpGet]
         public ActionResult AddAccount()

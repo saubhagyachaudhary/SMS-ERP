@@ -11,6 +11,10 @@ namespace SMS.Models
     public class std_discount
     {
         [Key]
+        [Display(Name = "Session")]
+        public string session { get; set; }
+
+        [Key]
         [Display(Name = "Admission Number")]
         public int sr_num { get; set; }
 

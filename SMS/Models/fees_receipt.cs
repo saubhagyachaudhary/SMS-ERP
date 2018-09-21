@@ -13,8 +13,13 @@ namespace SMS.Models
         [Key]
         [Required]
         [ForeignKey("mst_fin")]
-        [Display(Name = "Session")]
+        [Display(Name = "FY")]
         public virtual string fin_id { get; set; }
+
+        [Key]
+        [Required]
+        [Display(Name = "Session")]
+        public string session{ get; set; }
 
         [Required]
         [Display(Name = "Receipt Number")]

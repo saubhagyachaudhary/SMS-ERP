@@ -1,25 +1,38 @@
-﻿@model IEnumerable<SMS.Models.sr_register>
+﻿@model SMS.Models.sr_register
 
 @{
     ViewBag.Title = "AllStudentList";
 }
 
 <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-@*<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
-<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
-<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
-<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">*@
 
 <div class="right_col" role="main">
    
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
+            <h2>Class wise Student List</h2>
             <div class="x_panel">
                 <div class="x_title" style="overflow-x:auto;">
 
-                    <h2>All Student List</h2>
+                   
 
-                    
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+            <div class="col-md-10 col-xs-12 col-sm-10">
+                @Html.DropDownList("section_id", ViewData["section_id"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.class_name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+   
+
+    
                     <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
@@ -42,7 +55,7 @@
                                     @Html.DisplayNameFor(model => model.section_name)
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.std_active)
+                                    @Html.DisplayNameFor(model => model.std_contact)
                                 </th>
                                 <th>
                                     Control Panel
@@ -50,8 +63,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
-            {
+                            @foreach (var item in Model.sr_regi)
+                            {
                                 <tr>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.sr_number)
@@ -72,25 +85,25 @@
                                         @Html.DisplayFor(modelItem => item.section_name)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.std_active)
+                                        @Html.DisplayFor(modelItem => item.std_contact)
                                     </td>
                                     <td>
                                         @if (User.IsInRole("superadmin"))
                                         {
-                                           @Html.ActionLink("Edit", "EditDetails", new { id = item.sr_number }) @:|
+                                            if (item.std_active == "Y")
+                                            {
+                                              @Html.ActionLink("Edit", "EditDetails", new { id = item.sr_number }, new { @class = "btn btn-success btn-sm please_wait" }) 
+
+                                            }
                                         }
-                                        
-                                        @Html.ActionLink("Details", "StudentDetails", new { id = item.sr_number }) 
-                                        @if (User.IsInRole("superadmin"))
-                                        {
-                                        @:|
-                                          @Html.ActionLink("Delete", "DeleteStudent", new { id = item.sr_number })
-                                        }
+                                        @Html.ActionLink("Details", "StudentDetails", new { id = item.sr_number }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                       
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+}
                 </div>
                 </div>
             </div>
@@ -99,20 +112,14 @@
                 @section scripts{
                     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
                     <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-                    @*<script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-                    <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
-                    <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
-                    <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
-                    <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
-                    <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
-                    <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
-                    <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-                    <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
-                    <script src="~/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
-                    <script src="~/vendors/jszip/dist/jszip.min.js"></script>
-                    <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
-                    <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>*@
+             
+                    <script>
+                        $('#section_id').on('change', function (event) {
+                            var form = $(event.target).parents('form');
 
+                            form.submit();
+                        });
+                    </script>
                     <script>
                         $('#datatable').dataTable();
                     </script>

@@ -16,9 +16,9 @@ namespace SMS.Models
         {
             try
             {
-                string query = "INSERT INTO sms.mst_class (class_id,class_name) VALUES (@class_id,@class_name)";
+                string query = "INSERT INTO mst_class (class_id,class_name) VALUES (@class_id,@class_name)";
 
-                string maxid = "select ifnull(MAX(class_id),0)+1 from sms.mst_class";
+                string maxid = "select ifnull(MAX(class_id),0)+1 from mst_class";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -42,16 +42,42 @@ namespace SMS.Models
 
         public IEnumerable<mst_class> AllClassList()
         {
-            String query = "SELECT class_id,class_name FROM sms.mst_class";
+            String query = "SELECT class_id,class_name FROM mst_class";
 
             var result = con.Query<mst_class>(query);
 
             return result;
         }
 
+        public IEnumerable<mst_class> AllClassListByTeacher(int user_id)
+        {
+            String query = @"SELECT distinct a.class_id,b.class_name FROM mst_attendance a,mst_class b 
+                            where 
+                            a.class_id = b.class_id
+                            and
+                            a.user_id = @user_id";
+
+            var result = con.Query<mst_class>(query,new {user_id = user_id });
+
+            return result;
+        }
+
+        public IEnumerable<mst_class> AllClassListWithSection()
+        {
+            String query = @"SELECT b.section_id class_id,concat(ifnull(a.class_name,''),' Section ',ifnull(b.section_name,'')) class_name FROM mst_class a,mst_section b
+                            where
+                            a.class_id = b.class_id
+                            order by class_name";
+
+            var result = con.Query<mst_class>(query);
+
+            return result;
+        }
+
+
         public mst_class FindClass(int? id)
         {
-            String Query = "SELECT class_id,class_name FROM sms.mst_class where class_id = @class_id";
+            String Query = "SELECT class_id,class_name FROM mst_class where class_id = @class_id";
 
             return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
         }
@@ -61,7 +87,7 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE sms.mst_class SET class_name = @class_name WHERE class_id = @class_id";
+                string query = "UPDATE mst_class SET class_name = @class_name WHERE class_id = @class_id";
 
                 con.Execute(query, mst);
             }
@@ -75,7 +101,7 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM sms.mst_class WHERE class_id = @class_id";
+                String Query = "DELETE FROM mst_class WHERE class_id = @class_id";
 
                 return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
             }

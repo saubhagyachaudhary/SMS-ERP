@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class uncleared_chequeController : Controller
+    public class uncleared_chequeController : BaseController
     {
         // GET: uncleared_cheque
         [HttpGet]
@@ -21,7 +22,7 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult AllUnclearedChequeList(List<uncleared_cheque> unclear)
+        public async Task<ActionResult> AllUnclearedChequeList(List<uncleared_cheque> unclear)
         {
             uncleared_chequeMain uncleared_cheque = new uncleared_chequeMain();
 
@@ -33,7 +34,7 @@ namespace SMS.Controllers
                     {
                         obj.chq_reject = "Bounce";
                         obj.chq_date = Convert.ToDateTime(obj.str_date);
-                        uncleared_cheque.Updatefees_Bounce(obj);
+                        await uncleared_cheque.Updatefees_Bounce(obj);
                     }
                     else
                     {

@@ -11,12 +11,12 @@ namespace SMS.Models
     public class mst_finMain
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
+        int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
         public void AddFin(mst_fin mst)
         {
             try
             {
-                 string query = @"INSERT INTO sms.mst_fin
+                 string query = @"INSERT INTO mst_fin
                                (fin_id
 		                       ,fin_start_date
                                ,fin_end_date
@@ -49,7 +49,7 @@ namespace SMS.Models
                           ,fin_start_date
                           ,fin_end_date
                           ,fin_close
-                          FROM sms.mst_fin";
+                          FROM mst_fin";
 
             var result = con.Query<mst_fin>(query);
 
@@ -62,10 +62,44 @@ namespace SMS.Models
                           ,fin_start_date
                           ,fin_end_date
                           ,fin_close
-                           FROM sms.mst_fin
+                           FROM mst_fin
                            where fin_id = @fin_id";
 
             return con.Query<mst_fin>(Query, new { fin_id = id }).SingleOrDefault();
+        }
+
+
+        public string FindActiveFinId()
+        {
+            String Query = @"SELECT fin_id
+                           FROM mst_fin
+                           where fin_close = 'N'";
+
+            return con.Query<string>(Query).SingleOrDefault();
+        }
+
+
+        public bool checkFYnotExpired()
+        {
+            String Query = @"SELECT fin_id
+                          ,fin_start_date
+                          ,fin_end_date
+                          ,fin_close
+                           FROM mst_fin
+                           where fin_close = 'N'";
+
+            mst_fin mst = con.Query<mst_fin>(Query).SingleOrDefault();
+
+            if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Date >= mst.fin_start_date && System.DateTime.Now.AddMinutes(dateTimeOffSet).Date <= mst.fin_end_date.Date)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+             
         }
 
         public void EditFin(mst_fin mst)
@@ -73,7 +107,7 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE sms.mst_fin SET fin_close = @fin_close WHERE fin_id = @fin_id";
+                string query = "UPDATE mst_fin SET fin_close = @fin_close WHERE fin_id = @fin_id";
 
                 con.Execute(query, mst);
             }
@@ -87,7 +121,7 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM sms.mst_fin WHERE fin_id = @fin_id";
+                String Query = "DELETE FROM mst_fin WHERE fin_id = @fin_id";
 
                 return con.Query<mst_fin>(Query, new { fin_id = id }).SingleOrDefault();
             }

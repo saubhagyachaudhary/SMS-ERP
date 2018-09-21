@@ -13,11 +13,12 @@
 
                     @using (Html.BeginForm())
                     {
+                        @Html.AntiForgeryToken()
                         <div class="form-horizontal">
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                             <div class="form-group">
-                                @Html.LabelFor(model => model.sr_num, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.sr_num, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.sr_num, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.sr_num, "", new { @class = "text-danger" })
                                 </div>
@@ -26,8 +27,8 @@
 
                         <div class="form-horizontal">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.reg_num, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.reg_num, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.reg_num, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.reg_num, "", new { @class = "text-danger" })
                                 </div>
@@ -35,12 +36,26 @@
                         </div>
 
                             <div class="form-group">
-                                <div class="col-md-offset-2 col-md-10">
-                                    <input type="submit" value="Search" class="btn btn-default" />
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                    <input type="submit" value="Search" class="btn btn-success please_wait" />
                                 </div>
                             </div>
+                    }
 
-
+                            @using (Html.BeginForm())
+                            {
+                                
+                                @Html.AntiForgeryToken()
+                                <div class="form-horizontal">
+                                   
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.section_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                        <div class="col-md-10 col-xs-12 col-sm-10">
+                                            @Html.DropDownList("section_id", ViewData["section_id"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.section_id, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
 
                     <h2>All Student List</h2>
 
@@ -97,6 +112,7 @@
                             }
                         </tbody>
                     </table>
+                            
                     }
                         </div>
             </div>
@@ -106,7 +122,29 @@
     </div>
 </div>
 
+
+
 @section scripts{
+
+<script>
+    
+        if (@ViewBag.recpt_no != null)
+        {
+             window.onload = function()
+             {
+       
+        var url = '@Html.Raw(@Url.Action("FeesStatement", "Fees_collect"))'+ '?rcpt_no=' + @ViewBag.recpt_no
+                window.open(url);
+                };
+         }
+</script>
+<script>
+                        $('#section_id').on('change', function (event) {
+                            var form = $(event.target).parents('form');
+
+                            form.submit();
+                        });
+</script>
     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     @*<script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>

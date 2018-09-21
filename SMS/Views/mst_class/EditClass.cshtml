@@ -23,15 +23,15 @@
                             @Html.HiddenFor(model => model.class_id)
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.class_name, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.class_name, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <div class="col-md-offset-2 col-md-10">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
                                     <input type="submit" value="Save" class="btn btn-default" />
                                 </div>
                             </div>
@@ -39,7 +39,7 @@
                     }
 
                     <div>
-                        @Html.ActionLink("Back to List", "AllClassList")
+                        @Html.ActionLink("Back to List", "AllClassList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
                     </div>
                 </div>
                 </div></div></div>

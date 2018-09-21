@@ -6,12 +6,44 @@
 <link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
 <link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
 <link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">*@
+<style>
+    .submit-progress {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 6em;
+  padding-top: 2.3em;
+  /* The following rules are the
+     ones most likely to change */
+  width: 25em;
+  /* Set 'margin-left' to a negative number
+     that is 1/2 of 'width' */
+  margin-left: -10em;
+  padding-left: 2.1em;
+  background-color: black;
+  color: white;
+  -webkit-border-radius: 0.4em;
+  -moz-border-radius: 0.4em;
+  border-radius: 0.4em;
+  box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+  -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+  -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+}
 
-@using (Html.BeginForm("AllUnclearedChequeList", "uncleared_cheque", FormMethod.Post))
+.submit-progress-bg {
+    background-color: lightgray;
+    opacity: .5;
+  }
+</style>
+@using (Html.BeginForm("AllUnclearedChequeList", "uncleared_cheque", FormMethod.Post, new { id = "submit"}))
 {
 <div class="right_col" role="main">
    
     <div class="row">
+        <div class="submit-progress hidden">
+            <i class="fa fa-2x fa-spinner fa-spin"></i>
+            <label> Please wait while finalizing attendance...</label>
+        </div>
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title" style="overflow-x:auto;">
@@ -99,8 +131,14 @@
                       }
                     </table>
                     </div>
-                <div class="col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" onclick="addchkItem()"/>
+                <div class="col-md-10 col-xs-12 col-sm-10">
+                    @*<input type="submit" value="Save" class="btn btn-default please_wait"  onclick="addchkItem()"/>*@
+                    <button type="submit"
+                            id="submitButton"
+                            class="btn btn-primary"
+                            onclick="return DisplayProgressMessage(this, 'Saving...');">
+                        Save
+                    </button>
                 </div>
 
 </div>
@@ -111,25 +149,34 @@
 @section scripts{
     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    @*<script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
-    <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
-    <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
-    <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
-    <script src="~/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
-    <script src="~/vendors/jszip/dist/jszip.min.js"></script>
-    <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
-    <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>*@
+
 
     <script>
                         $('#datatable').dataTable();
     </script>
 
     <script>
+
+        function DisplayProgressMessage(ctl, msg) 
+        {
+       
+                
+            if(confirm("Are you sure you want to save?"))
+            {
+                addchkItem();
+           
+              
+                $(".submit-progress").text(" Please wait...");
+                $(".submit-progress").removeClass("hidden");
+                document.forms["submit"].submit();
+            }
+            else
+                return false;
+
+       
+
+            return true;
+        }
 
         function findselected(i) {
 

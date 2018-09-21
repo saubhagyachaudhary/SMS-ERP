@@ -101,6 +101,9 @@ namespace SMS.Models
         [Display(Name = "Admission Date")]
         public virtual string std_admission_date_str { get; set; }
 
+        [Display(Name = "Aadhar Number")]
+        public virtual string std_aadhar { get; set; }
+
         [Required]
         [Display(Name = "Admission Class")]
         public virtual string std_admission_class { get; set; }
@@ -146,6 +149,12 @@ namespace SMS.Models
 
         [Display(Name = "Admission Fees")]
         public virtual decimal fees_amount { get; set; }
+
+        [Display(Name = "NSO Date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime nso_date { get; set; }
+
+        public IEnumerable<sr_register> sr_regi { get; set; }
 
     }
 }

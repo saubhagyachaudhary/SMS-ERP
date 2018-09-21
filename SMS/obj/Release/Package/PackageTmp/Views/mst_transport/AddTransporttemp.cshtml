@@ -16,24 +16,24 @@
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
-                @Html.LabelFor(model => model.pickup_point, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                @Html.LabelFor(model => model.pickup_point, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                <div class="col-md-10 col-xs-12 col-sm-10">
                     @Html.EditorFor(model => model.pickup_point, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.pickup_point, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.transport_fees, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                @Html.LabelFor(model => model.transport_fees, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                <div class="col-md-10 col-xs-12 col-sm-10">
                     @Html.EditorFor(model => model.transport_fees, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.transport_fees, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.transport_number, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                @Html.LabelFor(model => model.transport_number, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                <div class="col-md-10 col-xs-12 col-sm-10">
                     @Html.EditorFor(model => model.transport_number, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.transport_number, "", new { @class = "text-danger" })
                 </div>
@@ -170,7 +170,7 @@
 
 
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
+                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
                     <input type="submit" value="Create" class="btn btn-default" />
                 </div>
             </div>

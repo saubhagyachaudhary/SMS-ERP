@@ -24,32 +24,32 @@
                             
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.fin_id, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.fin_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.fin_id, new { htmlAttributes = new {@class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.fin_id, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.fin_start_date, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.fin_start_date, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.fin_start_date, new { htmlAttributes = new { id = "start", @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.fin_start_date, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.fin_end_date, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.fin_end_date, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.fin_end_date, new { htmlAttributes = new { id = "end", @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.fin_end_date, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.fin_close, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.fin_close, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.RadioButtonFor(model => model.fin_close, "N", new { htmlAttributes = new { @class = "form-control" } }) Open
                                     @Html.RadioButtonFor(model => model.fin_close, "Y", new { htmlAttributes = new { @class = "form-control" } }) Close
                                     @Html.ValidationMessageFor(model => model.fin_close, "", new { @class = "text-danger" })
@@ -57,7 +57,7 @@
                             </div>
 
                             <div class="form-group">
-                                <div class="col-md-offset-2 col-md-10">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
                                     <input type="submit" value="Create" class="btn btn-default" />
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                     }
 
                     <div>
-                        @Html.ActionLink("Back to List", "AllFinList")
+                        @Html.ActionLink("Back to List", "AllFinList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
                     </div>
                     </div>
                 </div>

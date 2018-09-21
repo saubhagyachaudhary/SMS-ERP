@@ -46,9 +46,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
+    <Reference Include="Dapper, Version=1.50.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.4\lib\net451\Dapper.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.Core, Version=1.6.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.6.20\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.MySql, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\Saubhagya Chaudhary\Desktop\Hangfire.MySql.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp, Version=5.5.9.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.9\lib\itextsharp.dll</HintPath>
@@ -87,21 +99,21 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ReportViewer.2015.Runtime.12.0.2.2402\lib\Microsoft.ReportViewer.Common.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ReportViewer.2015.Runtime.12.0.2.2402\lib\Microsoft.ReportViewer.ProcessingObjectModel.DLL</HintPath>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\MicosoftReportViewerWebForms_v11.1.0.1\lib\Microsoft.ReportViewer.WebForms.DLL</HintPath>
+    <Reference Include="MySql.Data, Version=6.9.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.12\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.10.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\MySQL\Connector NET 6.10\Assemblies\v4.5.2\MySql.Data.dll</HintPath>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ReportViewerForMvc, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ReportViewerForMvc.1.0.1\lib\net45\ReportViewerForMvc.dll</HintPath>
@@ -109,6 +121,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -178,33 +191,108 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\attendance_registerController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\emp_detailController.cs" />
+    <Compile Include="Controllers\enable_featureController.cs" />
+    <Compile Include="Controllers\enable_wedgetController.cs" />
     <Compile Include="Controllers\Fees_collectController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MentorController.cs" />
     <Compile Include="Controllers\mst_acc_headController.cs" />
+    <Compile Include="Controllers\mst_attendanceController.cs" />
     <Compile Include="Controllers\mst_classController.cs" />
+    <Compile Include="Controllers\mst_class_coscholasticController.cs" />
+    <Compile Include="Controllers\mst_class_disciplineController.cs" />
+    <Compile Include="Controllers\mst_class_subjectController.cs" />
+    <Compile Include="Controllers\mst_coscholastic_gradesController.cs" />
+    <Compile Include="Controllers\mst_co_scholasticController.cs" />
+    <Compile Include="Controllers\mst_disciplineController.cs" />
+    <Compile Include="Controllers\mst_discipline_gradesController.cs" />
+    <Compile Include="Controllers\mst_examController.cs" />
+    <Compile Include="Controllers\mst_exam_classController.cs" />
+    <Compile Include="Controllers\mst_exam_marksController.cs" />
     <Compile Include="Controllers\mst_feesController.cs" />
     <Compile Include="Controllers\mst_finController.cs" />
+    <Compile Include="Controllers\mst_rollnumberController.cs" />
     <Compile Include="Controllers\mst_sectionController.cs" />
     <Compile Include="Controllers\mst_sessionController.cs" />
+    <Compile Include="Controllers\mst_subjectController.cs" />
+    <Compile Include="Controllers\mst_termController.cs" />
+    <Compile Include="Controllers\mst_term_rulesController.cs" />
     <Compile Include="Controllers\mst_transportController.cs" />
     <Compile Include="Controllers\phoneSMSController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\reportController.cs" />
     <Compile Include="Controllers\sr_registerController.cs" />
     <Compile Include="Controllers\std_discountController.cs" />
     <Compile Include="Controllers\std_registrationController.cs" />
     <Compile Include="Controllers\uncleared_chequeController.cs" />
+    <Compile Include="Controllers\usersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="job_scheduler\dailyBirthdayWish.cs" />
+    <Compile Include="job_scheduler\dailyBirthdayWishMain.cs" />
+    <Compile Include="job_scheduler\duesReminder.cs" />
+    <Compile Include="job_scheduler\duesReminderMain.cs" />
+    <Compile Include="Models\attendance_register.cs" />
+    <Compile Include="Models\attendance_registerMain.cs" />
     <Compile Include="Models\dashboard.cs" />
     <Compile Include="Models\dashboardMain.cs" />
+    <Compile Include="Models\emp_detail.cs" />
+    <Compile Include="Models\emp_detailMain.cs" />
+    <Compile Include="Models\enable_features.cs" />
+    <Compile Include="Models\enable_featuresMain.cs" />
+    <Compile Include="Models\enable_wedget.cs" />
+    <Compile Include="Models\enable_wedgetMain.cs" />
     <Compile Include="Models\fees_collect.cs" />
     <Compile Include="Models\fees_payment.cs" />
     <Compile Include="Models\fees_receipt.cs" />
     <Compile Include="Models\fees_receiptMain.cs" />
     <Compile Include="Models\fees_slip.cs" />
+    <Compile Include="Models\HangFireAuthorizationFilter.cs" />
+    <Compile Include="Models\mentor.cs" />
+    <Compile Include="Models\mentorMain.cs" />
+    <Compile Include="Models\mst_attendance.cs" />
+    <Compile Include="Models\mst_attendanceMain.cs" />
+    <Compile Include="Models\mst_class_coscholastic.cs" />
+    <Compile Include="Models\mst_class_coscholasticMain.cs" />
+    <Compile Include="Models\mst_class_discipline.cs" />
+    <Compile Include="Models\mst_class_disciplineMain.cs" />
+    <Compile Include="Models\mst_class_subject.cs" />
+    <Compile Include="Models\mst_class_subjectMain.cs" />
+    <Compile Include="Models\mst_coscholastic_grades.cs" />
+    <Compile Include="Models\mst_coscholastic_gradesMain.cs" />
+    <Compile Include="Models\mst_co_scholastic.cs" />
+    <Compile Include="Models\mst_co_scholasticMain.cs" />
+    <Compile Include="Models\mst_discipline.cs" />
+    <Compile Include="Models\mst_disciplineMain.cs" />
+    <Compile Include="Models\mst_discipline_grades.cs" />
+    <Compile Include="Models\mst_discipline_gradesMain.cs" />
+    <Compile Include="Models\mst_exam.cs" />
+    <Compile Include="Models\mst_examMain.cs" />
+    <Compile Include="Models\mst_exam_class.cs" />
+    <Compile Include="Models\mst_exam_classMain.cs" />
+    <Compile Include="Models\mst_exam_marks.cs" />
+    <Compile Include="Models\mst_exam_marksMain.cs" />
+    <Compile Include="Models\mst_rollnumber.cs" />
+    <Compile Include="Models\mst_rollnumberMain.cs" />
+    <Compile Include="Models\mst_scholastic_grades.cs" />
+    <Compile Include="Models\mst_staff.cs" />
+    <Compile Include="Models\mst_staffMain.cs" />
+    <Compile Include="Models\mst_subject.cs" />
+    <Compile Include="Models\mst_subjectMain.cs" />
+    <Compile Include="Models\mst_term.cs" />
+    <Compile Include="Models\mst_termMain.cs" />
+    <Compile Include="Models\mst_term_rules.cs" />
+    <Compile Include="Models\mst_term_rulesMain.cs" />
     <Compile Include="Models\phoneSMS.cs" />
+    <Compile Include="Models\repAttendance_sheet.cs" />
+    <Compile Include="Models\repDues_Statement.cs" />
+    <Compile Include="Models\repFeesStatement.cs" />
+    <Compile Include="Models\reptransportList.cs" />
     <Compile Include="Models\SMSMessage.cs" />
     <Compile Include="Models\std_discount.cs" />
     <Compile Include="Models\std_discountMain.cs" />
@@ -233,9 +321,24 @@
     <Compile Include="Models\users.cs" />
     <Compile Include="Models\usersMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="report\birth_certificateMain.cs" />
+    <Compile Include="report\repAttendance_sheet.cs" />
+    <Compile Include="report\repAttendance_sheetMain.cs" />
+    <Compile Include="report\repDaily_report.cs" />
+    <Compile Include="report\repDaily_reportMain.cs" />
+    <Compile Include="report\repDues_list.cs" />
+    <Compile Include="report\repDues_listMain.cs" />
     <Compile Include="report\repFees_receipt.cs" />
+    <Compile Include="report\repReport_card.cs" />
+    <Compile Include="report\repReport_cardMain.cs" />
+    <Compile Include="report\reptransportListMain.cs" />
     <Compile Include="report\rep_fees.cs" />
+    <Compile Include="report\Notification.cs" />
+    <Compile Include="report\student_ledger.cs" />
+    <Compile Include="report\student_ledgerMain.cs" />
+    <Compile Include="report\transportList.cs" />
     <Compile Include="SMSRoleProvider.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bootstrap\checkbox\bootstrap-switch.css" />
@@ -285,6 +388,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="images\cbse.png" />
+    <Content Include="images\default.jpg" />
+    <Content Include="images\favicon.ico" />
+    <Content Include="images\load.gif" />
+    <Content Include="images\logo.jpg" />
     <Content Include="js\bootstrap.min.js" />
     <Content Include="js\jquery-1.10.2.js" />
     <Content Include="js\jquery.min.js" />
@@ -302,6 +410,7 @@
     <Content Include="fonts\fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\fonts\FontAwesome.otf" />
+    <None Include="Properties\PublishProfiles\FileSystem.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <Content Include="Scripts\daterangepicker.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -318,7 +427,6 @@
     <Content Include="vendors\autosize\build.js" />
     <Content Include="vendors\autosize\dist\autosize.js" />
     <Content Include="vendors\autosize\dist\autosize.min.js" />
-    <Content Include="vendors\autosize\example\index.html" />
     <Content Include="vendors\autosize\src\autosize.js" />
     <Content Include="vendors\bootstrap-daterangepicker\daterangepicker.css" />
     <Content Include="vendors\bootstrap-daterangepicker\daterangepicker.js" />
@@ -1401,7 +1509,9 @@
     <Content Include="vendors\validator\index.html" />
     <Content Include="vendors\validator\multifield.js" />
     <Content Include="vendors\validator\validator.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -2289,7 +2399,6 @@
     <Content Include="Views\Fees_collect\RenderPaid.cshtml" />
     <Content Include="Views\uncleared_cheque\AllUnclearedChequeList.cshtml" />
     <Content Include="Views\mst_transport\AddTransport.cshtml" />
-    <Content Include="Views\Fees_collect\FeesStatement.cshtml" />
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Home\Dashboard.cshtml" />
     <Content Include="Views\Profile\ProfileSetting.cshtml" />
@@ -2298,6 +2407,86 @@
     <Content Include="Views\std_discount\EditDiscount.cshtml" />
     <Content Include="Views\std_discount\DeleteDiscount.cshtml" />
     <Content Include="Views\phoneSMS\smsSend.cshtml" />
+    <Content Include="Views\Mentor\AllMentorHeaderList.cshtml" />
+    <Content Include="Views\Mentor\AllMentorDetailList.cshtml" />
+    <Content Include="Views\Mentor\AssignMentor.cshtml" />
+    <Content Include="Views\Mentor\addObservation.cshtml" />
+    <Content Include="Views\Mentor\deleteObservation.cshtml" />
+    <Content Include="Views\Home\Dashboard2.cshtml" />
+    <Content Include="Views\Home\Dashboard1.cshtml" />
+    <Content Include="Views\report\feesStatement.cshtml" />
+    <Content Include="Views\report\duesList.cshtml" />
+    <Content Include="Views\emp_detail\EmpList.cshtml" />
+    <Content Include="Views\emp_detail\AddEmp.cshtml" />
+    <Content Include="Views\emp_detail\EditEmp.cshtml" />
+    <Content Include="Views\emp_detail\DetailEmp.cshtml" />
+    <Content Include="Views\mst_attendance\list.cshtml" />
+    <Content Include="Views\mst_attendance\Assign_faculty.cshtml" />
+    <Content Include="Views\mst_attendance\deleteFaculty.cshtml" />
+    <Content Include="Views\attendance_register\attendance_class_list.cshtml" />
+    <Content Include="Views\attendance_register\attendance_class_student_list.cshtml" />
+    <Content Include="Views\report\attendance_sheet.cshtml" />
+    <Content Include="Views\attendance_register\finalize_class_attendance_sheet.cshtml" />
+    <Content Include="Views\attendance_register\success.cshtml" />
+    <Content Include="Views\attendance_register\nodatafound.cshtml" />
+    <Content Include="Views\std_registration\cannotdelete.cshtml" />
+    <Content Include="Views\mst_rollnumber\roll_class_list.cshtml" />
+    <Content Include="Views\mst_rollnumber\rollno_class_student_list.cshtml" />
+    <Content Include="Views\attendance_register\updateRollNo.cshtml" />
+    <Content Include="Views\mst_subject\AddSubject.cshtml" />
+    <Content Include="Views\mst_subject\AllSubjectList.cshtml" />
+    <Content Include="Views\mst_subject\DeleteSubject.cshtml" />
+    <Content Include="Views\mst_subject\EditSubject.cshtml" />
+    <Content Include="Views\mst_class_subject\AddClassSubject.cshtml" />
+    <Content Include="Views\mst_class_subject\AllClassSubjectList.cshtml" />
+    <Content Include="Views\mst_class_subject\DeleteClassSubject.cshtml" />
+    <Content Include="Views\mst_exam\AddExam.cshtml" />
+    <Content Include="Views\mst_exam\AllExamList.cshtml" />
+    <Content Include="Views\mst_exam\DeleteExam.cshtml" />
+    <Content Include="Views\mst_exam\EditExam.cshtml" />
+    <Content Include="Views\mst_exam_class\AddExamClass.cshtml" />
+    <Content Include="Views\mst_exam_class\AllExamClassList.cshtml" />
+    <Content Include="Views\mst_exam_class\DeleteExamClass.cshtml" />
+    <Content Include="Views\mst_term\AddTerm.cshtml" />
+    <Content Include="Views\mst_term\AllTermList.cshtml" />
+    <Content Include="Views\mst_term\DeleteTerm.cshtml" />
+    <Content Include="Views\mst_term\EditTerm.cshtml" />
+    <Content Include="Views\mst_term_rules\AddTermRules.cshtml" />
+    <Content Include="Views\mst_term_rules\ALLTermRuleList.cshtml" />
+    <Content Include="Views\mst_exam_marks\addExamMarks.cshtml" />
+    <Content Include="Views\mst_exam_marks\studentList.cshtml" />
+    <Content Include="Views\mst_co_scholastic\AddCoScholastic.cshtml" />
+    <Content Include="Views\mst_co_scholastic\AllCoScholasticList.cshtml" />
+    <Content Include="Views\mst_co_scholastic\DeleteCoScholastic.cshtml" />
+    <Content Include="Views\mst_co_scholastic\EditCoScholastic.cshtml" />
+    <Content Include="Views\mst_discipline\AddDiscipline.cshtml" />
+    <Content Include="Views\mst_discipline\AllDisciplineList.cshtml" />
+    <Content Include="Views\mst_discipline\DeleteDiscipline.cshtml" />
+    <Content Include="Views\mst_discipline\EditDiscipline.cshtml" />
+    <Content Include="Views\mst_class_coscholastic\AddClassCoScholastic.cshtml" />
+    <Content Include="Views\mst_class_coscholastic\AllClassCoScholasticList.cshtml" />
+    <Content Include="Views\mst_class_coscholastic\DeleteClassCoScholastic.cshtml" />
+    <Content Include="Views\mst_class_discipline\AddClassDiscipline.cshtml" />
+    <Content Include="Views\mst_class_discipline\AllClassDisciplineList.cshtml" />
+    <Content Include="Views\mst_class_discipline\DeleteClassDiscipline.cshtml" />
+    <Content Include="Views\mst_coscholastic_grades\AddCoscholasticGrades.cshtml" />
+    <Content Include="Views\mst_coscholastic_grades\studentList.cshtml" />
+    <Content Include="Views\mst_discipline_grades\AddDisciplineGrades.cshtml" />
+    <Content Include="Views\mst_discipline_grades\studentList.cshtml" />
+    <Content Include="Views\users\AllUsersList.cshtml" />
+    <Content Include="Views\users\AddUser.cshtml" />
+    <Content Include="Views\phoneSMS\success.cshtml" />
+    <Content Include="Views\phoneSMS\danger.cshtml" />
+    <Content Include="Views\users\DeleteUser.cshtml" />
+    <Content Include="Views\enable_feature\AllUserList.cshtml" />
+    <Content Include="Views\enable_feature\EditFeature.cshtml" />
+    <Content Include="Views\report\transportList.cshtml" />
+    <Content Include="Views\enable_wedget\AllUserList.cshtml" />
+    <Content Include="Views\enable_wedget\EditWedget.cshtml" />
+    <Content Include="Views\report\student_ledger.cshtml" />
+    <Content Include="Views\report\birth_certificate.cshtml" />
+    <Content Include="Views\mst_term_rules\DeleteTermRule.cshtml" />
+    <Content Include="Views\report\duesListTransportWise.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -2347,6 +2536,7 @@
     <Folder Include="js\textarea\" />
     <Folder Include="js\validator\" />
     <Folder Include="js\wizard\" />
+    <Folder Include="vendors\autosize\example\" />
     <Folder Include="vendors\bootstrap-progressbar\css\" />
     <Folder Include="vendors\Chart.js\src\charts\" />
     <Folder Include="vendors\Chart.js\src\controllers\" />
@@ -2443,6 +2633,7 @@
     <Folder Include="vendors\select2\src\js\select2\dropdown\" />
     <Folder Include="vendors\select2\vendor\" />
     <Folder Include="vendors\transitionize\dist\" />
+    <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

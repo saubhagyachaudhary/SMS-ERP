@@ -6,10 +6,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="shortcut icon" type="image/x-icon" href="~/images/favicon.ico">
     <title>School Management System | </title>
     <!-- Bootstrap -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+  
 
     <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
@@ -33,73 +34,355 @@
    
     @*<link href="~/vendors/starrr/dist/starrr.css" rel="stylesheet" />*@
     <!-- Custom Theme Style -->
-  
+
+    <link href="~/Content/Site.css" rel="stylesheet" />
     <link href="~/build/css/custom.min.css" rel="stylesheet" />
+   
     @RenderSection("scripthead", required: false)
+
+    <style>
+           .submit-progress {
+               position: fixed;
+               top: 50%;
+               left: 50%;
+               height: 6em;
+               padding-top: 2.3em;
+               /* The following rules are the
+        ones most likely to change */
+               width: 18em;
+               /* Set 'margin-left' to a negative number
+        that is 1/2 of 'width' */
+               margin-left: -10em;
+               padding-left: 2.1em;
+               background-color: black;
+               color: white;
+               -webkit-border-radius: 0.4em;
+               -moz-border-radius: 0.4em;
+               border-radius: 0.4em;
+               box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+               -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+               -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+           }
+    </style>
+
 </head>
-<body class="nav-md">
+@*nav-md to open default left menu and nav-sm for side menu by default*@
+
+
+
+<body class="nav-sm">
+   
+    @{
+        string feature = Request.Cookies["features"].Value.ToString();
+        var list = feature.Split(',');
+        string profilepicture = Request.Cookies["profilepicture"].Value.ToString();
+        string loginUserFullName = Request.Cookies["loginUserFullName"].Value.ToString();
+    }
+  
     <div class="container body">
+        
         <div class="main_container">
+           
             <div class="col-md-3 left_col">
+                <div class="submit-progress hidden">
+
+                    <i class="fa fa-2x fa-spinner fa-spin"></i>
+                    <label> Loading please wait...</label>
+                </div>
                 <div class="left_col scroll-view">
-                    <div class="navbar nav_title" style="border: 0;">
-                        <a href="~/Home/Dashboard" class="site_title"><i class="fa fa-paw"></i> <span>Hariti (SMS)</span></a>
-                        
+                    <div class="navbar nav_title please_wait" style="border: 0;">
+                        <a href="~/Home/Dashboard" class="site_title"><i class="fa fa-institution please_wait"></i> <span>@System.Configuration.ConfigurationManager.AppSettings["ShortName"].ToString() (SMS)</span></a>
+
                     </div>
                     <div class="clearfix"></div>
                     <!-- menu profile quick info -->
                     <div class="profile">
                         <div class="profile_pic">
                             @*<img src="~/images/img.jpg" alt="..." class="img-circle profile_img">*@
-                            <img  src="~/images/users/@Session["profilepicture"].ToString()" alt="..." class="img-circle profile_img" width="60" height="60">
-                         
+
+                         @{
+                             var filePath = "~/images/users/" + profilepicture; // e.g., /Files/Images/hest.png
+                             var absolutePath = System.Web.HttpContext.Current.Server.MapPath(filePath);
+
+                             if (System.IO.File.Exists(absolutePath))
+                             {
+
+                                <img src="~/images/users/@profilepicture" alt="..." class="img-circle profile_img" width="60" height="60">
+                             }
+                             else
+                             {
+
+                                <img src="~/images/default.jpg" alt="..." class="img-circle profile_img" width="60" height="60">
+                             }
+                        }
                         </div>
                         <div class="profile_info">
                             <span>Welcome,</span>
-                            <h2>@Session["loginUserFullName"].ToString()</h2>
+                            <h2>@loginUserFullName</h2>
                         </div>
                     </div>
                     <!-- /menu profile quick info -->
                     <br />
                     <!-- sidebar menu -->
+                    
+
                     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                       
                         <div class="menu_section">
                             <h3>Menu</h3>
                             <ul class="nav side-menu">
-                                <li>
-                                    <a><i class="fa fa-home"></i> Masters <span class="fa fa-chevron-down"></span></a>
-                                    <ul class="nav child_menu open">
-                                       @if (User.IsInRole("superadmin"))
-                                       {
-                                        <li>@Html.ActionLink("Class Master", "AllClassList", "mst_class")</li>
-                                            <li>@Html.ActionLink("Financial Year", "AllFinList", "mst_fin")</li>
-                                            <li>@Html.ActionLink("Session Master", "AllSessionList", "mst_session")</li>
-                                            <li>@Html.ActionLink("Section Master", "AllSectionList", "mst_section")</li>
-                                            <li>@Html.ActionLink("Transport Master", "AllTransportList", "mst_transport")</li>
-                                            <li>@Html.ActionLink("Account Master", "AllAccountList", "mst_acc_head")</li>
-                                            <li>@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
-                                            <li>@Html.ActionLink("Discount Master", "AllStdDiscountList", "std_discount")</li>
 
-                                       }
-                                       
-                                        <li>@Html.ActionLink("Registration Master", "AllRegistrationList", "std_registration")</li>
-                                        <li>@Html.ActionLink("Student Master", "AllStudentList", "sr_register")</li>
-                                        <li>@Html.ActionLink("Fees Collection", "fees_collect", "Fees_collect")</li>
-                                        <li>@Html.ActionLink("Uncleared Cheque", "AllUnclearedChequeList", "uncleared_cheque")</li>
-                                    </ul>
-                                </li>
-                                @*<li>
+
+                               @if (list.Contains("class_master") || list.Contains("financial_year") || list.Contains("session_master") || list.Contains("section_master") || list.Contains("transport_master") || list.Contains("account_master") || list.Contains("fees_master") || list.Contains("discount_master") || list.Contains("employee_master") || list.Contains("user_master") || list.Contains("class_teacher") || list.Contains("update_roll_number")|| list.Contains("users_features") || User.IsInRole("superadmin"))
+                               {
+                                <li>
+                                    <a><i class="fa fa-cog"></i> Masters <span class="fa fa-chevron-down"></span></a>
+
+                                     <ul class="nav child_menu">
+                                         @if (User.IsInRole("superadmin"))
+                                         {
+                                            <li class="please_wait"><a href="~/job_scheduled">Hangfire Dashboard</a></li>
+                                             <li class="please_wait">@Html.ActionLink("Enable Features", "AllUserList", "enable_feature")</li>
+                                             <li class="please_wait">@Html.ActionLink("Enable Wedget", "AllUserList", "enable_wedget")</li>
+                                             
+                                         }
+                                            @if (list.Contains("class_master"))
+                                            {
+                                                <li class="please_wait">@Html.ActionLink("Class Master", "AllClassList", "mst_class")</li>
+                                            }
+                                            @if (list.Contains("financial_year"))
+                                            {
+                                                <li class="please_wait">@Html.ActionLink("Financial Year", "AllFinList", "mst_fin")</li>
+                                            }
+                                            @if (list.Contains("session_master"))
+                                            {
+                                                <li class="please_wait">@Html.ActionLink("Session Master", "AllSessionList", "mst_session")</li>
+                                            }
+                                            @if (list.Contains("section_master"))
+                                            {
+                                                <li class="please_wait">@Html.ActionLink("Section Master", "AllSectionList", "mst_section")</li>
+                                            }
+                                            @if (list.Contains("transport_master"))
+                                            {
+                                                <li class="please_wait">@Html.ActionLink("Transport Master", "AllTransportList", "mst_transport")</li>
+                                            }
+
+                                         @if (list.Contains("account_master"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("Account Master", "AllAccountList", "mst_acc_head")</li>
+                                         }
+
+
+                                         @if (list.Contains("fees_master"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
+                                         }
+
+                                         @if (list.Contains("discount_master"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("Discount Master", "AllStdDiscountList", "std_discount")</li>
+                                         }
+
+                                         @if (list.Contains("employee_master"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("Employee Master", "EmpList", "emp_detail")</li>
+                                         }
+
+                                         @if (list.Contains("user_master"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("User Master", "AllUsersList", "users")</li>
+                                         }
+
+                                         @if (User.IsInRole("superadmin"))
+                                         {
+                                             <li class="please_wait">@Html.ActionLink("Enable Features", "AllUserList", "enable_feature")</li>
+                                             <li class="please_wait">@Html.ActionLink("Enable Wedget", "AllUserList", "enable_wedget")</li>
+                                         }
+
+                                         @if (list.Contains("class_teacher"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("Class Teacher", "list", "mst_attendance")</li>
+                                         }
+
+                                         @if (list.Contains("update_roll_number"))
+                                         {
+                                            <li class="please_wait">@Html.ActionLink("Update Roll Number", "roll_class_list", "mst_rollnumber")</li>
+                                         }
+                                       </ul>
+                                       </li>
+                               }
+                                @if (list.Contains("registration_form")|| list.Contains("mark_attendance"))
+                                {
+                                <li>
+
                                     <a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        <li><a href="form.html">General Form</a></li>
-                                        <li><a href="form_advanced.html">Advanced Components</a></li>
-                                        <li><a href="form_validation.html">Form Validation</a></li>
-                                        <li><a href="form_wizards.html">Form Wizard</a></li>
-                                        <li><a href="form_upload.html">Form Upload</a></li>
-                                        <li><a href="form_buttons.html">Form Buttons</a></li>
+                                        @if (list.Contains("registration_form"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Registration Form", "AllRegistrationList", "std_registration")</li>
+                                        }
+                                        @if (list.Contains("mark_attendance"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Mark Attendance", "attendance_class_list", "attendance_register")</li>
+                                        }
+
+
+
                                     </ul>
                                 </li>
+                                }
+                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades"))
+                                {
                                 <li>
+                                    <a><i class="fa fa-edit"></i> Examination <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        @if (list.Contains("subject_master"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Subject Master", "AllSubjectList", "mst_subject")</li>
+                                        }
+                                        @if (list.Contains("co_scholastic_master"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("CO-Scholastic Master", "AllCoScholasticList", "mst_Co_scholastic")</li>
+                                        }
+                                        @if (list.Contains("discipline_master"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Discipline Master", "AllDisciplineList", "mst_discipline")</li>
+                                        }
+                                        @if (list.Contains("assign_subject_to_class"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Subject To Class", "AllClassSubjectList", "mst_class_subject")</li>
+                                        }
+                                        @if (list.Contains("assign_co_scholastic_to_class"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Co-Scholastic To Class", "AllClassCoScholasticList", "mst_class_coscholastic")</li>
+                                        }
+                                        @if (list.Contains("assign_discipline_to_class"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Discipline To Class", "AllClassDisciplineList", "mst_class_discipline")</li>
+                                        }
+                                        @if (list.Contains("exam_master"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Exam Master", "AllExamList", "mst_exam")</li>
+                                        }
+                                        @if (list.Contains("assign_class_to_exam"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Class To Exam", "AllExamClassList", "mst_exam_class")</li>
+                                        }
+                                        @if (list.Contains("term_master"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Term Master", "AllTermList", "mst_term")</li>
+                                        }
+                                        @if (list.Contains("term_rule_for_report_card"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Term Rule For Report Card", "AllTermRuleList", "mst_term_rules")</li>
+                                        }
+                                        @if (list.Contains("assign_marks"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Marks", "addExamMarks", "mst_exam_marks")</li>
+                                        }
+                                        @if (list.Contains("assign_co_scholastic_grades"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Co-Scholastic Grades", "AddCoscholasticGrades", "mst_coscholastic_grades")</li>
+                                        }
+                                        @if (list.Contains("assign_discipline_grades"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Discipline Grades", "AddDisciplineGrades", "mst_discipline_grades")</li>
+                                        }
+
+                                    </ul>
+                                </li>
+                                }
+                                @if (list.Contains("active_students_list"))
+                                {
+                                <li>
+                                    <a><i class="fa fa-list"></i> Student List <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+
+                                            <li class="please_wait">@Html.ActionLink("Active Students List", "AllStudentList", "sr_register")</li>
+
+
+                                    </ul>
+                                </li>
+                                }
+                                @if (list.Contains("fees_collection")|| list.Contains("uncleared_cheque"))
+                                {
+                                <li>
+                                    <a><i class="fa fa-money"></i> Fees Collection <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        @if (list.Contains("fees_collection"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Fees Collection", "fees_collect", "Fees_collect")</li>
+                                        }
+                                        @if (list.Contains("uncleared_cheque"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Uncleared Cheque", "AllUnclearedChequeList", "uncleared_cheque")</li>
+                                        }
+
+
+                                    </ul>
+                                </li>
+                                }
+                                @if (list.Contains("send_sms"))
+                                {
+                                    <li>
+                                        <a><i class="fa fa-wechat"></i> Send Message <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+
+                                            <li class="please_wait">@Html.ActionLink("Send SMS", "smsSend", "phoneSMS")</li>
+
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (list.Contains("assign_mentor"))
+                                {
+                                    <li>
+                                        <a><i class="fa fa-graduation-cap"></i> Assign Mentor <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="please_wait">@Html.ActionLink("Assign Mentor", "AllMentorHeaderList", "Mentor")</li>
+
+                                        </ul>
+                                    </li>
+                                }
+
+
+                                @if (list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger")|| list.Contains("birth_certificate")|| list.Contains("transport_dues_list"))
+                                {
+                                <li>
+                                    <a><i class="fa fa-file-text-o"></i>MIS Reports <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        @if (list.Contains("fees_statement"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Fees Statement", "feesStatement", "report")</li>
+                                        }
+                                        @if (list.Contains("class_dues_list"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Class Dues List", "duesList", "report")</li>
+                                        }
+                                        @if (list.Contains("transport_dues_list"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Transport Wise Dues List", "duesListTransportWise", "report")</li>
+                                        }
+                                        @if (list.Contains("attendance_sheet"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Attendace Sheet", "attendance_sheet", "report")</li>
+                                        }
+                                        @if (list.Contains("transport_list"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Transport List", "transportList", "report")</li>
+                                        }
+                                        @if (list.Contains("student_ledger"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Student Ledger", "student_ledger", "report")</li>
+                                        }
+                                        @if (list.Contains("birth_certificate"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Student Birth Certificate", "birth_certificate", "report")</li>
+                                        }
+                                    </ul>
+                                </li>
+                                }
+                               @* <li>
                                     <a><i class="fa fa-desktop"></i> UI Elements <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         <li><a href="general_elements.html">General Elements</a></li>
@@ -219,8 +502,22 @@
                         <ul class="nav navbar-nav navbar-right">
                             <li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <img src="~/images/users/@Session["profilepicture"].ToString()" alt="" width="128" height="128">@Session["loginUserFullName"].ToString()
-                                    
+                                  @{
+
+                                        if (System.IO.File.Exists(absolutePath))
+                                        {
+                                            <img src="~/images/users/@profilepicture" alt="" width="128" height="128">
+
+                                        }
+                                        else
+                                        {
+                                            <img src="~/images/default.jpg" alt="" width="128" height="128">
+
+                                        }
+                                    }
+
+                                    @loginUserFullName
+
                                     <span class=" fa fa-angle-down"></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -231,8 +528,8 @@
                                             <span>Change Password</span>
                                         </a>
                                     </li>
-                                   
-                                    <li>@Html.ActionLink("Log Out","Logout","Login")<i class="fa fa-sign-out pull-right"></i></li>
+
+                                    <li class="please_wait">@Html.ActionLink("Log Out","Logout","Login")<i class="fa fa-sign-out pull-right"></i></li>
                                 </ul>
                             </li>
                             <li role="presentation" class="dropdown">
@@ -305,71 +602,83 @@
             </div>
             <div class="container body-content">
                 @RenderBody()
-                
+
                 <footer>
-                    <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                    <p>&copy; @DateTime.Now.Year - School Management System</p>
                 </footer>
             </div>
             </div>
         </div>
             <!-- jQuery -->
-            
+
             <script src="~/vendors/jquery/dist/jquery.min.js"></script>
+
             <!-- Bootstrap -->
-            
+
            @* <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>*@
             <!-- FastClick -->
-            
+
             @*<script src="~/vendors/fastclick/lib/fastclick.js"></script>*@
             <!-- NProgress -->
-         
+
             @*<script src="~/vendors/nprogress/nprogress.js"></script>*@
 
             <!-- bootstrap-progressbar -->
-            
+
             @*<script src="~/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>*@
             <!-- iCheck -->
-           
+
             @*<script src="~/vendors/iCheck/icheck.min.js"></script>*@
 
             <!-- bootstrap-daterangepicker -->
-            
-           
-            
+
+
+
             @*<script src="~/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>*@
-            
+
             @*<script src="~/vendors/jquery.hotkeys/jquery.hotkeys.js"></script>*@
-           
+
             @*<script src="~/vendors/google-code-prettify/src/prettify.js"></script>*@
             <!-- jQuery Tags Input -->
-           
+
             @*<script src="~/vendors/jquery.tagsinput/src/jquery.tagsinput.js"></script>*@
             <!-- Switchery -->
-           
+
             @*<script src="~/vendors/switchery/dist/switchery.min.js"></script>*@
             <!-- Select2 -->
-           
+
             @*<script src="~/vendors/select2/dist/js/select2.full.min.js"></script>*@
             <!-- Parsley -->
-           
+
             @*<script src="~/vendors/parsleyjs/dist/parsley.min.js"></script>*@
             <!-- Autosize -->
             @*<script src="~/vendors/autosize/dist/autosize.min.js"></script>*@
-           
+
             <!-- jQuery autocomplete -->
-            
+
             @*<script src="~/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js"></script>*@
             <!-- starrr -->
-           
+
             @*<script src="~/vendors/starrr/dist/starrr.js"></script>*@
             <!-- Custom Theme Scripts -->
-           
 
-            <script src="~/build/js/custom.min.js"></script>
+
+            <script src="~/build/js/custom.js"></script>
             <!-- bootstrap-daterangepicker -->
-    
+
             @Scripts.Render("~/bundles/jquery")
             @Scripts.Render("~/bundles/bootstrap")
             @RenderSection("scripts", required: false)
 </body>
 </html>
+<script>
+    $(document).ready(function()
+    {
+        $('.please_wait').click(function (e)
+        {
+            
+            $(".submit-progress").removeClass("hidden");
+        });
+    });
+
+</script>

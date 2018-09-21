@@ -96,6 +96,14 @@
                                     @Html.DisplayFor(model => model.std_Pickup_point)
                                 </dd>
 
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.std_aadhar)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.std_aadhar)
+                                </dd>
+
                             </dl>
                         </div>
                 </div>
@@ -157,7 +165,7 @@
             </div>
 
         <p>
-            @Html.ActionLink("Back to Search", "fees_collect")
+            @Html.ActionLink("Back to Search", "fees_collect", new { area = "" }, new { @class = "btn btn-primary please_wait" })
         </p>
         </div>
     </div>
@@ -199,4 +207,5 @@
 
          });
     </script>
+  
 }

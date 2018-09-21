@@ -16,9 +16,13 @@ namespace SMS.Models
         {
             try
             {
-              
-                string query = @"INSERT INTO sms.mst_fees
-                                   (class_id
+                string query = @"SELECT session FROM mst_session where session_active = 'Y'";
+
+                string session = con.Query<string>(query).SingleOrDefault();
+
+                 query = @"INSERT INTO mst_fees
+                                   (session
+                                   ,class_id
                                    ,acc_id
                                    ,fees_amount                                 
                                    ,bl_onetime
@@ -35,7 +39,8 @@ namespace SMS.Models
                                    ,bl_feb
                                    ,bl_mar)
                                      VALUES
-                                   (@class_id,
+                                   (@session,
+                                   @class_id,
                                    @acc_id,
                                    @fees_amount,
                                    @bl_onetime,
@@ -52,11 +57,11 @@ namespace SMS.Models
                                    @bl_feb,
                                    @bl_mar)";
 
-
+                mst.session = session;
 
                 con.Execute(query, new
                 {
-
+                    mst.session,
                     mst.class_id,
                     mst.acc_id,
                     mst.fees_amount,
@@ -84,13 +89,15 @@ namespace SMS.Models
 
         public IEnumerable<mst_fees> AllFeesList()
         {
-            String query = @"SELECT 
-                           a.class_id
+
+            String query = @"SELECT
+                           a.session 
+                           ,a.class_id
                            ,a.acc_id 
                            ,b.class_name
                           ,c.acc_name
                           ,fees_amount
-                           FROM sms.mst_fees a,sms.mst_class b, sms.mst_acc_head c
+                           FROM mst_fees a,mst_class b, mst_acc_head c
                            where 
                            a.class_id = b.class_id
                            and
@@ -120,7 +127,7 @@ namespace SMS.Models
                           ,bl_jan
                           ,bl_feb
                           ,bl_mar
-                          FROM sms.mst_fees a, sms.mst_acc_head c,sms.sr_register d,sms.mst_batch e
+                          FROM mst_fees a, mst_acc_head c,sr_register d,mst_batch e
                           where 
                           a.acc_id = c.acc_id
 						  and
@@ -138,14 +145,14 @@ namespace SMS.Models
 
         public IEnumerable<mst_acc_head> account_head()
         {
-            String query = "SELECT acc_id,acc_name,nature FROM sms.mst_acc_head where nature = 'A'";
+            String query = "SELECT acc_id,acc_name,nature FROM mst_acc_head where nature = 'A'";
 
             var result = con.Query<mst_acc_head>(query);
 
             return result;
         }
 
-        public mst_fees Findfees(int cls_id,int ac_id)
+        public mst_fees Findfees(int cls_id,int ac_id,string session)
         {
             String Query = @"SELECT a.class_id
 	                       ,a.acc_id
@@ -165,7 +172,7 @@ namespace SMS.Models
                           ,bl_jan
                           ,bl_feb
                           ,bl_mar
-                          FROM sms.mst_fees a,sms.mst_class b, sms.mst_acc_head c
+                          FROM mst_fees a,mst_class b, mst_acc_head c
                           where 
                           a.class_id = b.class_id
                           and
@@ -173,9 +180,11 @@ namespace SMS.Models
                           and
                           a.class_id = @class_id
                           and
-                          a.acc_id = @acc_id";
+                          a.acc_id = @acc_id
+                          and 
+                          a.session = @session";
 
-            return con.Query<mst_fees>(Query, new { class_id =  cls_id, acc_id = ac_id}).SingleOrDefault();
+            return con.Query<mst_fees>(Query, new { class_id =  cls_id, acc_id = ac_id,session = session}).SingleOrDefault();
         }
 
         
@@ -185,7 +194,7 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE sms.mst_fees
+                string query = @"UPDATE mst_fees
                                SET fees_amount = @fees_amount
                                   ,bl_onetime = @bl_onetime
                                   ,bl_apr = @bl_apr
@@ -210,11 +219,11 @@ namespace SMS.Models
             }
         }
 
-        public mst_fees DeleteFees(int cls_id, int ac_id)
+        public mst_fees DeleteFees(int cls_id, int ac_id,string session)
         {
-            String Query = "DELETE FROM sms.mst_fees WHERE class_id = @class_id and acc_id = @acc_id";
+            String Query = "DELETE FROM mst_fees WHERE class_id = @class_id and acc_id = @acc_id and session = @session";
 
-            return con.Query<mst_fees>(Query, new { class_id = cls_id, acc_id = ac_id }).SingleOrDefault();
+            return con.Query<mst_fees>(Query, new { class_id = cls_id, acc_id = ac_id,session = session }).SingleOrDefault();
         }
     }
 }

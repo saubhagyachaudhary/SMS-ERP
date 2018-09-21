@@ -13,7 +13,7 @@
 <div class="right_col" role="main">
    
     <p>
-        @Html.ActionLink("Create New Session", "AddSession")
+        @Html.ActionLink("Create New Session", "AddSession", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -37,6 +37,9 @@
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.session_active)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.session_finalize)
                     </th>
                     <th>Control Panel</th>
                 </tr>
@@ -66,10 +69,23 @@
                                 @("Close");
                             }
                         </td>
-                        <td>
-                            @Html.ActionLink("Edit", "EditSession", new { id = item.session }) |
 
-                            @Html.ActionLink("Delete", "DeleteSession", new { id = item.session })
+                        <td>
+
+                            @if (item.session_finalize == "Y")
+                            {
+                                @("Finalized");
+                            }
+                            else
+                            {
+                                @("Not Finalized");
+                            }
+                        </td>
+
+                        <td>
+                            @Html.ActionLink("Edit", "EditSession", new { id = item.session }, new { @class = "btn btn-success btn-sm please_wait" }) 
+
+                            @Html.ActionLink("Delete", "DeleteSession", new { id = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
                         </td>
                     </tr>
                 }

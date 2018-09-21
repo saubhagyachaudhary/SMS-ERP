@@ -1,14 +1,19 @@
-﻿using SMS.Models;
+﻿using Dapper;
+using MySql.Data.MySqlClient;
+using SMS.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class mst_transportController : Controller
+    public class mst_transportController : BaseController
     {
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
         [HttpGet]
         public ActionResult AddTransport()
         {
@@ -18,11 +23,28 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult AddTransport(mst_transport mst)
         {
-            mst_transportMain mstMain = new mst_transportMain();
+            //string query = "select session_finalize from mst_session where session_active = 'Y'";
 
-            mstMain.AddTransport(mst);
+            //string id1 = con.ExecuteScalar<string>(query);
 
-            return RedirectToAction("AllTransportList");
+            //if (id1 == "Y")
+            //{
+               
+
+            //    ModelState.AddModelError(String.Empty, "Session is already finalized cannot add new fees.");
+
+            //    return View(mst);
+            //}
+            //else
+            //{
+                mst_transportMain mstMain = new mst_transportMain();
+
+                mstMain.AddTransport(mst);
+
+                return RedirectToAction("AllTransportList");
+           // }
+
+          
         }
 
         [HttpGet]
@@ -34,11 +56,11 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditTransport(int id)
+        public ActionResult EditTransport(int id,string session)
         {
             mst_transportMain stdMain = new mst_transportMain();
 
-            return View(stdMain.FindTransport(id));
+            return View(stdMain.FindTransport(id,session));
         }
 
         [HttpPost]
@@ -52,21 +74,21 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult DeleteTransport(int id)
+        public ActionResult DeleteTransport(int id, string session)
         {
             mst_transportMain stdMain = new mst_transportMain();
 
-            return View(stdMain.FindTransport(id));
+            return View(stdMain.FindTransport(id,session));
         }
 
         [HttpPost]
-        public ActionResult DeleteTransport(int id, FormCollection collection)
+        public ActionResult DeleteTransport(int id,string session, FormCollection collection)
         {
             try
             {
                 mst_transportMain stdMain = new mst_transportMain();
 
-                stdMain.DeleteTransport(id);
+                stdMain.DeleteTransport(id,session);
 
                 return RedirectToAction("AllTransportList");
             }

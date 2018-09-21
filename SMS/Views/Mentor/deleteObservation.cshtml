@@ -1,0 +1,55 @@
+﻿@model SMS.Models.mentor_detail
+
+@{
+    ViewBag.Title = "deleteObservation";
+}
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+                <h2>Delete Observation</h2>
+
+                <h3>Are you sure you want to delete this?</h3>
+                <div>
+                  
+                    <hr />
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            @Html.HiddenFor(model => model.serial_no)
+                            @Html.HiddenFor(model => model.mentor_no)
+                            @Html.HiddenFor(model => model.mentor_date)
+                            @Html.DisplayNameFor(model => model.mentor_observation)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.mentor_observation)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.parents_observation)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.parents_observation)
+                        </dd>
+
+
+                    </dl>
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-actions no-color">
+                            <input type="submit" value="Delete" class="btn btn-default" /> 
+                            @Html.ActionLink("Back to List", "AllMentorDetailList",new {ViewBag.mentor_id,Model.mentor_no,Model.mentor_date }, new { @class = "btn btn-primary please_wait" })
+                        </div>
+                    }
+                </div>
+                </div>
+            </div>
+       </div>
+</div>

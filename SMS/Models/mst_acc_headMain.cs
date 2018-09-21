@@ -16,7 +16,7 @@ namespace SMS.Models
         {
             try
             {
-                string query = @"INSERT INTO sms.mst_acc_head
+                string query = @"INSERT INTO mst_acc_head
                                (acc_id
                                 ,acc_name
                                ,nature)
@@ -25,7 +25,7 @@ namespace SMS.Models
                                 ,@acc_name
                                ,@nature)";
 
-                string maxid = "select ifnull(MAX(acc_id),0)+1 from sms.mst_acc_head";
+                string maxid = "select ifnull(MAX(acc_id),0)+1 from mst_acc_head";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -52,7 +52,7 @@ namespace SMS.Models
 
         public IEnumerable<mst_acc_head> AllAccountList()
         {
-            String query = "SELECT acc_id,acc_name,nature FROM sms.mst_acc_head";
+            String query = "SELECT acc_id,acc_name,nature FROM mst_acc_head";
 
             var result = con.Query<mst_acc_head>(query);
 
@@ -61,7 +61,7 @@ namespace SMS.Models
 
         public mst_acc_head FindAccount(int? id)
         {
-            String Query = "SELECT acc_id,acc_name,nature FROM sms.mst_acc_head where acc_id = @acc_id";
+            String Query = "SELECT acc_id,acc_name,nature FROM mst_acc_head where acc_id = @acc_id";
 
             return con.Query<mst_acc_head>(Query, new { acc_id = id }).SingleOrDefault();
         }
@@ -71,7 +71,7 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE sms.mst_acc_head SET acc_name = @acc_name,nature = @nature WHERE acc_id = @acc_id";
+                string query = "UPDATE mst_acc_head SET acc_name = @acc_name,nature = @nature WHERE acc_id = @acc_id";
 
                 con.Execute(query, mst);
             }
@@ -85,7 +85,7 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM sms.mst_acc_head WHERE acc_id = @acc_id";
+                String Query = "DELETE FROM mst_acc_head WHERE acc_id = @acc_id";
 
                 return con.Query<mst_acc_head>(Query, new { acc_id = id }).SingleOrDefault();
             }

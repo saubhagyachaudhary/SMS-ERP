@@ -1,14 +1,19 @@
-﻿using SMS.Models;
+﻿using Dapper;
+using MySql.Data.MySqlClient;
+using SMS.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class mst_sectionController : Controller
+    public class mst_sectionController : BaseController
     {
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
         [HttpGet]
         public ActionResult AddSection()
         {
@@ -43,8 +48,15 @@ namespace SMS.Controllers
 
                 ViewData["class_id"] = list;
 
-                 ModelState.AddModelError(String.Empty, "Section Already Created");
+                if (mst.Section_name == null || mst.class_id == 0)
+                {
 
+                    ModelState.AddModelError(String.Empty, "Fields cannot be empty.");
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, "Section Already Created.");
+                }
                 return View(mst);
                 }
             }
@@ -90,9 +102,22 @@ namespace SMS.Controllers
         {
             mst_sectionMain stdMain = new mst_sectionMain();
 
-            stdMain.DeleteSection(id);
+            string query = @"select count(*) from sr_register where std_section_id = @section_id";
 
-            return RedirectToAction("AllSectionList");
+            int count = con.Query<int>(query, new { section_id = id }).SingleOrDefault();
+
+            if(count == 0)
+            { 
+                stdMain.DeleteSection(id);
+                return RedirectToAction("AllSectionList");
+            }
+            else
+            {
+                ModelState.AddModelError(String.Empty, "Students assigned cannot delete section");
+                return View(stdMain.FindSection(id));
+
+            }
+            
         }
     }
 }

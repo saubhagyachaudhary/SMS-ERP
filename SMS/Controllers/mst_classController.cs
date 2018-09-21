@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace SMS.Controllers
 {
-    public class mst_classController : Controller
+    public class mst_classController : BaseController
     {
         [HttpGet]
         public ActionResult AddClass()

@@ -5,300 +5,336 @@
 }
 <div class="right_col" role="main">
     <h2>Student Details</h2>
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                    <div class="x_title">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
 
-                        
 
-                        <div>
-                            <hr />
-                            <dl class="dl-horizontal">
+
+                    <div>
+                        <hr />
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_first_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_first_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_last_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_last_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_father_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_father_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_mother_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_mother_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_address)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_address)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_address1)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_address1)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_address2)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_address2)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_district)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_district)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_state)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_state)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_country)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_country)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_pincode)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_pincode)
+                            </dd>
+
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_contact)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_contact)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_contact1)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_contact1)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_contact2)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_contact2)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_email)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_email)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_father_occupation)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_father_occupation)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_mother_occupation)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_mother_occupation)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_aadhar)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_aadhar)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_blood_gp)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_blood_gp)
+                            </dd>
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_house_income)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_house_income)
+                            </dd>
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_nationality)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_nationality)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_category)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_category)
+                            </dd>
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_cast)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_cast)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_dob)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_dob)
+                            </dd>
+
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_sex)
+                            </dt>
+
+                            <dd>
+                                @{
+                                    if (Model.std_sex == "F")
+                                    {
+                                        @:Female
+                                    }
+                                    else
+                                    {
+                                        @:Male
+                                    }
+                                }
+                                @*@Html.DisplayFor(model => model.std_sex)*@
+                            </dd>
+
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_last_school)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_last_school)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_admission_date)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_admission_date)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_admission_class)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_admission_class)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.class_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.class_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.section_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.section_name)
+                            </dd>
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_house)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_house)
+                            </dd>
+
+
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_remark)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_remark)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.pickup_point)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.pickup_point)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.std_active)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.std_active)
+                            </dd>
+                            @if (Model.nso_date != System.DateTime.MinValue)
+                            {
                                 <dt>
-                                    @Html.DisplayNameFor(model => model.std_first_name)
+                                    @Html.DisplayNameFor(model => model.nso_date)
                                 </dt>
 
                                 <dd>
-                                    @Html.DisplayFor(model => model.std_first_name)
+                                    @Html.DisplayFor(model => model.nso_date)
                                 </dd>
+                            }
 
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_last_name)
-                                </dt>
 
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_last_name)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_father_name)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_father_name)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_mother_name)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_mother_name)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_address)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_address)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_address1)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_address1)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_address2)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_address2)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_district)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_district)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_state)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_state)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_country)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_country)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_pincode)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_pincode)
-                                </dd>
-
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_contact)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_contact)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_contact1)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_contact1)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_contact2)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_contact2)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_email)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_email)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_father_occupation)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_father_occupation)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_mother_occupation)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_mother_occupation)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_blood_gp)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_blood_gp)
-                                </dd>
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_house_income)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_house_income)
-                                </dd>
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_nationality)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_nationality)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_category)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_category)
-                                </dd>
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_cast)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_cast)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_dob)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_dob)
-                                </dd>
-
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_sex)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_sex)
-                                </dd>
-
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_last_school)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_last_school)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_admission_date)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_admission_date)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_admission_class)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_admission_class)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.class_name)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.class_name)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.section_name)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.section_name)
-                                </dd>
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_house)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_house)
-                                </dd>
-
-
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_remark)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_remark)
-                                </dd>
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.pickup_point)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.pickup_point)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.std_active)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.std_active)
-                                </dd>
-
-
-                            </dl>
-                        </div>
-                        <p>
-                            @Html.ActionLink("Edit", "EditDetails", new { id = Model.sr_number }) |
-                            @Html.ActionLink("Back to List", "AllStudentList")
-                        </p>
+                        </dl>
                     </div>
-                    </div>
-</div>
-</div>
+                    <p>
+                        @{
+                            if (Model.std_active == "Y")
+                            {
+                                @Html.ActionLink("Edit ", "EditDetails", new { id = Model.sr_number }, new { @class = "btn btn-primary please_wait" })
+                                }
+
+
+                        }
+
+                        @*@Html.ActionLink("Back to List", "AllStudentList")*@
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -16,7 +16,7 @@ namespace SMS.Models
         public int serial { get; set; }
 
         [Key]
-        public string fin_id { get; set; }
+        public string session { get; set; }
 
         [Key]
         public DateTime dt_date { get; set; }
@@ -29,6 +29,8 @@ namespace SMS.Models
         [Required]
         public int acc_id { get; set; }
 
+        public int class_id { get; set; }
+
         [Required]
         public string acc_name { get; set; }
 
@@ -39,6 +41,10 @@ namespace SMS.Models
         public decimal outstd_amount { get; set; }
 
         public decimal rmt_amount { get; set; }
+
+        public decimal dc_fine { get; set; }
+
+        public decimal dc_discount { get; set; }
 
         public string narration { get; set; }
 

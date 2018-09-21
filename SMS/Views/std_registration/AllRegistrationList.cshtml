@@ -11,7 +11,7 @@
 
 <div class="right_col" role="main">
     <p>
-        @Html.ActionLink("New Registration", "AddRegistration")
+        @Html.ActionLink("New Registration", "AddRegistration", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -77,10 +77,10 @@
                                             @Html.DisplayFor(modelItem => item.class_name)
                                         </td>
                                         <td>
-                                            @Html.ActionLink("Edit", "EditRegistration", new { sess = item.session, reg = item.reg_no, dt = item.reg_date }) |
+                                            @Html.ActionLink("Edit", "EditRegistration", new { sess = item.session, reg = item.reg_no, dt = item.reg_date }, new { @class = "btn btn-success btn-sm please_wait" }) 
 
-                                            @Html.ActionLink("Admit", "AddStudent", "sr_register", new { sess = item.session, reg = item.reg_no, dt = item.reg_date }, null) |
-                                            @Html.ActionLink("Delete", "DeleteRegistration", new { sess = item.session, reg = item.reg_no, dt = item.reg_date })
+                                            @Html.ActionLink("Admit", "AddStudent", "sr_register", new { sess = item.session, reg = item.reg_no, dt = item.reg_date }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                            @Html.ActionLink("Delete", "DeleteRegistration", new { sess = item.session, reg = item.reg_no, dt = item.reg_date }, new { @class = "btn btn-success btn-sm please_wait" })
                                         </td>
                                     </tr>
                                 }

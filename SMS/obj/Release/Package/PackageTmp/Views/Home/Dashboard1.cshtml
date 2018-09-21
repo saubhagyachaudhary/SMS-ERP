@@ -1,0 +1,516 @@
+﻿@model SMS.Models.dashboard
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+
+<div class="right_col" role="main">
+    <div class="">
+        @*<div class="col-md-12 col-sm-12 col-xs-12">*@
+
+
+        <!-- page content -->
+        <div class="row top_tiles">
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="tile-stats">
+                    <div class="icon"><i class="fa fa-user"></i></div>
+                    <div class="count">@Model.school_strength</div>
+                    <h3>School Strength</h3>
+                    <p><i class="fa fa-male"></i>Male: @Model.male_std  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.female_std </p>
+                </div>
+            </div>
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="tile-stats">
+                    <div class="icon"><i class="fa fa-bus"></i></div>
+                    <div class="count">@Model.transport_std</div>
+                    <h3>Transport</h3>
+                    <p><i class="fa fa-male"></i>Male: @Model.transport_male_std  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.transport_female_std </p>
+                </div>
+            </div>
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="tile-stats">
+                    <div class="icon"><i class="fa fa-user-plus"></i></div>
+                    <div class="count">@Model.newAdmission</div>
+                    <h3>New admission</h3>
+                    <p><i class="fa fa-male"></i>Male: @Model.newAdmission_male  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.newAdmission_female </p>
+                </div>
+            </div>
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="tile-stats">
+                    <div class="icon"><i class="fa fa-graduation-cap"></i></div>
+                    <div class="count">@Model.working_mentor</div>
+                    <h3>Assigned Mentor</h3>
+                    <p>Number of mentors assigned</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- page content -->
+
+    <div class="row">
+        <div class="col-md-9 col-sm-12 col-xs-12">
+
+            @*<div class="col-lg-9 col-md-3 col-sm-6 col-xs-12">*@
+            @*<div class="col-md-9 col-sm-6 col-xs-12">*@
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Monthly Fees Dues Chart</h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="overflow-x:auto;">
+
+                    <div id="echart_line" style="height:250px;"></div>
+
+                </div>
+            </div>
+        </div>
+
+        @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">*@
+        <div class="col-md-3 col-sm-4 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Total Recovery</h2>
+                    <ul class="nav navbar-right panel_toolbox"></ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+
+                    <div id="echart_donut" style="height:250px;"></div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-4 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Mentor No
+                                </th>
+                                <th>
+                                    Mentor Date
+                                </th>
+                                <th>
+                                    Student Name
+                                </th>
+                                <th>
+                                    Class
+                                </th>
+                                <th>
+                                    Mentor Name
+                                </th>
+                                <th>
+                                    Problem
+                                </th>
+                                <th>
+                                    Dead Line
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.pending_mentor)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.mentor_no)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.mentor_date)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.class_name)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.mentor_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.problem)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.dead_line)
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>    
+
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+
+            <!-- Bootstrap -->
+            @*<script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+                <!-- FastClick -->
+                <script src="~/vendors/fastclick/lib/fastclick.js"></script>
+                <!-- NProgress -->
+                <script src="~/vendors/nprogress/nprogress.js"></script>*@
+            <!-- ECharts -->
+            <script src="~/vendors/echarts/dist/echarts.min.js"></script>
+            @*<script src="~/vendors/echarts/map/js/world.js"></script>*@
+            <!-- Custom Theme Scripts -->
+            @*<script src="~/build/js/custom.min.js"></script>*@
+
+            <script>
+                var theme = {
+                    color: [
+                        '#26B99A', '#34495E', '#BDC3C7', '#3498DB',
+                        '#9B59B6', '#8abb6f', '#759c6a', '#bfd3b7'
+                    ],
+
+                    title: {
+                        itemGap: 8,
+                        textStyle: {
+                            fontWeight: 'normal',
+                            color: '#408829'
+                        }
+                    },
+
+                    dataRange: {
+                        color: ['#1f610a', '#97b58d']
+                    },
+
+                    toolbox: {
+                        color: ['#408829', '#408829', '#408829', '#408829']
+                    },
+
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                                color: '#408829',
+                                type: 'dashed'
+                            },
+                            crossStyle: {
+                                color: '#408829'
+                            },
+                            shadowStyle: {
+                                color: 'rgba(200,200,200,0.3)'
+                            }
+                        }
+                    },
+
+                    dataZoom: {
+                        dataBackgroundColor: '#eee',
+                        fillerColor: 'rgba(64,136,41,0.2)',
+                        handleColor: '#408829'
+                    },
+                    grid: {
+                        borderWidth: 0
+                    },
+
+                    categoryAxis: {
+                        axisLine: {
+                            lineStyle: {
+                                color: '#408829'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: ['#eee']
+                            }
+                        }
+                    },
+
+                    valueAxis: {
+                        axisLine: {
+                            lineStyle: {
+                                color: '#408829'
+                            }
+                        },
+                        splitArea: {
+                            show: true,
+                            areaStyle: {
+                                color: ['rgba(250,250,250,0.1)', 'rgba(200,200,200,0.1)']
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: ['#eee']
+                            }
+                        }
+                    },
+                    timeline: {
+                        lineStyle: {
+                            color: '#408829'
+                        },
+                        controlStyle: {
+                            normal: { color: '#408829' },
+                            emphasis: { color: '#408829' }
+                        }
+                    },
+
+                    k: {
+                        itemStyle: {
+                            normal: {
+                                color: '#68a54a',
+                                color0: '#a9cba2',
+                                lineStyle: {
+                                    width: 1,
+                                    color: '#408829',
+                                    color0: '#86b379'
+                                }
+                            }
+                        }
+                    },
+
+                    force: {
+                        itemStyle: {
+                            normal: {
+                                linkStyle: {
+                                    strokeColor: '#408829'
+                                }
+                            }
+                        }
+                    },
+                    chord: {
+                        padding: 4,
+                        itemStyle: {
+                            normal: {
+                                lineStyle: {
+                                    width: 1,
+                                    color: 'rgba(128, 128, 128, 0.5)'
+                                },
+                                chordStyle: {
+                                    lineStyle: {
+                                        width: 1,
+                                        color: 'rgba(128, 128, 128, 0.5)'
+                                    }
+                                }
+                            },
+                            emphasis: {
+                                lineStyle: {
+                                    width: 1,
+                                    color: 'rgba(128, 128, 128, 0.5)'
+                                },
+                                chordStyle: {
+                                    lineStyle: {
+                                        width: 1,
+                                        color: 'rgba(128, 128, 128, 0.5)'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    gauge: {
+                        startAngle: 225,
+                        endAngle: -45,
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: [[0.2, '#86b379'], [0.8, '#68a54a'], [1, '#408829']],
+                                width: 8
+                            }
+                        },
+                        axisTick: {
+                            splitNumber: 10,
+                            length: 12,
+                            lineStyle: {
+                                color: 'auto'
+                            }
+                        },
+                        axisLabel: {
+                            textStyle: {
+                                color: 'auto'
+                            }
+                        },
+                        splitLine: {
+                            length: 18,
+                            lineStyle: {
+                                color: 'auto'
+                            }
+                        },
+                        pointer: {
+                            length: '90%',
+                            color: 'auto'
+                        },
+                        title: {
+                            textStyle: {
+                                color: '#333'
+                            }
+                        },
+                        detail: {
+                            textStyle: {
+                                color: 'auto'
+                            }
+                        }
+                    },
+                    textStyle: {
+                        fontFamily: 'Arial, Verdana, sans-serif'
+                    }
+                };
+
+
+                var echartLine = echarts.init(document.getElementById('echart_line'), theme);
+
+                echartLine.setOption({
+
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        x: 220,
+                        y: 40,
+                        data: ['Recovered', 'Dues']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            magicType: {
+                                show: true,
+                                title: {
+                                    line: 'Line',
+                                    bar: 'Bar',
+                                    stack: 'Stack',
+
+                                },
+                                type: ['line', 'bar', 'stack']
+                            },
+                            restore: {
+                                show: true,
+                                title: "Restore"
+                            },
+                            saveAsImage: {
+                                show: true,
+                                title: "Save Image"
+                            }
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [{
+                        type: 'category',
+                        boundaryGap: false,
+                        data: [@Html.Raw(string.Join(",",Model.name.Select(x=>"'"+x+"'")))]
+                    }],
+                    yAxis: [{
+                        type: 'value'
+                    }],
+                    series: [{
+                        name: 'Recovered',
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: {
+                            normal: {
+                                areaStyle: {
+                                    type: 'default'
+                                }
+                            }
+                        },
+                        data: [@Html.Raw(string.Join(",", Model.recovered.Select(x => x )))]
+                    }, {
+                        name: 'Dues',
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: {
+                            normal: {
+                                areaStyle: {
+                                    type: 'default'
+                                }
+                            }
+                        },
+                        data: [@Html.Raw(string.Join(",", Model.dues.Select(x =>  x )))]
+
+                    }]
+                });
+
+                var echartDonut = echarts.init(document.getElementById('echart_donut'), theme);
+
+                echartDonut.setOption({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    calculable: true,
+                    legend: {
+                        x: 'center',
+                        y: 'bottom',
+                        data: ['Recovered', 'Dues']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            magicType: {
+                                show: true,
+                                type: ['pie', 'funnel'],
+                                option: {
+                                    funnel: {
+                                        x: '25%',
+                                        width: '50%',
+                                        funnelAlign: 'center',
+                                        max: 1548
+                                    }
+                                }
+                            },
+
+                            saveAsImage: {
+                                show: true,
+                                title: "Save Image"
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'School Fees Recovery Status',
+                        type: 'pie',
+                        radius: ['35%', '55%'],
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true
+                                },
+                                labelLine: {
+                                    show: true
+                                }
+                            },
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    position: 'center',
+                                    textStyle: {
+                                        fontSize: '14',
+                                        fontWeight: 'normal'
+                                    }
+                                }
+                            }
+                        },
+                        data: [{
+                            value: @Model.total_recovered,
+                            name: 'Recovered'
+                        }, {
+                            value: @Model.total_dues,
+                            name: 'Dues'
+                        }]
+                    }]
+                });
+
+            </script>
+            @section scripts{
+                <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+                <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+
+                <script>
+                    $('#datatable').dataTable();
+                </script>
+            }

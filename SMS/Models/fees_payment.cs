@@ -54,6 +54,8 @@ namespace SMS.Models
 
         public string fin_id { get; set; }
 
+        public string session { get; set; }
+
         public bool clear_flag { get; set; }
 
         public string mode_flag { get; set; }

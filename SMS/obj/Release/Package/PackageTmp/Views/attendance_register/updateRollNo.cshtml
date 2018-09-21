@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewBag.Title = "updateRollNo";
+}
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+                    <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <strong>Roll numbers are not assigned to all the students.</strong>
+                    </div>
+                </div>
+                @Html.ActionLink("Update roll number", "roll_class_list", "mst_rollnumber", "" ,new { @class = "btn btn-primary please_wait" })
+            </div>
+        </div>
+    </div>
+</div>
+

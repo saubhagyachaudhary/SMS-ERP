@@ -13,7 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Hariti Infotech</title>
+    <title>RamRaj Infotech</title>
 
     <!-- Bootstrap core CSS -->
 
@@ -47,27 +47,30 @@
                 <section class="login_content">
                    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
                    {
-                       @Html.AntiForgeryToken();
+                       
+
+                     @Html.AntiForgeryToken()
                       
+
                         <h1>Login</h1>
                         @Html.ValidationSummary(true);
                         @Html.ValidationMessageFor(model => model.username, "", new { @class = "text-danger" })
                         <div>
-                            @*<input type="text" class="form-control" placeholder="Username" required="" />*@
+                          
                             @Html.TextBoxFor(model => model.username, new { @class = "form-control", placeholder = "Username" })
-                           
+                            @Html.HiddenFor(model => model.ReturnUrl)
                         </div>
                         @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
                         <div>
                             @Html.PasswordFor(model => model.password, new { @class = "form-control", placeholder = "Password" })
+                            
                            
-                            @*<input type="password" class="form-control" placeholder="Password" required="" />*@
                         </div>
                         <div>
-                            @*<a class="btn btn-default submit" value="Log in">Log in</a>*@
+                        
 
                             <input type="submit" value="Log in" class="btn btn-default"/>
-                            @*<a class="reset_pass" href="#">Lost your password?</a>*@
+                        
                         </div>
                         <div class="clearfix"></div>
                         <div class="separator">
@@ -77,7 +80,7 @@
                             <div>
                                 <h1><i class="fa fa-paw" style="font-size: 26px;"></i> RamRaj Infotech  </h1>
 
-                                <p>©2015 All Rights Reserved.</p>
+                                <p>©@DateTime.Now.Year All Rights Reserved to RamRaj Infotech</p>
                             </div>
                         </div>
                    }

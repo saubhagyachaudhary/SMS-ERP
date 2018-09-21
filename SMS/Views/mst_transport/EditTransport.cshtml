@@ -6,311 +6,318 @@
 
 <div class="right_col" role="main">
     <h2>Edit Transport</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-horizontal">
+                            <hr />
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.pickup_id)
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.pickup_point, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.pickup_point, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.pickup_point, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.transport_fees, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.transport_fees, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.transport_fees, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.transport_number, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.transport_number, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.transport_number, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-10 col-md-10 col-sm-offset-2">
+                                        <div class="panel panel-default">
+                                            <!-- Default panel contents -->
+                                            <div class="panel-heading">Select Month For Fees Applicability</div>
+
+                                            <!-- List group -->
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_apr, htmlAttributes: new { @for = "apr" })
+                                                    <div class="material-switch pull-right">
+
+                                                        @if (Model.bl_apr)
+                                                        {
+                                                            <input id="apr" name="bl_apr" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="apr" name="bl_apr" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="apr" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_apr)
+                                                    </div>
+                                                </li>
+
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_may, htmlAttributes: new { @for = "may" })
+                                                    <div class="material-switch pull-right">
 
 
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+                                                        @if (Model.bl_may)
+                                                        {
+                                                            <input id="may" name="bl_may" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="may" name="bl_may" type="checkbox" value="true" />
+                                                        }
 
-        <div class="form-horizontal">
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.pickup_id)
+                                                        <label for="may" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_may)
+                                                    </div>
+                                                </li>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.pickup_point, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.pickup_point, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.pickup_point, "", new { @class = "text-danger" })
-                </div>
-            </div>
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_jun, htmlAttributes: new { @for = "jun" })
+                                                    <div class="material-switch pull-right">
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.transport_fees, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.transport_fees, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.transport_fees, "", new { @class = "text-danger" })
-                </div>
-            </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.transport_number, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.transport_number, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.transport_number, "", new { @class = "text-danger" })
-                </div>
-            </div>
+                                                        @if (Model.bl_jun)
+                                                        {
+                                                            <input id="jun" name="bl_jun" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="jun" name="bl_jun" type="checkbox" value="true" />
+                                                        }
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-10 col-md-10 col-sm-offset-2">
-                        <div class="panel panel-default">
-                            <!-- Default panel contents -->
-                            <div class="panel-heading">Select Month For Fees Applicability</div>
+                                                        <label for="jun" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_jun)
+                                                    </div>
+                                                </li>
 
-                            <!-- List group -->
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_apr, htmlAttributes: new { @for = "apr" })
-                                    <div class="material-switch pull-right">
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_jul, htmlAttributes: new { @for = "jul" })
+                                                    <div class="material-switch pull-right">
 
-                                        @if (Model.bl_apr)
-                                        {
-                                            <input id="apr" name="bl_apr" type="checkbox" value="true" checked/>
-                                        }
-                                        else
-                                        {
-                                            <input id="apr" name="bl_apr" type="checkbox" value="true" />
-                                        }
 
-                                        <label for="apr" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_apr)
+                                                        @if (Model.bl_jul)
+                                                        {
+                                                            <input id="jul" name="bl_jul" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="jul" name="bl_jul" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="jul" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_jul)
+                                                    </div>
+                                                </li>
+
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_aug, htmlAttributes: new { @for = "aug" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_aug)
+                                                        {
+                                                            <input id="aug" name="bl_aug" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="aug" name="bl_aug" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="aug" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_aug)
+                                                    </div>
+                                                </li>
+
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_sep, htmlAttributes: new { @for = "sep" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_sep)
+                                                        {
+                                                            <input id="sep" name="bl_sep" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="sep" name="bl_sep" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="sep" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_sep)
+                                                    </div>
+                                                </li>
+
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_oct, htmlAttributes: new { @for = "oct" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_oct)
+                                                        {
+                                                            <input id="oct" name="bl_oct" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="oct" name="bl_oct" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="oct" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_oct)
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_nov, htmlAttributes: new { @for = "nov" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_nov)
+                                                        {
+                                                            <input id="nov" name="bl_nov" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="nov" name="bl_nov" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="nov" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_nov)
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_dec, htmlAttributes: new { @for = "dec" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_dec)
+                                                        {
+                                                            <input id="dec" name="bl_dec" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="dec" name="bl_dec" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="dec" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_dec)
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_jan, htmlAttributes: new { @for = "jan" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_jan)
+                                                        {
+                                                            <input id="jan" name="bl_jan" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="jan" name="bl_jan" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="jan" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_jan)
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_feb, htmlAttributes: new { @for = "feb" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_feb)
+                                                        {
+                                                            <input id="feb" name="bl_feb" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="feb" name="bl_feb" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="feb" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_feb)
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    @Html.LabelFor(model => model.bl_mar, htmlAttributes: new { @for = "mar" })
+                                                    <div class="material-switch pull-right">
+
+
+                                                        @if (Model.bl_mar)
+                                                        {
+                                                            <input id="mar" name="bl_mar" type="checkbox" value="true" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="mar" name="bl_mar" type="checkbox" value="true" />
+                                                        }
+
+                                                        <label for="mar" class="label-success"></label>
+                                                        @Html.HiddenFor(model => model.bl_mar)
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </li>
-
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_may, htmlAttributes: new { @for = "may" })
-                                    <div class="material-switch pull-right">
+                                </div>
+                            </div>
 
 
-                                        @if (Model.bl_may)
-                                        {
-                                            <input id="may" name="bl_may" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="may" name="bl_may" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="may" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_may)
-                                    </div>
-                                </li>
-
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_jun, htmlAttributes: new { @for = "jun" })
-                                    <div class="material-switch pull-right">
 
 
-                                        @if (Model.bl_jun)
-                                        {
-                                            <input id="jun" name="bl_jun" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="jun" name="bl_jun" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="jun" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_jun)
-                                    </div>
-                                </li>
-
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_jul, htmlAttributes: new { @for = "jul" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_jul)
-                                        {
-                                            <input id="jul" name="bl_jul" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="jul" name="bl_jul" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="jul" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_jul)
-                                    </div>
-                                </li>
-
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_aug, htmlAttributes: new { @for = "aug" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_aug)
-                                        {
-                                            <input id="aug" name="bl_aug" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="aug" name="bl_aug" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="aug" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_aug)
-                                    </div>
-                                </li>
-
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_sep, htmlAttributes: new { @for = "sep" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_sep)
-                                        {
-                                            <input id="sep" name="bl_sep" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="sep" name="bl_sep" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="sep" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_sep)
-                                    </div>
-                                </li>
-
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_oct, htmlAttributes: new { @for = "oct" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_oct)
-                                        {
-                                            <input id="oct" name="bl_oct" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="oct" name="bl_oct" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="oct" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_oct)
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_nov, htmlAttributes: new { @for = "nov" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_nov)
-                                        {
-                                            <input id="nov" name="bl_nov" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="nov" name="bl_nov" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="nov" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_nov)
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_dec, htmlAttributes: new { @for = "dec" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_dec)
-                                        {
-                                            <input id="dec" name="bl_dec" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="dec" name="bl_dec" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="dec" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_dec)
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_jan, htmlAttributes: new { @for = "jan" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_jan)
-                                        {
-                                            <input id="jan" name="bl_jan" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="jan" name="bl_jan" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="jan" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_jan)
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_feb, htmlAttributes: new { @for = "feb" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_feb)
-                                        {
-                                            <input id="feb" name="bl_feb" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="feb" name="bl_feb" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="feb" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_feb)
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    @Html.LabelFor(model => model.bl_mar, htmlAttributes: new { @for = "mar" })
-                                    <div class="material-switch pull-right">
-
-
-                                        @if (Model.bl_mar)
-                                        {
-                                            <input id="mar" name="bl_mar" type="checkbox" value="true" checked />
-                                        }
-                                        else
-                                        {
-                                            <input id="mar" name="bl_mar" type="checkbox" value="true" />
-                                        }
-
-                                        <label for="mar" class="label-success"></label>
-                                        @Html.HiddenFor(model => model.bl_mar)
-                                    </div>
-                                </li>
-                            </ul>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                    <input type="submit" value="Save" class="btn btn-default" onclick="monthCheckValue()" />
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
+
+                    
                 </div>
+                </div>
+            <div>
+                @Html.ActionLink("Back to List", "AllTransportList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
             </div>
-
-           
-
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" onclick="monthCheckValue()" />
-                </div>
             </div>
         </div>
-    }
-
-    <div>
-        @Html.ActionLink("Back to List", "AllTransportList")
     </div>
-</div>
-<script>
-    function monthCheckValue()
-    {
+                <script>
+                    function monthCheckValue() {
 
-        document.getElementById("bl_apr").value = document.getElementById("apr").checked;
-        document.getElementById("bl_may").value = document.getElementById("may").checked;
-        document.getElementById("bl_jun").value = document.getElementById("jun").checked;
-        document.getElementById("bl_jul").value = document.getElementById("jul").checked;
-        document.getElementById("bl_aug").value = document.getElementById("aug").checked;
-        document.getElementById("bl_sep").value = document.getElementById("sep").checked;
-        document.getElementById("bl_oct").value = document.getElementById("oct").checked;
-        document.getElementById("bl_nov").value = document.getElementById("nov").checked;
-        document.getElementById("bl_dec").value = document.getElementById("dec").checked;
-        document.getElementById("bl_jan").value = document.getElementById("jan").checked;
-        document.getElementById("bl_feb").value = document.getElementById("feb").checked;
-        document.getElementById("bl_mar").value = document.getElementById("mar").checked;
+                        document.getElementById("bl_apr").value = document.getElementById("apr").checked;
+                        document.getElementById("bl_may").value = document.getElementById("may").checked;
+                        document.getElementById("bl_jun").value = document.getElementById("jun").checked;
+                        document.getElementById("bl_jul").value = document.getElementById("jul").checked;
+                        document.getElementById("bl_aug").value = document.getElementById("aug").checked;
+                        document.getElementById("bl_sep").value = document.getElementById("sep").checked;
+                        document.getElementById("bl_oct").value = document.getElementById("oct").checked;
+                        document.getElementById("bl_nov").value = document.getElementById("nov").checked;
+                        document.getElementById("bl_dec").value = document.getElementById("dec").checked;
+                        document.getElementById("bl_jan").value = document.getElementById("jan").checked;
+                        document.getElementById("bl_feb").value = document.getElementById("feb").checked;
+                        document.getElementById("bl_mar").value = document.getElementById("mar").checked;
 
-    }
-</script>
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+                    }
+                </script>
+                @section Scripts {
+                    @Scripts.Render("~/bundles/jqueryval")
+                }

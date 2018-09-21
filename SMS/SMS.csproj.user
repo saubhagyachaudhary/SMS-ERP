@@ -11,7 +11,7 @@
     </WebStackScaffolding_LayoutPageFile>
     <WebStackScaffolding_ControllerDialogWidth>600</WebStackScaffolding_ControllerDialogWidth>
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
-    <NameOfLastUsedPublishProfile>local</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>FileSystem</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

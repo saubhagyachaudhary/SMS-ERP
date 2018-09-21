@@ -12,7 +12,7 @@
 
 <div class="right_col" role="main">
     <p>
-        @Html.ActionLink("Add Fees", "AddFees")
+        @Html.ActionLink("Add Fees", "AddFees", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -24,6 +24,9 @@
                     <table id="datatable"class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.session)
+                                </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.class_name)
                                 </th>
@@ -45,6 +48,9 @@
                             {
                                 <tr>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.session)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.class_name)
                                     </td>
                                     <td>
@@ -56,9 +62,9 @@
                                     </td>
                                   
                                     <td>
-                                        @Html.ActionLink("Edit", "EditFees", new {  class_id= item.class_id, acc_id = item.acc_id }) |
+                                        @Html.ActionLink("Edit", "EditFees", new {  class_id= item.class_id, acc_id = item.acc_id,session = item.session }, new { @class = "btn btn-success btn-sm please_wait" }) 
                                        
-                                        @Html.ActionLink("Delete", "DeleteFees", new { class_id = item.class_id, acc_id = item.acc_id })
+                                        @Html.ActionLink("Delete", "DeleteFees", new { class_id = item.class_id, acc_id = item.acc_id,session = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }

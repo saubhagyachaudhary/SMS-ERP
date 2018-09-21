@@ -11,7 +11,7 @@
 <link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">*@
 <div class="right_col" role="main">
     <p>
-        @Html.ActionLink("Create New Section", "AddSection")
+        @Html.ActionLink("Create New Section", "AddSection", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -46,7 +46,7 @@
                                         @Html.DisplayFor(modelItem => item.Section_name)
                                     </td>
                                     <td>
-                                        @Html.ActionLink("Delete", "DeleteSection", new { id = item.section_id })
+                                        @Html.ActionLink("Delete", "DeleteSection", new { id = item.section_id }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Hangfire;
+using Hangfire.MySql;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -10,12 +14,16 @@ namespace SMS
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            
         }
     }
 }

@@ -22,8 +22,8 @@
                             <hr />
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                             <div class="form-group">
-                                @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.DropDownListFor(model => model.class_id, ViewData["class_id"] as IEnumerable<SelectListItem>, "Please Select Class", htmlAttributes: new { @class = "form-control" })
 
                                     @Html.ValidationMessageFor(model => model.class_name, "", new { @class = "text-danger" })
@@ -31,8 +31,8 @@
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.acc_name, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.acc_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.DropDownListFor(model => model.acc_id, ViewData["acc_id"] as IEnumerable<SelectListItem>, "Please Select Class", htmlAttributes: new { @class = "form-control" })
 
                                     @Html.ValidationMessageFor(model => model.acc_name, "", new { @class = "text-danger" })
@@ -40,8 +40,8 @@
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.fees_amount, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
+                                @Html.LabelFor(model => model.fees_amount, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
                                     @Html.EditorFor(model => model.fees_amount, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.fees_amount, "", new { @class = "text-danger" })
                                 </div>
@@ -215,7 +215,7 @@
 
 
                                 <div class="form-group">
-                                    <div class="col-md-offset-2 col-md-10">
+                                    <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
                                         <input type="submit" value="Save" class="btn btn-default" onclick="monthCheckValue()"/>
                                     </div>
                                 </div>
@@ -223,7 +223,7 @@
                     }
 
                     <div>
-                        @Html.ActionLink("Back to List", "AllFeesList")
+                        @Html.ActionLink("Back to List", "AllFeesList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
                     </div>
                     <script>
     function monthCheckValue()
