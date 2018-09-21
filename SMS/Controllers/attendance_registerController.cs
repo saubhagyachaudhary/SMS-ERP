@@ -22,7 +22,7 @@ namespace SMS.Controllers
             
             return View(att.Attendance_class_list(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())));
 
-            //check
+            
         }
 
         [HttpGet]
