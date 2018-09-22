@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using SMS.job_scheduler;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -580,6 +581,138 @@ namespace SMS.Models
             return result;
         }
 
+        public IEnumerable<dailyBirthdayWish> std_birthday_list(int user_id, bool flag)
+        {
+            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
+            string query = "";
+            IEnumerable<dailyBirthdayWish> result;
+            if (flag)
+            {
+                query = @"SELECT 
+                            DATE_FORMAT(a.std_dob, '%d') date_num,
+                            DATE_FORMAT(a.std_dob, '%b') month_name,
+                            CONCAT(IFNULL(std_first_name, ''),
+                                    ' ',
+                                    IFNULL(std_last_name, '')) std_name,
+                            d.class_name,
+                            e.section_name
+                        FROM
+                            sr_register a,
+                            mst_batch b,
+                            mst_attendance c,
+                            mst_class d,
+                            mst_section e
+                        WHERE
+                            CONCAT(DAY(std_dob), MONTH(std_dob)) IN (CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 0 DAY)),
+                                    MONTH(DATE_ADD(CURDATE(), INTERVAL 0 DAY))) , CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 1 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 1 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 2 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 2 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 3 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 3 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 4 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 4 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 5 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 5 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 6 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 6 DAY))))
+                                AND std_active = 'Y'
+                                AND a.std_batch_id = b.batch_id
+                                AND b.class_id = c.class_id
+                                AND a.std_section_id = c.section_id
+                                AND b.class_id = d.class_id
+                                and a.std_section_id = e.section_id
+                        ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
+
+                result = con.Query<dailyBirthdayWish>(query);
+            }
+            else
+            {
+                query = @"SELECT 
+                            DATE_FORMAT(a.std_dob, '%d') date_num,
+                            DATE_FORMAT(a.std_dob, '%b') month_name,
+                            CONCAT(IFNULL(std_first_name, ''),
+                                    ' ',
+                                    IFNULL(std_last_name, '')) std_name,
+                            d.class_name,
+                            e.section_name
+                        FROM
+                            sr_register a,
+                            mst_batch b,
+                            mst_attendance c,
+                            mst_class d,
+                            mst_section e
+                        WHERE
+                            CONCAT(DAY(std_dob), MONTH(std_dob)) IN (CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 0 DAY)),
+                                    MONTH(DATE_ADD(CURDATE(), INTERVAL 0 DAY))) , CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 1 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 1 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 2 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 2 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 3 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 3 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 4 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 4 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 5 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 5 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 6 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 6 DAY))))
+                                AND std_active = 'Y'
+                                AND a.std_batch_id = b.batch_id
+                                AND b.class_id = c.class_id
+                                AND a.std_section_id = c.section_id
+                                AND b.class_id = d.class_id
+                                and c.user_id = @user_id 
+                                and a.std_section_id = e.section_id
+                        ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
+
+                result = con.Query<dailyBirthdayWish>(query, new { user_id = user_id });
+            }
+
+
+            return result;
+        }
+
+
+        public IEnumerable<dailyBirthdayWish> staff_birthday()
+        {
+            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
+            string query = "";
+            IEnumerable<dailyBirthdayWish> result;
+           
+                query = @"SELECT 
+                            DATE_FORMAT(a.dob, '%d') date_num,
+                            DATE_FORMAT(a.dob, '%b') month_name,
+                            CONCAT(IFNULL(FirstName, ''),
+                                    ' ',
+                                    IFNULL(FirstName, '')) std_name
+                        FROM
+                            emp_profile a
+                        WHERE
+                            CONCAT(DAY(dob), MONTH(dob)) IN (CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 0 DAY)),
+                                    MONTH(DATE_ADD(CURDATE(), INTERVAL 0 DAY))) , CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 1 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 1 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 2 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 2 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 3 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 3 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 4 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 4 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 5 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 5 DAY))),
+                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 6 DAY)),
+                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 6 DAY))))
+                                AND emp_active = 1
+                        ORDER BY YEAR(CURDATE()) , MONTH(dob) , DAY(dob)";
+
+                result = con.Query<dailyBirthdayWish>(query);
+            
+          
+
+
+            return result;
+        }
 
         public IEnumerable<mentor_header> pending_Observation_list_for_faculty(int mentor_id)
         {

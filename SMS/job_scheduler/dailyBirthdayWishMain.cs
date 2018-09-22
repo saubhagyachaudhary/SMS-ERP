@@ -23,7 +23,6 @@ namespace SMS.job_scheduler
                                 CONCAT(IFNULL(std_first_name, ''),
                                         ' ',
                                         IFNULL(std_last_name, '')) std_name,
-                                std_dob,
                                 COALESCE(std_contact, std_contact1, std_contact2) std_contact
                             FROM
                                 sr_register

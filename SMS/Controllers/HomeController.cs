@@ -47,6 +47,9 @@ namespace SMS.Controllers
             Task t22 = Task.FromResult<object>(null);
             Task t23 = Task.FromResult<object>(null);
             Task t24 = Task.FromResult<object>(null);
+            Task t25 = Task.FromResult<object>(null);
+            Task t26 = Task.FromResult<object>(null);
+            Task t27 = Task.FromResult<object>(null);
 
             if (list.Contains("fees_received"))
             {
@@ -205,7 +208,7 @@ namespace SMS.Controllers
                 if (User.IsInRole("superadmin") || User.IsInRole("principal"))
                     t22 = Task.Factory.StartNew(() => db.list_att_left_class = dmain.att_left_classess(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), true));
                 else
-                    t22 = Task.Factory.StartNew(() => db.list_att_left_class = dmain.att_left_classess(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), true));
+                    t22 = Task.Factory.StartNew(() => db.list_att_left_class = dmain.att_left_classess(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), false));
                 
 
             }
@@ -219,7 +222,23 @@ namespace SMS.Controllers
                 
             }
 
-            var tasklist = new List<Task> { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 };
+
+            if (list.Contains("std_birthday_list"))
+            {
+                if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+                    t25 = Task.Factory.StartNew(() => db.std_birthday_list = dmain.std_birthday_list(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), true));
+                else
+                    t26 = Task.Factory.StartNew(() => db.std_birthday_list = dmain.std_birthday_list(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), false));
+            }
+
+            if (list.Contains("staff_birthday_list"))
+            {
+                
+                    t27 = Task.Factory.StartNew(() => db.staff_birthday_list = dmain.staff_birthday());
+            }
+
+
+            var tasklist = new List<Task> { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27 };
 
 
             Task.WaitAll(tasklist.ToArray());

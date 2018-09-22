@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using SMS.job_scheduler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +78,10 @@ namespace SMS.Models
         public IEnumerable<attendance_register> finalize_list { get; set; }
 
         public IEnumerable<attendance_register> list_att_left_class { get; set; }
+
+        public IEnumerable<dailyBirthdayWish> std_birthday_list { get; set; }
+
+        public IEnumerable<dailyBirthdayWish> staff_birthday_list { get; set; }
 
     }
 

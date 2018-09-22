@@ -417,6 +417,62 @@
             </div>
         </div>
         }
+        @if (list.Contains("std_birthday_list"))
+        {
+            <div class="col-md-6 col-xs-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Upcomming Students Birthday List </h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content" style="height:250px; overflow-y:auto;">
+                        @foreach (var item in Model.std_birthday_list)
+                    {
+                            <article class="media event">
+
+                                <a class="pull-left date">
+                                    <p class="month">@item.month_name</p>
+                                    <p class="day">@item.date_num</p>
+                                </a>
+                                <div class="media-body">
+                                    <br />
+                                    <p>@String.Format("Student Name: {0}, Class {1} Section {2}", item.std_name, item.class_name,item.section_name)</p>
+                                </div>
+
+                            </article>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        @if (list.Contains("staff_birthday_list"))
+        {
+            <div class="col-md-6 col-xs-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Upcomming Staff Birthday List </h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content" style="height:250px; overflow-y:auto;">
+                        @foreach (var item in Model.staff_birthday_list)
+                    {
+                            <article class="media event">
+
+                                <a class="pull-left date">
+                                    <p class="month">@item.month_name</p>
+                                    <p class="day">@item.date_num</p>
+                                </a>
+                                <div class="media-body">
+                                    <br />
+                                    <p>@String.Format("Employee Name: {0}", item.std_name)</p>
+                                </div>
+
+                            </article>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 }
 
