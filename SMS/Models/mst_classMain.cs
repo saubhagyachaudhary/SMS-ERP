@@ -49,17 +49,30 @@ namespace SMS.Models
             return result;
         }
 
-        public IEnumerable<mst_class> AllClassListByTeacher(int user_id)
+        public IEnumerable<mst_class> AllClassListByTeacher(int user_id,bool flag)
         {
-            String query = @"SELECT distinct a.class_id,b.class_name FROM mst_attendance a,mst_class b 
+
+            if (flag)
+            {
+                String query = @"SELECT distinct a.class_id,b.class_name FROM mst_attendance a,mst_class b 
+                            where 
+                            a.class_id = b.class_id";
+
+                var result = con.Query<mst_class>(query);
+                return result;
+            }
+            else
+            {
+                String query = @"SELECT distinct a.class_id,b.class_name FROM mst_attendance a,mst_class b 
                             where 
                             a.class_id = b.class_id
                             and
                             a.user_id = @user_id";
 
-            var result = con.Query<mst_class>(query,new {user_id = user_id });
-
-            return result;
+                var result = con.Query<mst_class>(query, new { user_id = user_id });
+                return result;
+            }
+            
         }
 
         public IEnumerable<mst_class> AllClassListWithSection()

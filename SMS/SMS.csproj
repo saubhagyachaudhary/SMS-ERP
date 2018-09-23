@@ -292,6 +292,7 @@
     <Compile Include="Models\repAttendance_sheet.cs" />
     <Compile Include="Models\repDues_Statement.cs" />
     <Compile Include="Models\repFeesStatement.cs" />
+    <Compile Include="Models\repReport_card.cs" />
     <Compile Include="Models\reptransportList.cs" />
     <Compile Include="Models\SMSMessage.cs" />
     <Compile Include="Models\std_discount.cs" />
@@ -2487,6 +2488,7 @@
     <Content Include="Views\report\birth_certificate.cshtml" />
     <Content Include="Views\mst_term_rules\DeleteTermRule.cshtml" />
     <Content Include="Views\report\duesListTransportWise.cshtml" />
+    <Content Include="Views\report\report_card.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

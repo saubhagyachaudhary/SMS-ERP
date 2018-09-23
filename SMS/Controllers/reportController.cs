@@ -204,6 +204,64 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
+        public ActionResult report_card()
+        {
+
+            mst_classMain mstClass = new mst_classMain();
+
+            bool flag;
+
+            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+            {
+                flag = true;
+            }
+            else
+            {
+                flag = false;
+            }
+
+            var class_list = mstClass.AllClassListByTeacher(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()),flag);
+
+
+            IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
+
+            ViewData["class_id"] = list;
+            DDsession_name();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult report_card(int section_id, int class_id, string session)
+        {
+
+            repReport_cardMain report_card = new repReport_cardMain();
+
+            report_card.pdfReportCard(class_id, section_id, session);
+
+            mst_classMain mstClass = new mst_classMain();
+
+            bool flag;
+
+            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+            {
+                flag = true;
+            }
+            else
+            {
+                flag = false;
+            }
+
+            var class_list = mstClass.AllClassListByTeacher(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()),flag);
+
+
+            IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
+
+            ViewData["class_id"] = list;
+            DDsession_name();
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult attendance_sheet()
         {
 
@@ -222,6 +280,57 @@ namespace SMS.Controllers
             DDsession_name();
             DDclass_name();
             return View();
+        }
+
+        public JsonResult GetSection(int id)
+        {
+            bool flag;
+
+            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+            {
+                flag = true;
+            }
+            else
+            {
+                flag = false;
+            }
+
+            if(flag)
+            {
+                string query = @"SELECT a.section_id,b.section_name FROM mst_attendance a,mst_section b
+                            where
+                            a.section_id = b.section_id
+                            and
+                            a.class_id = @class_id";
+
+
+                var exam_list = con.Query<mst_section>(query, new { class_id = id});
+
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
+
+                return Json(list);
+            }
+            else
+            {
+                string query = @"SELECT a.section_id,b.section_name FROM mst_attendance a,mst_section b
+                            where
+                            a.section_id = b.section_id
+                            and
+                            a.class_id = @class_id
+                            and 
+                            a.user_id = @user_id";
+
+
+                var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });
+
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
+
+                return Json(list);
+            }
+           
+
+            
+
         }
 
         public void DDsession_name()

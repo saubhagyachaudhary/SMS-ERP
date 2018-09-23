@@ -74,7 +74,7 @@ namespace SMS.Models
 
                     marks.session = session;
 
-                    int count = con.Query<int>(query2,new { session = marks.session,sr_num = marks.sr_num,exam_id = marks.exam_id, subject_id = marks.exam_id, class_id = marks.class_id, section_id = marks.section_id }).SingleOrDefault();
+                    int count = con.Query<int>(query2,new { session = marks.session,sr_num = marks.sr_num,exam_id = marks.exam_id, subject_id = marks.subject_id, class_id = marks.class_id, section_id = marks.section_id }).SingleOrDefault();
 
                     if (count > 0)
                     {
@@ -116,7 +116,7 @@ namespace SMS.Models
             }
         }
 
-        public IEnumerable<mst_exam_marks> student_list_for_marks_update(int subject_id,int class_id, int section_id)
+        public IEnumerable<mst_exam_marks> student_list_for_marks_update(int subject_id,int class_id, int section_id,int exam_id)
         {
             mst_sessionMain sess = new mst_sessionMain();
 
@@ -137,7 +137,7 @@ namespace SMS.Models
                             sr_register b,
                             mst_rollnumber c
                         WHERE
-                            a.exam_id = 1 AND a.session = @session
+                            a.exam_id = @exam_id AND a.session = @session
                                 AND a.subject_id = @subject_id
                                 AND a.class_id = @class_id
                                 AND a.section_id = @section_id
@@ -146,7 +146,7 @@ namespace SMS.Models
                                 AND a.session = c.session
                                 order by c.roll_number";
 
-            return con.Query<mst_exam_marks>(query, new { subject_id = subject_id, class_id = class_id, section_id = section_id, session = session_name });
+            return con.Query<mst_exam_marks>(query, new { subject_id = subject_id, class_id = class_id, section_id = section_id, session = session_name,exam_id = exam_id });
         }
 
         public IEnumerable<mst_exam_marks> student_list_for_marks(int class_id, int section_id)

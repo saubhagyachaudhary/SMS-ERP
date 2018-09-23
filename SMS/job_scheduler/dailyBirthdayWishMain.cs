@@ -29,7 +29,18 @@ namespace SMS.job_scheduler
                             WHERE
                                 MONTH(std_dob) = MONTH(CURDATE())
                                     AND DAY(std_dob) = DAY(CURDATE())
-                                    AND std_active = 'Y'";
+                                    AND std_active = 'Y' 
+                            UNION SELECT 
+                                CONCAT(IFNULL(FirstName, ''),
+                                        ' ',
+                                        IFNULL(FirstName, '')) std_name,
+                                COALESCE(contact, contact1, contact2) std_contact
+                            FROM
+                                emp_profile a
+                            WHERE
+                                MONTH(dob) = MONTH(CURDATE())
+                                    AND DAY(dob) = DAY(CURDATE())
+                                    AND emp_active = 1";
 
             std = con.Query<dailyBirthdayWish>(query);
 
@@ -39,7 +50,7 @@ namespace SMS.job_scheduler
             {
                 foreach (var bdy in sms.smsbody("birthday"))
                 {
-                    await sms.SendSMS(bdy.Replace("#student_name#", item.std_name), item.std_contact);
+                    await sms.SendSMS(bdy.Replace("#name#", item.std_name), item.std_contact);
                 }
             }
         }

@@ -18,9 +18,7 @@ namespace SMS.Controllers
         // GET: Login
         public ActionResult Login(string ReturnUrl)
         {
-
-           
-
+            
             users u = new users();
             u.ReturnUrl = ReturnUrl;
             return View(u);

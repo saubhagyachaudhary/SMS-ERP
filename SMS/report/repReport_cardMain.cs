@@ -442,8 +442,10 @@ namespace SMS.report
                     query = @"SELECT a.subject_id,b.subject_name FROM mst_class_subject a, mst_subject b
                                     where
                                     a.subject_id = b.subject_id
-                                    and 
-                                    session = @session
+                                    and
+                                    a.session = b.session
+                                    and
+                                    a.session = @session
                                     and
                                     class_id = @class_id";
 
@@ -648,9 +650,10 @@ namespace SMS.report
                                 where
                                 sr_num = @sr_num
                                 and term_id = @term_id
-                                and session = @session
+                                 and a.session = @session
                                 and a.co_scholastic_id = b.co_scholastic_id
                                 and a.co_scholastic_id  = @co_scholastic_id 
+                                and a.session = b.session
                                 order by b.co_scholastic_name";
 
                     
@@ -670,18 +673,31 @@ namespace SMS.report
                         {
                             coscholastic = con.Query<mst_coscholastic_grades>(query, new { sr_num = std.sr_num, session = session, co_scholastic_id = dt.co_scholastic_id,term_id = dtt.term_id });
 
-                            foreach (var gr in coscholastic)
+                            if (coscholastic.Count() > 0)
                             {
+                                foreach (var gr in coscholastic)
+                                {
 
+                                    ph = new Phrase();
+                                    text = new Chunk(gr.grade, FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
+                                    ph.Add(text);
+                                    _cell = new PdfPCell(ph);
+                                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                    pt.AddCell(_cell);
+
+
+                                }
+                            }
+                            else
+                            {
                                 ph = new Phrase();
-                                text = new Chunk(gr.grade, FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
+                                text = new Chunk("", FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
                                 ph.Add(text);
                                 _cell = new PdfPCell(ph);
                                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                                 pt.AddCell(_cell);
-
-
                             }
+
                         }
                         
 
@@ -759,9 +775,10 @@ namespace SMS.report
                             where 
                             sr_num = @sr_num 
                             and term_id = @term_id
-                            and session = @session
+                            and a.session = @session
                             and a.discipline_id = b.discipline_id
                             and a.discipline_id = @discipline_id
+                            and a.session = b.session
                             order by b.discipline_name";
 
 
@@ -781,17 +798,29 @@ namespace SMS.report
                         {
                             discipline = con.Query<mst_discipline_grades>(query, new { sr_num = std.sr_num, session = session, discipline_id = dt.discipline_id,term_id = dtt.term_id });
 
-                            foreach (var gr in discipline)
+                            if (discipline.Count() > 0)
                             {
+                                foreach (var gr in discipline)
+                                {
 
+                                    ph = new Phrase();
+                                    text = new Chunk(gr.grade, FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
+                                    ph.Add(text);
+                                    _cell = new PdfPCell(ph);
+                                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                    pt.AddCell(_cell);
+
+
+                                }
+                            }
+                            else
+                            {
                                 ph = new Phrase();
-                                text = new Chunk(gr.grade, FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
+                                text = new Chunk("", FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
                                 ph.Add(text);
                                 _cell = new PdfPCell(ph);
                                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                                 pt.AddCell(_cell);
-
-
                             }
 
                         }

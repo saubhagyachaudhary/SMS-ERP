@@ -19,7 +19,18 @@ namespace SMS.Controllers
         {
             mst_classMain mstClass = new mst_classMain();
 
-            var class_list = mstClass.AllClassListByTeacher(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()));
+            bool flag;
+
+            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+            {
+                flag = true;
+            }
+            else
+            {
+                flag = false;
+            }
+
+            var class_list = mstClass.AllClassListByTeacher(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()),flag);
 
 
             IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
@@ -55,7 +66,7 @@ namespace SMS.Controllers
 
             if (marks.Count() > 0)
             {
-                var student_list = mstMain.student_list_for_marks_update(mst.subject_id,mst.class_id,mst.section_id);
+                var student_list = mstMain.student_list_for_marks_update(mst.subject_id,mst.class_id,mst.section_id,mst.exam_id);
                 exam = examMain.FindExam(mst.exam_id);
 
                 ViewData["MaxMarks"] = exam.max_no;
