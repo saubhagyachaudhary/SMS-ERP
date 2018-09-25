@@ -37,6 +37,8 @@ namespace SMS
 
             RecurringJob.AddOrUpdate("Dues Reminder date 5", () => dues.SendDuesReminder(), "0 9 5 * *",TimeZoneInfo.Local);
 
+            app.MapSignalR();
+
             app.UseHangfireServer();
         }
     }

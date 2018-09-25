@@ -12,6 +12,7 @@ using SMS.report;
 using System.Web.Routing;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using SMS.Hubs;
 
 namespace SMS.Models
 {
@@ -285,6 +286,10 @@ namespace SMS.Models
 
 
                     }
+
+                    DashboardHub dash = new DashboardHub();
+
+                    dash.DailyFeesUpdate();
 
                     return rect_no;
                 }

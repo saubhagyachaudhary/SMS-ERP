@@ -494,80 +494,6 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS.cancelled\SMS\obj\Debug
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS.cancelled\SMS\obj\Debug\SMS.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS.cancelled\SMS\obj\Debug\SMS.pdb
 E:\Hariti ERP MySQL\SMS.cancelled\SMS\bin\Google.Protobuf.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ApplicationInsights.config
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\csc.exe
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\Microsoft.CodeAnalysis.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\Microsoft.CSharp.Core.targets
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\Microsoft.VisualBasic.Core.targets
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\System.Collections.Immutable.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\System.Reflection.Metadata.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\vbc.exe
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\VBCSCompiler.exe
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\roslyn\VBCSCompiler.exe.config
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\SMS.dll.config
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\SMS.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\SMS.pdb
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Antlr3.Runtime.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Dapper.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EntityFramework.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\itextsharp.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.Agent.Intercept.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.DependencyCollector.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.PerfCounterCollector.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.ServerTelemetryChannel.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.Web.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.WindowsServer.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ApplicationInsights.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ReportViewer.Common.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ReportViewer.ProcessingObjectModel.DLL
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ReportViewer.WebForms.DLL
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Web.Infrastructure.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Newtonsoft.Json.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ReportViewerForMvc.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Helpers.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Mvc.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Optimization.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Razor.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.Deployment.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.Razor.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\WebGrease.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.SqlServer.Types.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Dapper.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EntityFramework.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\itextsharp.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.DependencyCollector.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.ServerTelemetryChannel.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.Web.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.WindowsServer.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ApplicationInsights.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Helpers.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Mvc.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Optimization.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Razor.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.Deployment.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.Razor.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Antlr3.Runtime.pdb
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Newtonsoft.Json.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\de\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\es\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\fr\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\it\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ja\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ko\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\pt\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ru\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-Hans\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-Hant\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.pdb
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\ApplicationInsights.config
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\roslyn\csc.exe
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
@@ -653,14 +579,3 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\Microsof
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\es\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\zh\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled - Copy (6)\SMS\bin\zh-TW\Hangfire.Core.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Hangfire.Core.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.Host.SystemWeb.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\MySql.Data.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Owin.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Hangfire.Core.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.Host.SystemWeb.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\es\Hangfire.Core.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh\Hangfire.Core.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core.resources.dll

@@ -453,9 +453,6 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.Web.dl
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.WindowsServer.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ApplicationInsights.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ReportViewer.Common.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ReportViewer.ProcessingObjectModel.DLL
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.ReportViewer.WebForms.DLL
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Web.Infrastructure.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Newtonsoft.Json.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ReportViewerForMvc.dll
@@ -467,7 +464,6 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.Razor.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\WebGrease.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.SqlServer.Types.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Dapper.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EntityFramework.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\itextsharp.xml
@@ -486,16 +482,6 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages.Razor.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Antlr3.Runtime.pdb
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Newtonsoft.Json.xml
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\de\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\es\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\fr\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\it\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ja\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ko\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\pt\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\ru\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-Hans\Microsoft.SqlServer.Types.resources.dll
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-Hant\Microsoft.SqlServer.Types.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Release\SMS.csprojResolveAssemblyReference.cache
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Release\SMS.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Release\SMS.pdb
@@ -510,3 +496,9 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.Host
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\es\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core.resources.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AspNet.SignalR.Core.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AspNet.SignalR.SystemWeb.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.Security.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AspNet.SignalR.Core.xml
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.Owin.Security.xml
