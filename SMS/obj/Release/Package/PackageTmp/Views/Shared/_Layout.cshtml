@@ -379,6 +379,10 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Student Birth Certificate", "birth_certificate", "report")</li>
                                         }
+                                        @if (list.Contains("report_card"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Generate Report Card", "report_card", "report")</li>
+                                        }
                                     </ul>
                                 </li>
                                 }

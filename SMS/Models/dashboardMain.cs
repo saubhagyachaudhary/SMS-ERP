@@ -960,12 +960,11 @@ namespace SMS.Models
             if (flag)
             {
                 query = @"SELECT 
-                             COUNT(*)
+                            COUNT(IF(attendance=0,0, NULL))
                         FROM
-                             attendance_register
+                            attendance_register
                         WHERE
-                            attendance = 0 
-                              AND att_date = CURDATE()
+                            att_date = CURDATE()
                         GROUP BY class_id
                         ORDER BY class_id";
 
@@ -975,11 +974,11 @@ namespace SMS.Models
             else
             {
                 query = @"SELECT 
-                                 COUNT(*)
-                            FROM
-                                attendance_register
-                            WHERE
-                                attendance = 0 AND att_date = CURDATE()
+                            COUNT(IF(attendance=0,0, NULL))
+                        FROM
+                            attendance_register
+                        WHERE
+                            att_date = CURDATE()
                                     AND section_id IN (SELECT 
                                         section_id
                                     FROM
@@ -1006,12 +1005,11 @@ namespace SMS.Models
             if (flag)
             {
                 query = @"SELECT 
-                             COUNT(*)
+                            COUNT(IF(attendance=1,1, NULL))
                         FROM
-                             attendance_register
+                            attendance_register
                         WHERE
-                            attendance = 1
-                              AND att_date = CURDATE()
+                            att_date = CURDATE()
                         GROUP BY class_id
                         ORDER BY class_id";
 
@@ -1021,11 +1019,11 @@ namespace SMS.Models
             else
             {
                 query = @"SELECT 
-                                 COUNT(*)
-                            FROM
-                                attendance_register
-                            WHERE
-                                attendance = 1 AND att_date = CURDATE()
+                            COUNT(IF(attendance=1,1, NULL))
+                        FROM
+                            attendance_register
+                        WHERE
+                            att_date = CURDATE()
                                     AND section_id IN (SELECT 
                                         section_id
                                     FROM

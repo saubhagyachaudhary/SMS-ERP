@@ -157,7 +157,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>09/22/2018 12:45:18</publishTime>
+      <publishTime>09/24/2018 12:10:54</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/28/2015 04:04:30</publishTime>
@@ -6537,6 +6537,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/report/feesStatement.cshtml">
       <publishTime>09/06/2018 18:54:31</publishTime>
     </File>
+    <File Include="Views/report/report_card.cshtml">
+      <publishTime>09/23/2018 16:31:28</publishTime>
+    </File>
     <File Include="Views/report/student_ledger.cshtml">
       <publishTime>09/06/2018 18:54:38</publishTime>
     </File>
@@ -6547,7 +6550,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/07/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>09/20/2018 12:48:00</publishTime>
+      <publishTime>09/23/2018 16:07:08</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>09/09/2018 15:19:21</publishTime>
@@ -6610,7 +6613,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/21/2018 11:27:45</publishTime>
+      <publishTime>09/24/2018 12:11:00</publishTime>
     </File>
   </ItemGroup>
 </Project>

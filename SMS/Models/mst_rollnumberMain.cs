@@ -32,6 +32,8 @@ namespace SMS.Models
                             b.session = @session
                             and 
                             a.sr_number not in (select sr_num from mst_rollnumber where session = @session and class_id = @class_id and section_id = @section_id)
+                            and 
+                            a.std_active = 'Y'
                             order by std_name";
 
           
