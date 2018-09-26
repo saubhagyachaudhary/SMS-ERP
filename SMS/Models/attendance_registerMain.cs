@@ -140,6 +140,7 @@ namespace SMS.Models
                                 order by roll_no";
 
             return con.Query<attendance_register>(query, new { section_id = section_id, session = session,att_date = att_date });
+
         }
 
         public async Task finalize_attendance(List<attendance_register> attendance)
@@ -187,6 +188,8 @@ namespace SMS.Models
 
                         await sms.SendSMS(body, std.std_contact);
                     }
+
+                    
 
                     //SMSMessage sms = new SMSMessage();
 

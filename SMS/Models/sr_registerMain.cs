@@ -7,6 +7,7 @@ using MySql.Data.MySqlClient;
 using System.Configuration;
 using SMS.report;
 using System.Threading.Tasks;
+using SMS.Hubs;
 
 namespace SMS.Models
 {
@@ -273,7 +274,9 @@ namespace SMS.Models
 
                     con.Execute("MonthlyTransportFullYear", p, commandType: System.Data.CommandType.StoredProcedure);
 
-                   
+                    DashboardHub hub = new DashboardHub();
+
+                    hub.DashboardSchoolStrength();
 
                 }
             }
@@ -445,6 +448,10 @@ namespace SMS.Models
                     out_standingMain otsd = new out_standingMain();
 
                     otsd.markStdNSO(std.sr_number);
+
+                    DashboardHub hub = new DashboardHub();
+
+                    hub.DashboardSchoolStrength();
                 }
                  else
                 {
@@ -456,6 +463,10 @@ namespace SMS.Models
                         p.Add("@sr_num", std.sr_number);
 
                         con.Execute("StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
+
+                        DashboardHub hub = new DashboardHub();
+
+                        hub.DashboardSchoolStrength();
 
                     }
 

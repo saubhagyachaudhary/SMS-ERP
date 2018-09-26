@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using SMS.Hubs;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -115,6 +116,11 @@ namespace SMS.Models
                     
 
                 }
+
+                DashboardHub hub = new DashboardHub();
+
+                hub.SMSCreditLeft();
+
             }
             catch (Exception objException)
             {
@@ -299,6 +305,10 @@ namespace SMS.Models
                     }
 
                 }
+
+                DashboardHub hub = new DashboardHub();
+
+                hub.SMSCreditLeft();
             }
             catch (Exception objException)
             {

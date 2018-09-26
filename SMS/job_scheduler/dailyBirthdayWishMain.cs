@@ -51,6 +51,8 @@ namespace SMS.job_scheduler
                 foreach (var bdy in sms.smsbody("birthday"))
                 {
                     await sms.SendSMS(bdy.Replace("#name#", item.std_name), item.std_contact);
+
+                 
                 }
             }
         }
