@@ -186,7 +186,7 @@ namespace SMS.Models
 
                         body = body.Replace("#current_date#", att.att_date.ToString("dd/MM/yyyy"));
 
-                        await sms.SendSMS(body, std.std_contact);
+                        await sms.SendSMS(body, std.std_contact,true);
                     }
 
                     

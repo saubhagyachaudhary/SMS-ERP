@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using SMS.Hubs;
 using SMS.Models;
 using System;
 using System.Collections.Generic;
@@ -50,11 +51,15 @@ namespace SMS.job_scheduler
             {
                 foreach (var bdy in sms.smsbody("birthday"))
                 {
-                    await sms.SendSMS(bdy.Replace("#name#", item.std_name), item.std_contact);
+                    await sms.SendSMS(bdy.Replace("#name#", item.std_name), item.std_contact,false);
 
                  
                 }
             }
+
+            DashboardHub hub = new DashboardHub();
+
+            hub.SMSCreditLeft();
         }
     }
 }

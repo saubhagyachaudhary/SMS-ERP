@@ -15,7 +15,7 @@
 
 <script>
 window.odometerOptions = {
-  format: '(,ddd).dd'
+    format: '(,ddd).dd',
 };
 </script>
 
@@ -95,31 +95,36 @@ window.odometerOptions = {
         <div class="row top_tiles">
             @if (list.Contains("school_strength"))
             {
-                
+
                 <div class="@class_format">
                     <div class="tile-stats">
                         <div class="icon"><i class="fa fa-user"></i></div>
-                        <div class="count">@Model.school_strength.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))</div>
+                        <div class="count" id="school_strength">
+                            <div class="odometer">
+                                @Model.school_strength.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
+                            </div>
+                        </div>
                         <h3>School Strength</h3>
-                        <p><i class="fa fa-male"></i>Male: @Model.male_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.female_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN")) </p>
+                        <p id="male_female"><i class="fa fa-male"></i>Male: @Model.male_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.female_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) </p>
 
                     </div>
                 </div>
+
             }
             @if (list.Contains("fees_received"))
             {
                 <div class="@class_format">
                     <div class="tile-stats">
                         <div class="icon"><i class="fa fa-inr"></i></div>
-                        <div class="count" id="fees_received">
+                        <div class="count count1" id="fees_received">
                             <div class="odometer">
-                                @Model.fees_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))
+                               @Model.fees_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
                             </div>
-                            <h3>Daily Fees Received</h3>
-                            <p id="cash_bank"><i class="fa fa-bank"></i>Bank: @Model.bank_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))  &nbsp &nbsp &nbsp <i class="fa fa-money"></i>Cash: @Model.cash_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN")) </p>
-
                         </div>
-                        
+                        <h3>Total Fees Received</h3>
+                        <p id="cash_bank"><i class="fa fa-bank"></i>Bank: @Model.bank_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))  &nbsp &nbsp &nbsp <i class="fa fa-money"></i>Cash: @Model.cash_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) </p>
+
+
                     </div>
                 </div>
             }
@@ -128,31 +133,50 @@ window.odometerOptions = {
                     <div class="@class_format">
                         <div class="tile-stats">
                             <div class="icon"><i class="fa fa-bus"></i></div>
-                            <div class="count">@Model.transport_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))</div>
+                            <div class="count" id="transport_std">
+                                <div class="odometer">
+                                    @Model.transport_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
+                                </div>
+                            </div>
                             <h3>Transport</h3>
-                            <p><i class="fa fa-male"></i>Male: @Model.transport_male_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.transport_female_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN")) </p>
+                            <p id="transport_male_female"><i class="fa fa-male"></i>Male: @Model.transport_male_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.transport_female_std.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) </p>
                         </div>
                     </div>
                 }
             @if (list.Contains("newAdmission"))
             {
+
+
                 <div class="@class_format">
                     <div class="tile-stats">
                         <div class="icon"><i class="fa fa-user-plus"></i></div>
-                        <div class="count">@Model.newAdmission.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))</div>
+                        <div class="count" id="new_admission">
+                            <div class="odometer">
+                                @Model.newAdmission.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
+                            </div>
+                        </div>
                         <h3>New admission</h3>
-                        <p><i class="fa fa-male"></i>Male: @Model.newAdmission_male.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.newAdmission_female.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN")) </p>
+                        <p id="new_male_female"><i class="fa fa-male"></i>Male: @Model.newAdmission_male.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))  &nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: @Model.newAdmission_female.ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) </p>
+
                     </div>
                 </div>
+
             }
             @if (list.Contains("sms_credit_left"))
             {
+
                 <div class="@class_format">
                     <div class="tile-stats">
                         <div class="icon"><i class="fa fa-wechat"></i></div>
-                        <div class="count">@int.Parse(Model.sms_credit_left).ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))</div>
+                        <div class="count count1" id="sms_credit_left1">
+                            <div class="odometer">
+                                @int.Parse(Model.sms_credit_left)
+                            </div>
+                        </div>
                         <h3>SMS Credit Left</h3>
-                        <p><i class="fa fa-wechat"></i>Today's Consumption: @int.Parse(Model.today_consumption).ToString("N0", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))</p>
+                        <p id="sms_credit_used1"><i class="fa fa-wechat"></i>Today's Consumption: @int.Parse(Model.today_consumption)</p>
+
+
                     </div>
                 </div>
             }
@@ -163,11 +187,11 @@ window.odometerOptions = {
                         <div class="icon"><i class="fa fa-inr"></i></div>
                         <div class="count count1" id="total_fees">
                             <div class="odometer">
-                                @Model.total_cash_bank_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))
+                                @Model.total_cash_bank_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
                             </div>
                         </div>
                         <h3>Total Fees Received</h3>
-                        <p id="total_cash_bank"><i class="fa fa-bank"></i>Bank: @Model.total_bank_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))  &nbsp &nbsp &nbsp <i class="fa fa-money"></i>Cash: @Model.total_cash_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN")) </p>
+                        <p id="total_cash_bank"><i class="fa fa-bank"></i>Bank: @Model.total_bank_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))  &nbsp &nbsp &nbsp <i class="fa fa-money"></i>Cash: @Model.total_cash_received.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) </p>
 
                     </div>
                 </div>
@@ -529,10 +553,40 @@ window.odometerOptions = {
 
                 $("#total_fees .odometer").html(parseFloat(fees[3]).toFixed(2));
                 //$('#txt').text(num + parseInt(message));
-                $("#total_cash_bank").html('<i class="fa fa-bank"></i>Bank: '+parseFloat(fees[4]).toFixed(2)+'  &nbsp &nbsp &nbsp <i class="fa fa-money"></i>Cash: '+parseFloat(fees[5]).toFixed(2));
+                $("#total_cash_bank").html('<i class="fa fa-bank"></i>Bank: '+parseFloat(fees[5]).toFixed(2)+'  &nbsp &nbsp &nbsp <i class="fa fa-money"></i>Cash: '+parseFloat(fees[4]).toFixed(2));
 
             });
 
+
+            hub.on('DashBoadSMSCreditLeft', function (sms) {
+                // Add the message to the page.
+
+
+                $("#sms_credit_left1 .odometer").html(parseInt(sms[0]));
+
+                $("#sms_credit_used1").html("<i class='fa fa-wechat'></i>Today's Consumption:"+ parseInt(sms[1]));
+
+            });
+
+
+            hub.on('DashboardSchoolStrength', function (strength) {
+                // Add the message to the page.
+
+                $("#school_strength .odometer").html(parseInt(strength[0]));
+
+                $("#male_female").html('<i class="fa fa-male"></i>Male: '+strength[1]+'&nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: '+strength[2] );
+
+                $("#new_admission .odometer").html(parseInt(strength[3]));
+
+                $("#new_male_female").html('<i class="fa fa-male"></i>Male: '+strength[4]+'&nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: '+strength[5] );
+
+                $("#transport_std .odometer").html(parseInt(strength[6]));
+
+                $("#transport_male_female").html('<i class="fa fa-male"></i>Male: '+strength[7]+'&nbsp &nbsp &nbsp <i class="fa fa-female"></i>Female: '+strength[8] );
+
+            });
+
+            
             $.connection.hub.start();
         });
 </script>

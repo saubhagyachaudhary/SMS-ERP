@@ -193,12 +193,6 @@
                                             <li class="please_wait">@Html.ActionLink("User Master", "AllUsersList", "users")</li>
                                          }
 
-                                         @if (User.IsInRole("superadmin"))
-                                         {
-                                             <li class="please_wait">@Html.ActionLink("Enable Features", "AllUserList", "enable_feature")</li>
-                                             <li class="please_wait">@Html.ActionLink("Enable Wedget", "AllUserList", "enable_wedget")</li>
-                                         }
-
                                          @if (list.Contains("class_teacher"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Class Teacher", "list", "mst_attendance")</li>

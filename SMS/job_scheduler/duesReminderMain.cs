@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using SMS.Hubs;
 using SMS.Models;
 using System;
 using System.Collections.Generic;
@@ -129,9 +130,14 @@ namespace SMS.job_scheduler
 
                     body = body.Replace("#current_date#", DateTime.Now.ToString("dddd, dd MMMM yyyy"));
 
-                    await sms.SendSMS(body, item.std_contact);
+                    await sms.SendSMS(body, item.std_contact,false);
                 }
             }
+
+            DashboardHub hub = new DashboardHub();
+
+            hub.SMSCreditLeft();
+
         }
     }
 }

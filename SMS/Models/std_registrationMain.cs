@@ -170,7 +170,7 @@ namespace SMS.Models
 
                         body = body.Replace("#class#", className);
 
-                        await sms.SendSMS(body, std.std_contact);
+                        await sms.SendSMS(body, std.std_contact,true);
                     }
 
                     //string text =  std.std_first_name+" "+ std.std_last_name+" is successfully registered in class "+ className + @". This registration is valid for 3 days subject to availability of seats. Thank You. Hariti Public School.";

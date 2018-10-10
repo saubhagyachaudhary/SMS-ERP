@@ -254,7 +254,7 @@ namespace SMS.Models
 
                         body = body.Replace("#sr_number#", std.sr_number.ToString());
 
-                        await sms.SendSMS(body, std.std_contact);
+                        await sms.SendSMS(body, std.std_contact,true);
                     }
 
 

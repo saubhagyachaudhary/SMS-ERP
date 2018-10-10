@@ -119,7 +119,7 @@ namespace SMS.Models
 
                             body = body.Replace("#bounce_charge#", unclear.bnk_charges.ToString());
 
-                            await sms.SendSMS(body, phone);
+                            await sms.SendSMS(body, phone,true);
                         }
 
                         // SMSMessage sms = new SMSMessage();

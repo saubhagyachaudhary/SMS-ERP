@@ -31,7 +31,7 @@ namespace SMS.Models
             return con.Query<string>(query, new { sms_code = sms_code });
         }
 
-        public async Task SendSMS(string smsText, string sendTo)
+        public async Task SendSMS(string smsText, string sendTo,bool flag)
         {
            
             string responseMessage = string.Empty;
@@ -117,9 +117,12 @@ namespace SMS.Models
 
                 }
 
-                DashboardHub hub = new DashboardHub();
+                if (flag)
+                {
+                    DashboardHub hub = new DashboardHub();
 
-                hub.SMSCreditLeft();
+                    hub.SMSCreditLeft();
+                }
 
             }
             catch (Exception objException)

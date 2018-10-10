@@ -5,10 +5,11 @@ using System.Web;
 using Microsoft.AspNet.SignalR;
 using SMS.Models;
 using SMS.Controllers;
+using System.Threading.Tasks;
 
 namespace SMS.Hubs
 {
-    public class DashboardHub : Hub 
+    public class DashboardHub : Hub
     {
         public void DailyFeesUpdate()
         {
@@ -16,15 +17,22 @@ namespace SMS.Hubs
             dashboard db = new dashboard();
             dashboardMain dmain = new dashboardMain();
 
-            db.bank_received = dmain.bank_received();
+            Task t1, t2, t3, t4;
+            
+            t1 = Task.Factory.StartNew(() => db.bank_received = dmain.bank_received());
 
-            db.cash_received = dmain.cash_received();
+            t2 = Task.Factory.StartNew(() => db.cash_received = dmain.cash_received());
+
+            t3 = Task.Factory.StartNew(() => db.total_bank_received = dmain.total_bank_received());
+
+            t4 = Task.Factory.StartNew(() => db.total_cash_received = dmain.total_cash_received());
+
+            var tasklist = new List<Task> { t1, t2, t3, t4};
+
+            Task.WaitAll(tasklist.ToArray());
+
 
             db.fees_received = db.bank_received + db.cash_received;
-
-            db.total_bank_received = dmain.total_bank_received();
-
-            db.total_cash_received = dmain.total_cash_received();
 
             db.total_cash_bank_received = db.total_bank_received + db.total_cash_received;
 
@@ -32,7 +40,28 @@ namespace SMS.Hubs
 
             var context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
 
-            context.Clients.All.DashBoadDailyFeesUpdate(fees);
+            Task.Factory.StartNew(() => context.Clients.All.DashBoadDailyFeesUpdate(fees));
+
+            DashboardClassWiseDuesChart();
+        }
+
+        public void DashboardClassWiseDuesChart()
+        {
+            dashboard db = new dashboard();
+            dashboardMain dmain = new dashboardMain();
+
+            Task t1, t2, t3;
+
+            // Dashboard dues chart live update
+            t1 = Task.Factory.StartNew(() => db.name = dmain.school_class());
+
+            t2 = Task.Factory.StartNew(() => db.dues = dmain.dues());
+
+            t3 = Task.Factory.StartNew(() => db.recovered = dmain.recovered());
+
+            var context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
+
+            Task.Factory.StartNew(() => context.Clients.All.DashboardClassWiseDuesChart( db.name, db.dues, db.recovered));
         }
 
 
@@ -42,15 +71,21 @@ namespace SMS.Hubs
             dashboard db = new dashboard();
             dashboardMain dmain = new dashboardMain();
 
-             db.sms_credit_left = dmain.SMSCredit();
+            Task t1, t2;
 
-            db.today_consumption = dmain.today_consumption().ToString();
+            t1 = Task.Factory.StartNew(() => db.sms_credit_left = dmain.SMSCredit());
 
+            t2 = Task.Factory.StartNew(() => db.today_consumption = dmain.today_consumption().ToString());
+
+            var tasklist = new List<Task> { t1, t2};
+
+            Task.WaitAll(tasklist.ToArray());
+            
             var context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
 
             string[] sms = { db.sms_credit_left, db.today_consumption };
 
-            context.Clients.All.DashBoadSMSCreditLeft(sms);
+            Task.Factory.StartNew(() => context.Clients.All.DashBoadSMSCreditLeft(sms));
         }
 
         public void DashboardSchoolStrength()
@@ -59,24 +94,28 @@ namespace SMS.Hubs
             dashboard db = new dashboard();
             dashboardMain dmain = new dashboardMain();
 
-            db.school_strength = dmain.school_strength();
+            Task t1, t2, t3, t4,t5,t6,t7,t8;
 
-            db.male_std = dmain.school_Male_std();
+            t1 = Task.Factory.StartNew(() => db.school_strength = dmain.school_strength());
 
-            db.female_std = dmain.school_Female_std();
+            t2 = Task.Factory.StartNew(() => db.male_std = dmain.school_Male_std());
 
-            db.newAdmission = dmain.new_admission();
+            t3 = Task.Factory.StartNew(() => db.female_std = dmain.school_Female_std());
 
+            t4 = Task.Factory.StartNew(() => db.newAdmission = dmain.new_admission());
 
-            db.newAdmission_male = dmain.new_admission_male_std();
+            t5 = Task.Factory.StartNew(() => db.newAdmission_male = dmain.new_admission_male_std());
 
+            t6 = Task.Factory.StartNew(() => db.newAdmission_female = dmain.new_admission_female_std());
 
-            db.newAdmission_female = dmain.new_admission_female_std();
+            t7 = Task.Factory.StartNew(() => db.transport_male_std = dmain.transport_Male_std());
 
+            t8 = Task.Factory.StartNew(() => db.transport_female_std = dmain.transport_Female_std());
 
-            db.transport_male_std = dmain.transport_Male_std();
+            var tasklist = new List<Task> { t1, t2, t3, t4,t5,t6,t7,t8 };
 
-            db.transport_female_std = dmain.transport_Female_std();
+            Task.WaitAll(tasklist.ToArray());
+
 
             db.transport_std = db.transport_male_std + db.transport_female_std;
 
@@ -85,7 +124,8 @@ namespace SMS.Hubs
 
             int[] strength = { db.school_strength, db.male_std, db.female_std, db.newAdmission, db.newAdmission_male, db.newAdmission_female, db.transport_std, db.transport_male_std, db.transport_female_std };
 
-            context.Clients.All.DashboardSchoolStrength(strength);
+            Task.Factory.StartNew(() => context.Clients.All.DashboardSchoolStrength(strength));
+           
         }
 
     }
