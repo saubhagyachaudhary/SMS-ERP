@@ -225,7 +225,7 @@
                                     </ul>
                                 </li>
                                 }
-                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades"))
+                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades")|| list.Contains("teacher_exam_remark"))
                                 {
                                 <li>
                                     <a><i class="fa fa-edit"></i> Examination <span class="fa fa-chevron-down"></span></a>
@@ -274,6 +274,10 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Marks", "addExamMarks", "mst_exam_marks")</li>
                                         }
+                                        @if (list.Contains("teacher_exam_remark"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Assign Remarks", "AddRemarks", "teacher_exam_remark")</li>
+                                        }
                                         @if (list.Contains("assign_co_scholastic_grades"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Co-Scholastic Grades", "AddCoscholasticGrades", "mst_coscholastic_grades")</li>
@@ -282,7 +286,6 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Discipline Grades", "AddDisciplineGrades", "mst_discipline_grades")</li>
                                         }
-
                                     </ul>
                                 </li>
                                 }

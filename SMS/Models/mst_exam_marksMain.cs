@@ -186,7 +186,7 @@ namespace SMS.Models
                             FROM
                                 mst_exam_marks
                             WHERE
-                                exam_id = 1 AND session = @session
+                                exam_id = @exam_id AND session = @session
                                     AND subject_id = @subject_id
                                     AND class_id = @class_id
                                     AND section_id = @section_id";

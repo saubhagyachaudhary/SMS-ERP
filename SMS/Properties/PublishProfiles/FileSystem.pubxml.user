@@ -166,7 +166,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>10/10/2018 18:08:51</publishTime>
+      <publishTime>10/25/2018 09:10:02</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/28/2015 04:04:30</publishTime>
@@ -6574,7 +6574,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/07/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>10/10/2018 18:07:29</publishTime>
+      <publishTime>10/24/2018 21:24:38</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>09/09/2018 15:19:21</publishTime>
@@ -6618,6 +6618,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/std_registration/EditRegistration.cshtml">
       <publishTime>09/09/2018 14:45:17</publishTime>
     </File>
+    <File Include="Views/teacher_exam_remark/AddRemarks.cshtml">
+      <publishTime>10/24/2018 20:26:05</publishTime>
+    </File>
+    <File Include="Views/teacher_exam_remark/studentList.cshtml">
+      <publishTime>10/24/2018 20:16:24</publishTime>
+    </File>
     <File Include="Views/uncleared_cheque/AllUnclearedChequeList.cshtml">
       <publishTime>09/09/2018 15:08:59</publishTime>
     </File>
@@ -6637,7 +6643,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>10/10/2018 18:09:09</publishTime>
+      <publishTime>10/25/2018 09:10:23</publishTime>
     </File>
   </ItemGroup>
 </Project>
