@@ -240,6 +240,7 @@
     <Compile Include="Controllers\sr_registerController.cs" />
     <Compile Include="Controllers\std_discountController.cs" />
     <Compile Include="Controllers\std_registrationController.cs" />
+    <Compile Include="Controllers\teacher_exam_remarkController.cs" />
     <Compile Include="Controllers\uncleared_chequeController.cs" />
     <Compile Include="Controllers\usersController.cs" />
     <Compile Include="Global.asax.cs">
@@ -310,6 +311,8 @@
     <Compile Include="Models\SMSMessage.cs" />
     <Compile Include="Models\std_discount.cs" />
     <Compile Include="Models\std_discountMain.cs" />
+    <Compile Include="Models\teacher_exam_remark.cs" />
+    <Compile Include="Models\teacher_exam_remarkMain.cs" />
     <Compile Include="Models\uncleared_chequeMain.cs" />
     <Compile Include="Models\mst_acc_head.cs" />
     <Compile Include="Models\mst_acc_headMain.cs" />
@@ -2505,6 +2508,8 @@
     <Content Include="Views\mst_term_rules\DeleteTermRule.cshtml" />
     <Content Include="Views\report\duesListTransportWise.cshtml" />
     <Content Include="Views\report\report_card.cshtml" />
+    <Content Include="Views\teacher_exam_remark\AddRemarks.cshtml" />
+    <Content Include="Views\teacher_exam_remark\studentList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
