@@ -11,16 +11,19 @@ namespace SMS.Models
         [Display(Name = "Session")]
         public string session { get; set; }
 
+        [Display(Name = "Term")]
         public int term_id { get; set; }
 
         [Display(Name = "Term Name")]
         public string term_name { get; set; }
 
+        [Display(Name = "Class")]
         public int class_id { get; set; }
 
         [Display(Name = "Class Name")]
         public string class_name { get; set; }
 
+        [Display(Name = "Section")]
         public int section_id { get; set; }
 
         [Display(Name = "Section Name")]

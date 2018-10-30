@@ -139,7 +139,7 @@ namespace SMS.Models
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"SELECT 
+            string Query = @"select * from (SELECT 
                                 a.class_id,
                                 a.section_id,
                                 b.roll_number roll_no,
@@ -160,8 +160,40 @@ namespace SMS.Models
                                     AND a.session = @session
                                     AND a.class_id = @class_id
                                     AND a.section_id = @section_id
-                                    And a.term_id = @term_id
-                            ORDER BY roll_number";
+                                    AND a.term_id = @term_id
+                            UNION ALL 
+                            SELECT 
+                                b.class_id,
+                                b.section_id,
+                                c.roll_number roll_no,
+                                '',
+                                a.sr_number,
+                                CONCAT(IFNULL(a.std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name
+                            FROM
+                                sr_register a,
+                                mst_section b,
+                                mst_rollnumber c
+                            WHERE
+                                a.std_section_id = b.section_id
+                                    AND b.section_id = @section_id
+                                    AND b.class_id = @class_id
+                                    AND c.class_id = b.class_id
+                                    AND c.section_id = b.section_id
+                                    AND b.session = c.session
+                                    AND c.session = @session
+                                    AND a.sr_number = c.sr_num
+                                    AND a.std_active = 'Y'
+                                    AND sr_number NOT IN (SELECT 
+                                        sr_number
+                                    FROM
+                                        teacher_exam_remark
+                                    WHERE
+                                        session = @session AND term_id = @term_id
+                                            AND class_id = @class_id
+                                            AND section_id = @section_id)) a
+                                            order by a.roll_no";
 
             return con.Query<teacher_exam_remark>(Query, new { class_id = class_id, term_id = term_id, session = session.findActive_finalSession(), section_id = section_id });
         }

@@ -50,6 +50,41 @@ namespace SMS.Controllers
         [HttpGet]
         public ActionResult studentList(teacher_exam_remark mst)
         {
+            if(mst.term_id == 0 || mst.section_id == 0)
+            {
+                
+                ModelState.AddModelError(String.Empty, "Check for required field.");
+                
+                mst_classMain mstClass = new mst_classMain();
+
+                bool flag;
+
+                if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+                {
+                    flag = true;
+                }
+                else
+                {
+                    flag = false;
+                }
+
+                var class_list = mstClass.AllClassListByTeacher(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), flag);
+
+
+                IEnumerable<SelectListItem> list3 = new SelectList(class_list, "class_id", "class_name");
+                ViewData["class_id"] = list3;
+
+
+                mst_termMain mst_term = new mst_termMain();
+
+                var term_list = mst_term.AllTermList();
+
+                IEnumerable<SelectListItem> list1 = new SelectList(term_list, "term_id", "term_name");
+                ViewData["term_id"] = list1;
+
+                return View("AddRemarks");
+            }
+
             teacher_exam_remarkMain main = new teacher_exam_remarkMain();
             List<teacher_exam_remark> list = new List<teacher_exam_remark>();
             IEnumerable<teacher_exam_remark> remark;

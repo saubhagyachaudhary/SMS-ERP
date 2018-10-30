@@ -598,31 +598,27 @@ namespace SMS.Models
                             d.class_name,
                             e.section_name
                         FROM
-                            sr_register a,
+                            ( SELECT 
+                            *
+                        FROM
+                            sr_register
+                        WHERE
+                            DATE_FORMAT(std_dob, '%c-%d') BETWEEN DATE_FORMAT(CURDATE(), '%c-%d') AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+                                    '%c-%d')
+                                OR (MONTH(CURDATE()) > MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))
+                                AND (MONTH(std_dob) >= MONTH(CURDATE())
+                                OR MONTH(std_dob) <= MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))))) a,
                             mst_batch b,
                             mst_attendance c,
                             mst_class d,
                             mst_section e
                         WHERE
-                            CONCAT(DAY(std_dob), MONTH(std_dob)) IN (CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 0 DAY)),
-                                    MONTH(DATE_ADD(CURDATE(), INTERVAL 0 DAY))) , CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 1 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 1 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 2 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 2 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 3 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 3 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 4 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 4 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 5 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 5 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 6 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 6 DAY))))
-                                AND std_active = 'Y'
-                                AND a.std_batch_id = b.batch_id
+		                        a.std_Active = 'Y'
+                                And a.std_batch_id = b.batch_id
                                 AND b.class_id = c.class_id
                                 AND a.std_section_id = c.section_id
                                 AND b.class_id = d.class_id
-                                and a.std_section_id = e.section_id
+                                AND a.std_section_id = e.section_id
                         ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
 
                 result = con.Query<dailyBirthdayWish>(query);
@@ -638,26 +634,22 @@ namespace SMS.Models
                             d.class_name,
                             e.section_name
                         FROM
-                            sr_register a,
+                            ( SELECT 
+                            *
+                        FROM
+                            sr_register
+                        WHERE
+                            DATE_FORMAT(std_dob, '%c-%d') BETWEEN DATE_FORMAT(CURDATE(), '%c-%d') AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+                                    '%c-%d')
+                                OR (MONTH(CURDATE()) > MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))
+                                AND (MONTH(std_dob) >= MONTH(CURDATE())
+                                OR MONTH(std_dob) <= MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))))) a,
                             mst_batch b,
                             mst_attendance c,
                             mst_class d,
                             mst_section e
                         WHERE
-                            CONCAT(DAY(std_dob), MONTH(std_dob)) IN (CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 0 DAY)),
-                                    MONTH(DATE_ADD(CURDATE(), INTERVAL 0 DAY))) , CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 1 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 1 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 2 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 2 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 3 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 3 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 4 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 4 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 5 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 5 DAY))),
-                                CONCAT(DAY(DATE_ADD(CURDATE(), INTERVAL 6 DAY)),
-                                        MONTH(DATE_ADD(CURDATE(), INTERVAL 6 DAY))))
-                                AND std_active = 'Y'
+		                        a.std_Active = 'Y'
                                 AND a.std_batch_id = b.batch_id
                                 AND b.class_id = c.class_id
                                 AND a.std_section_id = c.section_id
@@ -756,15 +748,39 @@ namespace SMS.Models
 
             if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b
-                            where
-                            a.sr_number = b.sr_number 
-                            and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
-                            and month_no <= month(date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))) 
-                            and month_no between 4 and 12
-                            and a.session = @session
-                            and b.std_active = 'Y'
-                            group by class_id asc";
+                query = @"SELECT 
+                                SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                class_id
+                            FROM
+                                out_standing a,
+                                sr_register b
+                            WHERE
+                                a.sr_number = b.sr_number
+                                    AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                    AND month_no <= MONTH(DATE(DATE_ADD(NOW(),
+                                            INTERVAL '00:00' HOUR_MINUTE)))
+                                    AND month_no BETWEEN 4 AND 12
+                                    AND a.session =  @session
+                                    AND b.std_active = 'Y'
+                            GROUP BY class_id ASC 
+                            UNION ALL SELECT 
+                                0, class_id
+                            FROM
+                                mst_class
+                            WHERE
+                                class_id NOT IN (SELECT 
+                                        class_id
+                                    FROM
+                                        out_standing a,
+                                        sr_register b
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                            AND month_no <= MONTH(DATE(DATE_ADD(NOW(),
+                                                    INTERVAL '00:00' HOUR_MINUTE)))
+                                            AND month_no BETWEEN 4 AND 12
+                                            AND a.session =  @session
+                                            AND b.std_active = 'Y')";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
@@ -775,7 +791,23 @@ namespace SMS.Models
                             and month_no not in (2,3)
                             and a.session = @session
                             and b.std_active = 'Y'
-                            group by class_id asc";
+                            group by class_id asc
+                             UNION ALL SELECT 
+                                0, class_id
+                            FROM
+                                mst_class
+                            WHERE
+                                class_id NOT IN (SELECT 
+                                        class_id
+                                    FROM
+                                        out_standing a,
+                                        sr_register b
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                            and month_no not in (2,3)
+                                            AND a.session =  @session
+                                            AND b.std_active = 'Y')";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
             {
@@ -786,7 +818,23 @@ namespace SMS.Models
                             and month_no != 3
                             and a.session = @session
                             and b.std_active = 'Y'
-                            group by class_id asc";
+                            group by class_id asc
+                             UNION ALL SELECT 
+                                0, class_id
+                            FROM
+                                mst_class
+                            WHERE
+                                class_id NOT IN (SELECT 
+                                        class_id
+                                    FROM
+                                        out_standing a,
+                                        sr_register b
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                            and month_no != 3
+                                            AND a.session = @session
+                                            AND b.std_active = 'Y')";
             }
             else
             {
@@ -796,7 +844,22 @@ namespace SMS.Models
                             and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
                             and a.session = @session
                             and b.std_active = 'Y'
-                            group by class_id asc";
+                            group by class_id asc
+                             UNION ALL SELECT 
+                                0, class_id
+                            FROM
+                                mst_class
+                            WHERE
+                                class_id NOT IN (SELECT 
+                                        class_id
+                                    FROM
+                                        out_standing a,
+                                        sr_register b
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                            AND a.session = @session
+                                            AND b.std_active = 'Y')";
             }
 
             var result = con.Query<decimal>(query, new { session = session });
@@ -821,13 +884,32 @@ namespace SMS.Models
 
             if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
             {
-                query = @"select ifnull(sum(d.amount),0)-ifnull(sum(d.dc_discount),0) from out_standing a, sr_register b, mst_batch c,fees_receipt d where a.month_no <= month(date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE )))
-                            and a.month_no between 4 and 12
-                            and a.sr_number = b.sr_number
-                            and b.std_batch_id = c.batch_id
-                            and a.session = @session
-                            and a.serial = d.serial
-                             group by c.class_id asc";
+                query = @"SELECT 
+                                IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0)
+                            FROM
+                                out_standing a,
+                                sr_register b,
+                                mst_batch c,
+                                fees_receipt d
+                            WHERE
+                                a.month_no <= MONTH(DATE(DATE_ADD(NOW(),
+                                            INTERVAL '00:00' HOUR_MINUTE)))
+                                    AND a.month_no BETWEEN 4 AND 12
+                                    AND a.sr_number = b.sr_number
+                                    AND b.std_batch_id = c.batch_id
+                                    and b.std_active = 'Y'
+                                    AND a.session = @session
+                                    AND a.serial = d.serial
+                            GROUP BY c.class_id ASC 
+                            UNION ALL SELECT 
+                                0
+                            FROM
+                                mst_class
+                            WHERE
+                                class_id NOT IN (SELECT DISTINCT
+                                        class_id
+                                    FROM
+                                        fees_receipt)";
             }
             else
             {
@@ -836,6 +918,7 @@ namespace SMS.Models
                             and b.std_batch_id = c.batch_id
                             and a.session = @session
                             and a.serial = d.serial
+                            and b.std_active = 'Y'
                              group by c.class_id asc
                              union all
                              select ifnull(sum(d.amount), 0) - ifnull(sum(d.dc_discount), 0) from out_standing a, sr_register b, mst_batch c, fees_receipt d where a.month_no <= month(date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))) and a.month_no between 1 and 3
@@ -843,6 +926,7 @@ namespace SMS.Models
                             and b.std_batch_id = c.batch_id
                             and a.session = @session
                             and a.serial = d.serial
+                            and b.std_active = 'Y'
                              group by c.class_id asc) a
                              group by a.class_id";
             }
