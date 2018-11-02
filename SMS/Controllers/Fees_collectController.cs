@@ -190,12 +190,19 @@ namespace SMS.Controllers
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"select a.section_id,concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) Section_name from mst_section a,mst_class b
-                            where
-                            a.class_id = b.class_id
-                            and 
-                            session = @session
-                            order by b.class_name";
+            string query = @"SELECT 
+                                    a.section_id,
+                                    CONCAT(IFNULL(b.class_name, ''),
+                                            ' Section ',
+                                            IFNULL(a.section_name, '')) Section_name
+                                FROM
+                                    mst_section a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.session = @session
+                                        AND a.session = b.session
+                                ORDER BY b.class_name";
 
 
             var section_list = con.Query<mst_section>(query, new { session = sess.findActive_finalSession() });
@@ -211,11 +218,12 @@ namespace SMS.Controllers
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"select a.section_id from mst_section a
-                            where
-                            session = @session
-                            and
-                            a.class_id = 4";
+            string query = @"SELECT 
+                                    a.section_id
+                                FROM
+                                    mst_section a
+                                WHERE
+                                    session = @session AND a.class_id = 4";
 
 
             var dafault = con.Query<int>(query, new { session = sess.findActive_finalSession() }).SingleOrDefault();

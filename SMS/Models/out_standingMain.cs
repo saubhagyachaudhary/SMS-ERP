@@ -15,17 +15,27 @@ namespace SMS.Models
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
         public IEnumerable<out_standing> OutStandingByReg(int reg)
         {
-            String query = @"SELECT serial
-                              ,session
-                              ,dt_date
-                              ,acc_id
-                              ,sr_number
-                              ,outstd_amount
-                              ,rmt_amount
-                              ,narration
-                              ,reg_num
-                          FROM out_standing
-                          where reg_num = @reg_num";
+            string query = @"SELECT 
+                                serial,
+                                session,
+                                dt_date,
+                                acc_id,
+                                sr_number,
+                                outstd_amount,
+                                rmt_amount,
+                                narration,
+                                reg_num
+                            FROM
+                                out_standing
+                            WHERE
+                                reg_num = @reg_num
+                                    AND session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             var result = con.Query<out_standing>(query, new { reg_num = reg });
 
@@ -36,44 +46,51 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"select * from (SELECT 1,
-                             serial
-                            ,session
-                            , dt_date
-                            , a.acc_id
-                            , concat(b.acc_name, ' ', ifnull(a.month_name, ' ')) acc_name
-                            , a.month_no
-                            , sr_number
-                            , ifnull(outstd_amount, 0) - ifnull(rmt_amount, 0) outstd_amount
-                            , narration
-                             FROM out_standing a, mst_acc_head b
-                             where sr_number = @sr_number
-                             and ifnull(outstd_amount, 0) - ifnull(rmt_amount, 0) <> 0
-                            and session = @session
-                             and a.acc_id = b.acc_id
-
-                             and month_no between 4 and 12
-							  ) one
-                               union all
-
-                              select * from (SELECT 2,
-                             serial
-                            , session
-                            , dt_date
-                            , a.acc_id
-                            , concat(b.acc_name, ' ', ifnull(a.month_name, ' ')) acc_name
-                            , a.month_no
-                            , sr_number
-                            , ifnull(outstd_amount, 0) - ifnull(rmt_amount, 0) outstd_amount
-                            , narration
-                             FROM out_standing a, mst_acc_head b
-                             where sr_number = @sr_number
-                             and ifnull(outstd_amount, 0) - ifnull(rmt_amount, 0) <> 0
-                            and session = @session
-                             and a.acc_id = b.acc_id
-
-                             and month_no between 1 and 3
-							 ) two order by 1, month_no, acc_id";
+            string query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        1,
+                                            serial,
+                                            session,
+                                            dt_date,
+                                            a.acc_id,
+                                            CONCAT(b.acc_name, ' ', IFNULL(a.month_name, ' ')) acc_name,
+                                            a.month_no,
+                                            sr_number,
+                                            IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) outstd_amount,
+                                            narration
+                                    FROM
+                                        out_standing a, mst_acc_head b
+                                    WHERE
+                                        sr_number = @sr_number
+                                            AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
+                                            AND session = @session
+                                            AND a.acc_id = b.acc_id
+                                            AND month_no BETWEEN 4 AND 12) one 
+                                UNION ALL SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        2,
+                                            serial,
+                                            session,
+                                            dt_date,
+                                            a.acc_id,
+                                            CONCAT(b.acc_name, ' ', IFNULL(a.month_name, ' ')) acc_name,
+                                            a.month_no,
+                                            sr_number,
+                                            IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) outstd_amount,
+                                            narration
+                                    FROM
+                                        out_standing a, mst_acc_head b
+                                    WHERE
+                                        sr_number = @sr_number
+                                            AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
+                                            AND session = @session
+                                            AND a.acc_id = b.acc_id
+                                            AND month_no BETWEEN 1 AND 3) two
+                                ORDER BY 1 , month_no , acc_id";
 
             var result = con.Query<out_standing>(query, new { sr_number = sr_num, session = sess.findActive_finalSession() });
             
@@ -84,19 +101,30 @@ namespace SMS.Models
       
         public IEnumerable<out_standing> AllOutStandingByReg(int reg)
         {
-            String query = @"SELECT serial
-                            ,session
-                            ,dt_date
-                            ,a.acc_id
-							,b.acc_name
-                            ,sr_number
-                            ,reg_num
-                            ,ifnull(outstd_amount,0) - ifnull(rmt_amount, 0) outstd_amount
-                            ,narration
-                             FROM out_standing a, mst_acc_head b 
-                             where reg_num = @reg_num
-                             and ifnull(outstd_amount,0) - ifnull(rmt_amount,0) <> 0
-							 and a.acc_id = b.acc_id";
+            string query = @"SELECT 
+                                serial,
+                                session,
+                                dt_date,
+                                a.acc_id,
+                                b.acc_name,
+                                sr_number,
+                                reg_num,
+                                IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) outstd_amount,
+                                narration
+                            FROM
+                                out_standing a,
+                                mst_acc_head b
+                            WHERE
+                                reg_num = @reg_num
+                                    AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
+                                    AND a.acc_id = b.acc_id
+                                    AND session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             var result = con.Query<out_standing>(query, new { reg_num = reg });
 
@@ -109,11 +137,20 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE out_standing
-                                SET sr_number = @sr_number,
-                                    class_id = @class_id                                        
-                                WHERE reg_num = @reg_num
-                                and dt_date = @dt_date";
+                string query = @"UPDATE out_standing 
+                                    SET 
+                                        sr_number = @sr_number,
+                                        class_id = @class_id
+                                    WHERE
+                                        reg_num = @reg_num
+                                            AND dt_date = @dt_date
+                                            AND session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 con.Execute(query, std);
             }
@@ -131,15 +168,16 @@ namespace SMS.Models
             try
             {
                 
-                string query = @"UPDATE out_standing
-                                SET receipt_no = @receipt_no,
-                                   receipt_date = @receipt_date,
-                                   rmt_amount = ifnull(rmt_amount,0) + @rmt_amount,
-                                   dc_fine = ifnull(dc_fine,0) + @dc_fine,
-                                   dc_discount = ifnull(dc_discount,0) + @dc_discount,
-                                   clear_flag = @clear_flag
-                                   WHERE session = @session
-                                and serial = @serial";
+                string query = @"UPDATE out_standing 
+                                    SET 
+                                        receipt_no = @receipt_no,
+                                        receipt_date = @receipt_date,
+                                        rmt_amount = IFNULL(rmt_amount, 0) + @rmt_amount,
+                                        dc_fine = IFNULL(dc_fine, 0) + @dc_fine,
+                                        dc_discount = IFNULL(dc_discount, 0) + @dc_discount,
+                                        clear_flag = @clear_flag
+                                    WHERE
+                                        session = @session AND serial = @serial";
 
                 con.Execute(query, std);
             }
@@ -154,30 +192,56 @@ namespace SMS.Models
 
             try
             {
-                string query1 = @"SELECT session FROM mst_session where session_active = 'Y'";
+                string query1 = @"SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_active = 'Y'";
 
                 string session = con.Query<string>(query1).SingleOrDefault();
 
                 if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
                 {
-                    string query = @"delete from out_standing where sr_number = @sr_num and month_no > month(date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))) and month_no between 4 and 12 and ifnull(rmt_amount,0) = 0 and session = @session";
+                    string query = @"DELETE FROM out_standing 
+                                    WHERE
+                                        sr_number = @sr_num
+                                        AND month_no > MONTH(DATE(DATE_ADD(NOW(),
+                                                INTERVAL '00:00' HOUR_MINUTE)))
+                                        AND month_no BETWEEN 4 AND 12
+                                        AND IFNULL(rmt_amount, 0) = 0
+                                        AND session = @session";
 
                     con.Execute(query, new { sr_num = sr_num, session = session });
 
-                    query = @"delete from out_standing where sr_number = @sr_num and month_no between 1 and 3 and ifnull(rmt_amount,0) = 0 and session = @session";
+                    query = @"DELETE FROM out_standing 
+                                WHERE
+                                    sr_number = @sr_num
+                                    AND month_no BETWEEN 1 AND 3
+                                    AND IFNULL(rmt_amount, 0) = 0
+                                    AND session = @session";
 
                     con.Execute(query, new { sr_num = sr_num, session = session });
                 }
                 else
                 {
-                    string query = @"delete from out_standing where sr_number = @sr_num and month_no > month(date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))) and month_no between 1 and 3 and ifnull(rmt_amount,0) = 0 and session = @session";
+                    string query = @"DELETE FROM out_standing 
+                                        WHERE
+                                            sr_number = @sr_num
+                                            AND month_no > MONTH(DATE(DATE_ADD(NOW(),
+                                                    INTERVAL '00:00' HOUR_MINUTE)))
+                                            AND month_no BETWEEN 1 AND 3
+                                            AND IFNULL(rmt_amount, 0) = 0
+                                            AND session = @session";
 
                     con.Execute(query, new { sr_num = sr_num, session = session });
                 }
 
-                 string query2 = @"UPDATE sr_register
-                               SET nso_date = @nso_date
-                               WHERE sr_number = @sr_num";
+                 string query2 = @"UPDATE sr_register 
+                                    SET 
+                                        nso_date = @nso_date
+                                    WHERE
+                                        sr_number = @sr_num";
 
                 DateTime nso_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
 
@@ -197,14 +261,24 @@ namespace SMS.Models
             {
                
 
-                string query1 = @"SELECT session FROM mst_session where session_active = 'Y'";
+                string query1 = @"SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_active = 'Y'";
 
                 string session = con.Query<string>(query1).SingleOrDefault();
 
 
 
 
-                string maxid = "select ifnull(MAX(serial),0)+1 from out_standing where session = @session";
+                string maxid = @"SELECT 
+                                    IFNULL(MAX(serial), 0) + 1
+                                FROM
+                                    out_standing
+                                WHERE
+                                    session = @session";
 
                 int id = con.Query<int>(maxid,new {session = session }).SingleOrDefault();
 

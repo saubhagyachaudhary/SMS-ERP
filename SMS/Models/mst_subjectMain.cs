@@ -20,7 +20,18 @@ namespace SMS.Models
 
                 string query = "INSERT INTO mst_subject (session,subject_id,subject_name) VALUES (@session,@subject_id,@subject_name)";
 
-                string maxid = "select ifnull(MAX(subject_id),0)+1 from mst_subject";
+                string maxid = @"SELECT 
+                                        IFNULL(MAX(subject_id), 0) + 1
+                                    FROM
+                                        mst_subject
+                                    WHERE
+                                        session = (SELECT
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 int id = con.ExecuteScalar<int>(maxid);
 
@@ -46,7 +57,12 @@ namespace SMS.Models
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string query = "SELECT subject_id,subject_name FROM mst_subject where session = @session";
+            string query = @"SELECT 
+                                subject_id, subject_name
+                            FROM
+                                mst_subject
+                            WHERE
+                                session = @session";
 
             var result = con.Query<mst_subject>(query, new {session = session.findActive_finalSession() });
 
@@ -58,7 +74,13 @@ namespace SMS.Models
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string Query = "SELECT subject_id,subject_name FROM mst_subject where subject_id = @subject_id and session = @session";
+            string Query = @"SELECT 
+                                    subject_id, subject_name
+                                FROM
+                                    mst_subject
+                                WHERE
+                                    subject_id = @subject_id
+                                        AND session = @session";
 
             return con.Query<mst_subject>(Query, new { subject_id = id,session = session.findActive_finalSession() }).SingleOrDefault();
         }
@@ -72,7 +94,12 @@ namespace SMS.Models
 
                 mst.session = session.findActive_finalSession();
 
-                string query = "UPDATE mst_subject SET subject_name = @subject_name WHERE subject_id = @subject_id and session = @session";
+                string query = @"UPDATE mst_subject 
+                                    SET
+                                        subject_name = @subject_name
+                                    WHERE
+                                        subject_id = @subject_id
+                                            AND session = @session";
 
                 con.Execute(query, mst);
             }
@@ -88,7 +115,10 @@ namespace SMS.Models
             {
                 mst_sessionMain session = new mst_sessionMain();
 
-                string Query = "DELETE FROM mst_subject WHERE subject_id = @subject_id and session = @session";
+                string Query = @"DELETE FROM mst_subject 
+                                    WHERE
+                                        subject_id = @subject_id
+                                        AND session = @session";
 
                 return con.Query<mst_subject>(Query, new { subject_id = id,session=session.findActive_finalSession() }).SingleOrDefault();
             }

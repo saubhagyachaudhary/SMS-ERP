@@ -18,7 +18,18 @@ namespace SMS.Models
             {
                 string query = "INSERT INTO mst_co_scholastic (session,co_scholastic_id,co_scholastic_name) VALUES (@session,@co_scholastic_id,@co_scholastic_name)";
 
-                string maxid = "select ifnull(MAX(co_scholastic_id),0)+1 from mst_co_scholastic";
+                string maxid = @"SELECT 
+                                        IFNULL(MAX(co_scholastic_id), 0) + 1
+                                    FROM
+                                        mst_co_scholastic
+                                    WHERE
+                                        session = (SELECT
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 int id = con.ExecuteScalar<int>(maxid);
 
@@ -45,7 +56,12 @@ namespace SMS.Models
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string query = "SELECT co_scholastic_id,co_scholastic_name FROM mst_co_scholastic where session = @session";
+            string query = @"SELECT 
+                                    co_scholastic_id, co_scholastic_name
+                                FROM
+                                    mst_co_scholastic
+                                WHERE
+                                    session = @session";
 
             var result = con.Query<mst_co_scholastic>(query,new {session = session.findActive_finalSession() });
 
@@ -57,7 +73,13 @@ namespace SMS.Models
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string Query = "SELECT co_scholastic_id,co_scholastic_name FROM mst_co_scholastic where co_scholastic_id = @co_scholastic_id and session = @session";
+            string Query = @"SELECT 
+                                co_scholastic_id, co_scholastic_name
+                            FROM
+                                mst_co_scholastic
+                            WHERE
+                                co_scholastic_id = @co_scholastic_id
+                                    AND session = @session";
 
             return con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id ,session = session.findActive_finalSession()}).SingleOrDefault();
         }
@@ -71,7 +93,12 @@ namespace SMS.Models
 
                 mst.session = session.findActive_finalSession();
 
-                string query = "UPDATE mst_co_scholastic SET co_scholastic_name = @co_scholastic_name WHERE co_scholastic_id = @co_scholastic_id and session = @session";
+                string query = @"UPDATE mst_co_scholastic 
+                                    SET
+                                        co_scholastic_name = @co_scholastic_name
+                                    WHERE
+                                        co_scholastic_id = @co_scholastic_id
+                                            AND session = @session";
 
                 con.Execute(query, mst);
             }
@@ -87,7 +114,10 @@ namespace SMS.Models
             {
                 mst_sessionMain session = new mst_sessionMain(); 
 
-                string Query = "DELETE FROM mst_co_scholastic WHERE co_scholastic_id = @co_scholastic_id and session = @session";
+                string Query = @"DELETE FROM mst_co_scholastic 
+                                    WHERE
+                                        co_scholastic_id = @co_scholastic_id
+                                        AND session = @session";
 
                 con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id,session = session.findActive_finalSession()}).SingleOrDefault();
             }

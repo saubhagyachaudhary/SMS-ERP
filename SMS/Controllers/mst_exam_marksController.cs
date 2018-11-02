@@ -118,13 +118,16 @@ namespace SMS.Controllers
            
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT b.exam_id,b.exam_name FROM mst_exam_class a, mst_exam b
-                                where
-                                a.exam_id = b.exam_id
-                                and
-                                a.class_id = @class_id
-                                and
-                                a.session = @session";
+            string query = @"SELECT 
+                                    b.exam_id, b.exam_name
+                                FROM
+                                    mst_exam_class a,
+                                    mst_exam b
+                                WHERE
+                                    a.exam_id = b.exam_id
+                                        AND a.class_id = @class_id
+                                        AND a.session = @session
+                                        AND a.session = b.session";
 
 
             var exam_list = con.Query<mst_exam>(query, new { class_id = id,session = sess.findActive_finalSession() });
@@ -139,23 +142,16 @@ namespace SMS.Controllers
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            //string query = @"SELECT a.subject_id,b.subject_name FROM mst_class_subject a,mst_subject b
-            //                where
-            //                a.subject_id = b.subject_id
-            //                and
-            //                a.session = @session
-            //                and
-            //                a.class_id = @class_id
-            //                and
-            //                a.subject_id not in (SELECT distinct subject_id FROM mst_exam_marks where exam_id = @exam_id and class_id = @class_id and section_id = @section_id)";
-
-            string query = @"SELECT a.subject_id,b.subject_name FROM mst_class_subject a,mst_subject b
-                            where
-                            a.subject_id = b.subject_id
-                            and
-                            a.session = @session
-                            and
-                            a.class_id = @class_id";
+            string query = @"SELECT 
+                                a.subject_id, b.subject_name
+                            FROM
+                                mst_class_subject a,
+                                mst_subject b
+                            WHERE
+                                a.subject_id = b.subject_id
+                                    AND a.session = @session
+                                    AND a.class_id = @class_id
+                                    AND a.session = b.session";
 
 
 
@@ -171,13 +167,22 @@ namespace SMS.Controllers
         {
             
 
-            string query = @"SELECT a.section_id,b.section_name FROM mst_attendance a,mst_section b
-                            where
-                            a.section_id = b.section_id
-                            and
-                            a.class_id = @class_id
-                            and 
-                            a.user_id = @user_id";
+            string query = @"SELECT 
+                                a.section_id, b.section_name
+                            FROM
+                                mst_attendance a,
+                                mst_section b
+                            WHERE
+                                a.section_id = b.section_id
+                                    AND a.class_id = @class_id
+                                    AND a.user_id = @user_id
+                                    AND b.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
 
             var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });

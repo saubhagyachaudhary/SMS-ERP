@@ -45,8 +45,7 @@ namespace SMS.Models
         [Required]
         [Display(Name = "Section Name")]
         public virtual int section_id { get; set; }
-        [Required]
-        public virtual int batch_id { get; set; }
+        
         [Required]
         public virtual String nature { get; set; }
         [Required]

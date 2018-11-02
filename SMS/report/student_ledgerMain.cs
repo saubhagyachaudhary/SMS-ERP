@@ -61,15 +61,16 @@ namespace SMS.report
                                     d.pickup_point
                                 FROM
                                     sr_register a,
-                                    mst_batch b,
+                                    mst_std_class b,
                                     mst_class c,
                                     mst_transport d
                                 WHERE
-                                    a.std_batch_id = b.batch_id
+                                    a.sr_number = b.sr_num
                                         AND b.class_id = c.class_id
                                         AND a.sr_number = @sr_num
                                         AND b.session = @session
                                         AND b.session = d.session
+                                        AND d.session = c.session
                                         AND a.std_pickup_id = d.pickup_id";
 
                 student_ledger std_ledger = con.Query<student_ledger>(query, new { sr_num = sr_num, session = session }).SingleOrDefault();

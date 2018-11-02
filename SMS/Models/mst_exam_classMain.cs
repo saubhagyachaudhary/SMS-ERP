@@ -50,13 +50,18 @@ namespace SMS.Models
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT a.session,a.class_id,a.exam_id,c.class_name,b.exam_name FROM mst_exam_class a, mst_exam b, mst_class c
-                                where
-                                a.class_id = c.class_id
-                                and
-                                a.exam_id = b.exam_id
-                                and
-                                a.session = @session";
+            string query = @"SELECT 
+                                    a.session, a.class_id, a.exam_id, c.class_name, b.exam_name
+                                FROM
+                                    mst_exam_class a,
+                                    mst_exam b,
+                                    mst_class c
+                                WHERE
+                                    a.class_id = c.class_id
+                                        AND a.exam_id = b.exam_id
+                                        AND a.session = @session
+                                        AND a.session = b.session
+                                        AND b.session = c.session";
 
             var result = con.Query<mst_exam_class>(query, new { session = sess.findActive_finalSession() });
 
@@ -66,17 +71,20 @@ namespace SMS.Models
 
         public mst_exam_class FindExamClass(int class_id, int exam_id, string session)
         {
-            String Query = @"SELECT a.session,a.class_id,a.exam_id,c.class_name,b.exam_name FROM mst_exam_class a, mst_exam b, mst_class c
-                                where
-                                a.class_id = c.class_id
-                                and
-                                a.exam_id = b.exam_id
-                                and
-                                a.session = @session
-                                and
-                                a.class_id = @class_id
-                                and
-                                a.exam_id = @exam_id";
+            string Query = @"SELECT 
+                                    a.session, a.class_id, a.exam_id, c.class_name, b.exam_name
+                                FROM
+                                    mst_exam_class a,
+                                    mst_exam b,
+                                    mst_class c
+                                WHERE
+                                    a.class_id = c.class_id
+                                        AND a.exam_id = b.exam_id
+                                        AND a.session = b.session
+                                        AND b.session = c.session
+                                        AND c.session = @session
+                                        AND a.class_id = @class_id
+                                        AND a.exam_id = @exam_id";
 
             return con.Query<mst_exam_class>(Query, new { class_id = class_id, exam_id = exam_id, session = session }).SingleOrDefault();
         }

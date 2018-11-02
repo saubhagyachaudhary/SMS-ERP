@@ -51,15 +51,29 @@ namespace SMS.report
 
                 string fin = con.Query<string>(query1).SingleOrDefault();
 
-                string query = @"SELECT mode_flag,chq_no,chq_date,receipt_date,fees_name
-                              , sr_number
-                              , class_id
-                              , amount +dc_fine - dc_discount amount
-                              , reg_no
-                              , reg_date
-                                  FROM fees_receipt
-                                  where fin_id = @fin_id
-                                  and receipt_no = @receipt_no";
+                string query = @"SELECT 
+                                        mode_flag,
+                                        chq_no,
+                                        chq_date,
+                                        receipt_date,
+                                        fees_name,
+                                        sr_number,
+                                        class_id,
+                                        amount + dc_fine - dc_discount amount,
+                                        reg_no,
+                                        reg_date
+                                    FROM
+                                        fees_receipt
+                                    WHERE
+                                        fin_id = @fin_id
+                                            AND receipt_no = @receipt_no
+                                            AND session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
 
                 IEnumerable<fees_receipt> result = con.Query<fees_receipt>(query, new { fin_id = fin, receipt_no = receipt_no });
@@ -68,27 +82,52 @@ namespace SMS.report
 
                 if (result.First<fees_receipt>().sr_number == 0)
                 {
-                    query = @"SELECT reg_no num  
-                               ,concat(std_first_name,' ',std_last_name) name
-                              ,std_father_name father_name
-	                          ,b.class_name
-	                           FROM std_registration a, mst_class b
-	                           where a.std_class_id = b.class_id
-	                           and reg_no = @reg_no
-	                           and reg_date = @reg_date";
+                    query = @"SELECT 
+                                    reg_no num,
+                                    CONCAT(std_first_name, ' ', std_last_name) name,
+                                    std_father_name father_name,
+                                    b.class_name
+                                FROM
+                                    std_registration a,
+                                    mst_class b
+                                WHERE
+                                    a.std_class_id = b.class_id
+                                        AND reg_no = @reg_no
+                                        AND reg_date = @reg_date
+                                        AND b.session = a.session
+                                        AND a.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
                     rep = con.Query<rep_fees>(query, new { reg_no = result.First<fees_receipt>().reg_no, reg_date = result.First<fees_receipt>().reg_date }).SingleOrDefault();
                 }
                 else
                 {
-                    query = @"SELECT sr_number num   
-                                   ,concat(std_first_name,' ',std_last_name) name
-                                  ,std_father_name father_name
-	                              ,CONCAT(c.class_name,' Sec. ',b.section_name) class_name
-                                  FROM sr_register a,mst_section b,mst_class c
-	                              where a.std_section_id = b.section_id
-	                              and b.class_id = c.class_id
-                                  and sr_number = @sr_number";
+                    query = @"SELECT 
+                                    sr_number num,
+                                    CONCAT(std_first_name, ' ', std_last_name) name,
+                                    std_father_name father_name,
+                                    CONCAT(c.class_name, ' Sec. ', b.section_name) class_name
+                                FROM
+                                    sr_register a,
+                                    mst_section b,
+                                    mst_class c,
+                                    mst_std_section d,
+                                    mst_std_class e
+                                WHERE
+                                    d.section_id = b.section_id
+                                        AND b.class_id = c.class_id
+                                        AND e.class_id = b.class_id
+                                        AND a.sr_number = d.sr_num
+                                        AND d.sr_num = e.sr_num
+                                        AND a.sr_number = @sr_number
+                                        AND b.session = c.session
+                                        AND c.session = d.session
+                                        AND d.session = e.session";
 
                     rep = con.Query<rep_fees>(query, new { sr_number = result.First<fees_receipt>().sr_number }).SingleOrDefault();
                 }

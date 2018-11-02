@@ -104,13 +104,16 @@ namespace SMS.Controllers
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT b.discipline_id,b.discipline_name FROM mst_class_discipline a, mst_discipline b
-                                where
+            string query = @"SELECT 
+                                b.discipline_id, b.discipline_name
+                            FROM
+                                mst_class_discipline a,
+                                mst_discipline b
+                            WHERE
                                 a.discipline_id = b.discipline_id
-                                and
-                                a.class_id = @class_id
-                                and
-                                a.session = @session";
+                                    AND a.class_id = @class_id
+                                    AND a.session = @session
+                                    AND a.session = b.session";
 
 
             var exam_list = con.Query<mst_discipline>(query, new { class_id = id, session = sess.findActive_finalSession(), term_id = term_id });
@@ -127,11 +130,21 @@ namespace SMS.Controllers
         {
 
 
-            string query = @"SELECT a.section_id,b.section_name FROM mst_attendance a,mst_section b
-                            where
-                            a.section_id = b.section_id
-                            and
-                            a.class_id = @class_id";
+            string query = @"SELECT 
+                                a.section_id, b.section_name
+                            FROM
+                                mst_attendance a,
+                                mst_section b
+                            WHERE
+                                a.section_id = b.section_id
+                                    AND a.class_id = @class_id
+                                    AND b.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
 
             var exam_list = con.Query<mst_section>(query, new { class_id = id });

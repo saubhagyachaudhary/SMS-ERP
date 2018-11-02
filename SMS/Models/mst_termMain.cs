@@ -21,7 +21,18 @@ namespace SMS.Models
 
                 string query = "INSERT INTO mst_term (session,term_id,term_name) VALUES (@session,@term_id,@term_name)";
 
-                string maxid = "select ifnull(MAX(term_id),0)+1 from mst_term";
+                string maxid = @"SELECT 
+                                        IFNULL(MAX(term_id), 0) + 1
+                                    FROM
+                                        mst_term
+                                    WHERE
+                                        session = (SELECT
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -46,7 +57,18 @@ namespace SMS.Models
 
         public IEnumerable<mst_term> AllTermList()
         {
-            String query = "SELECT term_id,term_name FROM mst_term";
+            string query = @"SELECT 
+                                    term_id, term_name
+                                FROM
+                                    mst_term
+                                WHERE
+                                    session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
             var result = con.Query<mst_term>(query);
 
@@ -56,7 +78,19 @@ namespace SMS.Models
 
         public mst_term FindTerm(int? id)
         {
-            String Query = "SELECT term_id,term_name FROM mst_term where term_id = @term_id";
+            string Query = @"SELECT 
+                                    term_id, term_name
+                                FROM
+                                    mst_term
+                                WHERE
+                                    term_id = @term_id
+                                        AND session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
             return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
         }
@@ -66,7 +100,18 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE mst_term SET term_name = @term_name WHERE term_id = @term_id";
+                string query = @"UPDATE mst_term 
+                                    SET
+                                        term_name = @term_name
+                                    WHERE
+                                        term_id = @term_id
+                                            AND session = (SELECT
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 con.Execute(query, mst);
             }
@@ -80,7 +125,17 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM mst_term WHERE term_id = @term_id";
+                string Query = @"DELETE FROM mst_term 
+                                    WHERE
+                                        term_id = @term_id
+                                        AND session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+
+                                        WHERE
+                                            session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
                 return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
             }

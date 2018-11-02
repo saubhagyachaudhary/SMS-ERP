@@ -95,18 +95,36 @@ namespace SMS.Models
 
         public IEnumerable<std_discount> AllStdDiscountList()
         {
-            String query = @"SELECT a.session,a.sr_num,concat(b.std_first_name,' ',b.std_last_name) stdName
-							  ,d.class_name stdclass
-							  ,e.acc_name account_name
-                              ,concat(percent,'%') per
-							  ,a.acc_id
-							  ,a.sr_num
-                              ,a.remark std_remarks
-                          FROM std_discount a, sr_register b,mst_batch c,mst_class d,mst_acc_head e
-								where a.sr_num = b.sr_number
-								and b.std_batch_id = c.batch_id
-								and c.class_id = d.class_id
-								and a.acc_id = e.acc_id";
+            string query = @"SELECT 
+                                a.session,
+                                a.sr_num,
+                                CONCAT(b.std_first_name, ' ', b.std_last_name) stdName,
+                                d.class_name stdclass,
+                                e.acc_name account_name,
+                                CONCAT(percent, '%') per,
+                                a.acc_id,
+                                a.sr_num,
+                                a.remark std_remarks
+                            FROM
+                                std_discount a,
+                                sr_register b,
+                                mst_std_class c,
+                                mst_class d,
+                                mst_acc_head e
+                            WHERE
+                                a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND c.class_id = d.class_id
+                                    AND a.acc_id = e.acc_id
+                                    AND a.session = c.session
+                                    AND c.session = d.session
+                                    AND d.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             var result = con.Query<std_discount>(query);
 
@@ -115,26 +133,35 @@ namespace SMS.Models
 
         public std_discount FindDiscount(int sr_num, int ac_id)
         {
-            String Query = @"SELECT sr_num
-                              ,acc_id
-                              ,percent
-                              ,bl_exempt
-                              ,bl_apr
-                              ,bl_may
-                              ,bl_jun
-                              ,bl_jul
-                              ,bl_aug
-                              ,bl_sep
-                              ,bl_oct
-                              ,bl_nov
-                              ,bl_dec
-                              ,bl_jan
-                              ,bl_feb
-                              ,bl_mar
-                              ,remark std_remarks
-                          FROM std_discount
-                          where sr_num = @sr_num
-                          and acc_id = @acc_id";
+            string Query = @"SELECT 
+                                sr_num,
+                                acc_id,
+                                percent,
+                                bl_exempt,
+                                bl_apr,
+                                bl_may,
+                                bl_jun,
+                                bl_jul,
+                                bl_aug,
+                                bl_sep,
+                                bl_oct,
+                                bl_nov,
+                                bl_dec,
+                                bl_jan,
+                                bl_feb,
+                                bl_mar,
+                                remark std_remarks
+                            FROM
+                                std_discount
+                            WHERE
+                                sr_num = @sr_num AND acc_id = @acc_id
+                                    AND session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             return con.Query<std_discount>(Query, new { sr_num = sr_num, acc_id = ac_id }).SingleOrDefault();
         }
@@ -146,25 +173,33 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE std_discount
-                               SET acc_id = @acc_id
-                                  ,percent = @percent
-                                  ,bl_exempt = @bl_exempt
-                                  ,bl_apr = @bl_apr
-                                  ,bl_may = @bl_may
-                                  ,bl_jun = @bl_jun
-                                  ,bl_jul = @bl_jul
-                                  ,bl_aug = @bl_aug
-                                  ,bl_sep = @bl_sep
-                                  ,bl_oct = @bl_oct
-                                  ,bl_nov = @bl_nov
-                                  ,bl_dec = @bl_dec
-                                  ,bl_jan = @bl_jan
-                                  ,bl_feb = @bl_feb
-                                  ,bl_mar = @bl_mar
-                                  ,remark = @std_remarks
-                             WHERE sr_num = @sr_num
-                             and acc_id = @acc_id";
+                string query = @"UPDATE std_discount 
+                                    SET 
+                                        acc_id = @acc_id,
+                                        percent = @percent,
+                                        bl_exempt = @bl_exempt,
+                                        bl_apr = @bl_apr,
+                                        bl_may = @bl_may,
+                                        bl_jun = @bl_jun,
+                                        bl_jul = @bl_jul,
+                                        bl_aug = @bl_aug,
+                                        bl_sep = @bl_sep,
+                                        bl_oct = @bl_oct,
+                                        bl_nov = @bl_nov,
+                                        bl_dec = @bl_dec,
+                                        bl_jan = @bl_jan,
+                                        bl_feb = @bl_feb,
+                                        bl_mar = @bl_mar,
+                                        remark = @std_remarks
+                                    WHERE
+                                        sr_num = @sr_num AND acc_id = @acc_id
+                                            AND session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 con.Execute(query, mst);
 
@@ -181,10 +216,10 @@ namespace SMS.Models
 
         public void DeleteDiscount(int sr_num, int acc_id, string session)
         {
-            String Query = @"DELETE FROM std_discount
-                             WHERE sr_num = @sr_num
-                              and acc_id = @acc_id
-                              and session = @session";
+            string Query = @"DELETE FROM std_discount 
+                                WHERE
+                                    sr_num = @sr_num AND acc_id = @acc_id
+                                    AND session = @session";
 
 
 

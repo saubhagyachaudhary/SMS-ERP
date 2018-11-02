@@ -36,7 +36,12 @@ namespace SMS.Controllers
 
         public JsonResult GetSections(int id)
         {
-            string query = "select section_id,section_name from mst_section where class_id = @class_id";
+            string query = @"SELECT 
+                                section_id, section_name
+                            FROM
+                                mst_section
+                            WHERE
+                                class_id = @class_id";
 
             var section_list = con.Query<mst_section>(query,new { class_id = id});
 
@@ -49,7 +54,13 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult Assign_faculty(mst_attendance mst)
         {
-            string query = @"select count(*) from mst_attendance where class_id = @class_id and section_id = @section_id";
+            string query = @"SELECT 
+                                COUNT(*)
+                            FROM
+                                mst_attendance
+                            WHERE
+                                class_id = @class_id
+                                    AND section_id = @section_id";
 
             int count = con.Query<int>(query, new { class_id = mst.class_id,section_id = mst.section_id }).SingleOrDefault();
 

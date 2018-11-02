@@ -47,11 +47,21 @@ namespace SMS.Controllers
 
         public JsonResult GetExam(int id)
         {
-            string query = @"SELECT b.exam_id,b.exam_name FROM mst_exam_class a, mst_exam b
-                                where
-                                a.exam_id = b.exam_id
-                                and
-                                a.class_id = @class_id";
+            string query = @"SELECT 
+                                b.exam_id, b.exam_name
+                            FROM
+                                mst_exam_class a,
+                                mst_exam b
+                            WHERE
+                                a.exam_id = b.exam_id AND a.class_id = @class_id
+                                    AND a.session = b.session
+                                    AND a.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
 
             var exam_list = con.Query<mst_exam>(query, new { class_id = id });

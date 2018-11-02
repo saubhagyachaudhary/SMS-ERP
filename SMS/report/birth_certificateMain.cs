@@ -54,14 +54,14 @@ namespace SMS.report
                                     c.class_name
                                 FROM
                                     sr_register a,
-                                    mst_batch b,
+                                    mst_std_class b,
                                     mst_class c
                                 WHERE
-                                         b.class_id = c.class_id
-                                         AND a.std_batch_id = b.batch_id
+                                    b.class_id = c.class_id
+                                        AND a.sr_number = b.sr_num
                                         AND a.sr_number = @sr_num
                                         AND b.session = @session
-                                        And	a.std_active = 'Y'";
+                                        AND a.std_active = 'Y'";
 
                 student_ledger std = con.Query<student_ledger>(query, new { sr_num = sr_num, session = session.findActive_finalSession() }).SingleOrDefault();
 

@@ -23,20 +23,14 @@ namespace SMS.Models
                 string query = @"INSERT INTO `teacher_exam_remark`
                                 (`session`,
                                 `term_id`,
-                                `class_id`,
-                                `section_id`,
                                 `sr_number`,
                                 `remark`,
-                                `roll_no`,
                                 `user_id`)
                                 VALUES
                                 (@session,
                                 @term_id,
-                                @class_id,
-                                @section_id,
                                 @sr_number,
                                 @remark,
-                                @roll_no,
                                 @user_id)";
 
                 string update = @"UPDATE `teacher_exam_remark` 
@@ -46,8 +40,6 @@ namespace SMS.Models
                                     WHERE
                                         `session` = @session
                                             AND `term_id` = @term_id
-                                            AND `class_id` = @class_id
-                                            AND `section_id` = @section_id
                                             AND `sr_number` = @sr_number";
 
                 string query1 = @"SELECT 
@@ -57,8 +49,6 @@ namespace SMS.Models
                                     WHERE
                                         `session` = @session
                                             AND `term_id` = @term_id
-                                            AND `class_id` = @class_id
-                                            AND `section_id` = @section_id
                                             AND `sr_number` = @sr_number";
 
                 foreach (var remark in mst)
@@ -75,8 +65,6 @@ namespace SMS.Models
                             remark.session,
                             remark.sr_number,
                             remark.term_id,
-                            remark.class_id,
-                            remark.section_id,
                             remark.remark,
                             remark.user_id
                         });
@@ -88,11 +76,8 @@ namespace SMS.Models
                         {
                             remark.session,
                             remark.term_id,
-                            remark.class_id,
-                            remark.section_id,
                             remark.sr_number,
                             remark.remark,
-                            remark.roll_no,
                             remark.user_id
                         });
                     }
@@ -111,26 +96,36 @@ namespace SMS.Models
 
             string session_name = sess.findActive_finalSession();
 
-            string query = @"select b.class_id,b.section_id,c.roll_number roll_no,a.sr_number,concat(ifnull(a.std_first_name, ''), ' ', ifnull(std_last_name, '')) std_name from sr_register a, mst_section b,mst_rollnumber c
-                            where
-                            a.std_section_id = b.section_id
-                            and
-                            b.section_id = @section_id
-                            and
-                            b.class_id = @class_id
-                            and
-                            c.class_id = b.class_id
-                            and
-                            c.section_id = b.section_id
-                            and
-                            b.session = c.session
-                            and
-                            c.session = @session
-                            and
-                            a.sr_number = c.sr_num
-                            and
-                            a.std_active = 'Y'
-                            order by roll_no";
+            string query = @"SELECT 
+                                b.class_id,
+                                b.section_id,
+                                c.roll_number roll_no,
+                                a.sr_number,
+                                CONCAT(IFNULL(a.std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name
+                            FROM
+                                sr_register a,
+                                mst_section b,
+                                mst_rollnumber c,
+                                mst_std_class d,
+                                mst_std_section e
+                            WHERE
+                                a.sr_number = d.sr_num
+                                    AND d.sr_num = e.sr_num
+                                    AND e.sr_num = c.sr_num
+                                    AND e.section_id = b.section_id
+                                    AND d.class_id = b.class_id
+                                    AND b.section_id = @section_id
+                                    AND b.class_id = @class_id
+                                    AND d.class_id = b.class_id
+                                    AND e.section_id = b.section_id
+                                    AND b.session = c.session
+                                    AND c.session = d.session
+                                    AND d.session = e.session
+                                    AND e.session = @session
+                                    AND a.std_active = 'Y'
+                            ORDER BY roll_no";
 
             return con.Query<teacher_exam_remark>(query, new { class_id = class_id, section_id = section_id, session = session_name });
         }
@@ -139,61 +134,66 @@ namespace SMS.Models
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"select * from (SELECT 
-                                a.class_id,
-                                a.section_id,
-                                b.roll_number roll_no,
-                                a.remark,
-                                a.sr_number,
-                                CONCAT(IFNULL(c.std_first_name, ''),
-                                        ' ',
-                                        IFNULL(c.std_last_name, '')) std_name
-                            FROM
-                                teacher_exam_remark a,
-                                mst_rollnumber b,
-                                sr_register c
-                            WHERE
-                                a.sr_number = b.sr_num
-                                    AND b.sr_num = c.sr_number
-                                    AND a.sr_number = c.sr_number
-                                    AND a.session = b.session
-                                    AND a.session = @session
-                                    AND a.class_id = @class_id
-                                    AND a.section_id = @section_id
-                                    AND a.term_id = @term_id
-                            UNION ALL 
-                            SELECT 
-                                b.class_id,
-                                b.section_id,
-                                c.roll_number roll_no,
-                                '',
-                                a.sr_number,
-                                CONCAT(IFNULL(a.std_first_name, ''),
-                                        ' ',
-                                        IFNULL(std_last_name, '')) std_name
-                            FROM
-                                sr_register a,
-                                mst_section b,
-                                mst_rollnumber c
-                            WHERE
-                                a.std_section_id = b.section_id
-                                    AND b.section_id = @section_id
-                                    AND b.class_id = @class_id
-                                    AND c.class_id = b.class_id
-                                    AND c.section_id = b.section_id
-                                    AND b.session = c.session
-                                    AND c.session = @session
-                                    AND a.sr_number = c.sr_num
-                                    AND a.std_active = 'Y'
-                                    AND sr_number NOT IN (SELECT 
-                                        sr_number
+            string Query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        d.class_id,
+                                            e.section_id,
+                                            b.roll_number roll_no,
+                                            a.remark,
+                                            a.sr_number,
+                                            CONCAT(IFNULL(c.std_first_name, ''), ' ', IFNULL(c.std_last_name, '')) std_name
                                     FROM
-                                        teacher_exam_remark
+                                        teacher_exam_remark a, mst_rollnumber b, sr_register c, mst_std_class d, mst_std_section e
                                     WHERE
-                                        session = @session AND term_id = @term_id
-                                            AND class_id = @class_id
-                                            AND section_id = @section_id)) a
-                                            order by a.roll_no";
+                                        a.sr_number = b.sr_num
+                                            AND b.sr_num = c.sr_number
+                                            AND c.sr_number = d.sr_num
+                                            AND d.sr_num = e.sr_num
+                                            AND a.session = b.session
+                                            AND b.session = d.session
+                                            AND d.session = e.session
+                                            AND e.session = @session
+                                            AND d.class_id = @class_id
+                                            AND e.section_id = @section_id
+                                            AND a.term_id = @term_id UNION ALL SELECT 
+                                        b.class_id,
+                                            b.section_id,
+                                            c.roll_number roll_no,
+                                            '',
+                                            a.sr_number,
+                                            CONCAT(IFNULL(a.std_first_name, ''), ' ', IFNULL(std_last_name, '')) std_name
+                                    FROM
+                                        sr_register a, mst_section b, mst_rollnumber c, mst_std_class d, mst_std_section e
+                                    WHERE
+                                        e.section_id = b.section_id
+                                            AND d.class_id = b.class_id
+                                            AND a.sr_number = c.sr_num
+                                            AND c.sr_num = d.sr_num
+                                            AND d.sr_num = e.sr_num
+                                            AND b.session = c.session
+                                            AND c.session = d.session
+                                            AND d.session = e.session
+                                            AND e.session = @session
+                                            AND b.section_id = @section_id
+                                            AND b.class_id = @class_id
+                                            AND a.sr_number = c.sr_num
+                                            AND a.std_active = 'Y'
+                                            AND sr_number NOT IN (SELECT 
+                                                sr_number
+                                            FROM
+                                                teacher_exam_remark a, mst_std_class b, mst_std_section c
+                                            WHERE
+                                                a.session = b.session
+                                                    AND b.session = c.session
+                                                    AND c.session = @session
+                                                    AND a.sr_number = b.sr_num
+                                                    AND b.sr_num = c.sr_num
+                                                    AND a.term_id = @term_id
+                                                    AND b.class_id = @class_id
+                                                    AND c.section_id = @section_id)) a
+                                ORDER BY a.roll_no";
 
             return con.Query<teacher_exam_remark>(Query, new { class_id = class_id, term_id = term_id, session = session.findActive_finalSession(), section_id = section_id });
         }

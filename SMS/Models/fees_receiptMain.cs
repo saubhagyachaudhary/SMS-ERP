@@ -58,27 +58,37 @@ namespace SMS.Models
 
                         if (fee.class_id == 0)
                         {
-                            query1 = @"SELECT std_section_id
-                                        FROM sr_register
-                                        where sr_number = @sr_number";
+                            query1 = @"SELECT 
+                                            section_id
+                                        FROM
+                                            mst_std_section 
+                                        WHERE
+                                            sr_num = @sr_number 
+                                        AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_active = 'Y'
+                                                        AND session_finalize = 'Y')";
 
                             int id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
                             fee.section_id = id;
-
-                            query1 = @"SELECT std_batch_id
-                                        FROM sr_register
-                                        where sr_number = @sr_number";
-
-                            id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
-
-                            fee.batch_id = id;
-
-                            query1 = @"SELECT b.class_id
-                                FROM sr_register a,mst_batch b
-                                where sr_number = @sr_number
-                                and
-                                a.std_batch_id = b.batch_id";
+                            
+                            query1 = @"SELECT 
+                                            class_id
+                                        FROM
+                                            mst_std_class
+                                        WHERE
+                                            sr_num = @sr_number
+                                        AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_active = 'Y'
+                                                        AND session_finalize = 'Y')";
 
                             id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
@@ -115,7 +125,6 @@ namespace SMS.Models
                                ,sr_number
                                ,class_id
                                ,section_id
-                               ,batch_id
                                ,amount
                                ,reg_no
                                ,reg_date
@@ -140,7 +149,6 @@ namespace SMS.Models
                                ,@sr_number
                                ,@class_id
                                ,@section_id
-                               ,@batch_id
                                ,@amount
                                ,@reg_no
                                ,@reg_date
@@ -168,7 +176,6 @@ namespace SMS.Models
                                     fee.sr_number,
                                     fee.class_id,
                                     fee.section_id,
-                                    fee.batch_id,
                                     fee.amount,
                                     fee.reg_no,
                                     fee.reg_date,
@@ -314,7 +321,6 @@ namespace SMS.Models
                                SET sr_number = @sr_number
                                   ,class_id = @class_id
                                   ,section_id = @section_id
-                                  ,batch_id = @batch_id
                              WHERE 
 		                            reg_no = @reg_no
 		                            and
@@ -325,7 +331,6 @@ namespace SMS.Models
                     sr_number = fees.sr_number,
                     class_id = fees.class_id,
                     section_id = fees.section_id,
-                    batch_id = fees.batch_id,
                     reg_no = fees.reg_no,
                     reg_date = fees.reg_date
 
@@ -351,7 +356,6 @@ namespace SMS.Models
                               ,sr_number
                               ,class_id
                               ,section_id
-                              ,batch_id
                               ,amount
                               ,reg_no
                               ,reg_date
@@ -386,7 +390,6 @@ namespace SMS.Models
                               ,sr_number
                               ,class_id
                               ,section_id
-                              ,batch_id
                               ,amount
                               ,reg_no
                               ,reg_date

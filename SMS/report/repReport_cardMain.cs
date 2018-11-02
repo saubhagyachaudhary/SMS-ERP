@@ -22,16 +22,30 @@ namespace SMS.report
         public void pdfReportCard( int class_id, int section_id, string session)
         {
 
-            string query1 = @"SELECT concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) class_name FROM mst_section a,mst_class b 
-                                where a.class_id = b.class_id
-                                and a.section_id = @section_id";
+            string query1 = @"SELECT 
+                                    CONCAT(IFNULL(b.class_name, ''),
+                                            ' Section ',
+                                            IFNULL(a.section_name, '')) class_name
+                                FROM
+                                    mst_section a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.section_id = @section_id
+                                        AND a.session = b.session
+                                        AND a.session = @session";
 
-            string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
+            string class_name = con.Query<string>(query1, new { section_id = section_id, session = session }).SingleOrDefault();
 
-             query1 = @"SELECT class_name FROM mst_class b 
-                                where b.class_id = @class_id";
+             query1 = @"SELECT 
+                            class_name
+                        FROM
+                            mst_class b
+                        WHERE
+                            b.class_id = @class_id
+                            and b.session = @session";
 
-            string class_na = con.Query<string>(query1, new { class_id = class_id }).SingleOrDefault();
+            string class_na = con.Query<string>(query1, new { class_id = class_id, session = session }).SingleOrDefault();
 
             MemoryStream ms = new MemoryStream();
 
@@ -47,22 +61,51 @@ namespace SMS.report
            // doc.SetMargins(0f, 0f, 10f, 30f);
             try
             {
-                string query = @"SELECT * FROM mst_scholastic_grades where session = @session order by from_marks desc";
+                string query = @"SELECT 
+                                        *
+                                    FROM
+                                        mst_scholastic_grades
+                                    WHERE
+                                        session = @session
+                                    ORDER BY from_marks DESC";
 
                 IEnumerable<mst_scholastic_grades> grades = con.Query<mst_scholastic_grades>(query, new { session = session });
 
 
-                query = @"select a.sr_number sr_num, c.roll_number roll_no,concat(ifnull(a.std_first_name, ''), ' ', ifnull(std_last_name, '')) std_name,std_father_name,std_mother_name,std_dob,b.section_name,concat(ifnull(std_address,''),' ',ifnull(std_address1,''),' ',ifnull(std_address2,''),' ',ifnull(std_district,'')) address from sr_register a, mst_section b,mst_rollnumber c
-                            where
-                            a.std_section_id = b.section_id
-                            and
-                            b.section_id = @section_id
-                            and
-                            c.sr_num = a.sr_number
-                            order by c.roll_number";
+                query = @"SELECT 
+                                a.sr_number sr_num,
+                                c.roll_number roll_no,
+                                CONCAT(IFNULL(a.std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name,
+                                std_father_name,
+                                std_mother_name,
+                                std_dob,
+                                b.section_name,
+                                CONCAT(IFNULL(std_address, ''),
+                                        ' ',
+                                        IFNULL(std_address1, ''),
+                                        ' ',
+                                        IFNULL(std_address2, ''),
+                                        ' ',
+                                        IFNULL(std_district, '')) address
+                            FROM
+                                sr_register a,
+                                mst_section b,
+                                mst_rollnumber c,
+                                mst_std_section d
+                            WHERE
+                                d.section_id = b.section_id
+                                    AND d.section_id = @section_id
+                                    AND c.sr_num = a.sr_number
+                                    AND a.sr_number = d.sr_num
+                                    AND b.session = c.session
+                                    AND c.session = d.session
+                                    AND d.session = @session
+                            ORDER BY c.roll_number";
 
 
-                IEnumerable<repReport_card> sr_list = con.Query<repReport_card>(query, new { section_id = section_id });
+                IEnumerable<repReport_card> sr_list = con.Query<repReport_card>(query, new { section_id = section_id, session = session });
 
 
 
@@ -71,18 +114,26 @@ namespace SMS.report
 
                 IEnumerable<mst_term> term_list;
 
-                string query_term = @"SELECT * FROM mst_term_rules where class_id = @class_id and session = @session and term_id = @term_id";
+                string query_term = @"SELECT 
+                                            *
+                                        FROM
+                                            mst_term_rules
+                                        WHERE
+                                            class_id = @class_id
+                                                AND session = @session
+                                                AND term_id = @term_id";
 
                 
-                query = @"select distinct a.term_id,b.term_name from mst_term_rules a,mst_term b 
-                            where 
-                            a.class_id = @class_id
-                            and
-                            a.session = @session
-                            and
-                            a.term_id = b.term_id
-                            and
-                            a.session = b.session";
+                query = @"SELECT DISTINCT
+                                a.term_id, b.term_name
+                            FROM
+                                mst_term_rules a,
+                                mst_term b
+                            WHERE
+                                a.class_id = @class_id
+                                    AND a.session = @session
+                                    AND a.term_id = b.term_id
+                                    AND a.session = b.session";
 
                 term_list = con.Query<mst_term>(query, new { class_id = class_id, session = session });
 
@@ -332,11 +383,13 @@ namespace SMS.report
 
                     doc.Add(pt);
 
-                    string count = @"select count(*) from mst_term_rules a
-                            where 
-                            a.class_id = @class_id
-                            and
-                            a.session = @session";
+                    string count = @"SELECT 
+                                            COUNT(*)
+                                        FROM
+                                            mst_term_rules a
+                                        WHERE
+                                            a.class_id = @class_id
+                                                AND a.session = @session";
 
                     int exam_count = con.Query<int>(count, new { class_id = class_id, session = session }).SingleOrDefault();
 
@@ -414,7 +467,16 @@ namespace SMS.report
                        
                     }
 
-                    string query_Convert_marks = @"SELECT sum(convert_to) FROM mst_term_rules a, mst_exam b where a.class_id = @class_id and a.session = @session and b.exam_id = a.exam_id1";
+                    string query_Convert_marks = @"SELECT 
+                                                        SUM(convert_to)
+                                                    FROM
+                                                        mst_term_rules a,
+                                                        mst_exam b
+                                                    WHERE
+                                                        a.class_id = @class_id
+                                                            AND a.session = @session
+                                                            AND b.exam_id = a.exam_id1
+                                                            and a.session = b.session";
 
                     int sum_convert_marks = con.Query<int>(query_Convert_marks, new { class_id = class_id, session = session }).SingleOrDefault();
 
@@ -439,33 +501,55 @@ namespace SMS.report
 
                     IEnumerable<mst_subject> subject;
 
-                    query = @"SELECT a.subject_id,b.subject_name FROM mst_class_subject a, mst_subject b
-                                    where
+                    query = @"SELECT 
+                                    a.subject_id, b.subject_name
+                                FROM
+                                    mst_class_subject a,
+                                    mst_subject b
+                                WHERE
                                     a.subject_id = b.subject_id
-                                    and
-                                    a.session = b.session
-                                    and
-                                    a.session = @session
-                                    and
-                                    class_id = @class_id";
+                                        AND a.session = b.session
+                                        AND a.session = @session
+                                        AND class_id = @class_id";
 
                     subject = con.Query<mst_subject>(query, new { class_id = class_id, session = session });
 
-                    query = @"select round((marks/(select max_no from mst_exam where exam_id = a.exam_id )*(select convert_to from mst_exam where exam_id = a.exam_id )),1) from mst_exam_marks a
-                            where 
-                            session = @session
-                            and 
-                            subject_id = @subject_id
-                            and
-                            class_id = @class_id
-                            and
-                            section_id = @section_id
-                            and
-                            exam_id	 = @exam_id
-                            and
-                            sr_num = @sr_num";
+                    query = @"SELECT 
+                                    ROUND((marks / (SELECT 
+                                                    max_no
+                                                FROM
+                                                    mst_exam
+                                                WHERE
+                                                    exam_id = a.exam_id) * (SELECT 
+                                                    convert_to
+                                                FROM
+                                                    mst_exam
+                                                WHERE
+                                                    exam_id = a.exam_id)),
+                                            1)
+                                FROM
+                                    mst_exam_marks a,
+                                    mst_std_class b,
+                                    mst_std_section c
+                                WHERE
+                                    a.session = @session
+                                        AND a.session = b.session
+                                        AND b.session = c.session
+                                        AND a.sr_num = b.sr_num
+                                        AND b.sr_num = c.sr_num
+                                        AND a.subject_id = @subject_id
+                                        AND b.class_id = @class_id
+                                        AND c.section_id = @section_id
+                                        AND a.exam_id = @exam_id
+                                        AND a.sr_num = @sr_num";
 
-                    string query_max_no = @"select convert_to from mst_exam where exam_id = @exam_id";
+                    string query_max_no = @"SELECT 
+                                                convert_to
+                                            FROM
+                                                mst_exam
+                                            WHERE
+                                                exam_id = @exam_id
+                                                    AND session = @session";
 
                     foreach (var sub_list in subject)
                     {
@@ -492,7 +576,7 @@ namespace SMS.report
                                 if (scolastic.rule == "Only")
                                 {
                                     decimal marks = con.Query<decimal>(query, new { class_id = class_id, session = session, subject_id = sub_list.subject_id, section_id = section_id, exam_id = scolastic.exam_id1, sr_num = std.sr_num }).SingleOrDefault();
-                                     max = max + con.Query<decimal>(query_max_no, new { exam_id = scolastic.exam_id1 }).SingleOrDefault();
+                                     max = max + con.Query<decimal>(query_max_no, new { exam_id = scolastic.exam_id1,session = session }).SingleOrDefault();
 
                                     ph = new Phrase();
                                     text = new Chunk(marks.ToString(), FontFactory.GetFont("Areal", 8));
@@ -510,7 +594,7 @@ namespace SMS.report
                                     decimal marks1 = con.Query<decimal>(query, new { class_id = class_id, session = session, subject_id = sub_list.subject_id, section_id = section_id, exam_id = scolastic.exam_id1, sr_num = std.sr_num }).SingleOrDefault();
                                     decimal marks2 = con.Query<decimal>(query, new { class_id = class_id, session = session, subject_id = sub_list.subject_id, section_id = section_id, exam_id = scolastic.exam_id2, sr_num = std.sr_num }).SingleOrDefault();
 
-                                    max = max + con.Query<decimal>(query_max_no, new { exam_id = scolastic.exam_id1 }).SingleOrDefault();
+                                    max = max + con.Query<decimal>(query_max_no, new { exam_id = scolastic.exam_id1, session = session }).SingleOrDefault();
 
 
                                     if (marks1 > marks2)
@@ -586,17 +670,23 @@ namespace SMS.report
 
 
 
-                    string term_co = @"SELECT distinct a.term_id, b.term_name FROM mst_coscholastic_grades a, mst_term b
-                                    where
-                                    a.term_id = b.term_id
-                                    and
-                                    a.session = b.session
-                                    and
-                                    a.session = @session
-                                    and
-                                    a.term_id = b.term_id
-                                    and
-                                    class_id = @class_id";
+                    string term_co = @"SELECT DISTINCT
+                                            a.term_id, b.term_name
+                                        FROM
+                                            mst_coscholastic_grades a,
+                                            mst_term b,
+                                            mst_std_class c,
+                                            mst_std_section d
+                                        WHERE
+                                            a.term_id = b.term_id
+                                                AND a.session = b.session
+                                                AND b.session = c.session
+                                                AND c.session = d.session
+                                                AND a.session = @session
+                                                AND a.sr_num = c.sr_num
+                                                AND c.sr_num = d.sr_num
+                                                AND a.term_id = b.term_id
+                                                AND c.class_id = @class_id";
 
                     IEnumerable<mst_term> mst_term = con.Query<mst_term>(term_co, new { class_id = class_id, session = session });
 
@@ -635,26 +725,32 @@ namespace SMS.report
                     }
 
 
-                    string coschol = @"SELECT a.co_scholastic_id,b.co_scholastic_name FROM mst_class_coscholastic a,mst_co_scholastic b 
-                                        where
-                                        a.session = @session
-                                        and 
-                                        a.class_id = @class_id
-                                        and
-                                        a.co_scholastic_id = b.co_scholastic_id
-                                        order by b.co_scholastic_name";
+                    string coschol = @"SELECT 
+                                            a.co_scholastic_id, b.co_scholastic_name
+                                        FROM
+                                            mst_class_coscholastic a,
+                                            mst_co_scholastic b
+                                        WHERE
+                                            a.session = @session
+                                                AND a.session = b.session
+                                                AND a.class_id = @class_id
+                                                AND a.co_scholastic_id = b.co_scholastic_id
+                                        ORDER BY b.co_scholastic_name";
 
                     IEnumerable<mst_co_scholastic> scho = con.Query<mst_co_scholastic>(coschol, new { class_id = class_id, session = session});
 
-                    query = @"select b.co_scholastic_name,a.grade from mst_coscholastic_grades a, mst_co_scholastic b 
-                                where
-                                sr_num = @sr_num
-                                and term_id = @term_id
-                                 and a.session = @session
-                                and a.co_scholastic_id = b.co_scholastic_id
-                                and a.co_scholastic_id  = @co_scholastic_id 
-                                and a.session = b.session
-                                order by b.co_scholastic_name";
+                    query = @"SELECT 
+                                    b.co_scholastic_name, a.grade
+                                FROM
+                                    mst_coscholastic_grades a,
+                                    mst_co_scholastic b
+                                WHERE
+                                    sr_num = @sr_num AND term_id = @term_id
+                                        AND a.session = @session
+                                        AND a.co_scholastic_id = b.co_scholastic_id
+                                        AND a.co_scholastic_id = @co_scholastic_id
+                                        AND a.session = b.session
+                                ORDER BY b.co_scholastic_name";
 
                     
 
@@ -708,17 +804,20 @@ namespace SMS.report
                     doc.Add(pt);
 
 
-                    term_co = @"SELECT distinct a.term_id, b.term_name FROM mst_discipline_grades a, mst_term b
-                                    where
+                    term_co = @"SELECT DISTINCT
+                                    a.term_id, b.term_name
+                                FROM
+                                    mst_discipline_grades a,
+                                    mst_term b,
+                                    mst_std_class c
+                                WHERE
                                     a.term_id = b.term_id
-                                    and
-                                    a.session = b.session
-                                    and
-                                    a.session = @session
-                                    and
-                                    a.term_id = b.term_id
-                                    and
-                                    class_id = @class_id";
+                                        AND a.session = b.session
+                                        AND b.session = c.session
+                                        AND a.session = @session
+                                        AND a.sr_num = c.sr_num
+                                        AND a.term_id = b.term_id
+                                        AND c.class_id = @class_id";
 
                     mst_term = con.Query<mst_term>(term_co, new { class_id = class_id, session = session });
 
@@ -760,26 +859,32 @@ namespace SMS.report
                  
 
 
-                    string desci = @"SELECT a.discipline_id,b.discipline_name FROM mst_class_discipline a,mst_discipline b 
-                                        where
-                                        a.session = @session
-                                        and 
-                                        a.class_id = @class_id
-                                        and
-                                        a.discipline_id = b.discipline_id
-                                        order by b.discipline_name";
+                    string desci = @"SELECT 
+                                            a.discipline_id, b.discipline_name
+                                        FROM
+                                            mst_class_discipline a,
+                                            mst_discipline b
+                                        WHERE
+                                            a.session = @session
+                                                AND a.session = b.session
+                                                AND a.class_id = @class_id
+                                                AND a.discipline_id = b.discipline_id
+                                        ORDER BY b.discipline_name";
 
                     IEnumerable<mst_discipline> disci = con.Query<mst_discipline>(desci, new { class_id = class_id, session = session });
 
-                    query = @"select b.discipline_name,a.grade from mst_discipline_grades a, mst_discipline b 
-                            where 
-                            sr_num = @sr_num 
-                            and term_id = @term_id
-                            and a.session = @session
-                            and a.discipline_id = b.discipline_id
-                            and a.discipline_id = @discipline_id
-                            and a.session = b.session
-                            order by b.discipline_name";
+                    query = @"SELECT 
+                                    b.discipline_name, a.grade
+                                FROM
+                                    mst_discipline_grades a,
+                                    mst_discipline b
+                                WHERE
+                                    sr_num = @sr_num AND term_id = @term_id
+                                        AND a.session = @session
+                                        AND a.discipline_id = b.discipline_id
+                                        AND a.discipline_id = @discipline_id
+                                        AND a.session = b.session
+                                ORDER BY b.discipline_name";
 
 
 
@@ -835,12 +940,18 @@ namespace SMS.report
                     string remark_query = @"SELECT 
                                                 remark
                                             FROM
-                                                teacher_exam_remark
+                                                teacher_exam_remark a,
+                                                mst_std_section b,
+                                                mst_std_class c
                                             WHERE
-                                                term_id = @term_id AND class_id = @class_id
-                                                    AND section_id = @section_id
-                                                    AND sr_number = @sr_number
-                                                    AND session = @session";
+                                                term_id = @term_id
+                                                    AND c.class_id = @class_id
+                                                    AND b.section_id = @section_id
+                                                    AND a.sr_number = @sr_number
+                                                    AND a.sr_number = b.sr_num
+                                                    AND b.sr_num = c.sr_num
+                                                    AND a.session = @session
+                                                    AND a.session = b.session";
 
                     pt = new PdfPTable(8);
 

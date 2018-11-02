@@ -72,7 +72,19 @@ namespace SMS.Controllers
                 }
                 sr_registerMain stdMain = new sr_registerMain();
 
-                string query = "select class_id from mst_class where class_name = @std_admission_class";
+                string query = @"SELECT 
+                                    class_id
+                                FROM
+                                    mst_class
+                                WHERE
+                                    class_name = @std_admission_class
+                                        AND session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
                 int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
@@ -116,13 +128,16 @@ namespace SMS.Controllers
         {
             
 
-            string query = @" SELECT fees_amount
-                          FROM mst_fees a, mst_class b
-                          where
-                          a.class_id = b.class_id
-                          and
-                          b.class_name = @class_name 
-                          and acc_id = 2";
+            string query = @"SELECT 
+                                fees_amount
+                            FROM
+                                mst_fees a,
+                                mst_class b
+                            WHERE
+                                a.class_id = b.class_id
+                                    AND b.class_name = @class_name
+                                    AND a.acc_id = 2
+                                    AND a.session = b.session";
 
             decimal fees = con.Query<decimal>(query, new { class_name = id }).SingleOrDefault();
 
@@ -163,9 +178,22 @@ namespace SMS.Controllers
 
         public JsonResult GetSections(int id)
         {
-            string query = "select section_id,section_name from mst_section where class_id = @class_id";
+            string query = @"SELECT 
+                                section_id, section_name
+                            FROM
+                                mst_section
+                            WHERE
+                                class_id = @class_id
+                                    AND session = (SELECT
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
-          
+
+
            var section_list = con.Query<mst_section>(query,new { class_id = id});
 
             IEnumerable<SelectListItem> list = new SelectList(section_list,"section_id","section_name");
@@ -176,7 +204,19 @@ namespace SMS.Controllers
 
         public void DDSections(sr_register obj)
         {
-            string query = "select section_id,section_name from mst_section where class_id = @class_id";
+            string query = @"SELECT 
+                                    section_id, section_name
+                                FROM
+                                    mst_section
+                                WHERE
+                                    class_id = @class_id
+                                        AND session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
 
             var section_list = con.Query<mst_section>(query, new { class_id = obj.class_id});
@@ -192,12 +232,19 @@ namespace SMS.Controllers
 
             mst_sessionMain sess = new mst_sessionMain();
 
-           string query = @"select a.section_id,concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) Section_name from mst_section a,mst_class b
-                            where
-                            a.class_id = b.class_id
-                            and 
-                            session = @session
-                            order by b.class_name";
+           string query = @"SELECT 
+                                a.section_id,
+                                CONCAT(IFNULL(b.class_name, ''),
+                                        ' Section ',
+                                        IFNULL(a.section_name, '')) Section_name
+                            FROM
+                                mst_section a,
+                                mst_class b
+                            WHERE
+                                a.class_id = b.class_id
+                                    AND a.session = @session
+                                    AND a.session = b.session
+                            ORDER BY b.class_name";
 
 
             var section_list = con.Query<mst_section>(query,new {session =  sess.findActive_finalSession() });
@@ -230,20 +277,6 @@ namespace SMS.Controllers
             DDClassWiseSection();
             return View(sr);
         }
-
-        //[HttpGet]
-        //public ActionResult AllNSOStudentList()
-        //{
-        //    sr_registerMain stdMain = new sr_registerMain();
-        //    sr_register sr = new sr_register();
-
-        //    sr.sr_regi = stdMain.AllNSOStudentList(103);
-        //    DDClassWiseSection();
-
-           
-        //    return View("AllStudentList", sr);
-        //}
-
 
         [HttpGet]
         public ActionResult StudentDetails(int id)
@@ -282,7 +315,19 @@ namespace SMS.Controllers
         {
             sr_registerMain stdMain = new sr_registerMain();
 
-            string query = "select class_id from mst_class where class_name = @std_admission_class";
+            string query = @"SELECT 
+                                class_id
+                            FROM
+                                mst_class
+                            WHERE
+                                class_name = @std_admission_class
+                                    AND session = (SELECT
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
@@ -300,16 +345,41 @@ namespace SMS.Controllers
                 return View(std);
             }
 
-            query = @"select class_id from sr_register a, mst_batch b
-where
-a.std_batch_id = b.batch_id
-and sr_number = @sr_num";
+            query = @"SELECT 
+                            class_id
+                        FROM
+                            sr_register a,
+                            mst_std_class b
+                        WHERE
+                            a.sr_number = b.sr_num
+                                AND b.session = (SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_active = 'Y'
+                                        AND session_finalize = 'Y')
+                                AND sr_number = @sr_num";
 
             int changedclassid = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
 
-             query = @"select ifnull(count(CASE 
-WHEN rmt_amount = 0.00  THEN null 
-else rmt_amount end),0) from out_standing where sr_number = @sr_num  and serial != 0  and session = (SELECT session FROM mst_session where session_active = 'Y') and acc_id not in (1,2,6)";
+             query = @"SELECT 
+                            IFNULL(COUNT(CASE
+                                        WHEN rmt_amount = 0.00 THEN NULL
+                                        ELSE rmt_amount
+                                    END),
+                                    0)
+                        FROM
+                            out_standing
+                        WHERE
+                            sr_number = @sr_num AND serial != 0
+                                AND session = (SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_active = 'Y')
+                                AND acc_id NOT IN (1 , 2, 6)";
 
             int error = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
 

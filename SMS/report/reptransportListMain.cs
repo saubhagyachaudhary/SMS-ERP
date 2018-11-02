@@ -46,33 +46,46 @@ namespace SMS.report
                 foreach (var i in pickup_id)
                 {
                     string query = @"SELECT 
-                                a.sr_number,
-                                CONCAT(IFNULL(a.std_first_name, ''),
-                                        ' ',
-                                        IFNULL(a.std_last_name, '')) std_name,
-                                a.std_father_name,
-                                b.pickup_point,
-                                c.class_name,
-                                e.section_name,
-                                COALESCE(a.std_contact,
-                                        a.std_contact1,
-                                        a.std_contact2) contact
-                            FROM
-                                sr_register a,
-                                mst_transport b,
-                                mst_class c,
-                                mst_batch d,
-                                mst_section e
-                            WHERE
-                                a.std_pickup_id = b.pickup_id
-                                    AND a.std_batch_id = d.batch_id
-                                    AND d.class_id = c.class_id
-                                    AND c.class_id = e.class_id
-                                    AND d.class_id = e.class_id
-                                    AND a.std_active = 'Y'
-                                    AND a.std_section_id = e.section_id
-                                    AND b.pickup_id = @pickup_id
-                            ORDER BY c.class_name,e.section_name";
+                                        a.sr_number,
+                                        CONCAT(IFNULL(a.std_first_name, ''),
+                                                ' ',
+                                                IFNULL(a.std_last_name, '')) std_name,
+                                        a.std_father_name,
+                                        b.pickup_point,
+                                        c.class_name,
+                                        e.section_name,
+                                        COALESCE(a.std_contact,
+                                                a.std_contact1,
+                                                a.std_contact2) contact
+                                    FROM
+                                        sr_register a,
+                                        mst_transport b,
+                                        mst_class c,
+                                        mst_std_class d,
+                                        mst_section e,
+                                        mst_std_section f
+                                    WHERE
+                                        a.std_pickup_id = b.pickup_id
+                                            AND a.sr_number = d.sr_num
+                                            AND d.class_id = c.class_id
+                                            AND c.class_id = e.class_id
+                                            AND d.class_id = e.class_id
+                                            AND a.std_active = 'Y'
+                                            AND a.sr_number = f.sr_num
+                                            AND f.section_id = e.section_id
+                                            AND b.pickup_id = @pickup_id
+                                            AND b.session = c.session
+                                            AND c.session = d.session
+                                            AND d.session = e.session
+                                            AND e.session = f.session
+                                            AND f.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')
+                                    ORDER BY c.class_name , e.section_name";
 
                    result = result.Concat(con.Query<transportList>(query, new { pickup_id = i }));
                 }

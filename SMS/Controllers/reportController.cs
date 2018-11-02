@@ -297,11 +297,21 @@ namespace SMS.Controllers
 
             if(flag)
             {
-                string query = @"SELECT a.section_id,b.section_name FROM mst_attendance a,mst_section b
-                            where
-                            a.section_id = b.section_id
-                            and
-                            a.class_id = @class_id";
+                string query = @"SELECT 
+                                    a.section_id, b.section_name
+                                FROM
+                                    mst_attendance a,
+                                    mst_section b
+                                WHERE
+                                    a.section_id = b.section_id
+                                        AND a.class_id = @class_id
+                                        AND b.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
 
                 var exam_list = con.Query<mst_section>(query, new { class_id = id});
@@ -312,13 +322,22 @@ namespace SMS.Controllers
             }
             else
             {
-                string query = @"SELECT a.section_id,b.section_name FROM mst_attendance a,mst_section b
-                            where
-                            a.section_id = b.section_id
-                            and
-                            a.class_id = @class_id
-                            and 
-                            a.user_id = @user_id";
+                string query = @"SELECT 
+                                    a.section_id, b.section_name
+                                FROM
+                                    mst_attendance a,
+                                    mst_section b
+                                WHERE
+                                    a.section_id = b.section_id
+                                        AND a.class_id = @class_id
+                                        AND a.user_id = @user_id
+                                        AND b.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
 
                 var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });

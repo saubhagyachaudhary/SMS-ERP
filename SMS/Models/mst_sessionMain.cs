@@ -46,7 +46,14 @@ namespace SMS.Models
 
         public IEnumerable<mst_session> AllSesssionList()
         {
-            String query = "SELECT session,session_start_date,session_end_date,session_active,session_finalize FROM mst_session";
+            string query = @"SELECT 
+                                session,
+                                session_start_date,
+                                session_end_date,
+                                session_active,
+                                session_finalize
+                            FROM
+                                mst_session";
 
             var result = con.Query<mst_session>(query);
 
@@ -55,35 +62,66 @@ namespace SMS.Models
 
         public mst_session FindSession(string id)
         {
-            String Query = "SELECT session,session_start_date,session_end_date,session_active,session_finalize FROM mst_session where session = @session";
+            string Query = @"SELECT 
+                                    session,
+                                    session_start_date,
+                                    session_end_date,
+                                    session_active,
+                                    session_finalize
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session = @session";
 
             return con.Query<mst_session>(Query, new { session = id }).SingleOrDefault();
         }
 
         public string findActive_finalSession()
         {
-            string Query = "select session from mst_session where session_active = 'Y' and session_finalize = 'Y'";
+            string Query = @"SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_active = 'Y'
+                                        AND session_finalize = 'Y'";
 
             return con.Query<string>(Query).SingleOrDefault();
         }
 
         public string findActive_Session()
         {
-            string Query = "select session from mst_session where session_active = 'Y'";
+            string Query = @"SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_active = 'Y'";
 
             return con.Query<string>(Query).SingleOrDefault();
         }
 
         public mst_session getStartEndDate(string session)
         {
-             String Query = @"SELECT session_start_date,session_end_date FROM mst_session where session = @session";
+             string Query = @"SELECT 
+                                    session_start_date, session_end_date
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session = @session";
 
              return con.Query<mst_session>(Query,new {session = session }).SingleOrDefault();
         }
 
         public bool checkSessionNotExpired()
         {
-            String Query = @"SELECT session_start_date,session_end_date FROM mst_session where session_active = 'Y' and session_finalize = 'Y'";
+            string Query = @"SELECT 
+                                    session_start_date, session_end_date
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_active = 'Y'
+                                        AND session_finalize = 'Y'";
 
             mst_session mst = con.Query<mst_session>(Query).SingleOrDefault();
 
@@ -104,7 +142,12 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE mst_session SET session_active = @session_active,session_finalize = @session_finalize WHERE session = @session";
+                string query = @"UPDATE mst_session 
+                                    SET
+                                        session_active = @session_active,
+                                        session_finalize = @session_finalize
+                                    WHERE
+                                        session = @session";
 
                 con.Execute(query, mst);
             }
@@ -118,7 +161,9 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM mst_session WHERE session = @session";
+                String Query = @"DELETE FROM mst_session 
+                                WHERE
+                                    session = @session";
 
                 return con.Query<mst_session>(Query, new { session = id }).SingleOrDefault();
             }

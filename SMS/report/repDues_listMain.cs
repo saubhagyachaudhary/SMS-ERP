@@ -23,9 +23,24 @@ namespace SMS.report
         public void pdfDues_list(int section_id,decimal amt,string operation)
         {
 
-            string query1 = @"SELECT concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) class_name FROM mst_section a,mst_class b 
-                                where a.class_id = b.class_id
-                                and a.section_id = @section_id";
+            string query1 = @"SELECT 
+                                    CONCAT(IFNULL(b.class_name, ''),
+                                            ' Section ',
+                                            IFNULL(a.section_name, '')) class_name
+                                FROM
+                                    mst_section a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.section_id = @section_id
+                                        AND a.session = b.session
+                                        AND a.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
             string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
 
@@ -55,55 +70,121 @@ namespace SMS.report
 
                 if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
                 {
-                     query = @"select * from (select a.sr_number,concat(ifnull(b.std_first_name,''),' ',ifnull(b.std_last_name,'')) name,b.std_father_name,coalesce(std_contact,std_contact1,std_contact2) contact,c.pickup_point,sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b,mst_transport c
-                                        where
-                                        a.sr_number = b.sr_number 
-                                        and b.std_section_id = @section_id 
-                                        and month_no <= month(date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))) 
-                                        and month_no between 4 and 12
-                                        and a.session = @session
-                                        and b.std_active = 'Y'
-                                        and b.std_pickup_id = c.pickup_id
-                                        group by sr_number) a
-                                        where a.amount " + operation+ " @amt order by pickup_point";
+                     query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            AND month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
+                                            AND month_no BETWEEN 4 AND 12
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
                 }
                 else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
                 {
-                    query = @"select * from (select a.sr_number,concat(ifnull(b.std_first_name,''),' ',ifnull(b.std_last_name,'')) name,b.std_father_name,coalesce(std_contact,std_contact1,std_contact2) contact,c.pickup_point,sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b,mst_transport c
-                                        where
-                                        a.sr_number = b.sr_number 
-                                        and b.std_section_id = @section_id
-                                        and month_no not in (2,3)
-                                        and a.session = @session
-                                        and b.std_active = 'Y'
-                                        and b.std_pickup_id = c.pickup_id
-                                        group by sr_number) a
-                                        where a.amount " + operation + " @amt order by pickup_point";
+
+                    query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            and month_no not in (2,3)
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
                 }
                 else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
                 {
-                    query = @"select * from (select a.sr_number,concat(ifnull(b.std_first_name,''),' ',ifnull(b.std_last_name,'')) name,b.std_father_name,coalesce(std_contact,std_contact1,std_contact2) contact,c.pickup_point,sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b,mst_transport c
-                                        where
-                                        a.sr_number = b.sr_number 
-                                        and b.std_section_id = @section_id
-                                        and month_no != 3
-                                        and a.session = @session
-                                        and b.std_active = 'Y'
-                                        and b.std_pickup_id = c.pickup_id
-                                        group by sr_number) a
-                                         where a.amount " + operation + " @amt order by pickup_point";
+
+                    query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            and month_no != 3
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
+
+                    
                 }
                 else
                 {
-                    query = @"select * from (select a.sr_number,concat(ifnull(b.std_first_name,''),' ',ifnull(b.std_last_name,'')) name,b.std_father_name,coalesce(std_contact,std_contact1,std_contact2) contact,c.pickup_point,sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b,mst_transport c
-                                        where
-                                        a.sr_number = b.sr_number 
-                                        and b.std_section_id = @section_id
-                                        and a.session = @session
-                                        and b.std_active = 'Y'
-                                        and b.std_pickup_id = c.pickup_id
-                                        group by sr_number) a
-                                        where a.amount " + operation + " @amt order by pickup_point";
+
+                    query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
+
                 }
 
                     result = con.Query<repDues_list>(query, new { section_id = section_id, session = session,amt = amt});
@@ -408,61 +489,61 @@ namespace SMS.report
                     if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
                     {
                         query = @"SELECT 
-                                    *
-                                FROM
-                                    (SELECT 
-                                        a.sr_number,
-                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
-                                            b.std_father_name,
-                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
-                                            c.class_name,
-                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
-                                            e.pickup_point
+                                        *
                                     FROM
-                                        out_standing a, sr_register b, mst_class c, mst_batch d,mst_transport e
+                                        (SELECT 
+                                            a.sr_number,
+                                                CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                                b.std_father_name,
+                                                COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                                c.class_name,
+                                                SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                                e.pickup_point
+                                        FROM
+                                            out_standing a, sr_register b, mst_class c, mst_std_class d, mst_transport e
+                                        WHERE
+                                            a.sr_number = b.sr_number
+                                                AND b.std_pickup_id = @pickup_id
+                                                AND month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
+                                                AND month_no BETWEEN 4 AND 12
+                                                AND a.session = @session
+                                                AND b.std_active = 'Y'
+                                                AND b.sr_number = d.sr_num
+                                                AND d.class_id = c.class_id
+                                                AND b.std_pickup_id = e.pickup_id
+                                        GROUP BY sr_number) a
                                     WHERE
-                                        a.sr_number = b.sr_number
-                                            AND b.std_pickup_id = @pickup_id
-                                            AND month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
-                                            AND month_no BETWEEN 4 AND 12
-                                            AND a.session = @session
-                                            AND b.std_active = 'Y'
-                                            AND b.std_batch_id = d.batch_id
-                                            AND d.class_id = c.class_id
-                                            AND b.std_pickup_id = e.pickup_id
-                                    GROUP BY sr_number) a
-                                WHERE
-                                   a.amount " + operation + " @amt ORDER BY class_name";
+                                         a.amount " + operation + " @amt ORDER BY class_name";
 
                     }
                     else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
                     {
 
                         query = @"SELECT 
-                                    *
-                                FROM
-                                    (SELECT 
-                                        a.sr_number,
-                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
-                                            b.std_father_name,
-                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
-                                            c.class_name,
-                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
-                                            e.pickup_point
+                                        *
                                     FROM
-                                        out_standing a, sr_register b, mst_class c, mst_batch d,mst_transport e
+                                        (SELECT 
+                                            a.sr_number,
+                                                CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                                b.std_father_name,
+                                                COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                                c.class_name,
+                                                SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                                e.pickup_point
+                                        FROM
+                                            out_standing a, sr_register b, mst_class c, mst_std_class d, mst_transport e
+                                        WHERE
+                                            a.sr_number = b.sr_number
+                                                AND b.std_pickup_id = @pickup_id
+                                                AND month_no NOT IN (2 , 3)
+                                                AND a.session = @session
+                                                AND b.std_active = 'Y'
+                                                AND b.sr_number = d.sr_num
+                                                AND d.class_id = c.class_id
+                                                AND b.std_pickup_id = e.pickup_id
+                                        GROUP BY sr_number) a
                                     WHERE
-                                        a.sr_number = b.sr_number
-                                            AND b.std_pickup_id = @pickup_id
-                                            AND month_no not in (2,3)
-                                            AND a.session = @session
-                                            AND b.std_active = 'Y'
-                                            AND b.std_batch_id = d.batch_id
-                                            AND d.class_id = c.class_id
-                                            AND b.std_pickup_id = e.pickup_id
-                                    GROUP BY sr_number) a
-                                WHERE
-                                   a.amount " + operation + " @amt ORDER BY class_name";
+                                       a.amount " + operation + " @amt ORDER BY class_name";
 
 
 
@@ -481,14 +562,14 @@ namespace SMS.report
                                             SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
                                             e.pickup_point
                                     FROM
-                                        out_standing a, sr_register b, mst_class c, mst_batch d,mst_transport e
+                                        out_standing a, sr_register b, mst_class c, mst_std_class d,mst_transport e
                                     WHERE
                                         a.sr_number = b.sr_number
                                             AND b.std_pickup_id = @pickup_id
                                             AND month_no != 3
                                             AND a.session = @session
                                             AND b.std_active = 'Y'
-                                            AND b.std_batch_id = d.batch_id
+                                            AND b.sr_number = d.sr_num
                                             AND d.class_id = c.class_id
                                             AND b.std_pickup_id = e.pickup_id
                                     GROUP BY sr_number) a
@@ -509,13 +590,13 @@ namespace SMS.report
                                             SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
                                             e.pickup_point
                                     FROM
-                                        out_standing a, sr_register b, mst_class c, mst_batch d,mst_transport e
+                                        out_standing a, sr_register b, mst_class c, mst_std_class d,mst_transport e
                                     WHERE
                                         a.sr_number = b.sr_number
                                             AND b.std_pickup_id = @pickup_id
                                             AND a.session = @session
                                             AND b.std_active = 'Y'
-                                            AND b.std_batch_id = d.batch_id
+                                            AND b.sr_number = d.sr_num
                                             AND d.class_id = c.class_id
                                             AND b.std_pickup_id = e.pickup_id
                                     GROUP BY sr_number) a

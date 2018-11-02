@@ -36,19 +36,13 @@ namespace SMS.Models
                                 (`session`,
                                 `user_id`,
                                 `att_date`,
-                                `class_id`,
-                                `section_id`,
                                 `sr_num`,
-                                `roll_no`,
                                 `attendance`)
                                 VALUES
                                 (@session,
                                 @user_id,
                                 @att_date,
-                                @class_id,
-                                @section_id,
                                 @sr_num,
-                                @roll_no,
                                 @attendance)";
                 foreach (attendance_register att in attendance)
                 {
@@ -61,10 +55,7 @@ namespace SMS.Models
                                    att.session,
                                    att.user_id,
                                    att.att_date,
-                                   att.class_id,
-                                   att.section_id,
                                    att.sr_num,
-                                   att.roll_no,
                                    att.attendance
                                });
                     class_id = att.class_id;
@@ -100,44 +91,68 @@ namespace SMS.Models
 
             string session_name = sess.findActive_finalSession();
 
-            string query = @"select b.class_id,b.section_id,c.roll_number roll_no,a.sr_number sr_num,concat(ifnull(a.std_first_name, ''), ' ', ifnull(std_last_name, '')) std_name,1 attendance from sr_register a, mst_section b,mst_rollnumber c
-                            where
-                            a.std_section_id = b.section_id
-                            and
-                            b.section_id = @section_id
-                            and
-                            b.class_id = @class_id
-                            and
-                            c.class_id = b.class_id
-                            and
-                            c.section_id = b.section_id
-                            and
-                            b.session = c.session
-                            and
-                            c.session = @session
-                            and
-                            a.sr_number = c.sr_num
-                            and
-                            a.std_active = 'Y'
-                            order by roll_no";
+            string query = @"SELECT 
+                                b.class_id,
+                                b.section_id,
+                                c.roll_number roll_no,
+                                a.sr_number sr_num,
+                                CONCAT(IFNULL(a.std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name,
+                                1 attendance
+                            FROM
+                                sr_register a,
+                                mst_section b,
+                                mst_rollnumber c,
+                                mst_std_section d,
+                                mst_std_class e
+                            WHERE
+                                a.sr_number = d.sr_num
+                                    AND d.section_id = b.section_id
+                                    AND b.section_id = @section_id
+                                    AND b.class_id = @class_id
+                                    AND e.class_id = b.class_id
+                                    AND d.section_id = b.section_id
+                                    AND b.session = c.session
+                                    AND c.session = d.session
+                                    AND d.session = e.session
+                                    AND e.session = @session
+                                    AND a.sr_number = c.sr_num
+                                    AND a.std_active = 'Y'
+                            ORDER BY roll_no";
 
             return con.Query<attendance_register>(query, new { class_id = class_id, section_id= section_id,session = session_name });
         }
 
         public IEnumerable<attendance_register> find_attendance_sheet_for_finalize(int section_id, DateTime att_date, string session)
         {
-            string query = @"select a.session,a.att_date,a.roll_no,a.class_id,a.section_id,a.sr_num,concat(ifnull(b.std_first_name,''),' ',ifnull(b.std_last_name,'')) std_name,attendance from attendance_register a, sr_register b
-                                where 
+            string query = @"SELECT 
+                                a.session,
+                                a.att_date,
+                                a.roll_no,
+                                e.class_id,
+                                c.section_id,
+                                a.sr_num,
+                                CONCAT(IFNULL(b.std_first_name, ''),
+                                        ' ',
+                                        IFNULL(b.std_last_name, '')) std_name,
+                                attendance
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c,
+                                mst_std_class e
+                            WHERE
                                 a.sr_num = b.sr_number
-                                and 
-                                a.section_id = @section_id
-                                and 
-                                a.session = @session
-                                and 
-                                a.att_date = @att_date
-                                and 
-                                ifnull(a.finalize,0) = 0
-                                order by roll_no";
+                                    AND b.sr_number = c.sr_num
+                                    AND c.sr_num = e.sr_num
+                                    AND c.section_id = @section_id
+                                    AND a.session = c.session
+                                    AND c.session = e.session
+                                    AND e.session = @session
+                                    AND a.att_date = @att_date
+                                    AND IFNULL(a.finalize, 0) = 0
+                            ORDER BY roll_no";
 
             return con.Query<attendance_register>(query, new { section_id = section_id, session = session,att_date = att_date });
 
@@ -149,12 +164,7 @@ namespace SMS.Models
                                 SET
                                 `attendance` = @attendance,
                                 `finalize` = 1
-                                WHERE `session` = @session AND `att_date` = @att_date AND `class_id` = @class_id and sr_num = @sr_num and section_id = @section_id and roll_no = @roll_no";
-
-           
-
-            
-            
+                                WHERE `session` = @session AND `att_date` = @att_date and sr_num = @sr_num";
 
             foreach (attendance_register att in attendance)
             {
@@ -164,17 +174,22 @@ namespace SMS.Models
                            {
                                att.session,
                                att.att_date,
-                               att.class_id,
                                att.attendance,
-                               att.sr_num,
-                               att.section_id,
-                               att.roll_no
+                               att.sr_num
                            });
 
                 if (!att.attendance)
                 {
                     sr_register std = new sr_register();
-                    string phone_query = @"select coalesce(std_contact,std_contact1,std_contact2) std_contact,concat(ifnull(std_first_name,''),' ',ifnull(std_last_name,' ')) std_first_name from sr_register where sr_number = @sr_number";
+                    string phone_query = @"SELECT 
+                                                COALESCE(std_contact, std_contact1, std_contact2) std_contact,
+                                                CONCAT(IFNULL(std_first_name, ''),
+                                                        ' ',
+                                                        IFNULL(std_last_name, ' ')) std_first_name
+                                            FROM
+                                                sr_register
+                                            WHERE
+                                                sr_number = @sr_number";
                     std = con.Query<sr_register>(phone_query, new { sr_number = att.sr_num }).SingleOrDefault();
 
 
@@ -188,20 +203,6 @@ namespace SMS.Models
 
                         await sms.SendSMS(body, std.std_contact,true);
                     }
-
-                    
-
-                    //SMSMessage sms = new SMSMessage();
-
-                    //string message = @"Dear Parents,This is to inform you that "+ std.std_first_name +" is absent on "+att.att_date.ToString("dd/MM/yyyy")+".Thank you. "+SchoolName;
-
-                    //sms.SendSMS(message, std.std_contact);
-
-                    //SMSMessage sms1 = new SMSMessage();
-
-                    //string message1 = @"प्रिय अभिभावक, आपको सूचित किया जाता है कि "+ std.std_first_name+ " दिनांक "+ att.att_date.ToString("dd/MM/yyyy") + " को स्कूल में अनुपस्थित है। धन्यवाद। "+ SchoolName;
-
-                    //sms1.SendSMS(message1, std.std_contact);
                 }
             }
                 

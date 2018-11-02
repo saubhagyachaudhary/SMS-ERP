@@ -18,7 +18,18 @@ namespace SMS.Models
             {
                 string query = "INSERT INTO mst_transport (session,pickup_id,pickup_point,transport_fees,transport_number,bl_apr,bl_may,bl_jun,bl_jul,bl_aug,bl_sep,bl_oct,bl_nov,bl_dec,bl_jan,bl_feb,bl_mar) VALUES (@session,@pickup_id,@pickup_point,@transport_fees,@transport_number,@bl_apr,@bl_may,@bl_jun,@bl_jul,@bl_aug,@bl_sep,@bl_oct,@bl_nov,@bl_dec,@bl_jan,@bl_feb,@bl_mar)";
 
-                string maxid = "select ifnull(MAX(pickup_id),0)+1 from mst_transport";
+                string maxid = @"SELECT 
+                                        IFNULL(MAX(pickup_id), 0) + 1
+                                    FROM
+                                        mst_transport
+                                    WHERE
+                                        session = (SELECT
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -34,7 +45,12 @@ namespace SMS.Models
 
               
 
-                string query1 = @"SELECT session FROM mst_session where session_active = 'Y'";
+                string query1 = @"SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_active = 'Y'";
 
                 mst.session = con.Query<string>(query1).SingleOrDefault();
 
@@ -69,7 +85,21 @@ namespace SMS.Models
 
         public IEnumerable<mst_transport> AllTransportList()
         {
-            String query = "SELECT session,pickup_id,pickup_point,transport_fees,transport_number FROM mst_transport";
+            string query = @"SELECT 
+                                    session,
+                                    pickup_id,
+                                    pickup_point,
+                                    transport_fees,
+                                    transport_number
+                                FROM
+                                    mst_transport
+                                WHERE
+                                    session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_active = 'Y')";
 
             var result = con.Query<mst_transport>(query);
 
@@ -78,33 +108,71 @@ namespace SMS.Models
 
         public mst_transport FindTransport(int? id,string session)
         {
-            String Query = "SELECT session,pickup_id,pickup_point,transport_fees,transport_number,bl_apr,bl_may,bl_jun,bl_jul,bl_aug,bl_sep,bl_oct,bl_nov,bl_dec,bl_jan,bl_feb,bl_mar FROM mst_transport where pickup_id = @pickup_id";
+            string Query = @"SELECT 
+                                session,
+                                pickup_id,
+                                pickup_point,
+                                transport_fees,
+                                transport_number,
+                                bl_apr,
+                                bl_may,
+                                bl_jun,
+                                bl_jul,
+                                bl_aug,
+                                bl_sep,
+                                bl_oct,
+                                bl_nov,
+                                bl_dec,
+                                bl_jan,
+                                bl_feb,
+                                bl_mar
+                            FROM
+                                mst_transport
+                            WHERE
+                                pickup_id = @pickup_id
+                                    AND session = (SELECT
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_active = 'Y')";
 
             return con.Query<mst_transport>(Query, new { pickup_id = id, session = session }).SingleOrDefault();
         }
 
         public mst_transport FindTransportBySr(int id)
         {
-            String Query = @"SELECT a.session 
-                           ,pickup_id
-                          ,pickup_point
-                          ,transport_fees
-                          ,transport_number
-                          ,bl_apr
-                          ,bl_may
-                          ,bl_jun
-                          ,bl_jul
-                          ,bl_aug
-                          ,bl_sep
-                          ,bl_oct
-                          ,bl_nov
-                          ,bl_dec
-                          ,bl_jan
-                          ,bl_feb
-                          ,bl_mar
-                      FROM mst_transport a,sr_register b
-                      where a.pickup_id = b.std_pickup_id
-                      and b.sr_number = @sr_num";
+            string Query = @"SELECT 
+                                a.session,
+                                pickup_id,
+                                pickup_point,
+                                transport_fees,
+                                transport_number,
+                                bl_apr,
+                                bl_may,
+                                bl_jun,
+                                bl_jul,
+                                bl_aug,
+                                bl_sep,
+                                bl_oct,
+                                bl_nov,
+                                bl_dec,
+                                bl_jan,
+                                bl_feb,
+                                bl_mar
+                            FROM
+                                mst_transport a,
+                                sr_register b
+                            WHERE
+                                a.pickup_id = b.std_pickup_id
+                                    AND b.sr_number = @sr_num
+                                    AND a.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             return con.Query<mst_transport>(Query, new { sr_num = id }).SingleOrDefault();
         }
@@ -114,7 +182,26 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE mst_transport SET pickup_point = @pickup_point,transport_fees = @transport_fees,transport_number = @transport_number,bl_apr = @bl_apr,bl_may= @bl_may,bl_jun= @bl_jun,bl_jul= @bl_jul,bl_aug= @bl_aug,bl_sep= @bl_sep,bl_oct= @bl_oct,bl_nov= @bl_nov,bl_dec= @bl_dec,bl_jan= @bl_jan,bl_feb= @bl_feb,bl_mar= @bl_mar WHERE pickup_id = @pickup_id and session  = @session";
+                string query = @"UPDATE mst_transport 
+                                    SET
+                                        pickup_point = @pickup_point,
+                                        transport_fees = @transport_fees,
+                                        transport_number = @transport_number,
+                                        bl_apr = @bl_apr,
+                                        bl_may = @bl_may,
+                                        bl_jun = @bl_jun,
+                                        bl_jul = @bl_jul,
+                                        bl_aug = @bl_aug,
+                                        bl_sep = @bl_sep,
+                                        bl_oct = @bl_oct,
+                                        bl_nov = @bl_nov,
+                                        bl_dec = @bl_dec,
+                                        bl_jan = @bl_jan,
+                                        bl_feb = @bl_feb,
+                                        bl_mar = @bl_mar
+                                    WHERE
+                                        pickup_id = @pickup_id
+                                            AND session = @session";
 
                 con.Execute(query, mst);
             }
@@ -128,7 +215,10 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM mst_transport WHERE pickup_id = @pickup_id and session = @session";
+                string Query = @"DELETE FROM mst_transport 
+                                    WHERE
+                                        pickup_id = @pickup_id
+                                        AND session = @session";
 
                 return con.Query<mst_transport>(Query, new { pickup_id = id , session = session}).SingleOrDefault();
             }

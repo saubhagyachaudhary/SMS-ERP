@@ -211,7 +211,6 @@
     <Compile Include="Controllers\Fees_collectController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
-    <Compile Include="Controllers\MentorController.cs" />
     <Compile Include="Controllers\mst_acc_headController.cs" />
     <Compile Include="Controllers\mst_attendanceController.cs" />
     <Compile Include="Controllers\mst_classController.cs" />
@@ -267,8 +266,6 @@
     <Compile Include="Models\fees_receiptMain.cs" />
     <Compile Include="Models\fees_slip.cs" />
     <Compile Include="Models\HangFireAuthorizationFilter.cs" />
-    <Compile Include="Models\mentor.cs" />
-    <Compile Include="Models\mentorMain.cs" />
     <Compile Include="Models\mst_attendance.cs" />
     <Compile Include="Models\mst_attendanceMain.cs" />
     <Compile Include="Models\mst_class_coscholastic.cs" />
@@ -2427,13 +2424,6 @@
     <Content Include="Views\std_discount\EditDiscount.cshtml" />
     <Content Include="Views\std_discount\DeleteDiscount.cshtml" />
     <Content Include="Views\phoneSMS\smsSend.cshtml" />
-    <Content Include="Views\Mentor\AllMentorHeaderList.cshtml" />
-    <Content Include="Views\Mentor\AllMentorDetailList.cshtml" />
-    <Content Include="Views\Mentor\AssignMentor.cshtml" />
-    <Content Include="Views\Mentor\addObservation.cshtml" />
-    <Content Include="Views\Mentor\deleteObservation.cshtml" />
-    <Content Include="Views\Home\Dashboard2.cshtml" />
-    <Content Include="Views\Home\Dashboard1.cshtml" />
     <Content Include="Views\report\feesStatement.cshtml" />
     <Content Include="Views\report\duesList.cshtml" />
     <Content Include="Views\emp_detail\EmpList.cshtml" />

@@ -153,10 +153,15 @@ namespace SMS.Models
 
         public IEnumerable<string> getNumberByClass(int class_id)
         {
-            string query1 = @"select distinct coalesce(std_contact,std_contact1,std_contact2) from sr_register a, mst_batch b
-                                where a.std_batch_id = b.batch_id
-                                and b.class_id = @class_id
-                                and a.std_active = 'Y';";
+            string query1 = @"SELECT DISTINCT
+                                    COALESCE(std_contact, std_contact1, std_contact2)
+                                FROM
+                                    sr_register a,
+                                    mst_std_class b
+                                WHERE
+                                    a.sr_number = b.sr_num
+                                        AND b.class_id = @class_id
+                                        AND a.std_active = 'Y'";
 
             var numberlist = con.Query<string>(query1,new { class_id = class_id });
             //string phone = String.Join(",", numberlist);
@@ -167,7 +172,14 @@ namespace SMS.Models
 
         public IEnumerable<string> getNumberByTransport(int pickup_id)
         {
-            string query1 = @"SELECT distinct coalesce(std_contact,std_contact1,std_contact2) FROM sr_register where std_pickup_id = @pickup_id and std_pickup_id != 1000 and std_active = 'Y'";
+            string query1 = @"SELECT DISTINCT
+                                COALESCE(std_contact, std_contact1, std_contact2)
+                            FROM
+                                sr_register
+                            WHERE
+                                std_pickup_id = @pickup_id
+                                    AND std_pickup_id != 1000
+                                    AND std_active = 'Y'";
 
             var numberlist = con.Query<string>(query1, new { pickup_id = pickup_id });
             //string phone = String.Join(",", numberlist);
@@ -178,7 +190,18 @@ namespace SMS.Models
 
         public IEnumerable<class_list> Class_Name()
         {
-            string query1 = @"select concat( 'Class',' ' ,class_name) class_name ,class_id from mst_class";
+            string query1 = @"SELECT 
+                                    CONCAT('Class', ' ', class_name) class_name, class_id
+                                FROM
+                                    mst_class
+                                WHERE
+                                    session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
             var class_list = con.Query<class_list>(query1 );
 
@@ -187,7 +210,19 @@ namespace SMS.Models
 
         public IEnumerable<pickup_list> pickup_Name()
         {
-            string query1 = @"SELECT pickup_id,pickup_point FROM mst_transport where pickup_id != 1000";
+            string query1 = @"SELECT 
+                                pickup_id, pickup_point
+                            FROM
+                                mst_transport
+                            WHERE
+                                pickup_id != 1000
+                                    AND session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             var class_list = con.Query<pickup_list>(query1);
 
@@ -198,7 +233,12 @@ namespace SMS.Models
 
         public IEnumerable<string> getNumberWholeClass()
         {
-            string query1 = @"SELECT distinct coalesce(std_contact,std_contact1,std_contact2) FROM sr_register where std_active = 'Y'";
+            string query1 = @"SELECT DISTINCT
+                                    COALESCE(std_contact, std_contact1, std_contact2)
+                                FROM
+                                    sr_register
+                                WHERE
+                                    std_active = 'Y'";
 
             var numberlist = con.Query<string>(query1);
             //string phone = String.Join(",", numberlist);
@@ -209,7 +249,13 @@ namespace SMS.Models
 
         public IEnumerable<string> getNumberWholeTransport()
         {
-            string query1 = @"SELECT distinct coalesce(std_contact,std_contact1,std_contact2) FROM sr_register where std_pickup_id != 1000 and std_active = 'Y'";
+            string query1 = @"SELECT DISTINCT
+                                    COALESCE(std_contact, std_contact1, std_contact2)
+                                FROM
+                                    sr_register
+                                WHERE
+                                    std_pickup_id != 1000
+                                        AND std_active = 'Y'";
 
             var numberlist = con.Query<string>(query1);
             //string phone = String.Join(",", numberlist);
@@ -220,7 +266,12 @@ namespace SMS.Models
 
         public IEnumerable<string> getNumberWholeStaff()
         {
-            string query1 = @"SELECT distinct coalesce(contact,contact1,contact2) FROM emp_profile where emp_active = 1";
+            string query1 = @"SELECT DISTINCT
+                                    COALESCE(contact, contact1, contact2)
+                                FROM
+                                    emp_profile
+                                WHERE
+                                    emp_active = 1";
 
             var numberlist = con.Query<string>(query1);
           

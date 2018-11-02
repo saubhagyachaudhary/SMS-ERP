@@ -72,7 +72,19 @@ namespace SMS.Controllers
 
         public JsonResult GetFees(int id)
         {
-            string query = "select fees_amount from mst_fees where class_id = @class_id and acc_id = 1";
+            string query = @"SELECT 
+                                fees_amount
+                            FROM
+                                mst_fees
+                            WHERE
+                                class_id = @class_id AND acc_id = 1
+                                    AND session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
 
             decimal fees = con.Query<decimal>(query, new { class_id = id }).SingleOrDefault();

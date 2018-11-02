@@ -17,17 +17,16 @@ namespace SMS.Models
         {
 
 
-            String query = @"select
-                               bnk_name,
-                               chq_no,
-                               chq_date,
-                               (SUM(amount) + SUM(dc_fine)) - SUM(dc_discount) Amount
-                               from fees_receipt
-                               where
-                               clear_flag = 0
-							   and
-							   chq_reject is null
-                               group by bnk_name,chq_date,chq_no";
+            string query = @"SELECT 
+                                    bnk_name,
+                                    chq_no,
+                                    chq_date,
+                                    (SUM(amount) + SUM(dc_fine)) - SUM(dc_discount) Amount
+                                FROM
+                                    fees_receipt
+                                WHERE
+                                    clear_flag = 0 AND chq_reject IS NULL
+                                GROUP BY bnk_name , chq_date , chq_no";
 
             var result = con.Query<uncleared_cheque>(query);
 
@@ -39,25 +38,29 @@ namespace SMS.Models
 
             try
             {
-                String query = @"UPDATE fees_receipt
-                               SET chq_reject = @chq_reject,
-                                    nt_clear_reason = @narration,
-                                    clear_flag = 1
-                             WHERE bnk_name = @bnk_name
-                             and chq_date = date_format(@chq_date,'%Y-%m-%d')
-                             and chq_no = @chq_no
-                             and clear_flag = 0";
+                string query = @"UPDATE fees_receipt 
+                                    SET 
+                                        chq_reject = @chq_reject,
+                                        nt_clear_reason = @narration,
+                                        clear_flag = 1
+                                    WHERE
+                                        bnk_name = @bnk_name
+                                            AND chq_date = DATE_FORMAT(@chq_date, '%Y-%m-%d')
+                                            AND chq_no = @chq_no
+                                            AND clear_flag = 0";
 
                 con.Execute(query, unclear);
 
                 // fees_receipt fee = new fees_receipt();
 
-                query = @"select DISTINCT
-                               serial,session,amount,dc_fine,dc_discount
-							   from fees_receipt
-                               WHERE bnk_name = @bnk_name
-                                and chq_date = date_format(@chq_date,'%Y-%m-%d')
-                                and chq_no = @chq_no";
+                query = @"SELECT DISTINCT
+                                serial, session, amount, dc_fine, dc_discount
+                            FROM
+                                fees_receipt
+                            WHERE
+                                bnk_name = @bnk_name
+                                    AND chq_date = DATE_FORMAT(@chq_date, '%Y-%m-%d')
+                                    AND chq_no = @chq_no";
 
                 var result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
 
@@ -65,24 +68,27 @@ namespace SMS.Models
 
                 foreach (uncleared_cheque val in result)
                 {
-                    query = @"update out_standing
-                            set rmt_amount = rmt_amount - @rmt_amount,
-                                dc_fine = dc_fine - @dc_fine,
-                                dc_discount = dc_discount - @dc_discount
-                            where serial = @serial 
-                                  and session = @session";
+                    query = @"UPDATE out_standing 
+                                SET 
+                                    rmt_amount = rmt_amount - @rmt_amount,
+                                    dc_fine = dc_fine - @dc_fine,
+                                    dc_discount = dc_discount - @dc_discount
+                                WHERE
+                                    serial = @serial AND session = @session";
 
                     con.Execute(query, new { rmt_amount = val.amount,dc_fine = val.dc_fine,dc_discount = val.dc_discount ,serial = val.serial,session = val.session });
                 }
 
                 if (unclear.bnk_charges != 0)
                 {
-                    query = @"select
-                               DISTINCT sr_number,session,reg_no,class_id
-							   from fees_receipt
-                               WHERE bnk_name = @bnk_name
-                                and chq_date = date_format(@chq_date,'%Y-%m-%d')
-                                and chq_no = @chq_no";
+                    query = @"SELECT DISTINCT
+                                    sr_number, session, reg_no, class_id
+                                FROM
+                                    fees_receipt
+                                WHERE
+                                    bnk_name = @bnk_name
+                                        AND chq_date = DATE_FORMAT(@chq_date, '%Y-%m-%d')
+                                        AND chq_no = @chq_no";
 
                     result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
 
@@ -152,12 +158,16 @@ namespace SMS.Models
 
             try
             {
-                String query = @"UPDATE fees_receipt
-                               SET chq_reject = @chq_reject,clear_flag = 1, nt_clear_reason = @narration
-                             WHERE bnk_name = @bnk_name
-                             and chq_date = date_format(@chq_date,'%Y-%m-%d')
-                             and chq_no = @chq_no
-                             and clear_flag = 0";
+                string query = @"UPDATE fees_receipt 
+                                    SET 
+                                        chq_reject = @chq_reject,
+                                        clear_flag = 1,
+                                        nt_clear_reason = @narration
+                                    WHERE
+                                        bnk_name = @bnk_name
+                                            AND chq_date = DATE_FORMAT(@chq_date, '%Y-%m-%d')
+                                            AND chq_no = @chq_no
+                                            AND clear_flag = 0";
 
                 con.Execute(query, unclear);
 

@@ -126,9 +126,7 @@ namespace SMS.Models
         [Required]
         [ForeignKey("mst_section")]
         public virtual int std_section_id { get; set; }
-        [Required]
-        [Display(Name = "Batch Number")]
-        public virtual int std_batch_id { get; set; }
+        
         [Display(Name = "Remark")]
         public virtual string std_remark { get; set; }
         [Display(Name = "Avail Transport")]

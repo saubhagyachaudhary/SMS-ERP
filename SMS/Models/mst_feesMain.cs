@@ -90,18 +90,28 @@ namespace SMS.Models
         public IEnumerable<mst_fees> AllFeesList()
         {
 
-            String query = @"SELECT
-                           a.session 
-                           ,a.class_id
-                           ,a.acc_id 
-                           ,b.class_name
-                          ,c.acc_name
-                          ,fees_amount
-                           FROM mst_fees a,mst_class b, mst_acc_head c
-                           where 
-                           a.class_id = b.class_id
-                           and
-                           a.acc_id = c.acc_id";
+            string query = @"SELECT 
+                                a.session,
+                                a.class_id,
+                                a.acc_id,
+                                b.class_name,
+                                c.acc_name,
+                                fees_amount
+                            FROM
+                                mst_fees a,
+                                mst_class b,
+                                mst_acc_head c
+                            WHERE
+                                a.class_id = b.class_id
+                                    AND a.acc_id = c.acc_id
+                                    AND a.session = b.session
+                                    AND b.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             var result = con.Query<mst_fees>(query);
 
@@ -110,33 +120,36 @@ namespace SMS.Models
 
         public IEnumerable<mst_fees> FindFeesDetails(int sr_num)
         {
-            String query = @"SELECT a.class_id
-	                       ,a.acc_id
-	                       ,c.acc_name
-                          ,fees_amount
-                          ,bl_onetime
-                          ,bl_apr
-                          ,bl_may
-                          ,bl_jun
-                          ,bl_jul
-                          ,bl_aug
-                          ,bl_sep
-                          ,bl_oct
-                          ,bl_nov
-                          ,bl_dec
-                          ,bl_jan
-                          ,bl_feb
-                          ,bl_mar
-                          FROM mst_fees a, mst_acc_head c,sr_register d,mst_batch e
-                          where 
-                          a.acc_id = c.acc_id
-						  and
-						  e.class_id=a.class_id
-						  and
-						  d.std_batch_id=e.batch_id
-						  and
-						  d.sr_number = @sr_num
-						  and bl_onetime = 0";
+            String query = @"SELECT 
+                                a.class_id,
+                                a.acc_id,
+                                c.acc_name,
+                                fees_amount,
+                                bl_onetime,
+                                bl_apr,
+                                bl_may,
+                                bl_jun,
+                                bl_jul,
+                                bl_aug,
+                                bl_sep,
+                                bl_oct,
+                                bl_nov,
+                                bl_dec,
+                                bl_jan,
+                                bl_feb,
+                                bl_mar
+                            FROM
+                                mst_fees a,
+                                mst_acc_head c,
+                                sr_register d,
+                                mst_std_class e
+                            WHERE
+                                a.acc_id = c.acc_id
+                                    AND e.class_id = a.class_id
+                                    AND d.sr_number = e.sr_num
+                                    AND a.session = e.session
+                                    AND d.sr_number = @sr_num
+                                    AND bl_onetime = 0";
 
             var result = con.Query<mst_fees>(query, new {sr_num = sr_num });
 
@@ -154,35 +167,36 @@ namespace SMS.Models
 
         public mst_fees Findfees(int cls_id,int ac_id,string session)
         {
-            String Query = @"SELECT a.class_id
-	                       ,a.acc_id
-	                       ,b.class_name
-                          ,c.acc_name
-                          ,fees_amount
-                          ,bl_onetime
-                          ,bl_apr
-                          ,bl_may
-                          ,bl_jun
-                          ,bl_jul
-                          ,bl_aug
-                          ,bl_sep
-                          ,bl_oct
-                          ,bl_nov
-                          ,bl_dec
-                          ,bl_jan
-                          ,bl_feb
-                          ,bl_mar
-                          FROM mst_fees a,mst_class b, mst_acc_head c
-                          where 
-                          a.class_id = b.class_id
-                          and
-                          a.acc_id = c.acc_id
-                          and
-                          a.class_id = @class_id
-                          and
-                          a.acc_id = @acc_id
-                          and 
-                          a.session = @session";
+            string Query = @"SELECT 
+                                a.class_id,
+                                a.acc_id,
+                                b.class_name,
+                                c.acc_name,
+                                fees_amount,
+                                bl_onetime,
+                                bl_apr,
+                                bl_may,
+                                bl_jun,
+                                bl_jul,
+                                bl_aug,
+                                bl_sep,
+                                bl_oct,
+                                bl_nov,
+                                bl_dec,
+                                bl_jan,
+                                bl_feb,
+                                bl_mar
+                            FROM
+                                mst_fees a,
+                                mst_class b,
+                                mst_acc_head c
+                            WHERE
+                                a.class_id = b.class_id
+                                    AND a.acc_id = c.acc_id
+                                    AND a.class_id = @class_id
+                                    AND a.acc_id = @acc_id
+                                    AND a.session = @session
+                                    AND a.session = b.session";
 
             return con.Query<mst_fees>(Query, new { class_id =  cls_id, acc_id = ac_id,session = session}).SingleOrDefault();
         }
@@ -194,22 +208,31 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE mst_fees
-                               SET fees_amount = @fees_amount
-                                  ,bl_onetime = @bl_onetime
-                                  ,bl_apr = @bl_apr
-                                  ,bl_may = @bl_may
-                                  ,bl_jun = @bl_jun
-                                  ,bl_jul = @bl_jul
-                                  ,bl_aug = @bl_aug
-                                  ,bl_sep = @bl_sep
-                                  ,bl_oct = @bl_oct
-                                  ,bl_nov = @bl_nov
-                                  ,bl_dec = @bl_dec
-                                  ,bl_jan = @bl_jan
-                                  ,bl_feb = @bl_feb
-                                  ,bl_mar = @bl_mar
-                            WHERE class_id = @class_id and acc_id = @acc_id";
+                string query = @"UPDATE mst_fees 
+                                    SET 
+                                        fees_amount = @fees_amount,
+                                        bl_onetime = @bl_onetime,
+                                        bl_apr = @bl_apr,
+                                        bl_may = @bl_may,
+                                        bl_jun = @bl_jun,
+                                        bl_jul = @bl_jul,
+                                        bl_aug = @bl_aug,
+                                        bl_sep = @bl_sep,
+                                        bl_oct = @bl_oct,
+                                        bl_nov = @bl_nov,
+                                        bl_dec = @bl_dec,
+                                        bl_jan = @bl_jan,
+                                        bl_feb = @bl_feb,
+                                        bl_mar = @bl_mar
+                                    WHERE
+                                        class_id = @class_id
+                                            AND acc_id = @acc_id
+                                            AND session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_active = 'Y')";
 
                 con.Execute(query, mst);
             }

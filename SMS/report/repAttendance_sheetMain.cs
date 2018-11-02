@@ -29,9 +29,24 @@ namespace SMS.report
         public void pdfAttendanceSheet(int section_id,int month_no, string session)
         {
 
-            string query1 = @"SELECT concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) class_name FROM mst_section a,mst_class b 
-                                where a.class_id = b.class_id
-                                and a.section_id = @section_id";
+            string query1 = @"SELECT 
+                                    CONCAT(IFNULL(b.class_name, ''),
+                                            ' Section ',
+                                            IFNULL(a.section_name, '')) class_name
+                                FROM
+                                    mst_section a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.section_id = 108
+                                        AND a.session = b.session
+                                        AND a.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
             string class_name = con.Query<string>(query1, new { section_id = section_id}).SingleOrDefault();
 
@@ -153,21 +168,34 @@ namespace SMS.report
 
 
 
-                //         string query = @"select a.sr_number sr_num,a.roll_no,concat(ifnull(a.std_first_name,''),' ',ifnull(std_last_name,'')) std_name from sr_register a,mst_batch b
-                //                     where 
-                //                     a.std_batch_id = b.batch_id
-                //                     and 
-                //                     b.class_id = @class_id
-                //order by a.std_first_name";
+          
 
-                string query = @"select a.sr_number sr_num, c.roll_number roll_no,concat(ifnull(a.std_first_name, ''), ' ', ifnull(std_last_name, '')) std_name from sr_register a, mst_section b,mst_rollnumber c
-                            where
-                            a.std_section_id = b.section_id
-                            and
-                            b.section_id = @section_id
-                            and
-                            c.sr_num = a.sr_number
-                            order by c.roll_number";
+                string query = @"SELECT 
+                                        a.sr_number sr_num,
+                                        c.roll_number roll_no,
+                                        CONCAT(IFNULL(a.std_first_name, ''),
+                                                ' ',
+                                                IFNULL(std_last_name, '')) std_name
+                                    FROM
+                                        sr_register a,
+                                        mst_section b,
+                                        mst_rollnumber c,
+                                        mst_std_section d
+                                    WHERE
+                                        d.section_id = b.section_id
+                                            AND b.section_id = @section_id
+                                            AND c.sr_num = a.sr_number
+                                            AND a.sr_number = d.sr_num
+                                            AND b.session = c.session
+                                            AND c.session = d.session
+                                            AND d.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')
+                                    ORDER BY c.roll_number";
 
 
                 IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id});
@@ -327,51 +355,98 @@ namespace SMS.report
 
                 IEnumerable<repAttendance_sheet> T_A_count;
 
-                query = @"select case when a.attendance = 1 then 'P' else 'A' end attendance,sr_num,a.roll_no,day(att_date) day  from attendance_register a,sr_register b 
-                                where a.section_id = @section_id 
-                                and att_date between @startOfMonth and @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number";
+                query = @"SELECT 
+                                CASE
+                                    WHEN a.attendance = 1 THEN 'P'
+                                    ELSE 'A'
+                                END attendance,
+                                a.sr_num,
+                                c.roll_number roll_no,
+                                DAY(att_date) day
+                            FROM
+                                attendance_register a,
+                                mst_std_section b,
+                                mst_rollnumber c
+                            WHERE
+                                b.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = b.session
+                                    AND b.session = c.session
+                                    AND a.sr_num = b.sr_num
+                                    AND b.sr_num = c.sr_num";
 
                 check1 = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth});
 
-                query = @"select count(*) P_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date between @startOfMonth and @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 1
-                                group by sr_num";
+                query = @"SELECT 
+                                COUNT(*) P_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 1
+                            GROUP BY sr_num";
 
                 P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                query = @"select count(*) A_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date between @startOfMonth and @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 0
-                                group by sr_num";
+                query = @"SELECT 
+                                COUNT(*) A_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 0
+                            GROUP BY sr_num";
 
                 A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                query = @"select count(*) P_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date <= @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 1
-                                group by sr_num";
+                query = @"SELECT 
+                                COUNT(*) P_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date <= @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 1
+                            GROUP BY sr_num";
 
                 T_P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                query = @"select count(*) A_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date <= @endOfMonth
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 0
-                                group by sr_num";
+                query = @"SELECT 
+                                COUNT(*) A_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date <= @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 0
+                            GROUP BY sr_num";
 
                 T_A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
@@ -573,9 +648,24 @@ namespace SMS.report
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                string query1 = @"SELECT concat(ifnull(b.class_name,''),' Section ',ifnull(a.section_name,'')) class_name FROM mst_section a,mst_class b 
-                                where a.class_id = b.class_id
-                                and a.section_id = @section_id";
+                string query1 = @"SELECT 
+                                    CONCAT(IFNULL(b.class_name, ''),
+                                            ' Section ',
+                                            IFNULL(a.section_name, '')) class_name
+                                FROM
+                                    mst_section a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.section_id = 108
+                                        AND a.session = b.session
+                                        AND a.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
                 string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
 
@@ -695,14 +785,32 @@ namespace SMS.report
                     pt.AddCell(_cell);
 
 
-                    string query = @"select a.sr_number sr_num, c.roll_number roll_no,concat(ifnull(a.std_first_name, ''), ' ', ifnull(std_last_name, '')) std_name from sr_register a, mst_section b,mst_rollnumber c
-                            where
-                            a.std_section_id = b.section_id
-                            and
-                            b.section_id = @section_id
-                            and
-                            c.sr_num = a.sr_number
-                            order by c.roll_number";
+                    string query = @"SELECT 
+                                        a.sr_number sr_num,
+                                        c.roll_number roll_no,
+                                        CONCAT(IFNULL(a.std_first_name, ''),
+                                                ' ',
+                                                IFNULL(std_last_name, '')) std_name
+                                    FROM
+                                        sr_register a,
+                                        mst_section b,
+                                        mst_rollnumber c,
+                                        mst_std_section d
+                                    WHERE
+                                        d.section_id = b.section_id
+                                            AND b.section_id = @section_id
+                                            AND c.sr_num = a.sr_number
+                                            AND a.sr_number = d.sr_num
+                                            AND b.session = c.session
+                                            AND c.session = d.session
+                                            AND d.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')
+                                    ORDER BY c.roll_number";
 
 
                     IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id });
@@ -862,53 +970,101 @@ namespace SMS.report
 
                     IEnumerable<repAttendance_sheet> T_A_count;
 
-                    query = @"select case when a.attendance = 1 then 'P' else 'A' end attendance,sr_num,a.roll_no,day(att_date) day  from attendance_register a,sr_register b 
-                                where a.section_id = @section_id 
-                                and att_date between @startOfMonth and @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number";
+                    query = @"SELECT 
+                                CASE
+                                    WHEN a.attendance = 1 THEN 'P'
+                                    ELSE 'A'
+                                END attendance,
+                                a.sr_num,
+                                c.roll_number roll_no,
+                                DAY(att_date) day
+                            FROM
+                                attendance_register a,
+                                mst_std_section b,
+                                mst_rollnumber c
+                            WHERE
+                                b.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = b.session
+                                    AND b.session = c.session
+                                    AND a.sr_num = b.sr_num
+                                    AND b.sr_num = c.sr_num";
 
                     check1 = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                    query = @"select count(*) P_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date between @startOfMonth and @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 1
-                                group by sr_num";
+                    query = @"SELECT 
+                                COUNT(*) P_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 1
+                            GROUP BY sr_num";
 
                     P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                    query = @"select count(*) A_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date between @startOfMonth and @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 0
-                                group by sr_num";
+                    query = @"SELECT 
+                                COUNT(*) A_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 0
+                            GROUP BY sr_num";
 
                     A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                    query = @"select count(*) P_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date <= @endOfMonth 
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 1
-                                group by sr_num";
+                    query = @"SELECT 
+                                COUNT(*) P_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date <= @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 1
+                            GROUP BY sr_num";
 
                     T_P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
-                    query = @"select count(*) A_count, sr_num  from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date <= @endOfMonth
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 0
-                                group by sr_num";
+                    query = @"SELECT 
+                                COUNT(*) A_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date <= @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 0
+                            GROUP BY sr_num";
 
                     T_A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+
 
 
                     foreach (repAttendance_sheet dtt in sr_list)
@@ -1087,31 +1243,62 @@ namespace SMS.report
 
                     ms.Position = 0;
 
-                    query = @"select count(*) A_count from attendance_register a, sr_register b
-                                where a.section_id = @section_id
-                                and att_date = date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 1";
+                    query = @"SELECT 
+                                    COUNT(*) A_count
+                                FROM
+                                    attendance_register a,
+                                    sr_register b,
+                                    mst_std_section c
+                                WHERE
+                                    c.section_id = @section_id
+                                        AND att_date = DATE(DATE_ADD(NOW(),
+                                            INTERVAL '00:00' HOUR_MINUTE))
+                                        AND a.session = @session
+                                        AND a.session = c.session
+                                        AND a.sr_num = b.sr_number
+                                        AND b.sr_number = c.sr_num
+                                        AND a.attendance = 1";
 
                     int T_P_count_day = con.Query<int>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth }).SingleOrDefault();
 
 
-                    query = @"select count(*) A_count from attendance_register a, sr_register b
-                                where a.section_id = @section_id 
-                                and att_date = date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 0";
+                    query = @"SELECT 
+                                    COUNT(*) A_count
+                                FROM
+                                    attendance_register a,
+                                    sr_register b,
+                                    mst_std_section c
+                                WHERE
+                                    c.section_id = @section_id
+                                        AND att_date = DATE(DATE_ADD(NOW(),
+                                            INTERVAL '00:00' HOUR_MINUTE))
+                                        AND a.session = @session
+                                        AND a.session = c.session
+                                        AND a.sr_num = b.sr_number
+                                        AND b.sr_number = c.sr_num
+                                        AND a.attendance = 0";
 
                     int T_A_count_day = con.Query<int>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth }).SingleOrDefault();
 
-                    query = @"select sr_num,concat(ifnull(std_first_name,''),' ',ifnull(std_last_name,'')) std_name,coalesce(std_contact,std_contact1,std_contact2) contact from attendance_register a, sr_register b
-                                where a.section_id = @section_id
-                                and att_date = date(DATE_ADD( now( ) , INTERVAL  '00:00' HOUR_MINUTE ))
-                                and session = @session
-                                and a.sr_num = b.sr_number
-                                and a.attendance = 0";
+                    query = @"SELECT 
+                                a.sr_num,
+                                CONCAT(IFNULL(std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name,
+                                COALESCE(std_contact, std_contact1, std_contact2) contact
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date = DATE(DATE_ADD(NOW(),
+                                        INTERVAL '00:00' HOUR_MINUTE))
+                                    AND a.session = @session
+                                    and a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    and b.sr_number = c.sr_num
+                                    AND a.attendance = 0";
 
                     IEnumerable<repAttendance_sheet> absent_details = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 

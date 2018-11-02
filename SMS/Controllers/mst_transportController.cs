@@ -23,28 +23,13 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult AddTransport(mst_transport mst)
         {
-            //string query = "select session_finalize from mst_session where session_active = 'Y'";
-
-            //string id1 = con.ExecuteScalar<string>(query);
-
-            //if (id1 == "Y")
-            //{
-               
-
-            //    ModelState.AddModelError(String.Empty, "Session is already finalized cannot add new fees.");
-
-            //    return View(mst);
-            //}
-            //else
-            //{
+           
                 mst_transportMain mstMain = new mst_transportMain();
 
                 mstMain.AddTransport(mst);
 
                 return RedirectToAction("AllTransportList");
-           // }
-
-          
+           
         }
 
         [HttpGet]

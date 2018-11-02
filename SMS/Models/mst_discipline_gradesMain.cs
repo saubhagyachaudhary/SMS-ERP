@@ -25,8 +25,6 @@ namespace SMS.Models
                                 `sr_num`,
                                 `term_id`,
                                 `discipline_id`,
-                                `class_id`,
-                                `section_id`,
                                 `grade`,
                                 `user_id`)
                                 VALUES
@@ -34,8 +32,6 @@ namespace SMS.Models
                                 @sr_num,
                                 @term_id,
                                 @discipline_id,
-                                @class_id,
-                                @section_id,
                                 @grade,
                                 @user_id)";
 
@@ -47,9 +43,7 @@ namespace SMS.Models
                                         `session` = @session
                                             AND `sr_num` = @sr_num
                                             AND `term_id` = @term_id
-                                            AND `discipline_id` = @discipline_id
-                                            AND `class_id` = @class_id
-                                            AND `section_id` = @section_id";
+                                            AND `discipline_id` = @discipline_id";
 
                 string query1 = @"SELECT 
                                         COUNT(*)
@@ -59,9 +53,7 @@ namespace SMS.Models
                                         `session` = @session
                                             AND `sr_num` = @sr_num
                                             AND `term_id` = @term_id
-                                            AND `discipline_id` = @discipline_id
-                                            AND `class_id` = @class_id
-                                            AND `section_id` = @section_id";
+                                            AND `discipline_id` = @discipline_id";
 
                 foreach (var marks in mst)
                 {
@@ -78,8 +70,6 @@ namespace SMS.Models
                             marks.sr_num,
                             marks.term_id,
                             marks.discipline_id,
-                            marks.class_id,
-                            marks.section_id,
                             marks.grade,
                             marks.user_id
                         });
@@ -93,8 +83,6 @@ namespace SMS.Models
                             marks.sr_num,
                             marks.term_id,
                             marks.discipline_id,
-                            marks.class_id,
-                            marks.section_id,
                             marks.grade,
                             marks.user_id
                         });
@@ -113,24 +101,34 @@ namespace SMS.Models
 
             string session_name = sess.findActive_finalSession();
 
-            string query = @"select b.class_id,b.section_id,c.roll_number roll_no,a.sr_number sr_num,concat(ifnull(a.std_first_name, ''), ' ', ifnull(std_last_name, '')) std_name from sr_register a, mst_section b,mst_rollnumber c
-                            where
-                            a.std_section_id = b.section_id
-                            and
-                            b.section_id = @section_id
-                            and
-                            b.class_id = @class_id
-                            and
-                            c.class_id = b.class_id
-                            and
-                            c.section_id = b.section_id
-                            and
-                            b.session = c.session
-                            and
-                            c.session = @session
-                            and
-                            a.sr_number = c.sr_num
-                            order by roll_no";
+            string query = @"SELECT 
+                                b.class_id,
+                                b.section_id,
+                                c.roll_number roll_no,
+                                a.sr_number sr_num,
+                                CONCAT(IFNULL(a.std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name
+                            FROM
+                                sr_register a,
+                                mst_section b,
+                                mst_rollnumber c,
+                                mst_std_section e,
+                                mst_std_class f
+                            WHERE
+                                a.sr_number = e.sr_num
+                                    AND e.sr_num = f.sr_num
+                                    AND f.sr_num = c.sr_num
+                                    AND e.section_id = b.section_id
+                                    AND b.section_id = @section_id
+                                    AND b.class_id = @class_id
+                                    AND f.class_id = b.class_id
+                                    AND e.section_id = b.section_id
+                                    AND b.session = c.session
+                                    AND c.session = e.session
+                                    AND e.session = f.session
+                                    AND f.session = @session
+                            ORDER BY roll_no";
 
             return con.Query<mst_discipline_grades>(query, new { class_id = class_id, section_id = section_id, session = session_name });
         }
@@ -140,13 +138,25 @@ namespace SMS.Models
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT a.session,a.class_id,a.term_id,c.class_name,b.term_name FROM mst_discipline_grades a, mst_discipline b, mst_class c
-                                where
-                                a.class_id = c.class_id
-                                and
-                                a.discipline_id = b.discipline_id
-                                and
-                                a.session = @session";
+            string query = @"SELECT 
+                                a.session,
+                                d.class_id,
+                                a.discipline_id,
+                                c.class_name,
+                                b.discipline_name
+                            FROM
+                                mst_discipline_grades a,
+                                mst_discipline b,
+                                mst_class c,
+                                mst_std_class d
+                            WHERE
+                                a.sr_num = d.sr_num
+                                    AND d.class_id = c.class_id
+                                    AND a.discipline_id = b.discipline_id
+                                    AND b.session = a.session
+                                    AND a.session = c.session
+                                    AND c.session = d.session
+                                    AND d.session = @session";
 
             var result = con.Query<mst_discipline_grades>(query, new { session = sess.findActive_finalSession() });
 
@@ -159,8 +169,8 @@ namespace SMS.Models
             mst_sessionMain session = new mst_sessionMain();
 
             string Query = @"SELECT 
-                                a.class_id,
-                                a.section_id,
+                                d.class_id,
+                                e.section_id,
                                 b.roll_number roll_no,
                                 a.grade,
                                 a.sr_num,
@@ -170,15 +180,20 @@ namespace SMS.Models
                             FROM
                                 mst_discipline_grades a,
                                 mst_rollnumber b,
-                                sr_register c
+                                sr_register c,
+                                mst_std_class d,
+                                mst_std_section e
                             WHERE
                                 a.sr_num = b.sr_num
                                     AND b.sr_num = c.sr_number
-                                    AND a.sr_num = c.sr_number
+                                    AND c.sr_number = d.sr_num
+                                    AND d.sr_num = e.sr_num
                                     AND a.session = b.session
-                                    AND a.session = @session
-                                    AND a.class_id = @class_id
-                                    AND a.section_id = @section_id
+                                    AND b.session = d.session
+                                    AND d.session = e.session
+                                    AND e.session = @session
+                                    AND d.class_id = @class_id
+                                    AND e.section_id = @section_id
                                     AND a.discipline_id = @discipline_id
                             ORDER BY roll_number";
 
@@ -188,8 +203,7 @@ namespace SMS.Models
         public mst_discipline_grades DeleteDisciplineGrades(int class_id, int discipline_id, string session)
         {
             String Query = @"DELETE FROM `mst_discipline_grades`
-                            WHERE class_id = @class_id
-                            and
+                            WHERE
                             discipline_id = @discipline_id
                             and
                             session = @session";

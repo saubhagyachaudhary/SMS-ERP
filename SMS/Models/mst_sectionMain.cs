@@ -20,7 +20,20 @@ namespace SMS.Models
 
                 string session = sess.findActive_finalSession();
 
-                string duplicate = "select count(*) from mst_section where class_id = @class_id and section_name = @section_name";
+                string duplicate = @"SELECT 
+                                            COUNT(*)
+                                        FROM
+                                            mst_section
+                                        WHERE
+                                            class_id = @class_id
+                                                AND section_name = @section_name
+                                                AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y'
+                                                        AND session_active = 'Y')";
 
                 int dup = con.ExecuteScalar<int>(duplicate,new { mst.class_id,mst.Section_name});       
 
@@ -32,7 +45,12 @@ namespace SMS.Models
                 {
                     string query = "INSERT INTO mst_section(section_id,class_id,section_name,session) VALUES (@section_id,@class_id,@section_name,@session)";
 
-                    string maxid = "select ifnull(MAX(section_id),0)+1 from mst_section where session=@session";
+                    string maxid = @"SELECT 
+                                            IFNULL(MAX(section_id), 0) + 1
+                                        FROM
+                                            mst_section
+                                        WHERE
+                                            session = @session";
 
                     //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -63,7 +81,22 @@ namespace SMS.Models
 
         public IEnumerable<mst_section> AllSectionList()
         {
-            String query = "SELECT section.section_id,class.class_name,section_name FROM mst_section section,mst_class class where class.class_id = section.class_id order by class.class_id ";
+            string query = @"SELECT 
+                                section.section_id, class.class_name, section_name
+                            FROM
+                                mst_section section,
+                                mst_class class
+                            WHERE
+                                class.class_id = section.class_id
+                                    AND section.session = class.session
+                                    AND class.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')
+                            ORDER BY class.class_id";
 
             var result = con.Query<mst_section>(query);
 
@@ -72,7 +105,23 @@ namespace SMS.Models
 
         public mst_section FindSection(int? id)
         {
-            String Query = "SELECT section.section_id,class.class_name,section_name FROM mst_section section,mst_class class where class.class_id = section.class_id and section.section_id = @section_id";
+            string Query = @"SELECT 
+                                    section.section_id, class.class_name, section_name
+                                FROM
+                                    mst_section section,
+                                    mst_class class
+                                WHERE
+                                    class.class_id = section.class_id
+                                    and
+                                    section.session = class.session
+                                    and class.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')
+                                        AND section.section_id = @section_id";
 
             return con.Query<mst_section>(Query, new { section_id = id }).SingleOrDefault();
         }
@@ -82,7 +131,20 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE mst_section SET section_id = @section_id ,class_id = @class_id,section_name = @section_name WHERE section_id = @section_id";
+                string query = @"UPDATE mst_section 
+                                    SET 
+                                        section_id = @section_id,
+                                        class_id = @class_id,
+                                        section_name = @section_name
+                                    WHERE
+                                        section_id = @section_id
+                                            AND session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
                 con.Execute(query, mst);
             }
@@ -94,7 +156,17 @@ namespace SMS.Models
 
         public mst_section DeleteSection(int id)
         {
-            String Query = "DELETE FROM mst_section WHERE section_id = @section_id";
+            string Query = @"DELETE FROM mst_section 
+                                WHERE
+                                    section_id = @section_id
+                                    AND session = (SELECT
+                                        session
+                                    FROM
+                                        mst_session
+
+                                    WHERE
+                                        session_finalize = 'Y'
+                                        AND session_active = 'Y')";
 
             return con.Query<mst_section>(Query, new { section_id = id }).SingleOrDefault();
         }

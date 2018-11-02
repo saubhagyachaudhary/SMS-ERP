@@ -33,19 +33,30 @@ namespace SMS.Controllers
             string sess = session.findActive_finalSession();
 
 
-            string query = @"select count(*) from sr_register a, mst_section b
-														where
-														a.std_section_id = b.section_id
-														and
-                                                        a.std_active = 'Y'
-                                                        and
-														b.session = @session
-														and
-                                                        b.class_id = @class_id
-                                                        and 
-                                                        b.section_id = @section_id
-                                                        and
-														a.sr_number not in (select sr_num from mst_rollnumber where session = @session)";
+            string query = @"SELECT 
+                                COUNT(*)
+                            FROM
+                                sr_register a,
+                                mst_section b,
+                                mst_std_section c,
+                                mst_std_class d
+                            WHERE
+                                c.section_id = b.section_id
+                                    AND d.class_id = b.class_id
+                                    AND a.std_active = 'Y'
+                                    AND b.session = @session
+                                    AND b.session = c.session
+                                    AND c.session = d.session
+                                    AND a.sr_number = c.sr_num
+                                    AND c.sr_num = d.sr_num
+                                    AND d.class_id = @class_id
+                                    AND b.section_id = @section_id
+                                    AND a.sr_number NOT IN (SELECT 
+                                        sr_num
+                                    FROM
+                                        mst_rollnumber
+                                    WHERE
+                                        session = @session)";
 
             int count = con.Query<int>(query, new { class_id = class_id,section_id = section_id ,session = sess }).SingleOrDefault();
 

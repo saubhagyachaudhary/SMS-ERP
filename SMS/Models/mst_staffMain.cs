@@ -15,7 +15,13 @@ namespace SMS.Models
         public IEnumerable<mst_staff> mentor_list()
         {
 
-            String query = @"SELECT user_id staff_id,concat(FirstName,' ',LastName) staff_name FROM emp_profile where emp_active = 1";
+            string query = @"SELECT 
+                                    user_id staff_id,
+                                    CONCAT(FirstName, ' ', LastName) staff_name
+                                FROM
+                                    emp_profile
+                                WHERE
+                                    emp_active = 1";
 
             var result = con.Query<mst_staff>(query);
 

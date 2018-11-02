@@ -31,9 +31,21 @@ namespace SMS.Models
                                 @max_no,
                                 @convert_to)";
 
-                string maxid = "select ifnull(MAX(exam_id),0)+1 from mst_exam";
+                string maxid = @"SELECT 
+                                        IFNULL(MAX(exam_id), 0) + 1
+                                    FROM
+                                        mst_exam
+                                    WHERE
+                                        session = (SELECT
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'
+                                                    AND session_active = 'Y')";
 
-                
+
+
                 int id = con.ExecuteScalar<int>(maxid);
 
                 mst.session = session.findActive_finalSession();

@@ -48,7 +48,21 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult rollno_class_student_list(List<mst_rollnumber> list)
         {
-            string query = @"select count(*) from mst_rollnumber where session = @session and roll_number = @roll_number and class_id = @class_id and section_id = @section_id";
+            string query = @"SELECT 
+                                COUNT(*)
+                            FROM
+                                mst_rollnumber a,
+                                mst_std_class b,
+                                mst_std_section c
+                            WHERE
+                                a.session = @session
+                                    AND a.session = b.session
+                                    AND b.session = c.session
+                                    AND a.sr_num = b.sr_num
+                                    AND b.sr_num = c.sr_num
+                                    AND a.roll_number = @roll_number
+                                    AND b.class_id = @class_id
+                                    AND c.section_id = @section_id";
 
             mst_sessionMain sess = new mst_sessionMain();
 

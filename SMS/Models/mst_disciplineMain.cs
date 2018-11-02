@@ -20,7 +20,18 @@ namespace SMS.Models
 
                 string query = "INSERT INTO mst_discipline (session,discipline_id,discipline_name) VALUES (@session,@discipline_id,@discipline_name)";
 
-                string maxid = "select ifnull(MAX(discipline_id),0)+1 from mst_discipline";
+                string maxid = @"SELECT 
+                                    IFNULL(MAX(discipline_id), 0) + 1
+                                FROM
+                                    mst_discipline
+                                    where
+                                    session = (SELECT
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y'
+                                                AND session_active = 'Y')";
 
                 int id = con.ExecuteScalar<int>(maxid);
 

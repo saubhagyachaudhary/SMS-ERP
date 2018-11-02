@@ -17,8 +17,6 @@ namespace SMS.Models
 
         public int female_std { get; set; }
 
-        public int working_mentor { get; set; }
-
         public decimal fees_received { get; set; }
 
         public decimal cash_received { get; set; }
@@ -56,8 +54,6 @@ namespace SMS.Models
         public decimal total_bank_received { get; set; }
 
         public decimal total_cash_bank_received { get; set; }
-
-        public IEnumerable<mentor_header> pending_mentor {get; set;}
         
         public string sms_credit_left { get; set; }
 

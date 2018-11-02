@@ -102,7 +102,21 @@ namespace SMS.Controllers
         {
             mst_sectionMain stdMain = new mst_sectionMain();
 
-            string query = @"select count(*) from sr_register where std_section_id = @section_id";
+            string query = @"SELECT 
+                                COUNT(*)
+                            FROM
+                                sr_register a,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND c.sr_num = a.sr_number
+                                    AND c.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                            AND session_active = 'Y')";
 
             int count = con.Query<int>(query, new { section_id = id }).SingleOrDefault();
 
