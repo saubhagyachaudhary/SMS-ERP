@@ -331,18 +331,6 @@
                                     </li>
                                 }
 
-                                @if (list.Contains("assign_mentor"))
-                                {
-                                    <li>
-                                        <a><i class="fa fa-graduation-cap"></i> Assign Mentor <span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li class="please_wait">@Html.ActionLink("Assign Mentor", "AllMentorHeaderList", "Mentor")</li>
-
-                                        </ul>
-                                    </li>
-                                }
-
-
                                 @if (list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger")|| list.Contains("birth_certificate")|| list.Contains("transport_dues_list"))
                                 {
                                 <li>

@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 4</_PublishTargetUrl>
+    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 5</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="ApplicationInsights.config">
@@ -166,7 +166,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>10/30/2018 14:09:38</publishTime>
+      <publishTime>12/02/2018 11:26:28</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/28/2015 04:04:30</publishTime>
@@ -6574,7 +6574,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/07/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>10/24/2018 21:24:38</publishTime>
+      <publishTime>10/31/2018 06:52:05</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>09/09/2018 15:19:21</publishTime>
@@ -6634,7 +6634,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/09/2018 14:45:17</publishTime>
     </File>
     <File Include="Views/users/DeleteUser.cshtml">
-      <publishTime>09/09/2018 14:45:17</publishTime>
+      <publishTime>12/02/2018 11:11:42</publishTime>
     </File>
     <File Include="Views/Web.config">
       <publishTime>07/03/2016 14:16:16</publishTime>
@@ -6643,7 +6643,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>10/30/2018 14:09:58</publishTime>
+      <publishTime>12/02/2018 11:26:31</publishTime>
     </File>
   </ItemGroup>
 </Project>

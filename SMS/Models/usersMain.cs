@@ -159,7 +159,11 @@ namespace SMS.Models
         public void DeleteUser(int user_id)
         {
 
-            string query = @"DELETE FROM users WHERE user_id=@user_id";
+            string query = @"DELETE FROM enable_features WHERE user_id=@user_id";
+
+            con.Query<users>(query, new { user_id = user_id }).SingleOrDefault();
+
+             query = @"DELETE FROM users WHERE user_id=@user_id";
 
             con.Query<users>(query, new { user_id = user_id }).SingleOrDefault();
 
