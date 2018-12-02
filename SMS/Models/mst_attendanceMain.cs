@@ -69,7 +69,7 @@ namespace SMS.Models
                                 a.user_id = @user_id
                                     AND a.class_id = b.class_id
                                     AND a.section_id NOT IN (SELECT DISTINCT
-                                        section_id
+                                        e.section_id
                                     FROM
                                         attendance_register d,
                                         mst_std_section e
