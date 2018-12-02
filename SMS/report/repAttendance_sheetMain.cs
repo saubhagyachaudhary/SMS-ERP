@@ -1313,11 +1313,18 @@ namespace SMS.report
                         int serial = 0;
                         foreach (var details in absent_details)
                         {
-                            query = @"select a.attendance from attendance_register a
-                                where a.section_id = @section_id
-                                and session = @session
-                                and a.sr_num = @sr_num
-                                order by att_date desc";
+                            query = @"SELECT 
+                                            a.attendance
+                                        FROM
+                                            attendance_register a,
+                                            mst_std_section b
+                                        WHERE
+                                            a.sr_num = b.sr_num
+                                                AND a.session = b.session
+                                                AND b.section_id = @section_id
+                                                AND a.session =  @session
+                                                AND a.sr_num = @sr_num
+                                        ORDER BY att_date DESC";
 
                             IEnumerable<int> absent_count = con.Query<int>(query, new { section_id = section_id, session = session, sr_num = details.sr_num });
 

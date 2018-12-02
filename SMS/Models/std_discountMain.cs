@@ -216,7 +216,9 @@ namespace SMS.Models
 
         public void DeleteDiscount(int sr_num, int acc_id, string session)
         {
-            string Query = @"DELETE FROM std_discount 
+            try
+            {
+                string Query = @"DELETE FROM std_discount 
                                 WHERE
                                     sr_num = @sr_num AND acc_id = @acc_id
                                     AND session = @session";
@@ -224,13 +226,17 @@ namespace SMS.Models
 
 
 
-            con.Query<mst_fees>(Query, new { sr_num = sr_num, acc_id = acc_id,session = session }).SingleOrDefault();
+                con.Query<mst_fees>(Query, new { sr_num = sr_num, acc_id = acc_id, session = session }).SingleOrDefault();
 
-            var p = new DynamicParameters();
-            p.Add("@sr_num", sr_num);
-            p.Add("@ac_id", acc_id);
-            con.Execute("sms.DeleteDiscount", p, commandType: System.Data.CommandType.StoredProcedure);
-
+                var p = new DynamicParameters();
+                p.Add("@sr_num", sr_num);
+                p.Add("@ac_id", acc_id);
+                con.Execute("DeleteDiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

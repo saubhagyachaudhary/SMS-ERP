@@ -108,6 +108,7 @@ namespace SMS.Models
                                 mst_std_class e
                             WHERE
                                 a.sr_number = d.sr_num
+                                    AND d.sr_num = e.sr_num
                                     AND d.section_id = b.section_id
                                     AND b.section_id = @section_id
                                     AND b.class_id = @class_id
@@ -129,7 +130,7 @@ namespace SMS.Models
             string query = @"SELECT 
                                 a.session,
                                 a.att_date,
-                                a.roll_no,
+                                d.roll_number roll_no,
                                 e.class_id,
                                 c.section_id,
                                 a.sr_num,
@@ -141,18 +142,21 @@ namespace SMS.Models
                                 attendance_register a,
                                 sr_register b,
                                 mst_std_section c,
-                                mst_std_class e
+                                mst_std_class e,
+                                mst_rollnumber d
                             WHERE
                                 a.sr_num = b.sr_number
                                     AND b.sr_number = c.sr_num
                                     AND c.sr_num = e.sr_num
+                                    AND e.sr_num = d.sr_num
                                     AND c.section_id = @section_id
+                                    AND a.session = d.session
                                     AND a.session = c.session
                                     AND c.session = e.session
                                     AND e.session = @session
                                     AND a.att_date = @att_date
                                     AND IFNULL(a.finalize, 0) = 0
-                            ORDER BY roll_no";
+                            ORDER BY roll_number";
 
             return con.Query<attendance_register>(query, new { section_id = section_id, session = session,att_date = att_date });
 
