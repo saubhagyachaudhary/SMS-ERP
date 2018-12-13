@@ -579,11 +579,13 @@ namespace SMS.Models
                                         session_finalize = 'Y'
                                             AND session_active = 'Y')
                                     AND a.section_id NOT IN (SELECT DISTINCT
-                                        section_id
+                                        b.section_id
                                     FROM
-                                        attendance_register
+                                        attendance_register a,
+                                        mst_std_section b
                                     WHERE
-                                        att_date = CURDATE())
+                                        b.sr_num = a.sr_num
+                                            AND att_date = CURDATE())
                             ORDER BY a.class_id";
 
                 result = con.Query<attendance_register>(query);
@@ -1131,6 +1133,7 @@ namespace SMS.Models
                                 att_date BETWEEN DATE_SUB(CURDATE(),
                                     INTERVAL DAY(LAST_DAY(CURDATE())) DAY) AND CURDATE()
                                     AND attendance = 0
+                                    AND a.sr_num = b.sr_num
                                     AND b.section_id IN (SELECT 
                                         section_id
                                     FROM

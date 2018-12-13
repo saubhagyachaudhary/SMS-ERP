@@ -38,7 +38,7 @@ namespace SMS.report
                                     mst_class b
                                 WHERE
                                     a.class_id = b.class_id
-                                        AND a.section_id = 108
+                                        AND a.section_id = @section_id
                                         AND a.session = b.session
                                         AND a.session = (SELECT 
                                             session
@@ -518,7 +518,15 @@ namespace SMS.report
                             ph.Add(text);
                             ph.Add("\n");
                             _cell = new PdfPCell(ph);
-                            _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                            if (i >= int.Parse(System.DateTime.Now.ToString("dd"))-1 && month_no == int.Parse(DateTime.Now.ToString("MM")))
+                            {
+                                _cell.BackgroundColor = BaseColor.WHITE;
+                            }
+                            else
+                            {
+                                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                            }
+                            
                             _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                             pt.AddCell(_cell);
                         }
@@ -657,7 +665,7 @@ namespace SMS.report
                                     mst_class b
                                 WHERE
                                     a.class_id = b.class_id
-                                        AND a.section_id = 108
+                                        AND a.section_id = @section_id
                                         AND a.session = b.session
                                         AND a.session = (SELECT 
                                             session
