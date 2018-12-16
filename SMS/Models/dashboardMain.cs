@@ -733,7 +733,7 @@ namespace SMS.Models
                                 DATE_FORMAT(a.dob, '%b') month_name,
                                 CONCAT(IFNULL(FirstName, ''),
                                         ' ',
-                                        IFNULL(FirstName, '')) std_name
+                                        IFNULL(LastName, '')) std_name
                             FROM
                                 emp_profile a
                             WHERE

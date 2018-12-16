@@ -25,11 +25,15 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult AddEmp(emp_detail emp)
         {
-            emp_detailMain empMain = new emp_detailMain();
+            if (ModelState.IsValid)
+            {
+                emp_detailMain empMain = new emp_detailMain();
 
-            empMain.AddEmployee(emp);
+                empMain.AddEmployee(emp);
 
-            return RedirectToAction("EmpList");
+                return RedirectToAction("EmpList");
+            }
+            return View();
         }
 
         [HttpGet]
@@ -43,11 +47,15 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult EditEmp(emp_detail emp)
         {
-            emp_detailMain empMain = new emp_detailMain();
+            if (ModelState.IsValid)
+            {
+                emp_detailMain empMain = new emp_detailMain();
 
-            empMain.EditEmp(emp);
+                empMain.EditEmp(emp);
 
-            return RedirectToAction("EmpList");
+                return RedirectToAction("EmpList");
+            }
+            return View();
         }
 
         [HttpGet]

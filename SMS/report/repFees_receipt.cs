@@ -84,7 +84,7 @@ namespace SMS.report
                 {
                     query = @"SELECT 
                                     reg_no num,
-                                    CONCAT(std_first_name, ' ', std_last_name) name,
+                                    CONCAT(ifnull(std_first_name,''), ' ',ifnull(std_last_name,'')) name,
                                     std_father_name father_name,
                                     b.class_name
                                 FROM
@@ -109,7 +109,7 @@ namespace SMS.report
                 {
                     query = @"SELECT 
                                     sr_number num,
-                                    CONCAT(std_first_name, ' ', std_last_name) name,
+                                    CONCAT(ifnull(std_first_name,''), ' ',ifnull(std_last_name,'')) name,
                                     std_father_name father_name,
                                     CONCAT(c.class_name, ' Sec. ', b.section_name) class_name
                                 FROM

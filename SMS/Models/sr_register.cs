@@ -154,5 +154,8 @@ namespace SMS.Models
 
         public IEnumerable<sr_register> sr_regi { get; set; }
 
+        [Display(Name = "Admission form pdf link")]
+        public string adm_form_link { get; set; }
+
     }
 }

@@ -12,6 +12,7 @@ namespace SMS.Models
         public int user_id { get; set; }
 
         [Display(Name = "First Name")]
+        [Required]
         public string first_name{ get; set; }
 
         [Display(Name = "Last Name")]
@@ -24,6 +25,7 @@ namespace SMS.Models
         public string email { get; set; }
 
         [Display(Name = "Contact")]
+        [Required]
         public string contact { get; set; }
 
         [Display(Name = "Contact 2")]
@@ -33,6 +35,7 @@ namespace SMS.Models
         public string contact2 { get; set; }
 
         [Display(Name = "Address")]
+        [Required]
         public string address { get; set; }
 
         [Display(Name = "Address Line 1")]
@@ -42,33 +45,43 @@ namespace SMS.Models
         public string address2 { get; set; }
 
         [Display(Name = "District")]
+        [Required]
         public string district { get; set; }
 
         [Display(Name = "State")]
+        [Required]
         public string state { get; set; }
 
         [Display(Name = "Country")]
+        [Required]
         public string country { get; set; }
 
         [Display(Name = "Pincode")]
+        [Required]
         public string pincode { get; set; }
 
         [Display(Name = "Father's Name")]
+        [Required]
         public string FatherName { get; set; }
 
         [Display(Name = "Mother's Name")]
+        [Required]
         public string MotherName { get; set; }
 
         [Display(Name = "Date of Birth")]
+        [Required]
         public DateTime dob { get; set; }
 
         [Display(Name = "Sex")]
+        [Required]
         public string sex { get; set; }
 
         [Display(Name = "Qualification")]
+        [Required]
         public string education{ get; set; }
 
         [Display(Name = "Date of Joining")]
+        [Required]
         public DateTime doj { get; set; }
 
         [Display(Name = "EPF UAN No")]

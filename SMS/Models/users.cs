@@ -30,6 +30,7 @@ namespace SMS.Models
 
         public string features { get; set; }
 
+        [Display(Name = "Profile picture jpeg only")]
         public HttpPostedFileBase profilePicture { get; set; }
 
         public string ReturnUrl { get; set; }

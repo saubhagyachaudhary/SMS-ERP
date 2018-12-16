@@ -34,7 +34,7 @@ namespace SMS.job_scheduler
                             UNION SELECT 
                                 CONCAT(IFNULL(FirstName, ''),
                                         ' ',
-                                        IFNULL(FirstName, '')) std_name,
+                                        IFNULL(LastName, '')) std_name,
                                 COALESCE(contact, contact1, contact2) std_contact
                             FROM
                                 emp_profile a

@@ -205,6 +205,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\attendance_registerController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\ChangePasswordController.cs" />
     <Compile Include="Controllers\emp_detailController.cs" />
     <Compile Include="Controllers\enable_featureController.cs" />
     <Compile Include="Controllers\enable_wedgetController.cs" />
@@ -252,6 +253,8 @@
     <Compile Include="job_scheduler\duesReminderMain.cs" />
     <Compile Include="Models\attendance_register.cs" />
     <Compile Include="Models\attendance_registerMain.cs" />
+    <Compile Include="Models\change_password.cs" />
+    <Compile Include="Models\change_passwordMain.cs" />
     <Compile Include="Models\dashboard.cs" />
     <Compile Include="Models\dashboardMain.cs" />
     <Compile Include="Models\emp_detail.cs" />
@@ -2500,6 +2503,9 @@
     <Content Include="Views\report\report_card.cshtml" />
     <Content Include="Views\teacher_exam_remark\AddRemarks.cshtml" />
     <Content Include="Views\teacher_exam_remark\studentList.cshtml" />
+    <Content Include="Views\sr_register\FormViewer.cshtml" />
+    <Content Include="Views\ChangePassword\Change_Password.cshtml" />
+    <Content Include="Views\ChangePassword\success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

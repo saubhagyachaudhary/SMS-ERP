@@ -391,7 +391,8 @@ namespace SMS.Models
                             reg_date,
                             std_active,
                             std_aadhar,
-                            nso_date
+                            nso_date,
+                            adm_form_link
                         FROM
                             sr_register a,
                             mst_section b,
@@ -475,6 +476,7 @@ namespace SMS.Models
                                       ,std_pickup_id = @std_pickup_id
                                       ,std_admission_class = @std_admission_class
                                       ,std_aadhar = @std_aadhar
+                                      ,adm_form_link = @adm_form_link
                                         WHERE sr_number = @sr_number";
 
                 con.Execute(query, std);

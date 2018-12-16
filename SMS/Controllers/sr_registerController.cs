@@ -279,6 +279,22 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
+        public ActionResult FormViewer(int id)
+        {
+            string query = @"SELECT 
+                                    adm_form_link
+                                FROM
+                                    hariti.sr_register
+                                WHERE
+                                    sr_number = @id AND std_active = 'Y'";
+
+
+            ViewData["link"] = con.Query<string>(query, new { id = id }).SingleOrDefault();
+           
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult StudentDetails(int id)
         {
             sr_registerMain stdMain = new sr_registerMain();
