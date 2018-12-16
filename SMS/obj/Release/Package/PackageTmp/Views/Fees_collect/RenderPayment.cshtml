@@ -153,7 +153,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="submit" id="cash" value="Save" class="btn btn-default please_wait" onclick="addItem()" />
+                                    <input type="submit" id="cash" value="Save" class="btn btn-default" onclick="addItem()" />
                                 </div>
 
 
@@ -204,7 +204,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="submit" value="Save" class="btn btn-default please_wait" onclick="addchkItem()" />
+                                    <input type="submit" value="Save" class="btn btn-default" onclick='return addchkItem()' />
                                 </div>
 
 
@@ -225,6 +225,9 @@
                 var amt = 0.00;
                 var fin = 0.00;
                 var due = 0.00;
+
+                
+
                 for (i = 0; i < @Model.Count() ; i++)
                 {
                     var ch = document.getElementById("c"+i.toString());
@@ -240,6 +243,8 @@
                         dis = document.getElementById('dis'+i.toString()).value;
 
                         due = document.getElementById('due'+i.toString()).value;
+
+                       
 
                         if (parseFloat(amt) < 0 )
                         {
@@ -272,6 +277,58 @@
 
             function addchkItem()
             {
+
+                var flag = true;
+
+                for (i = 0; i < @Model.Count() ; i++)
+                {
+                   
+
+                    if(document.getElementById("c"+i.toString()).checked)
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+
+                if(flag)
+                {
+                    alert("No fees is selected.");
+
+                    return false;
+                }
+               
+
+                var cheque_no = document.getElementById('chq_number').value;
+
+                var cheque_date = document.getElementById('chq_date').value;
+
+                var bank_name = document.getElementById('bnk_name').value;
+
+                if (cheque_no.length == 0 )
+                {
+                    alert("Instrument number cannot be blank");
+
+                    return false;
+                   
+                }
+
+                if (cheque_date.length == 0 )
+                {
+                    alert("Instrument date cannot be blank");
+
+                    return false;
+                  
+                }
+
+                if (bank_name.length == 0 )
+                {
+                    alert("Bank name cannot be blank");
+
+                    return false;
+                    
+                }
+
                 for (i = 0; i < @Model.Count() ; i++)
                 {
                     document.getElementById(i.toString()).value = document.getElementById("chq_narration").value;
@@ -283,12 +340,12 @@
                     document.getElementById("mdf"+i.toString()).value = 'Cheque';
                     //window.alert(document.getElementById(i.toString()).value);
                 }
-
-                var x = document.forms["submit_fees"]["bank_name"].value;
-                if (x == "") {
-                    alert("Bank Name must be filled out");
-                    return false;
-                }
+            
+                //var x = document.forms["submit_fees"]["bank_name"].value;
+                //if (x == "") {
+                //    alert("Bank Name must be filled out");
+                //    return false;
+                //}
             }
 
             function addItem()

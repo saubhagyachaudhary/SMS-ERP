@@ -30,7 +30,31 @@ namespace SMS.Models
                                  and password = @password
                                  and a.user_id = b.user_id;";
 
-                return con.Query<users>(query, new { username = us.username , password = us.password}).SingleOrDefault();
+                users user =  con.Query<users>(query, new { username = us.username , password = us.password}).SingleOrDefault();
+
+                if(user == null)
+                {
+                    query = @"SELECT 
+                                    a.user_id,
+                                    a.username,
+                                    a.password,
+                                    'Super' FirstName,
+                                    'Admin' lastname,
+                                    a.roles
+                                FROM
+                                    users a
+                                WHERE
+                                    username = @username
+                                        AND password = @password
+                                        AND roles = 'superadmin'
+                                        AND a.user_id;";
+
+                    return con.Query<users>(query, new { username = us.username, password = us.password }).SingleOrDefault();
+                }
+                else
+                {
+                    return user;
+                }
             }
             catch (Exception ex)
             {
