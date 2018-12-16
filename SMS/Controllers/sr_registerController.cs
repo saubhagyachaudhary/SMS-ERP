@@ -290,7 +290,7 @@ namespace SMS.Controllers
 
 
             ViewData["link"] = con.Query<string>(query, new { id = id }).SingleOrDefault();
-           
+            ViewData["sr_number"] = id;
             return View();
         }
 
