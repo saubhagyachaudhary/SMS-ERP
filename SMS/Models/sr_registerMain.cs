@@ -335,8 +335,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_active = 'Y'
-                                            AND session_finalize = 'Y')
+                                        session_active = 'Y')
                                     AND b.section_id = @section_id
                                     AND a.std_active = 'Y'";
 
@@ -411,8 +410,7 @@ namespace SMS.Models
                                 FROM
                                     mst_session
                                 WHERE
-                                    session_finalize = 'Y'
-                                        AND session_active = 'Y')
+                                    session_active = 'Y')
                                 AND IFNULL(a.std_pickup_id, 0) = d.pickup_id
                                 AND a.sr_number = @sr_number";
           

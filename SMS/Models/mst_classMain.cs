@@ -67,8 +67,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                            session_active = 'Y')";
 
             var result = con.Query<mst_class>(query);
 

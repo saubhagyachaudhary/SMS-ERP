@@ -247,7 +247,7 @@ namespace SMS.Controllers
                             ORDER BY b.class_name";
 
 
-            var section_list = con.Query<mst_section>(query,new {session =  sess.findActive_finalSession() });
+            var section_list = con.Query<mst_section>(query,new {session =  sess.findActive_Session() });
 
             IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
@@ -262,7 +262,23 @@ namespace SMS.Controllers
             sr_registerMain stdMain = new sr_registerMain();
             sr_register sr = new sr_register();
 
-            sr.sr_regi = stdMain.AllStudentList(103);
+            mst_sessionMain sess = new mst_sessionMain();
+
+            string query = @"SELECT 
+                                a.section_id
+                            FROM
+                                mst_section a,
+                                mst_class b
+                            WHERE
+                                a.class_id = b.class_id
+                                    AND a.session = @session
+                                    AND a.session = b.session
+                            ORDER BY b.class_name 
+                            LIMIT 1";
+
+            int section = con.Query<int>(query, new { session = sess.findActive_Session() }).SingleOrDefault();
+
+            sr.sr_regi = stdMain.AllStudentList(section);
             DDClassWiseSection();
             return View(sr);
         }
