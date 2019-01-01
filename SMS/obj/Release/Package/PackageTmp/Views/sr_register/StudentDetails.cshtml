@@ -326,10 +326,15 @@
                             if (Model.std_active == "Y")
                             {
                                 @Html.ActionLink("Edit ", "EditDetails", new { id = Model.sr_number }, new { @class = "btn btn-primary please_wait" })
+
+                                if (Model.adm_form_link != null)
+                                {
+                                @Html.ActionLink("Form Preview", "FormViewer", new { id = Model.sr_number }, new { @class = "btn btn-primary please_wait" })
+                                    }
                                 }
 
 
-                        }
+                            }
 
                         @*@Html.ActionLink("Back to List", "AllStudentList")*@
                     </p>

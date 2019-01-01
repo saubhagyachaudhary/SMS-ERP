@@ -19,7 +19,7 @@ namespace SMS.Models
                 mst_sessionMain session = new mst_sessionMain();
                 string sess = session.findActive_Session();
 
-                string query = "INSERT INTO mst_class (session,class_id,class_name) VALUES (@seesion,@class_id,@class_name)";
+                string query = "INSERT INTO mst_class (session,class_id,class_name) VALUES (@session,@class_id,@class_name)";
 
                 string maxid = @"SELECT 
                                         IFNULL(MAX(class_id), 0) + 1

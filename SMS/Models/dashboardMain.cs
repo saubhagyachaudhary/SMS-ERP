@@ -803,7 +803,7 @@ namespace SMS.Models
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b
+                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount,class_id from out_standing a,sr_register b
                             where
                             a.sr_number = b.sr_number 
                             and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
@@ -830,7 +830,7 @@ namespace SMS.Models
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b
+                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount,class_id from out_standing a,sr_register b
                             where
                             a.sr_number = b.sr_number 
                             and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
@@ -857,7 +857,7 @@ namespace SMS.Models
             }
             else
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount from out_standing a,sr_register b
+                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount,class_id from out_standing a,sr_register b
                             where
                             a.sr_number = b.sr_number 
                             and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
