@@ -941,9 +941,7 @@ namespace SMS.Models
                             fees_receipt d,
                             mst_std_class c
                         WHERE
-                            a.month_no <= MONTH(DATE(DATE_ADD(NOW(),
-                                        INTERVAL '00:00' HOUR_MINUTE)))
-                                AND a.month_no in (4,5,6,7,8,9,10,11,12,1)
+                                a.month_no in (4,5,6,7,8,9,10,11,12,1)
                                 AND a.sr_number = b.sr_number
                                 AND b.sr_number = c.sr_num
                                 AND c.session = a.session
@@ -971,9 +969,7 @@ namespace SMS.Models
                             fees_receipt d,
                             mst_std_class c
                         WHERE
-                            a.month_no <= MONTH(DATE(DATE_ADD(NOW(),
-                                        INTERVAL '00:00' HOUR_MINUTE)))
-                                AND a.month_no in (4,5,6,7,8,9,10,11,12,1,2)
+                             a.month_no in (4,5,6,7,8,9,10,11,12,1,2)
                                 AND a.sr_number = b.sr_number
                                 AND b.sr_number = c.sr_num
                                 AND c.session = a.session
@@ -1001,9 +997,7 @@ namespace SMS.Models
                             fees_receipt d,
                             mst_std_class c
                         WHERE
-                            a.month_no <= MONTH(DATE(DATE_ADD(NOW(),
-                                        INTERVAL '00:00' HOUR_MINUTE)))
-                                AND a.sr_number = b.sr_number
+                                a.sr_number = b.sr_number
                                 AND b.sr_number = c.sr_num
                                 AND c.session = a.session
                                 AND b.std_active = 'Y'
