@@ -31,8 +31,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_active = 'Y')";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 

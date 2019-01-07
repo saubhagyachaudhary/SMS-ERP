@@ -18,7 +18,7 @@ namespace SMS.Models
             {
                 mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findActive_finalSession();
+                string session = sess.findActive_Session();
 
                 string duplicate = @"SELECT 
                                             COUNT(*)
@@ -32,8 +32,7 @@ namespace SMS.Models
                                                 FROM
                                                     mst_session
                                                 WHERE
-                                                    session_finalize = 'Y'
-                                                        AND session_active = 'Y')";
+                                                    session_active = 'Y')";
 
                 int dup = con.ExecuteScalar<int>(duplicate,new { mst.class_id,mst.Section_name});       
 
@@ -94,8 +93,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_active = 'Y')
                             ORDER BY class.class_id";
 
             var result = con.Query<mst_section>(query);

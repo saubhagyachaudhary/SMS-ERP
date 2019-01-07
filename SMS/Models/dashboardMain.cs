@@ -802,68 +802,83 @@ namespace SMS.Models
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount,class_id from out_standing a,sr_register b
-                            where
-                            a.sr_number = b.sr_number 
-                            and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
-                            and month_no not in (2,3)
-                            and a.session = @session
-                            and b.std_active = 'Y'
-                            group by class_id asc
-                             UNION ALL SELECT 
-                                0, class_id
-                            FROM
-                                mst_class
-                            WHERE
-                                class_id NOT IN (SELECT 
-                                        class_id
-                                    FROM
-                                        out_standing a,
-                                        sr_register b
-                                    WHERE
-                                        a.sr_number = b.sr_number
-                                            AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
-                                            and month_no not in (2,3)
-                                            AND a.session =  @session
-                                            AND b.std_active = 'Y')";
+                query = @"SELECT 
+                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                            class_id
+                        FROM
+                            out_standing a,
+                            sr_register b
+                        WHERE
+                            a.sr_number = b.sr_number
+                                AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                AND month_no IN (4 , 5, 6, 7, 8, 9, 10, 11, 12, 1)
+                                AND a.session = @session
+                                AND b.std_active = 'Y'
+                        GROUP BY class_id ASC 
+                        UNION ALL SELECT 
+                            0, class_id
+                        FROM
+                            mst_class
+                        WHERE
+                            class_id NOT IN (SELECT 
+                                    class_id
+                                FROM
+                                    out_standing a,
+                                    sr_register b
+                                WHERE
+                                    a.sr_number = b.sr_number
+                                        AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                        AND month_no IN (4 , 5, 6, 7, 8, 9, 10, 11, 12, 1)
+                                        AND a.session = @session
+                                        AND b.std_active = 'Y')";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount,class_id from out_standing a,sr_register b
-                            where
-                            a.sr_number = b.sr_number 
-                            and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
-                            and month_no != 3
-                            and a.session = @session
-                            and b.std_active = 'Y'
-                            group by class_id asc
-                             UNION ALL SELECT 
-                                0, class_id
-                            FROM
-                                mst_class
-                            WHERE
-                                class_id NOT IN (SELECT 
-                                        class_id
-                                    FROM
-                                        out_standing a,
-                                        sr_register b
-                                    WHERE
-                                        a.sr_number = b.sr_number
-                                            AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
-                                            and month_no != 3
-                                            AND a.session = @session
-                                            AND b.std_active = 'Y')";
+                query = @"SELECT 
+                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                            class_id
+                        FROM
+                            out_standing a,
+                            sr_register b
+                        WHERE
+                            a.sr_number = b.sr_number
+                                AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                AND month_no != 3
+                                AND a.session = @session
+                                AND b.std_active = 'Y'
+                        GROUP BY class_id ASC 
+                        UNION ALL SELECT 
+                            0, class_id
+                        FROM
+                            mst_class
+                        WHERE
+                            class_id NOT IN (SELECT 
+                                    class_id
+                                FROM
+                                    out_standing a,
+                                    sr_register b
+                                WHERE
+                                    a.sr_number = b.sr_number
+                                        AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                        AND month_no != 3
+                                        AND a.session = @session
+                                        AND b.std_active = 'Y')";
             }
             else
             {
-                query = @"select sum(ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) amount,class_id from out_standing a,sr_register b
-                            where
-                            a.sr_number = b.sr_number 
-                            and (ifnull(outstd_amount,0)-ifnull(rmt_amount,0)) != 0
-                            and a.session = @session
-                            and b.std_active = 'Y'
-                            group by class_id asc
-                             UNION ALL SELECT 
+                query = @"SELECT 
+                                SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                class_id
+                            FROM
+                                out_standing a,
+                                sr_register b
+                            WHERE
+                                a.sr_number = b.sr_number
+                                    AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
+                                    AND a.session = @session
+                                    AND b.std_active = 'Y'
+                            GROUP BY class_id ASC 
+                            UNION ALL SELECT 
                                 0, class_id
                             FROM
                                 mst_class
@@ -933,85 +948,94 @@ namespace SMS.Models
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
                 query = @"SELECT 
-                            IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0)
-                        FROM
-                            out_standing a,
-                            sr_register b,
-                            fees_receipt d,
-                            mst_std_class c
-                        WHERE
-                                a.month_no in (4,5,6,7,8,9,10,11,12,1)
-                                AND a.sr_number = b.sr_number
-                                AND b.sr_number = c.sr_num
-                                AND c.session = a.session
-                                AND b.std_active = 'Y'
-                                AND a.session = @session
-                                AND a.serial = d.serial
-                        GROUP BY c.class_id ASC 
-                        UNION ALL SELECT 
-                            0
-                        FROM
-                            mst_class
-                        WHERE
-                            class_id NOT IN (SELECT DISTINCT
-                                    class_id
+                                amt
+                            FROM
+                                (SELECT 
+                                    IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0) amt,
+                                        c.class_id
                                 FROM
-                                    fees_receipt)";
+                                    out_standing a, sr_register b, fees_receipt d, mst_std_class c
+                                WHERE
+                                    a.month_no IN (4 , 5, 6, 7, 8, 9, 10, 11, 12, 1)
+                                        AND a.sr_number = b.sr_number
+                                        AND b.sr_number = c.sr_num
+                                        AND c.session = a.session
+                                        AND b.std_active = 'Y'
+                                        AND a.session =  @session
+                                        AND a.serial = d.serial
+                                GROUP BY c.class_id ASC UNION ALL SELECT 
+                                    0 amt, class_id
+                                FROM
+                                    mst_class
+                                WHERE
+                                    class_id NOT IN (SELECT DISTINCT
+                                            class_id
+                                        FROM
+                                            fees_receipt
+                                        WHERE
+                                            session =  @session)) ab
+                            ORDER BY ab.class_id";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
             {
                 query = @"SELECT 
-                            IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0)
-                        FROM
-                            out_standing a,
-                            sr_register b,
-                            fees_receipt d,
-                            mst_std_class c
-                        WHERE
-                             a.month_no in (4,5,6,7,8,9,10,11,12,1,2)
-                                AND a.sr_number = b.sr_number
-                                AND b.sr_number = c.sr_num
-                                AND c.session = a.session
-                                AND b.std_active = 'Y'
-                                AND a.session = @session
-                                AND a.serial = d.serial
-                        GROUP BY c.class_id ASC 
-                        UNION ALL SELECT 
-                            0
-                        FROM
-                            mst_class
-                        WHERE
-                            class_id NOT IN (SELECT DISTINCT
-                                    class_id
+                                amt
+                            FROM
+                                (SELECT 
+                                    IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0) amt,
+                                        c.class_id
                                 FROM
-                                    fees_receipt)";
+                                    out_standing a, sr_register b, fees_receipt d, mst_std_class c
+                                WHERE
+                                    a.month_no != 3
+                                        AND a.sr_number = b.sr_number
+                                        AND b.sr_number = c.sr_num
+                                        AND c.session = a.session
+                                        AND b.std_active = 'Y'
+                                        AND a.session =  @session
+                                        AND a.serial = d.serial
+                                GROUP BY c.class_id ASC UNION ALL SELECT 
+                                    0 amt, class_id
+                                FROM
+                                    mst_class
+                                WHERE
+                                    class_id NOT IN (SELECT DISTINCT
+                                            class_id
+                                        FROM
+                                            fees_receipt
+                                        WHERE
+                                            session =  @session)) ab
+                            ORDER BY ab.class_id";
             }
             else
             {
                 query = @"SELECT 
-                            IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0)
-                        FROM
-                            out_standing a,
-                            sr_register b,
-                            fees_receipt d,
-                            mst_std_class c
-                        WHERE
-                                a.sr_number = b.sr_number
-                                AND b.sr_number = c.sr_num
-                                AND c.session = a.session
-                                AND b.std_active = 'Y'
-                                AND a.session = @session
-                                AND a.serial = d.serial
-                        GROUP BY c.class_id ASC 
-                        UNION ALL SELECT 
-                            0
-                        FROM
-                            mst_class
-                        WHERE
-                            class_id NOT IN (SELECT DISTINCT
-                                    class_id
+                                amt
+                            FROM
+                                (SELECT 
+                                    IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0) amt,
+                                        c.class_id
                                 FROM
-                                    fees_receipt)";
+                                    out_standing a, sr_register b, fees_receipt d, mst_std_class c
+                                WHERE
+                                    a.sr_number = b.sr_number
+                                        AND b.sr_number = c.sr_num
+                                        AND c.session = a.session
+                                        AND b.std_active = 'Y'
+                                        AND a.session = @session
+                                        AND a.serial = d.serial
+                                GROUP BY c.class_id ASC UNION ALL SELECT 
+                                    0 amt, class_id
+                                FROM
+                                    mst_class
+                                WHERE
+                                    class_id NOT IN (SELECT DISTINCT
+                                            class_id
+                                        FROM
+                                            fees_receipt
+                                        WHERE
+                                            session = @session)) ab
+                            ORDER BY ab.class_id";
             }
             var result = con.Query<decimal>(query, new { session = session });
 
