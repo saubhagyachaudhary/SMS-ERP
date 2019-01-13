@@ -60,24 +60,31 @@ namespace SMS.Models
         public IEnumerable<mst_attendance> Attendance_class_list(int user_id)
         {
             string query = @"SELECT 
-                                b.class_id, b.class_name, a.section_id, c.section_name
-                            FROM
-                                mst_attendance a,
-                                mst_class b,
-                                mst_section c
-                            WHERE
-                                a.user_id = @user_id
-                                    AND a.class_id = b.class_id
-                                    AND a.section_id NOT IN (SELECT DISTINCT
-                                        e.section_id
-                                    FROM
-                                        attendance_register d,
-                                        mst_std_section e
-                                    WHERE
-                                        d.sr_num = e.sr_num
-                                            AND att_date = DATE(DATE_ADD(NOW(),
-                                                INTERVAL '00:00' HOUR_MINUTE)))
-                                    AND a.section_id = c.section_id";
+                                    b.class_id, b.class_name, a.section_id, c.section_name
+                                FROM
+                                    mst_attendance a,
+                                    mst_class b,
+                                    mst_section c
+                                WHERE
+                                    a.user_id = @user_id
+                                        AND a.class_id = b.class_id
+                                        AND a.section_id NOT IN (SELECT DISTINCT
+                                            e.section_id
+                                        FROM
+                                            attendance_register d,
+                                            mst_std_section e
+                                        WHERE
+                                            d.sr_num = e.sr_num
+                                                AND att_date = DATE(DATE_ADD(NOW(),
+                                                    INTERVAL '00:00' HOUR_MINUTE)))
+                                        AND a.section_id = c.section_id
+                                        AND b.session = c.session
+                                        AND c.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')";
 
             var result = con.Query<mst_attendance>(query,new {user_id = user_id});
 

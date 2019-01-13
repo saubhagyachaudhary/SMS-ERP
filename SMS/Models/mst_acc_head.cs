@@ -20,8 +20,8 @@ namespace SMS.Models
             public String acc_name { get; set; }
 
             [Required]
-            [Display(Name = "Nature")]
-            public String nature { get; set; }
+            [Display(Name = "Session")]
+            public String session { get; set; }
 
 
     }

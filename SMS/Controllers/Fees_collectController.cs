@@ -24,6 +24,8 @@ namespace SMS.Controllers
             mst_finMain fin = new mst_finMain();
             fees_collect fee = new fees_collect();
 
+            DDsession_name();
+
             if (fin.checkFYnotExpired())
             {
                 
@@ -39,6 +41,7 @@ namespace SMS.Controllers
                 //fee.list = stdMain.AllStudentList(0);
 
                 ViewBag.recpt_no = rcpt_no;
+                
                 return View(fee);
 
             }
@@ -47,12 +50,26 @@ namespace SMS.Controllers
                 ModelState.AddModelError(String.Empty, "Financial Year Expired cannot submit fees create new Financial  year.");
                 sr_registerMain stdMain = new sr_registerMain();
 
+               
+
                 fee.list = stdMain.AllStudentList(GetDefaultSection());
                 DDClassWiseSection();
 
                 ViewBag.recpt_no = rcpt_no;
+              
                 return View(fee);
             }
+        }
+
+        public void DDsession_name()
+        {
+            mst_sessionMain mstSession = new mst_sessionMain();
+
+            IEnumerable<mst_session> session_list = mstSession.AllSesssionList();
+
+            IEnumerable<SelectListItem> list1 = new SelectList(session_list, "session", "session");
+
+            ViewData["session"] = list1;
         }
 
         [HttpGet]
@@ -80,7 +97,7 @@ namespace SMS.Controllers
                         sr_registerMain reg = new sr_registerMain();
                         sr_register register = new sr_register();
 
-                        register = reg.FindStudent(col.sr_num);
+                        register = reg.FindStudent(col.sr_num,col.session);
 
                         col.std_Name = register.std_first_name + " " + register.std_last_name;
 
@@ -137,6 +154,7 @@ namespace SMS.Controllers
                         fee.list = stdMain.AllStudentList(col.section_id);
 
 
+                        DDsession_name();
 
                         DDClassWiseSection();
 
@@ -156,7 +174,7 @@ namespace SMS.Controllers
                         fee.list = stdMain.AllStudentList(GetDefaultSection());
 
 
-
+                        DDsession_name();
                         DDClassWiseSection();
 
 
@@ -205,7 +223,7 @@ namespace SMS.Controllers
                                 ORDER BY b.class_name";
 
 
-            var section_list = con.Query<mst_section>(query, new { session = sess.findActive_finalSession() });
+            var section_list = con.Query<mst_section>(query, new { session = sess.findFinal_Session() });
 
             IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
@@ -219,16 +237,20 @@ namespace SMS.Controllers
             mst_sessionMain sess = new mst_sessionMain();
 
             string query = @"SELECT 
-                                    a.section_id
-                                FROM
-                                    mst_section a
-                                WHERE
-                                    session = @session AND a.class_id = 4";
+                                a.section_id
+                            FROM
+                                mst_section a,
+                                mst_class b
+                            WHERE
+                                a.class_id = b.class_id
+                                    AND a.session = @session
+                                    AND a.session = b.session
+                            ORDER BY b.class_name 
+                            LIMIT 1";
 
+            int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
 
-            var dafault = con.Query<int>(query, new { session = sess.findActive_finalSession() }).SingleOrDefault();
-
-            return dafault;
+            return section;
 
         }
 
@@ -317,12 +339,12 @@ namespace SMS.Controllers
 
 
                 int rcpt_no = await main.AddReceipt(rec);
-                return RedirectToAction("fees_collect", new { rcpt_no = rcpt_no });
+                return RedirectToAction("fees_collect", new { rcpt_no = rcpt_no});
           
             
         }
 
-        private IEnumerable<fees_payment> GetFeesPayment(int sr_num)
+        private IEnumerable<fees_payment> GetFeesPayment(int sr_num, string session)
         {
             List<fees_payment> payment = new List<fees_payment>();
             
@@ -334,7 +356,7 @@ namespace SMS.Controllers
 
             IEnumerable<out_standing> std = new List<out_standing>();
 
-            std = outstd.AllOutStanding(sr_num);
+            std = outstd.AllOutStanding(sr_num,session);
 
             
             
@@ -377,7 +399,7 @@ namespace SMS.Controllers
 
         }
 
-        private IEnumerable<fees_payment> GetFeesPaid(int sr_num)
+        private IEnumerable<fees_payment> GetFeesPaid(int sr_num,string session)
         {
             List<fees_payment> payment = new List<fees_payment>();
 
@@ -387,12 +409,12 @@ namespace SMS.Controllers
 
             IEnumerable<fees_receipt> rect = new List<fees_receipt>();
 
-            rect = outrect.AllPaidFees(sr_num);
+            rect = outrect.AllPaidFees(sr_num,session);
 
             foreach (fees_receipt val in rect)
             {
 
-                payment.Add(new fees_payment { sr_num=sr_num,mode_flag = val.mode_flag, fin_id = val.fin_id, receipt_no = val.receipt_no, receipt_date = val.receipt_date ,Fees_type = val.fees_name, amount_to_be_paid = val.amount, fine = val.dc_fine,discount = val.dc_discount,Narration = val.narration,acc_id = val.acc_id , chq_reject = val.chq_reject });
+                payment.Add(new fees_payment { sr_num=sr_num,mode_flag = val.mode_flag, session = val.session, receipt_no = val.receipt_no, receipt_date = val.receipt_date ,Fees_type = val.fees_name, amount_to_be_paid = val.amount, fine = val.dc_fine,discount = val.dc_discount,Narration = val.narration,acc_id = val.acc_id , chq_reject = val.chq_reject });
             }
 
            
@@ -401,7 +423,7 @@ namespace SMS.Controllers
 
         }
 
-        private IEnumerable<fees_payment> GetFeesPaidByReg(int reg)
+        private IEnumerable<fees_payment> GetFeesPaidByReg(int reg,string session)
         {
             List<fees_payment> payment = new List<fees_payment>();
 
@@ -411,12 +433,12 @@ namespace SMS.Controllers
 
             IEnumerable<fees_receipt> rect = new List<fees_receipt>();
 
-            rect = outrect.AllPaidFeesReg(reg);
+            rect = outrect.AllPaidFeesReg(reg,session);
 
             foreach (fees_receipt val in rect)
             {
 
-                payment.Add(new fees_payment { sr_num = reg, mode_flag = val.mode_flag, fin_id = val.fin_id, receipt_no = val.receipt_no, receipt_date = val.receipt_date, Fees_type = val.fees_name, amount_to_be_paid = val.amount, fine = val.dc_fine, discount = val.dc_discount, Narration = val.narration, acc_id = val.acc_id, chq_reject = val.chq_reject });
+                payment.Add(new fees_payment { sr_num = reg, mode_flag = val.mode_flag, session = val.session, receipt_no = val.receipt_no, receipt_date = val.receipt_date, Fees_type = val.fees_name, amount_to_be_paid = val.amount, fine = val.dc_fine, discount = val.dc_discount, Narration = val.narration, acc_id = val.acc_id, chq_reject = val.chq_reject });
             }
 
 
@@ -427,11 +449,11 @@ namespace SMS.Controllers
 
 
 
-        public PartialViewResult RenderPayment(int sr_num, int reg_num)
+        public PartialViewResult RenderPayment(int sr_num, int reg_num,string session)
         {
             if (sr_num > 0)
             {
-                return PartialView(GetFeesPayment(sr_num));
+                return PartialView(GetFeesPayment(sr_num,session));
             }
             else
             {
@@ -439,15 +461,15 @@ namespace SMS.Controllers
             }
         }
 
-        public PartialViewResult RenderPaid(int sr_num, int reg_num)
+        public PartialViewResult RenderPaid(int sr_num, int reg_num, string session)
         {
             if (sr_num > 0)
             {
-                return PartialView(GetFeesPaid(sr_num));
+                return PartialView(GetFeesPaid(sr_num,session));
             }
             else
             {
-                return PartialView(GetFeesPaidByReg(reg_num));
+                return PartialView(GetFeesPaidByReg(reg_num,session));
             }
 
 

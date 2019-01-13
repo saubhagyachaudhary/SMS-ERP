@@ -60,10 +60,11 @@ namespace SMS.report
                                     b.class_id = c.class_id
                                         AND a.sr_number = b.sr_num
                                         AND a.sr_number = @sr_num
+                                        AND c.session = b.session
                                         AND b.session = @session
                                         AND a.std_active = 'Y'";
 
-                student_ledger std = con.Query<student_ledger>(query, new { sr_num = sr_num, session = session.findActive_finalSession() }).SingleOrDefault();
+                student_ledger std = con.Query<student_ledger>(query, new { sr_num = sr_num, session = session.findFinal_Session() }).SingleOrDefault();
 
                 PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
 

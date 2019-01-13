@@ -129,7 +129,7 @@
                                     <hr />
                                     @{ 
                                        
-                                            Html.RenderAction("RenderPayment", new { sr_num = Model.sr_num, reg_num = Model.reg_num });
+                                            Html.RenderAction("RenderPayment", new { sr_num = Model.sr_num, reg_num = Model.reg_num, session = Model.session });
                                        
                                     }
                                     <div class="col-md-6">
@@ -147,7 +147,7 @@
                                     <hr />
                                     @{
 
-                                        Html.RenderAction("RenderPaid", new { sr_num = Model.sr_num, reg_num = Model.reg_num });
+                                        Html.RenderAction("RenderPaid", new { sr_num = Model.sr_num, reg_num = Model.reg_num, session = Model.session });
 
                                     }
                                     

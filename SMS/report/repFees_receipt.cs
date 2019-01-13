@@ -45,11 +45,7 @@ namespace SMS.report
             doc.SetMargins(0f, 0f, 10f, 70f);
             try
             {
-                string query1 = @"SELECT fin_id
-                             FROM mst_fin
-                          where fin_close = 'N'";
-
-                string fin = con.Query<string>(query1).SingleOrDefault();
+               
 
                 string query = @"SELECT 
                                         mode_flag,
@@ -65,43 +61,42 @@ namespace SMS.report
                                     FROM
                                         fees_receipt
                                     WHERE
-                                        fin_id = @fin_id
-                                            AND receipt_no = @receipt_no
-                                            AND session = (SELECT 
-                                                session
-                                            FROM
-                                                mst_session
-                                            WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                        fin_id = (SELECT 
+                                        fin_id
+                                    FROM
+                                        mst_fin
+                                    WHERE
+                                        fin_close = 'N')
+                                            AND receipt_no = @receipt_no";
 
 
-                IEnumerable<fees_receipt> result = con.Query<fees_receipt>(query, new { fin_id = fin, receipt_no = receipt_no });
+                IEnumerable<fees_receipt> result = con.Query<fees_receipt>(query, new { receipt_no = receipt_no });
 
                 rep_fees rep = new rep_fees();
 
                 if (result.First<fees_receipt>().sr_number == 0)
                 {
                     query = @"SELECT 
-                                    reg_no num,
-                                    CONCAT(ifnull(std_first_name,''), ' ',ifnull(std_last_name,'')) name,
-                                    std_father_name father_name,
-                                    b.class_name
-                                FROM
-                                    std_registration a,
-                                    mst_class b
-                                WHERE
-                                    a.std_class_id = b.class_id
-                                        AND reg_no = @reg_no
-                                        AND reg_date = @reg_date
-                                        AND b.session = a.session
-                                        AND a.session = (SELECT 
-                                            session
-                                        FROM
-                                            mst_session
-                                        WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                reg_no num,
+                                CONCAT(IFNULL(std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) name,
+                                std_father_name father_name,
+                                b.class_name
+                            FROM
+                                std_registration a,
+                                mst_class b
+                            WHERE
+                                a.std_class_id = b.class_id
+                                    AND reg_no = @reg_no
+                                    AND reg_date = @reg_date
+                                    AND b.session = a.session
+                                    AND a.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_active = 'Y')";
 
                     rep = con.Query<rep_fees>(query, new { reg_no = result.First<fees_receipt>().reg_no, reg_date = result.First<fees_receipt>().reg_date }).SingleOrDefault();
                 }

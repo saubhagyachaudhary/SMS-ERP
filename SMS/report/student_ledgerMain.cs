@@ -94,6 +94,7 @@ namespace SMS.report
                                 WHERE
                                     a.sr_number = @sr_num
                                         AND a.acc_id = b.acc_id
+                                        AND a.session = b.session
                                         AND a.session = @session
                                         AND a.month_no BETWEEN 4 AND 12) one 
                             UNION ALL SELECT 
@@ -549,6 +550,7 @@ namespace SMS.report
                                 WHERE
                                     a.sr_number = @sr_num
                                         AND a.acc_id = b.acc_id
+                                        AND a.session = b.session
                                         AND a.session = @session
                                         AND a.month_no BETWEEN 1 AND 3) one 
                             UNION ALL SELECT 

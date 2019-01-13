@@ -20,7 +20,7 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+            string session_name = sess.findFinal_Session();
 
             int class_id = 0;
 
@@ -89,7 +89,7 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+            string session_name = sess.findFinal_Session();
 
             string query = @"SELECT 
                                 b.class_id,

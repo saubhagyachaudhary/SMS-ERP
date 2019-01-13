@@ -23,9 +23,6 @@
                                     @Html.DisplayNameFor(model => model.acc_name)
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.nature)
-                                </th>
-                                <th>
                                     Control Panel
                                 </th>
                             </tr>
@@ -37,16 +34,7 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.acc_name)
                                     </td>
-                                    <td>
-                                        @if (item.nature == "A")
-                                        {
-                                            @("Additive");
-                                        }
-                                        else
-                                        {
-                                            @("Subtractive");
-                                        }
-                                    </td>
+                                   
                                     <td>
                                         @Html.ActionLink("Edit", "EditAccount", new { id = item.acc_id }, new { @class = "btn btn-success btn-sm please_wait" }) 
 

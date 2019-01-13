@@ -42,9 +42,9 @@ namespace SMS.Models
             return result;
         }
 
-        public IEnumerable<out_standing> AllOutStanding(int sr_num)
+        public IEnumerable<out_standing> AllOutStanding(int sr_num,string session)
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            
 
             string query = @"SELECT 
                                     *
@@ -52,7 +52,7 @@ namespace SMS.Models
                                     (SELECT 
                                         1,
                                             serial,
-                                            session,
+                                            a.session,
                                             dt_date,
                                             a.acc_id,
                                             CONCAT(b.acc_name, ' ', IFNULL(a.month_name, ' ')) acc_name,
@@ -65,16 +65,17 @@ namespace SMS.Models
                                     WHERE
                                         sr_number = @sr_number
                                             AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
-                                            AND session = @session
-                                            AND a.acc_id = b.acc_id
-                                            AND month_no BETWEEN 4 AND 12) one 
+                                            AND a.session = @session
+                                            AND a.session = b.session
+                                            AND a.acc_id IN (1 , 2)
+                                            AND a.acc_id = b.acc_id) one 
                                 UNION ALL SELECT 
                                     *
                                 FROM
                                     (SELECT 
                                         2,
                                             serial,
-                                            session,
+                                            a.session,
                                             dt_date,
                                             a.acc_id,
                                             CONCAT(b.acc_name, ' ', IFNULL(a.month_name, ' ')) acc_name,
@@ -87,12 +88,38 @@ namespace SMS.Models
                                     WHERE
                                         sr_number = @sr_number
                                             AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
-                                            AND session = @session
+                                            AND a.session = @session
+                                            AND a.session = b.session
+                                            AND a.acc_id NOT IN (1 , 2)
                                             AND a.acc_id = b.acc_id
-                                            AND month_no BETWEEN 1 AND 3) two
-                                ORDER BY 1 , month_no , acc_id";
+                                            AND month_no BETWEEN 4 AND 12) twp 
+                                UNION ALL SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        3,
+                                            serial,
+                                            a.session,
+                                            dt_date,
+                                            a.acc_id,
+                                            CONCAT(b.acc_name, ' ', IFNULL(a.month_name, ' ')) acc_name,
+                                            a.month_no,
+                                            sr_number,
+                                            IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) outstd_amount,
+                                            narration
+                                    FROM
+                                        out_standing a, mst_acc_head b
+                                    WHERE
+                                        sr_number = @sr_number
+                                            AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
+                                            AND a.session = @session
+                                            AND a.session = b.session
+                                            AND a.acc_id NOT IN (1 , 2)
+                                            AND a.acc_id = b.acc_id
+                                            AND month_no BETWEEN 1 AND 3) three
+                                ORDER BY 1 , month_no,acc_id";
 
-            var result = con.Query<out_standing>(query, new { sr_number = sr_num, session = sess.findActive_finalSession() });
+            var result = con.Query<out_standing>(query, new { sr_number = sr_num, session = session });
             
 
             return result;
@@ -103,7 +130,7 @@ namespace SMS.Models
         {
             string query = @"SELECT 
                                 serial,
-                                session,
+                                a.session,
                                 dt_date,
                                 a.acc_id,
                                 b.acc_name,
@@ -118,13 +145,13 @@ namespace SMS.Models
                                 reg_num = @reg_num
                                     AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) <> 0
                                     AND a.acc_id = b.acc_id
-                                    AND session = (SELECT 
+                                    AND a.session = b.session
+                                    AND a.session = (SELECT 
                                         session
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                        session_active = 'Y')";
 
             var result = con.Query<out_standing>(query, new { reg_num = reg });
 
@@ -149,8 +176,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_active = 'Y')";
 
                 con.Execute(query, std);
             }

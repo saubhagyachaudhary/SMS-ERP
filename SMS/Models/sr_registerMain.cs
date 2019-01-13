@@ -22,9 +22,7 @@ namespace SMS.Models
             {
                 mst_sessionMain sess = new mst_sessionMain();
 
-                
-                if (sess.checkSessionNotExpired())
-                {
+               
 
                    
 
@@ -209,7 +207,7 @@ namespace SMS.Models
 
                     
 
-                    await con.ExecuteAsync(query,new{session = sess.findActive_finalSession() ,sr_num = std.sr_number, class_id = std.class_id});
+                    await con.ExecuteAsync(query,new{session = sess.findActive_Session() ,sr_num = std.sr_number, class_id = std.class_id});
 
                     query = @"INSERT INTO `mst_std_section`
                             (`session`,
@@ -222,7 +220,7 @@ namespace SMS.Models
 
 
 
-                    await con.ExecuteAsync(query, new { session = sess.findActive_finalSession(), sr_num = std.sr_number, section_id = std.std_section_id });
+                    await con.ExecuteAsync(query, new { session = sess.findActive_Session(), sr_num = std.sr_number, section_id = std.std_section_id });
 
                     std_registrationMain main = new std_registrationMain();
 
@@ -298,7 +296,7 @@ namespace SMS.Models
 
                     hub.DashboardSchoolStrength();
 
-                }
+                
             }
             catch (Exception ex)
             {
@@ -335,7 +333,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_active = 'Y')
+                                        session_finalize = 'Y')
                                     AND b.section_id = @section_id
                                     AND a.std_active = 'Y'";
 
@@ -346,7 +344,7 @@ namespace SMS.Models
 
      
 
-        public sr_register FindStudent(int? id)
+        public sr_register FindStudent(int? id,string session)
         {
             string Query = @"SELECT 
                             sr_number,
@@ -405,16 +403,11 @@ namespace SMS.Models
                                 AND b.session = c.session
                                 AND c.session = d.session
                                 AND d.session = e.session
-                                AND e.session = (SELECT 
-                                    session
-                                FROM
-                                    mst_session
-                                WHERE
-                                    session_active = 'Y')
+                                AND e.session = @session
                                 AND IFNULL(a.std_pickup_id, 0) = d.pickup_id
                                 AND a.sr_number = @sr_number";
           
-            return con.Query<sr_register>(Query, new { sr_number = id }).SingleOrDefault();
+            return con.Query<sr_register>(Query, new { sr_number = id,session = session }).SingleOrDefault();
         }
 
         public void EditStudent(sr_register std)

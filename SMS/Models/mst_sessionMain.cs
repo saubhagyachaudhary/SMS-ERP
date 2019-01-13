@@ -53,9 +53,22 @@ namespace SMS.Models
                                 session_active,
                                 session_finalize
                             FROM
-                                mst_session";
+                                mst_session ORDER BY session DESC";
 
             var result = con.Query<mst_session>(query);
+
+            return result;
+        }
+
+        public IEnumerable<string> GetSesssionList()
+        {
+            string query = @"SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                ORDER BY session DESC";
+
+            var result = con.Query<string>(query);
 
             return result;
         }
@@ -101,6 +114,18 @@ namespace SMS.Models
             return con.Query<string>(Query).SingleOrDefault();
         }
 
+        public string findFinal_Session()
+        {
+            string Query = @"SELECT 
+                                    session
+                                FROM
+                                    mst_session
+                                WHERE
+                                    session_finalize = 'Y'";
+
+            return con.Query<string>(Query).SingleOrDefault();
+        }
+
         public mst_session getStartEndDate(string session)
         {
              string Query = @"SELECT 
@@ -120,8 +145,7 @@ namespace SMS.Models
                                 FROM
                                     mst_session
                                 WHERE
-                                    session_active = 'Y'
-                                        AND session_finalize = 'Y'";
+                                    session_finalize = 'Y'";
 
             mst_session mst = con.Query<mst_session>(Query).SingleOrDefault();
 

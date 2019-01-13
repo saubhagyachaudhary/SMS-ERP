@@ -90,8 +90,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
                 var result = con.Query<mst_class>(query);
                 return result;
@@ -111,8 +110,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
                 var result = con.Query<mst_class>(query, new { user_id = user_id });
                 return result;

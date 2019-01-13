@@ -166,7 +166,7 @@ namespace SMS.Models
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_finalSession();
+            string session = sess.findActive_Session();
 
             String query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session";
 
@@ -180,7 +180,7 @@ namespace SMS.Models
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_finalSession();
+            string session = sess.findActive_Session();
 
             String query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session and std_sex = 'M'";
 
@@ -194,7 +194,7 @@ namespace SMS.Models
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_finalSession();
+            string session = sess.findActive_Session();
 
             string query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session and std_sex = 'F'";
 
@@ -216,7 +216,7 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
             var result = con.Query<string>(query);
 
@@ -252,8 +252,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_active = 'Y'
-                                            AND session_finalize = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
 
@@ -287,8 +286,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
 
@@ -325,8 +323,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY att_date
                             ORDER BY att_date";
 
@@ -356,8 +353,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY att_date
                             ORDER BY att_date";
 
@@ -407,8 +403,7 @@ namespace SMS.Models
                                 FROM
                                     mst_session
                                 WHERE
-                                    session_finalize = 'Y'
-                                        AND session_active = 'Y')
+                                    session_finalize = 'Y')
                         GROUP BY d.class_id
                         ORDER BY date_num , d.class_id";
 
@@ -452,8 +447,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY d.class_id
                             ORDER BY date_num , d.class_id";
 
@@ -575,8 +569,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                                     AND a.section_id NOT IN (SELECT DISTINCT
                                         b.section_id
                                     FROM
@@ -609,8 +602,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                                     AND a.section_id IN (SELECT 
                                         section_id
                                     FROM
@@ -758,7 +750,7 @@ namespace SMS.Models
             int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
 
-            string query1 = @"SELECT session FROM mst_session where session_active = 'Y'";
+            string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
 
             string session = con.Query<string>(query1).SingleOrDefault();
 
@@ -798,7 +790,8 @@ namespace SMS.Models
                                                     INTERVAL '00:00' HOUR_MINUTE)))
                                             AND month_no BETWEEN 4 AND 12
                                             AND a.session =  @session
-                                            AND b.std_active = 'Y')";
+                                            AND b.std_active = 'Y')
+                                            AND session = @session";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
@@ -830,7 +823,8 @@ namespace SMS.Models
                                         AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
                                         AND month_no IN (4 , 5, 6, 7, 8, 9, 10, 11, 12, 1)
                                         AND a.session = @session
-                                        AND b.std_active = 'Y')";
+                                        AND b.std_active = 'Y')
+                                    AND session = @session";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
             {
@@ -862,7 +856,8 @@ namespace SMS.Models
                                         AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
                                         AND month_no != 3
                                         AND a.session = @session
-                                        AND b.std_active = 'Y')";
+                                        AND b.std_active = 'Y')
+                                        AND session = @session";
             }
             else
             {
@@ -892,7 +887,8 @@ namespace SMS.Models
                                         a.sr_number = b.sr_number
                                             AND (IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) != 0
                                             AND a.session = @session
-                                            AND b.std_active = 'Y')";
+                                            AND b.std_active = 'Y')
+                                            AND session = @session";
             }
 
             var result = con.Query<decimal>(query, new { session = session });
@@ -909,7 +905,7 @@ namespace SMS.Models
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
             int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
-            string query1 = @"SELECT session FROM mst_session where session_active = 'Y'";
+            string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
 
             string session = con.Query<string>(query1).SingleOrDefault();
 
@@ -943,7 +939,8 @@ namespace SMS.Models
                                 class_id NOT IN (SELECT DISTINCT
                                         class_id
                                     FROM
-                                        fees_receipt)";
+                                        fees_receipt)
+                                        AND session = @session";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
@@ -973,7 +970,7 @@ namespace SMS.Models
                                         FROM
                                             fees_receipt
                                         WHERE
-                                            session =  @session)) ab
+                                            session =  @session) AND session = @session) ab
                             ORDER BY ab.class_id";
             }
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
@@ -1004,7 +1001,7 @@ namespace SMS.Models
                                         FROM
                                             fees_receipt
                                         WHERE
-                                            session =  @session)) ab
+                                            session =  @session) AND session = @session) ab
                             ORDER BY ab.class_id";
             }
             else
@@ -1034,7 +1031,7 @@ namespace SMS.Models
                                         FROM
                                             fees_receipt
                                         WHERE
-                                            session = @session)) ab
+                                            session = @session) AND session = @session) ab
                             ORDER BY ab.class_id";
             }
             var result = con.Query<decimal>(query, new { session = session });
@@ -1065,8 +1062,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY att_date
                             ORDER BY att_date";
 
@@ -1097,8 +1093,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY att_date
                             ORDER BY att_date";
 
@@ -1131,8 +1126,7 @@ namespace SMS.Models
                                 FROM
                                     mst_session
                                 WHERE
-                                    session_finalize = 'Y'
-                                        AND session_active = 'Y')
+                                    session_finalize = 'Y')
                         GROUP BY att_date
                         ORDER BY att_date";
 
@@ -1163,8 +1157,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                             GROUP BY att_date
                             ORDER BY att_date";
 
@@ -1197,8 +1190,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                                     AND a.sr_num = b.sr_num
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
@@ -1223,8 +1215,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                                     AND a.sr_num = b.sr_num
                                     AND a.sr_num = c.sr_num
                                     AND c.section_id IN (SELECT 
@@ -1266,8 +1257,7 @@ namespace SMS.Models
                                 FROM
                                     mst_session
                                 WHERE
-                                    session_finalize = 'Y'
-                                        AND session_active = 'Y')
+                                    session_finalize = 'Y')
                         GROUP BY b.class_id
                         ORDER BY b.class_id";
 
@@ -1293,8 +1283,7 @@ namespace SMS.Models
                                 FROM
                                     mst_session
                                 WHERE
-                                    session_finalize = 'Y'
-                                        AND session_active = 'Y')
+                                    session_finalize = 'Y')
                                 AND c.section_id IN (SELECT 
                                     section_id
                                 FROM

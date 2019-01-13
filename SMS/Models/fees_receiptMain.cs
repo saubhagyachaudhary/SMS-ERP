@@ -344,11 +344,11 @@ namespace SMS.Models
 
         
 
-        public IEnumerable<fees_receipt> AllPaidFees(int sr_num)
+        public IEnumerable<fees_receipt> AllPaidFees(int sr_num,string session)
         {
             mst_finMain fin = new mst_finMain();
 
-            String query = @"SELECT fin_id
+            String query = @"SELECT session
                               ,receipt_no
                               ,receipt_date
                               ,acc_id
@@ -366,15 +366,15 @@ namespace SMS.Models
                               ,case mode_flag when 'Cash' then 'Cleared' else case  when chq_reject is NULL then 'Not Cleared' else chq_reject end end as chq_reject
                           FROM fees_receipt
                                 where sr_number = @sr_number
-                                and fin_id = @fin
+                                and session = @session
                                 order by receipt_date desc";
 
-            var result = con.Query<fees_receipt>(query, new { sr_number = sr_num,fin = fin.FindActiveFinId()});
+            var result = con.Query<fees_receipt>(query, new { sr_number = sr_num, session = session});
 
             return result;
         }
 
-        public IEnumerable<fees_receipt> AllPaidFeesReg(int reg_no)
+        public IEnumerable<fees_receipt> AllPaidFeesReg(int reg_no,string session)
         {
 
             string query1 = @"SELECT fin_id FROM mst_fin where fin_close = 'N'";
@@ -382,7 +382,7 @@ namespace SMS.Models
             string fin_id = con.Query<string>(query1).SingleOrDefault();
 
 
-            String query = @"SELECT fin_id
+            String query = @"SELECT session
                               ,receipt_no
                               ,receipt_date
                               ,acc_id
@@ -400,11 +400,12 @@ namespace SMS.Models
                               ,case mode_flag when 'Cash' then 'Cleared' else case  when chq_reject is NULL then 'Not Cleared' else chq_reject end end as chq_reject
                           FROM fees_receipt
                                 where reg_no = @reg_no
-                                and fin_id = @fin_id";
+                                and fin_id = @fin_id
+                                 AND session = @session";
 
            
 
-            var result = con.Query<fees_receipt>(query, new { reg_no = reg_no, fin_id = fin_id});
+            var result = con.Query<fees_receipt>(query, new { reg_no = reg_no, fin_id = fin_id, session = session});
 
             return result;
         }

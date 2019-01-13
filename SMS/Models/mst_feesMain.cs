@@ -105,6 +105,7 @@ namespace SMS.Models
                                 a.class_id = b.class_id
                                     AND a.acc_id = c.acc_id
                                     AND a.session = b.session
+                                    AND b.session = c.session
                                     AND b.session = (SELECT 
                                         session
                                     FROM
@@ -157,9 +158,13 @@ namespace SMS.Models
 
         public IEnumerable<mst_acc_head> account_head()
         {
-            String query = "SELECT acc_id,acc_name,nature FROM mst_acc_head where nature = 'A'";
+            mst_sessionMain sess = new mst_sessionMain();
 
-            var result = con.Query<mst_acc_head>(query);
+            string ses = sess.findActive_Session();
+
+            String query = "SELECT acc_id,acc_name FROM mst_acc_head where session = @session";
+
+            var result = con.Query<mst_acc_head>(query, new { session = ses });
 
             return result;
         }

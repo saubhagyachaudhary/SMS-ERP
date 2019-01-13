@@ -175,7 +175,11 @@ namespace SMS.Models
 
                     SMSMessage sms = new SMSMessage();
 
-                    string qry = @"SELECT 
+                   
+
+                    foreach (var item in sms.smsbody("student_registration"))
+                    {
+                        string qry = @"SELECT 
                                         class_name
                                     FROM
                                         mst_class
@@ -186,13 +190,10 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_active = 'Y')";
 
-                    string className = con.Query<string>(qry, new { class_id = std.std_class_id }).SingleOrDefault();
+                        string className = con.Query<string>(qry, new { class_id = std.std_class_id }).SingleOrDefault();
 
-                    foreach (var item in sms.smsbody("student_registration"))
-                    {
                         string body = item.Replace("#student_name#", std.std_first_name + " " + std.std_last_name);
 
                         body = body.Replace("#class#", className);
@@ -239,8 +240,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_active = 'Y')
                             ORDER BY reg_date DESC";
 
             var result = con.Query<std_registration>(query);
@@ -306,8 +306,7 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                        session_active = 'Y')";
 
             return con.Query<std_registration>(Query, new {reg_no = reg}).SingleOrDefault();
         }

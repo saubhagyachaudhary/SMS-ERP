@@ -30,7 +30,7 @@ namespace SMS.Controllers
         {
             mst_sessionMain session = new mst_sessionMain();
 
-            string sess = session.findActive_finalSession();
+            string sess = session.findFinal_Session();
 
 
             string query = @"SELECT 

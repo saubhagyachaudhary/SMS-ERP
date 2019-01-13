@@ -83,8 +83,7 @@ namespace SMS.Controllers
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                        session_active = 'Y')";
 
 
             decimal fees = con.Query<decimal>(query, new { class_id = id }).SingleOrDefault();

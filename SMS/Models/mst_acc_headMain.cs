@@ -18,18 +18,19 @@ namespace SMS.Models
             {
                 string query = @"INSERT INTO mst_acc_head
                                (acc_id
-                                ,acc_name
-                               ,nature)
+                                ,acc_name)
                                 VALUES
                                (@acc_id
-                                ,@acc_name
-                               ,@nature)";
+                                ,@acc_name)";
 
-                string maxid = "select ifnull(MAX(acc_id),0)+1 from mst_acc_head";
+                string maxid = "select ifnull(MAX(acc_id),0)+1 from mst_acc_head where session = @session";
 
-                //                var id = con.Query<mst_section>(maxid).ToString().Trim();
+               
+                mst_sessionMain sess = new mst_sessionMain();
 
-                int id = con.ExecuteScalar<int>(maxid);
+                string ses = sess.findActive_Session();
+
+                int id = con.ExecuteScalar<int>(maxid, new { session = ses });
 
                 
 
@@ -39,9 +40,7 @@ namespace SMS.Models
                 con.Execute(query, new
                 {
                     mst.acc_id,
-                    mst.acc_name,
-                    mst.nature
-                    
+                    mst.acc_name
                 });
             }
             catch (Exception ex)
@@ -52,18 +51,26 @@ namespace SMS.Models
 
         public IEnumerable<mst_acc_head> AllAccountList()
         {
-            String query = "SELECT acc_id,acc_name,nature FROM mst_acc_head";
+            mst_sessionMain sess = new mst_sessionMain();
 
-            var result = con.Query<mst_acc_head>(query);
+            string ses = sess.findActive_Session();
+
+            String query = "SELECT acc_id,acc_name FROM mst_acc_head where session = @session";
+
+            var result = con.Query<mst_acc_head>(query, new { session = ses });
 
             return result;
         }
 
         public mst_acc_head FindAccount(int? id)
         {
-            String Query = "SELECT acc_id,acc_name,nature FROM mst_acc_head where acc_id = @acc_id";
+            mst_sessionMain sess = new mst_sessionMain();
 
-            return con.Query<mst_acc_head>(Query, new { acc_id = id }).SingleOrDefault();
+            string ses = sess.findActive_Session();
+
+            String Query = "SELECT acc_id,acc_name,nature FROM mst_acc_head where acc_id = @acc_id and session = @session";
+
+            return con.Query<mst_acc_head>(Query, new { acc_id = id, session = ses }).SingleOrDefault();
         }
 
         public void EditAccount(mst_acc_head mst)
@@ -71,7 +78,13 @@ namespace SMS.Models
 
             try
             {
-                string query = "UPDATE mst_acc_head SET acc_name = @acc_name,nature = @nature WHERE acc_id = @acc_id";
+                mst_sessionMain sess = new mst_sessionMain();
+
+                string ses = sess.findActive_Session();
+
+                mst.session = ses;
+
+                string query = "UPDATE mst_acc_head SET acc_name = @acc_name,nature = @nature WHERE acc_id = @acc_id and session = @session";
 
                 con.Execute(query, mst);
             }
@@ -85,9 +98,13 @@ namespace SMS.Models
         {
             try
             {
-                String Query = "DELETE FROM mst_acc_head WHERE acc_id = @acc_id";
+                mst_sessionMain sess = new mst_sessionMain();
 
-                return con.Query<mst_acc_head>(Query, new { acc_id = id }).SingleOrDefault();
+                string ses = sess.findActive_Session();
+
+                String Query = "DELETE FROM mst_acc_head WHERE acc_id = @acc_id  and session = @session";
+
+                return con.Query<mst_acc_head>(Query, new { acc_id = id, session = ses }).SingleOrDefault();
             }
             catch (Exception ex)
             {

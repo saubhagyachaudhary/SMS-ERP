@@ -310,8 +310,7 @@ namespace SMS.Controllers
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
 
                 var exam_list = con.Query<mst_section>(query, new { class_id = id});
@@ -336,8 +335,7 @@ namespace SMS.Controllers
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
 
                 var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });

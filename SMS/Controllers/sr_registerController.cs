@@ -83,8 +83,7 @@ namespace SMS.Controllers
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_active = 'Y')";
 
                 int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
@@ -129,15 +128,21 @@ namespace SMS.Controllers
             
 
             string query = @"SELECT 
-                                fees_amount
-                            FROM
-                                mst_fees a,
-                                mst_class b
-                            WHERE
-                                a.class_id = b.class_id
-                                    AND b.class_name = @class_name
-                                    AND a.acc_id = 2
-                                    AND a.session = b.session";
+                                    fees_amount
+                                FROM
+                                    mst_fees a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND b.class_name = @class_name
+                                        AND a.acc_id = 2
+                                        AND a.session = b.session
+                                        AND b.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_active = 'Y')";
 
             decimal fees = con.Query<decimal>(query, new { class_name = id }).SingleOrDefault();
 
@@ -189,8 +194,7 @@ namespace SMS.Controllers
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                        session_active = 'Y')";
 
 
 
@@ -215,8 +219,7 @@ namespace SMS.Controllers
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_active = 'Y')";
 
 
             var section_list = con.Query<mst_section>(query, new { class_id = obj.class_id});
@@ -247,7 +250,7 @@ namespace SMS.Controllers
                             ORDER BY b.class_name";
 
 
-            var section_list = con.Query<mst_section>(query,new {session =  sess.findActive_Session() });
+            var section_list = con.Query<mst_section>(query,new {session =  sess.findFinal_Session() });
 
             IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
@@ -276,7 +279,7 @@ namespace SMS.Controllers
                             ORDER BY b.class_name 
                             LIMIT 1";
 
-            int section = con.Query<int>(query, new { session = sess.findActive_Session() }).SingleOrDefault();
+            int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
 
             sr.sr_regi = stdMain.AllStudentList(section);
             DDClassWiseSection();
@@ -315,14 +318,17 @@ namespace SMS.Controllers
         {
             sr_registerMain stdMain = new sr_registerMain();
 
-            return View(stdMain.FindStudent(id));
+            mst_sessionMain sess = new mst_sessionMain();
+
+            return View(stdMain.FindStudent(id,sess.findFinal_Session()));
         }
 
         [HttpGet]
         public ActionResult EditDetails(int id)
         {
             sr_registerMain stdMain = new sr_registerMain();
-            var obj = stdMain.FindStudent(id);
+            mst_sessionMain sess = new mst_sessionMain();
+            var obj = stdMain.FindStudent(id,sess.findFinal_Session());
 
             DDclass_name(obj);
             DDtransport_id(obj);
@@ -452,7 +458,9 @@ namespace SMS.Controllers
         {
             sr_registerMain stdMain = new sr_registerMain();
 
-            return View(stdMain.FindStudent(id));
+            mst_sessionMain sess = new mst_sessionMain();
+
+            return View(stdMain.FindStudent(id,sess.findFinal_Session()));
         }
 
         [HttpPost]

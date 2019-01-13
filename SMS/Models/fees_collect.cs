@@ -48,6 +48,9 @@ namespace SMS.Models
         [Display(Name = "Aadhar Number")]
         public string std_aadhar { get; set; }
 
+        [Display(Name = "Session")]
+        public string session { get; set; }
+
 
     }
 }

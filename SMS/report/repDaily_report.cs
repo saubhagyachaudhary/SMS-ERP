@@ -71,7 +71,15 @@ namespace SMS.report
                                                     AND b.sr_number = d.sr_num
                                                     AND receipt_date BETWEEN @fromdt and @todt
                                                     AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
-                                                    AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 UNION ALL SELECT 
+                                                    AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                    AND c.session = d.session
+                                                AND d.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y')
+                                                    UNION ALL SELECT 
                                                 receipt_no,
                                                     receipt_date,
                                                     0 sr_number,
@@ -139,7 +147,15 @@ namespace SMS.report
                                                 AND receipt_date BETWEEN @fromdt AND @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND a.mode_flag = 'Cheque'
-                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 UNION ALL SELECT 
+                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                AND c.session = d.session
+                                                        AND d.session = (SELECT 
+                                                            session
+                                                        FROM
+                                                            mst_session
+                                                        WHERE
+                                                            session_finalize = 'Y')
+                                                UNION ALL SELECT 
                                             receipt_no,
                                                 receipt_date,
                                                 0 sr_number,
@@ -207,7 +223,15 @@ namespace SMS.report
                                                     AND receipt_date BETWEEN @fromdt AND @todt
                                                     AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                     AND a.mode_flag = 'Cash'
-                                                    AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 UNION ALL SELECT 
+                                                    AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                    AND c.session = d.session
+                                                            AND d.session = (SELECT 
+                                                                session
+                                                            FROM
+                                                                mst_session
+                                                            WHERE
+                                                                session_finalize = 'Y')                                
+                                                    UNION ALL SELECT 
                                                 receipt_no,
                                                     receipt_date,
                                                     0 sr_number,
@@ -641,7 +665,15 @@ namespace SMS.report
                                                 AND b.sr_number = d.sr_num
                                                 AND receipt_date BETWEEN @fromdt and @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
-                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 UNION ALL SELECT 
+                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0
+                                                AND c.session = d.session
+                                                        AND d.session = (SELECT 
+                                                            session
+                                                        FROM
+                                                            mst_session
+                                                        WHERE
+                                                            session_finalize = 'Y')                                                
+                                                UNION ALL SELECT 
                                             receipt_no,
                                                 receipt_date,
                                                 0 sr_number,
@@ -721,7 +753,15 @@ namespace SMS.report
                                                 AND receipt_date BETWEEN @fromdt AND @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND a.mode_flag = 'Cheque'
-                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 UNION ALL SELECT 
+                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                AND c.session = d.session
+                                                        AND d.session = (SELECT 
+                                                            session
+                                                        FROM
+                                                            mst_session
+                                                        WHERE
+                                                            session_finalize = 'Y')
+                                                UNION ALL SELECT 
                                             receipt_no,
                                                 receipt_date,
                                                 0 sr_number,
@@ -799,7 +839,15 @@ namespace SMS.report
                                                 AND receipt_date BETWEEN @fromdt and @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND a.mode_flag = 'Cash'
-                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 UNION ALL SELECT 
+                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                AND c.session = d.session
+                                                        AND d.session = (SELECT 
+                                                            session
+                                                        FROM
+                                                            mst_session
+                                                        WHERE
+                                                            session_finalize = 'Y')
+                                                UNION ALL SELECT 
                                             receipt_no,
                                                 receipt_date,
                                                 0 sr_number,

@@ -83,8 +83,7 @@ namespace SMS.report
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')
+                                                session_finalize = 'Y')
                                     ORDER BY c.class_name , e.section_name";
 
                    result = result.Concat(con.Query<transportList>(query, new { pickup_id = i }));

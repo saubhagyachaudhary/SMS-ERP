@@ -45,8 +45,7 @@ namespace SMS.report
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
             string class_name = con.Query<string>(query1, new { section_id = section_id}).SingleOrDefault();
 
@@ -193,8 +192,7 @@ namespace SMS.report
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')
+                                                session_finalize = 'Y')
                                     ORDER BY c.roll_number";
 
 
@@ -672,8 +670,7 @@ namespace SMS.report
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
                 string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
 
@@ -816,8 +813,7 @@ namespace SMS.report
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')
+                                                session_finalize = 'Y')
                                     ORDER BY c.roll_number";
 
 

@@ -39,8 +39,7 @@ namespace SMS.report
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
             string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
 
@@ -60,7 +59,7 @@ namespace SMS.report
             {
                 
 
-                 query1 = @"SELECT session FROM mst_session where session_active = 'Y'";
+                 query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
 
                 string session = con.Query<string>(query1).SingleOrDefault();
 
@@ -506,6 +505,9 @@ namespace SMS.report
                                                 AND b.std_pickup_id = @pickup_id
                                                 AND month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
                                                 AND month_no BETWEEN 4 AND 12
+                                                AND e.session = d.session
+                                                AND d.session = c.session
+                                                AND c.session = a.session
                                                 AND a.session = @session
                                                 AND b.std_active = 'Y'
                                                 AND b.sr_number = d.sr_num
@@ -536,6 +538,9 @@ namespace SMS.report
                                             a.sr_number = b.sr_number
                                                 AND b.std_pickup_id = @pickup_id
                                                 AND month_no NOT IN (2 , 3)
+                                                AND e.session = d.session
+                                                AND d.session = c.session
+                                                AND c.session = a.session
                                                 AND a.session = @session
                                                 AND b.std_active = 'Y'
                                                 AND b.sr_number = d.sr_num
@@ -567,6 +572,9 @@ namespace SMS.report
                                         a.sr_number = b.sr_number
                                             AND b.std_pickup_id = @pickup_id
                                             AND month_no != 3
+                                            AND e.session = d.session
+                                            AND d.session = c.session
+                                            AND c.session = a.session
                                             AND a.session = @session
                                             AND b.std_active = 'Y'
                                             AND b.sr_number = d.sr_num
@@ -594,6 +602,9 @@ namespace SMS.report
                                     WHERE
                                         a.sr_number = b.sr_number
                                             AND b.std_pickup_id = @pickup_id
+                                            AND e.session = d.session
+                                            AND d.session = c.session
+                                            AND c.session = a.session
                                             AND a.session = @session
                                             AND b.std_active = 'Y'
                                             AND b.sr_number = d.sr_num
@@ -605,7 +616,7 @@ namespace SMS.report
 
                     }
 
-                    result = result.Concat(con.Query<repDues_list>(query, new { pickup_id = i, session = session.findActive_Session(), amt = amt }));
+                    result = result.Concat(con.Query<repDues_list>(query, new { pickup_id = i, session = session.findFinal_Session(), amt = amt }));
                 }
 
 
