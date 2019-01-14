@@ -26,7 +26,7 @@ namespace SMS.report
         string donotreplyMailPassword = ConfigurationManager.AppSettings["donotreplyMailPassword"].ToString();
         
 
-        public void pdfAttendanceSheet(int section_id,int month_no, string session)
+        public void pdfAttendanceSheet(int class_id,int section_id,int month_no, string session)
         {
 
             string query1 = @"SELECT 
@@ -38,16 +38,12 @@ namespace SMS.report
                                     mst_class b
                                 WHERE
                                     a.class_id = b.class_id
+                                        AND b.class_id = @class_id
                                         AND a.section_id = @section_id
                                         AND a.session = b.session
-                                        AND a.session = (SELECT 
-                                            session
-                                        FROM
-                                            mst_session
-                                        WHERE
-                                            session_finalize = 'Y')";
+                                        AND a.session = @session";
 
-            string class_name = con.Query<string>(query1, new { section_id = section_id}).SingleOrDefault();
+            string class_name = con.Query<string>(query1, new { section_id = section_id, session = session , class_id = class_id }).SingleOrDefault();
 
             MemoryStream ms = new MemoryStream();
 
@@ -187,16 +183,11 @@ namespace SMS.report
                                             AND a.sr_number = d.sr_num
                                             AND b.session = c.session
                                             AND c.session = d.session
-                                            AND d.session = (SELECT 
-                                                session
-                                            FROM
-                                                mst_session
-                                            WHERE
-                                                session_finalize = 'Y')
+                                            AND d.session = @session
                                     ORDER BY c.roll_number";
 
 
-                IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id});
+                IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id,session=session});
 
 
                 ph = new Phrase();

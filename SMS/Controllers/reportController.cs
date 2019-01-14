@@ -49,7 +49,9 @@ namespace SMS.Controllers
         public ActionResult duesList()
         {
 
-            DDclass_name();
+            mst_sessionMain session = new mst_sessionMain();
+
+            DDclass_name(session.findFinal_Session());
 
             return View();
         }
@@ -61,7 +63,11 @@ namespace SMS.Controllers
             repDues_listMain dues = new repDues_listMain();
 
             dues.pdfDues_list(section_id, amount,operation);
-            DDclass_name();
+
+            mst_sessionMain session = new mst_sessionMain();
+
+            DDclass_name(session.findFinal_Session());
+
             return View();
         }
 
@@ -261,24 +267,88 @@ namespace SMS.Controllers
             return View();
         }
 
+        public JsonResult GetClass(string session)
+        {
+            string query = @"SELECT 
+                                class_id, class_name
+                            FROM
+                                mst_class
+                            WHERE
+                                session = @session";
+
+
+
+            var class_list = con.Query<mst_section>(query, new { session = session });
+
+            IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
+
+            return Json(list);
+
+        }
+
+        public JsonResult GetSections(int id,string session)
+        {
+            string query = @"SELECT 
+                                section_id, section_name
+                            FROM
+                                mst_section
+                            WHERE
+                                class_id = @id AND session = @session";
+
+
+
+            var section_list = con.Query<mst_section>(query, new { id = id,session=session });
+
+            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
+
+            return Json(list);
+
+        }
+
         [HttpGet]
         public ActionResult attendance_sheet()
         {
 
             DDsession_name();
-            DDclass_name();
+            //DDclass_name();
             return View();
         }
 
         [HttpPost]
-        public ActionResult attendance_sheet(int section_id, int month_no, string session)
+        public ActionResult attendance_sheet(int class_id, int section_id, int month_no, string session)
         {
 
             repAttendance_sheetMain attendance = new repAttendance_sheetMain();
 
-            attendance.pdfAttendanceSheet(section_id,month_no,session);
+            attendance.pdfAttendanceSheet(class_id, section_id, month_no, session);
             DDsession_name();
-            DDclass_name();
+            //DDclass_name();
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult class_wise_std_list()
+        {
+
+            DDsession_name();
+            //DDclass_name();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult class_wise_std_list(int class_id,int section_id, string session)
+        {
+
+            //repAttendance_sheetMain attendance = new repAttendance_sheetMain();
+
+            // attendance.pdfAttendanceSheet(class_id,section_id,month_no,session);
+
+            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+
+            std_list.pdfClass_Wise_Std_List(class_id, section_id, session);
+
+            DDsession_name();
+            //DDclass_name();
             return View();
         }
 
@@ -361,11 +431,11 @@ namespace SMS.Controllers
             ViewData["session"] = list1;
         }
 
-        public void DDclass_name()
+        public void DDclass_name(string session)
         {
             mst_classMain mstClass = new mst_classMain();
 
-            var class_list = mstClass.AllClassListWithSection();
+            var class_list = mstClass.AllClassListWithSection(session);
 
             IEnumerable<SelectListItem> list1 = new SelectList(class_list, "class_id", "class_name");
            

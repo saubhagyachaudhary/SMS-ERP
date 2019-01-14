@@ -25,7 +25,8 @@ namespace SMS.report
         string shortfirstname = ConfigurationManager.AppSettings["ShortFirstName"].ToString();
         string shortlastname = ConfigurationManager.AppSettings["ShortLastName"].ToString();
         string Affiliation = ConfigurationManager.AppSettings["Affiliation"].ToString();
-        
+        string SchoolName = ConfigurationManager.AppSettings["SchoolName"].ToString();
+        string rcptHead = ConfigurationManager.AppSettings["RcptHead"].ToString();
 
         public void pdf(int receipt_no)
         {
@@ -140,59 +141,97 @@ namespace SMS.report
 
                 doc.Open();
                 // string imageURL = "E:\\HPS\\logo.jpg";
-                string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
-                Image jpg = Image.GetInstance(imageURL);
-                jpg.ScaleAbsolute(50f, 50f);
-
 
                 PdfPTable pt = new PdfPTable(6);
                 PdfPCell _cell;
                 Chunk text;
                 Phrase ph;
 
-                _cell = new PdfPCell(jpg);
-                _cell.Border = 0;
-                _cell.Colspan = 2;
-                _cell.Border = Rectangle.BOTTOM_BORDER;
-                _cell.PaddingBottom = 5;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
+                if (int.Parse(rcptHead) == 0)
+                {
+
+                    string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                    Image jpg = Image.GetInstance(imageURL);
+                    jpg.ScaleAbsolute(50f, 50f);
 
 
-                text = new Chunk(shortfirstname, FontFactory.GetFont("Areal", 18));
-                ph = new Phrase();
-                ph.Add(text);
-                ph.Add("\n");
-                text = new Chunk(shortlastname, FontFactory.GetFont("Areal", 12));
-                //ph = new Phrase();
-                ph.Add(text);
-                /* _cell = new PdfPCell(ph);
-                 _cell.Colspan = 3;
-                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;*/
 
-                //  _cell.Border = 0;
-                // pt.AddCell(_cell);
-                //ph.Add("\n");
-                //text = new Chunk("Nh-24 Village Ballia, Dhaneta, Meerganj Bareilly-243504", FontFactory.GetFont("Areal", 08));
-                //ph.Add(text);
-
-                ph.Add("\n");
-                text = new Chunk("("+Affiliation+")", FontFactory.GetFont("Areal", 08));
-                ph.Add(text);
+                    _cell = new PdfPCell(jpg);
+                    _cell.Border = 0;
+                    _cell.Colspan = 2;
+                    _cell.Border = Rectangle.BOTTOM_BORDER;
+                    _cell.PaddingBottom = 5;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
 
 
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 4;
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = Rectangle.BOTTOM_BORDER;
-                _cell.PaddingBottom = 5;
-                //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    text = new Chunk(shortfirstname, FontFactory.GetFont("Areal", 18));
+                    ph = new Phrase();
+                    ph.Add(text);
+                    ph.Add("\n");
+                    text = new Chunk(shortlastname, FontFactory.GetFont("Areal", 12));
+                    //ph = new Phrase();
+                    ph.Add(text);
+                    /* _cell = new PdfPCell(ph);
+                     _cell.Colspan = 3;
+                     _cell.HorizontalAlignment = Element.ALIGN_CENTER;*/
+
+                    //  _cell.Border = 0;
+                    // pt.AddCell(_cell);
+                    //ph.Add("\n");
+                    //text = new Chunk("Nh-24 Village Ballia, Dhaneta, Meerganj Bareilly-243504", FontFactory.GetFont("Areal", 08));
+                    //ph.Add(text);
+
+                    ph.Add("\n");
+                    text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 08));
+                    ph.Add(text);
 
 
-                pt.AddCell(_cell);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 4;
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = Rectangle.BOTTOM_BORDER;
+                    _cell.PaddingBottom = 5;
+                    //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
 
-                doc.Add(pt);
 
+                    pt.AddCell(_cell);
+
+                    doc.Add(pt);
+                }else
+                {
+                    string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                    Image jpg = Image.GetInstance(imageURL);
+                    jpg.ScaleAbsolute(30f, 30f);
+
+
+                    _cell = new PdfPCell(jpg);
+                    _cell.Border = 0;
+                    _cell.Border = Rectangle.BOTTOM_BORDER;
+                    _cell.PaddingBottom = 5;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+
+                    text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 16));
+                    ph = new Phrase();
+                    ph.Add(text);
+                    ph.Add("\n");
+                   
+
+
+                    text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 8));
+                    ph.Add(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 5;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    _cell.Border = Rectangle.BOTTOM_BORDER;
+                    _cell.PaddingBottom = 5;
+                    //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    pt.AddCell(_cell);
+
+                    doc.Add(pt);
+                }
                 pt = new PdfPTable(4);
 
                 text = new Chunk("Fees Receipt", FontFactory.GetFont("Areal", 10));

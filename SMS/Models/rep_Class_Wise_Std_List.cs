@@ -6,18 +6,18 @@ using System.Web;
 
 namespace SMS.Models
 {
-    public class repAttendance_sheet
+    public class rep_Class_Wise_Std_List
     {
         [Display(Name = "Select Class")]
+        [Required]
         public int class_id { get; set; }
 
         [Display(Name = "Select Section")]
+        [Required]
         public int section_id { get; set; }
 
-        [Display(Name = "Select Month")]
-        public int month_no { get; set; }
-
         [Display(Name = "Select Session")]
+        [Required]
         public string session { get; set; }
     }
 }

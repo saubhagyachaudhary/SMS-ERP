@@ -308,6 +308,7 @@
     <Compile Include="Models\repFeesStatement.cs" />
     <Compile Include="Models\repReport_card.cs" />
     <Compile Include="Models\reptransportList.cs" />
+    <Compile Include="Models\rep_Class_Wise_Std_List.cs" />
     <Compile Include="Models\SMSMessage.cs" />
     <Compile Include="Models\std_discount.cs" />
     <Compile Include="Models\std_discountMain.cs" />
@@ -341,6 +342,8 @@
     <Compile Include="report\birth_certificateMain.cs" />
     <Compile Include="report\repAttendance_sheet.cs" />
     <Compile Include="report\repAttendance_sheetMain.cs" />
+    <Compile Include="report\repClass_Wise_Std_List.cs" />
+    <Compile Include="report\repClass_Wise_Std_ListMain.cs" />
     <Compile Include="report\repDaily_report.cs" />
     <Compile Include="report\repDaily_reportMain.cs" />
     <Compile Include="report\repDues_list.cs" />
@@ -2506,6 +2509,7 @@
     <Content Include="Views\sr_register\FormViewer.cshtml" />
     <Content Include="Views\ChangePassword\Change_Password.cshtml" />
     <Content Include="Views\ChangePassword\success.cshtml" />
+    <Content Include="Views\report\class_wise_std_list.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

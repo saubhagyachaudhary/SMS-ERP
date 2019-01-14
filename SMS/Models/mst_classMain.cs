@@ -118,22 +118,23 @@ namespace SMS.Models
             
         }
 
-        public IEnumerable<mst_class> AllClassListWithSection()
+        public IEnumerable<mst_class> AllClassListWithSection(string session)
         {
             string query = @"SELECT 
-                                    b.section_id class_id,
-                                    CONCAT(IFNULL(a.class_name, ''),
-                                            ' Section ',
-                                            IFNULL(b.section_name, '')) class_name
-                                FROM
-                                    mst_class a,
-                                    mst_section b
-                                WHERE
-                                    a.session = b.session
-                                        AND a.class_id = b.class_id
-                                ORDER BY class_name";
+                                b.section_id class_id,
+                                CONCAT(IFNULL(a.class_name, ''),
+                                        ' Section ',
+                                        IFNULL(b.section_name, '')) class_name
+                            FROM
+                                mst_class a,
+                                mst_section b
+                            WHERE
+                                a.session = b.session
+                                    AND b.session = @session
+                                    AND a.class_id = b.class_id
+                            ORDER BY class_name";
 
-            var result = con.Query<mst_class>(query);
+            var result = con.Query<mst_class>(query, new { session = session });
 
             return result;
         }
