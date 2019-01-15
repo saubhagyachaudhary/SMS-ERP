@@ -356,6 +356,10 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Transport List", "transportList", "report")</li>
                                         }
+                                        @if (list.Contains("class_wise_std_list"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Class Student List", "class_wise_std_list", "report")</li>
+                                        }
                                         @if (list.Contains("student_ledger"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Student Ledger", "student_ledger", "report")</li>

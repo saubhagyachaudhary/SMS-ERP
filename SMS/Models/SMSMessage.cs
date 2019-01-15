@@ -44,20 +44,21 @@ namespace SMS.Models
 
                 postURL = String.Format(postURL, sendTo, smsText);
                 // byte[] data = new System.Text.ASCIIEncoding().GetBytes(postData.ToString());
-                byte[] data = new System.Text.UTF8Encoding().GetBytes(postURL.ToString());
+               // byte[] data = new System.Text.UTF8Encoding().GetBytes(postURL.ToString());
 
 
                 // Prepare web request
                 request = (HttpWebRequest)WebRequest.Create(postURL);
-                request.Method = "POST";
-                request.ContentType = "application/x-www-form-urlencoded";
-                request.ContentLength = data.Length;
+                //request.Method = "POST";
+                //request.ContentType = "application/x-www-form-urlencoded";
+                //request.MediaType = "text/plain";
+                //request.ContentLength = data.Length;
 
                 // Write data to stream
-                using (Stream newStream = request.GetRequestStream())
-                {
-                    newStream.Write(data, 0, data.Length);
-                }
+               // using (Stream newStream = request.GetRequestStream())
+               // {
+                //    newStream.Write(data, 0, data.Length);
+               // }
 
 
 
@@ -74,44 +75,44 @@ namespace SMS.Models
                     // Logic to interpret response from your gateway goes here
                     //Response.Write(String.Format("Response from gateway: {0}", responseMessage));
 
-                    string msg = responseMessage.Substring(0,1);
+                    //string msg = responseMessage.Substring(0,1);
 
-                    string query = @"INSERT INTO sms_record
-                                    (`phoneNumber`,
-                                    `message`,
-                                    `sms_status`,
-                                      date_time)
-                                    VALUES
-                                    (@phone,
-                                    @message,
-                                    @status,
-                                   @date_time)";
+                    //string query = @"INSERT INTO sms_record
+                    //                (`phoneNumber`,
+                    //                `message`,
+                    //                `sms_status`,
+                    //                  date_time)
+                    //                VALUES
+                    //                (@phone,
+                    //                @message,
+                    //                @status,
+                    //               @date_time)";
 
-                    DateTime dt = System.DateTime.Now.AddMinutes(dateTimeOffSet);
+                    //DateTime dt = System.DateTime.Now.AddMinutes(dateTimeOffSet);
 
-                    if (msg == "S")
-                    {
-                        con.Execute(query,
-                       new
-                       {
-                           phone = sendTo,
-                           message = smsText,
-                           status = "Success",
-                           date_time = dt
+                    //if (msg == "S")
+                    //{
+                    //    con.Execute(query,
+                    //   new
+                    //   {
+                    //       phone = sendTo,
+                    //       message = smsText,
+                    //       status = "Success",
+                    //       date_time = dt
 
-                       });
-                    }
-                    else
-                    {
-                        con.Execute(query,
-                     new
-                     {
-                         phone = sendTo,
-                         message = smsText,
-                         status = "Failed",
-                         date_time = dt
-                     });
-                    }
+                    //   });
+                    //}
+                    //else
+                    //{
+                    //    con.Execute(query,
+                    // new
+                    // {
+                    //     phone = sendTo,
+                    //     message = smsText,
+                    //     status = "Failed",
+                    //     date_time = dt
+                    // });
+                    //}
 
                     
 
