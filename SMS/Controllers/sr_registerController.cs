@@ -158,10 +158,12 @@ namespace SMS.Controllers
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            var class_list = mstClass.AllClassList(sess.findActive_Session());
+            var class_list = mstClass.AllClassList(sess.findFinal_Session());
+
+            var adm_class_list = mstClass.AllClassList(obj.adm_session);
 
             IEnumerable<SelectListItem> list1 = new SelectList(class_list, "class_id", "class_name",obj.class_id);
-            IEnumerable<SelectListItem> list = new SelectList(class_list, "class_name", "class_name");
+            IEnumerable<SelectListItem> list = new SelectList(adm_class_list, "class_name", "class_name");
 
             ViewData["class_id"] = list1;
 

@@ -12,8 +12,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>RamRaj Infotech</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/images/favicon.ico">
+    <title>School Management System</title>
 
     <!-- Bootstrap core CSS -->
 
@@ -78,9 +78,12 @@
                             <div class="clearfix"></div>
                             <br />
                             <div>
-                                <h1><i class="fa fa-paw" style="font-size: 26px;"></i> RamRaj Infotech  </h1>
 
-                                <p>©@DateTime.Now.Year All Rights Reserved to RamRaj Infotech</p>
+                                
+                                <h1>
+                                    <img src="~/images/logo.jpg"  width="60" height="60" /> @System.Configuration.ConfigurationManager.AppSettings["SchoolName"]</h1>
+
+                                <p>©@DateTime.Now.Year All Rights Reserved</p>
                             </div>
                         </div>
                    }
