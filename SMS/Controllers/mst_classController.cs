@@ -30,7 +30,9 @@ namespace SMS.Controllers
         {
             mst_classMain stdMain = new mst_classMain();
 
-            return View(stdMain.AllClassList());
+            mst_sessionMain sess = new mst_sessionMain();
+
+            return View(stdMain.AllClassList(sess.findActive_Session()));
         }
 
         [HttpGet]

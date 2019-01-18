@@ -200,7 +200,8 @@ namespace SMS.Models
                                     AND a.class_id = @class_id
                                     AND a.acc_id = @acc_id
                                     AND a.session = @session
-                                    AND a.session = b.session";
+                                    AND a.session = b.session
+                                    AND b.session = c.session";
 
             return con.Query<mst_fees>(Query, new { class_id =  cls_id, acc_id = ac_id,session = session}).SingleOrDefault();
         }

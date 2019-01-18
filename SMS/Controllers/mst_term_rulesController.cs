@@ -22,7 +22,9 @@ namespace SMS.Controllers
 
             var term_list = mstterm.AllTermList();
 
-            var class_list = mstClass.AllClassList();
+            mst_sessionMain sess = new mst_sessionMain();
+
+            var class_list = mstClass.AllClassList(sess.findFinal_Session());
 
            
             IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");

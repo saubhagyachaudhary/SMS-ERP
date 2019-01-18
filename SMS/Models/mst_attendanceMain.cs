@@ -42,15 +42,33 @@ namespace SMS.Models
 
         public IEnumerable<mst_attendance> assignList()
         {
-            String query = @"select a.user_id,a.class_id,a.section_id,e.section_name,concat(c.FirstName,' ',c.LastName) faculty_name,b.class_name,a.finalizer finalizer_user_id,concat(d.FirstName,' ',d.LastName) finalizer_name from mst_attendance a,mst_class b, emp_profile c,emp_profile d,mst_section e
-                                where
+            String query = @"SELECT 
+                                a.user_id,
+                                a.class_id,
+                                a.section_id,
+                                e.section_name,
+                                CONCAT(c.FirstName, ' ', c.LastName) faculty_name,
+                                b.class_name,
+                                a.finalizer finalizer_user_id,
+                                CONCAT(d.FirstName, ' ', d.LastName) finalizer_name
+                            FROM
+                                mst_attendance a,
+                                mst_class b,
+                                emp_profile c,
+                                emp_profile d,
+                                mst_section e
+                            WHERE
                                 a.class_id = b.class_id
-                                and
-                                a.user_id = c.user_id
-                                and
-                                a.finalizer = d.user_id
-                                and
-                                a.section_id = e.section_id";
+                                    AND a.user_id = c.user_id
+                                    AND a.finalizer = d.user_id
+                                    AND a.section_id = e.section_id
+                                    AND b.session = e.session
+                                    AND e.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y')";
 
             var result = con.Query<mst_attendance>(query);
 
@@ -103,23 +121,36 @@ namespace SMS.Models
 
         public mst_attendance FindFaculty(int user_id,int class_id,int finalizer_user_id,int section_id)
         {
-            String query = @"select a.user_id,a.class_id, e.section_name ,concat(c.FirstName,' ',c.LastName) faculty_name,b.class_name,a.finalizer finalizer_user_id,concat(d.FirstName,' ',d.LastName) finalizer_name from mst_attendance a,mst_class b, emp_profile c,emp_profile d,mst_section e
-                                where
+            String query = @"SELECT 
+                                a.user_id,
+                                a.class_id,
+                                e.section_name,
+                                CONCAT(c.FirstName, ' ', c.LastName) faculty_name,
+                                b.class_name,
+                                a.finalizer finalizer_user_id,
+                                CONCAT(d.FirstName, ' ', d.LastName) finalizer_name
+                            FROM
+                                mst_attendance a,
+                                mst_class b,
+                                emp_profile c,
+                                emp_profile d,
+                                mst_section e
+                            WHERE
                                 a.class_id = b.class_id
-                                and
-                                a.user_id = c.user_id
-                                and
-                                a.finalizer = d.user_id
-                                and
-								a.class_id = @class_id
-								and
-								a.user_id = @user_id
-								and
-								a.finalizer = @finalizer_user_id
-                                and 
-                                a.section_id = e.section_id
-                                and
-                                a.section_id = @section_id";
+                                    AND a.user_id = c.user_id
+                                    AND a.finalizer = d.user_id
+                                    AND a.class_id = 12
+                                    AND a.user_id = 1011
+                                    AND a.finalizer = 1007
+                                    AND a.section_id = e.section_id
+                                    AND a.section_id = 111
+                                    AND b.session = e.session
+                                    AND e.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y')";
 
 
 

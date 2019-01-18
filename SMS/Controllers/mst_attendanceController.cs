@@ -41,7 +41,13 @@ namespace SMS.Controllers
                             FROM
                                 mst_section
                             WHERE
-                                class_id = @class_id";
+                                class_id = @class_id
+                                    AND session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y')";
 
             var section_list = con.Query<mst_section>(query,new { class_id = id});
 
@@ -112,7 +118,9 @@ namespace SMS.Controllers
         {
             mst_classMain mstClass = new mst_classMain();
 
-            var class_list = mstClass.AllClassList();
+            mst_sessionMain sess = new mst_sessionMain();
+
+            var class_list = mstClass.AllClassList(sess.findFinal_Session());
 
             IEnumerable<SelectListItem> list1 = new SelectList(class_list, "class_id", "class_name");
            

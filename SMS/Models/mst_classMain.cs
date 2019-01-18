@@ -54,21 +54,16 @@ namespace SMS.Models
             }
         }
 
-        public IEnumerable<mst_class> AllClassList()
+        public IEnumerable<mst_class> AllClassList(string session)
         {
             string query = @"SELECT 
                                 class_id, class_name
                             FROM
                                 mst_class
                             WHERE
-                                session = (SELECT
-                                        session
-                                    FROM
-                                        mst_session
-                                    WHERE
-                                            session_active = 'Y')";
+                                session = @session";
 
-            var result = con.Query<mst_class>(query);
+            var result = con.Query<mst_class>(query,new {session = session });
 
             return result;
         }
@@ -143,18 +138,17 @@ namespace SMS.Models
         public mst_class FindClass(int? id)
         {
             string Query = @"SELECT 
-                                class_id, class_name
-                            FROM
-                                mst_class
-                            WHERE
-                                class_id = @class_id
-                                    AND session = (SELECT
-                                        session
-                                    FROM
-                                        mst_session
-                                    WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                    class_id, class_name
+                                FROM
+                                    mst_class
+                                WHERE
+                                    class_id = @class_id
+                                        AND session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_active = 'Y')";
 
             return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
         }
@@ -174,8 +168,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_active = 'Y')";
 
                 con.Execute(query, mst);
             }

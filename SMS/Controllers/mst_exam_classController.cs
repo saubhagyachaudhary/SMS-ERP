@@ -15,8 +15,9 @@ namespace SMS.Controllers
             mst_classMain mstClass = new mst_classMain();
             mst_examMain mstsubject = new mst_examMain();
 
+            mst_sessionMain sess = new mst_sessionMain();
 
-            var class_list = mstClass.AllClassList();
+            var class_list = mstClass.AllClassList(sess.findFinal_Session());
 
             var exam_list = mstsubject.AllExamList();
 
@@ -48,8 +49,9 @@ namespace SMS.Controllers
                 mst_classMain mstClass = new mst_classMain();
                 mst_examMain mstsubject = new mst_examMain();
 
+                mst_sessionMain sess = new mst_sessionMain();
 
-                var class_list = mstClass.AllClassList();
+                var class_list = mstClass.AllClassList(sess.findFinal_Session());
 
                 var exam_list = mstsubject.AllExamList();
 

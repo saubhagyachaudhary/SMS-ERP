@@ -68,7 +68,7 @@ namespace SMS.Models
 
             string ses = sess.findActive_Session();
 
-            String Query = "SELECT acc_id,acc_name,nature FROM mst_acc_head where acc_id = @acc_id and session = @session";
+            String Query = "SELECT acc_id,acc_name FROM mst_acc_head where acc_id = @acc_id and session = @session";
 
             return con.Query<mst_acc_head>(Query, new { acc_id = id, session = ses }).SingleOrDefault();
         }
@@ -84,7 +84,7 @@ namespace SMS.Models
 
                 mst.session = ses;
 
-                string query = "UPDATE mst_acc_head SET acc_name = @acc_name,nature = @nature WHERE acc_id = @acc_id and session = @session";
+                string query = "UPDATE mst_acc_head SET acc_name = @acc_name WHERE acc_id = @acc_id and session = @session";
 
                 con.Execute(query, mst);
             }

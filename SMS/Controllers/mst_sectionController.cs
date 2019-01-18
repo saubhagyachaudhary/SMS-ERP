@@ -19,7 +19,9 @@ namespace SMS.Controllers
         {
             mst_classMain mstClass = new mst_classMain();
 
-            var class_list = mstClass.AllClassList();
+            mst_sessionMain sess = new mst_sessionMain();
+
+            var class_list = mstClass.AllClassList(sess.findActive_Session());
             
             IEnumerable<SelectListItem> list = new SelectList(class_list,"class_id","class_name");
 
@@ -43,7 +45,9 @@ namespace SMS.Controllers
                 {
                 mst_classMain mstClass = new mst_classMain();
 
-                var class_list = mstClass.AllClassList();
+                mst_sessionMain sess = new mst_sessionMain();
+
+                var class_list = mstClass.AllClassList(sess.findActive_Session());
                 IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
 
                 ViewData["class_id"] = list;

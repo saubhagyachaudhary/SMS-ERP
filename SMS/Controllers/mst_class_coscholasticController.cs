@@ -15,8 +15,9 @@ namespace SMS.Controllers
             mst_classMain mstClass = new mst_classMain();
             mst_co_scholasticMain mstcoscholastic = new mst_co_scholasticMain();
 
+            mst_sessionMain sess = new mst_sessionMain();
 
-            var class_list = mstClass.AllClassList();
+            var class_list = mstClass.AllClassList(sess.findFinal_Session());
 
             var coscholastic_list = mstcoscholastic.AllCoScholasticList();
 
@@ -48,8 +49,8 @@ namespace SMS.Controllers
                 mst_classMain mstClass = new mst_classMain();
                 mst_co_scholasticMain mstcoscholastic = new mst_co_scholasticMain();
 
-
-                var class_list = mstClass.AllClassList();
+                mst_sessionMain sess = new mst_sessionMain();
+                var class_list = mstClass.AllClassList(sess.findFinal_Session());
 
                 var coscholastic_list = mstcoscholastic.AllCoScholasticList();
 
