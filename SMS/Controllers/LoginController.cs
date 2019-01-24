@@ -65,7 +65,7 @@ namespace SMS.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "The username or password in incorrect");
+                    ModelState.AddModelError(string.Empty, "The username or password is incorrect");
                 }
             }
            

@@ -663,6 +663,15 @@ namespace SMS.Models
                                     AND b.class_id = d.class_id
                                     AND a.sr_number = e.sr_num
                                     AND e.section_id = f.section_id
+                                    AND b.session = d.session
+                                    AND d.session = e.session
+                                    AND e.session = f.session
+                                    AND f.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y')
                             ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
 
                 result = con.Query<dailyBirthdayWish>(query);
@@ -699,9 +708,18 @@ namespace SMS.Models
                                     AND b.class_id = c.class_id
                                     AND e.section_id = c.section_id
                                     AND b.class_id = d.class_id
-                                    and c.user_id = @user_id 
+                                    AND c.user_id = @user_id
                                     AND a.sr_number = e.sr_num
                                     AND e.section_id = f.section_id
+                                    AND b.session = d.session
+                                    AND d.session = e.session
+                                    AND e.session = f.session
+                                    AND f.session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y')
                             ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
 
                 result = con.Query<dailyBirthdayWish>(query, new { user_id = user_id });

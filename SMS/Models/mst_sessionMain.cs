@@ -53,7 +53,7 @@ namespace SMS.Models
                                 session_active,
                                 session_finalize
                             FROM
-                                mst_session ORDER BY session DESC";
+                                mst_session ORDER BY session_finalize desc";
 
             var result = con.Query<mst_session>(query);
 
