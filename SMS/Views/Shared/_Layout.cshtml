@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -225,6 +225,7 @@
                                     </ul>
                                 </li>
                                 }
+
                                 @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades")|| list.Contains("teacher_exam_remark"))
                                 {
                                 <li>
@@ -660,6 +661,16 @@
 </html>
 
 <script>
+
+    var CURRENT_URL = window.location.href.split('?')[0],
+    $BODY = $('body'),
+    $SIDEBAR_MENU = $('#sidebar-menu'),
+    $SIDEBAR_FOOTER = $('.sidebar-footer'),
+    $LEFT_COL = $('.left_col'),
+    $RIGHT_COL = $('.right_col'),
+    $NAV_MENU = $('.nav_menu'),
+    $FOOTER = $('footer');
+
     $(document).ready(function()
     {
         $('.please_wait').click(function (e)
@@ -668,5 +679,40 @@
             $(".submit-progress").removeClass("hidden");
         });
     });
+
+    $(document).ready(function () {
+        // TODO: This is some kind of easy fix, maybe we can improve this
+        var setContentHeight = function () {
+            // reset height
+            $RIGHT_COL.css('min-height', $(window).height());
+
+            var bodyHeight = $BODY.outerHeight(),
+                footerHeight = $BODY.hasClass('footer_fixed') ? 0 : $FOOTER.height(),
+                leftColHeight = $LEFT_COL.eq(1).height() + $SIDEBAR_FOOTER.height(),
+                contentHeight = bodyHeight < leftColHeight ? leftColHeight : bodyHeight;
+
+            // normalize content
+            contentHeight -= $NAV_MENU.height() + footerHeight;
+
+            $RIGHT_COL.css('min-height', contentHeight);
+        };
+
+        $('.right_col').on('click', function (ev) {
+            var $li = $SIDEBAR_MENU.find('a').parent();
+
+            if ($li.is('.active')) {
+               
+                $li.removeClass('active active-sm');
+                $('ul:first', $li).slideUp(function () {
+                    setContentHeight();
+                });
+            } 
+        });
+
+      
+
+    });
+    // /Sidebar
+
 
 </script>

@@ -646,10 +646,8 @@ namespace SMS.Models
                                 FROM
                                     sr_register
                                 WHERE
-                                    DATE_FORMAT(std_dob, '%c-%d') BETWEEN DATE_FORMAT(CURDATE(), '%c-%d') AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY), '%c-%d')
-                                        OR (MONTH(CURDATE()) > MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))
-                                        AND (MONTH(std_dob) >= MONTH(CURDATE())
-                                        OR MONTH(std_dob) <= MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))))) a,
+                                    DATE_FORMAT(std_dob, '%m-%d') >= DATE_FORMAT(NOW(), '%m-%d')
+                                        AND DATE_FORMAT(std_dob, '%m-%d') <= DATE_FORMAT((NOW() + INTERVAL + 7 DAY), '%m-%d')) a,
                                 mst_std_class b,
                                 mst_attendance c,
                                 mst_class d,
@@ -693,10 +691,8 @@ namespace SMS.Models
                                 FROM
                                     sr_register
                                 WHERE
-                                    DATE_FORMAT(std_dob, '%c-%d') BETWEEN DATE_FORMAT(CURDATE(), '%c-%d') AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY), '%c-%d')
-                                        OR (MONTH(CURDATE()) > MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))
-                                        AND (MONTH(std_dob) >= MONTH(CURDATE())
-                                        OR MONTH(std_dob) <= MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))))) a,
+                                    DATE_FORMAT(std_dob, '%m-%d') >= DATE_FORMAT(NOW(), '%m-%d')
+                                        AND DATE_FORMAT(std_dob, '%m-%d') <= DATE_FORMAT((NOW() + INTERVAL + 7 DAY), '%m-%d')) a,
                                 mst_std_class b,
                                 mst_attendance c,
                                 mst_class d,
@@ -746,11 +742,8 @@ namespace SMS.Models
                             FROM
                                 emp_profile a
                             WHERE
-                                DATE_FORMAT(dob, '%c-%d') BETWEEN DATE_FORMAT(CURDATE(), '%c-%d') AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY),
-                                        '%c-%d')
-                                    OR (MONTH(CURDATE()) > MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))
-                                    AND (MONTH(dob) >= MONTH(CURDATE())
-                                    OR MONTH(dob) <= MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY))))
+                                DATE_FORMAT(dob, '%m-%d') >= DATE_FORMAT(NOW(), '%m-%d')
+                                    AND DATE_FORMAT(dob, '%m-%d') <= DATE_FORMAT((NOW() + INTERVAL + 7 DAY), '%m-%d')
                                     AND emp_active = 1
                             ORDER BY YEAR(CURDATE()) , MONTH(dob) , DAY(dob)";
 
