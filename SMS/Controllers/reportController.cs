@@ -5,7 +5,11 @@ using SMS.report;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 
@@ -207,6 +211,22 @@ namespace SMS.Controllers
                 DDsession_name();
                 return View();
             }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage apiStudentLedger(int sr_number)
+        {
+
+            student_ledgerMain ledger = new student_ledgerMain();
+
+            mst_sessionMain sess = new mst_sessionMain();
+
+            ledger.StreampdfStudent_ledger(sr_number, sess.findFinal_Session());
+
+            HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+
+            return httpResponseMessage;
         }
 
         [HttpGet]

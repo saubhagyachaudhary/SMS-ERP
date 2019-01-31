@@ -152,6 +152,67 @@ namespace SMS.Models
             }
         }
 
+        public void SendOTP(string smsText, string sendTo, bool flag)
+        {
+
+            string responseMessage = string.Empty;
+            HttpWebRequest request = null;
+            string postURL = ConfigurationManager.AppSettings["SMSGatewayPostURL"];
+
+            try
+            {
+
+
+                postURL = String.Format(postURL, sendTo, smsText);
+              
+                request = (HttpWebRequest)WebRequest.Create(postURL);
+            
+                // Send the request and get a response
+                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
+                {
+                    // Read the response
+                    using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+                    {
+                        responseMessage = srResponse.ReadToEnd();
+
+                    }
+                    
+                }
+
+                if (flag)
+                {
+                    DashboardHub hub = new DashboardHub();
+
+                    hub.SMSCreditLeft();
+                }
+
+            }
+            catch (Exception objException)
+            {
+                string query = @"INSERT INTO sms_record
+                                    (`phoneNumber`,
+                                    `message`,
+                                    `sms_status`,
+                                      date_time)
+                                    VALUES
+                                    (@phone,
+                                    @message,
+                                    @status,
+                                   @date_time)";
+                con.Execute(query,
+                   new
+                   {
+                       phone = sendTo,
+                       message = smsText,
+                       status = "Failed",
+                       date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
+                   });
+
+
+                throw objException;
+            }
+        }
+
         public IEnumerable<string> getNumberByClass(int class_id)
         {
             string query1 = @"SELECT DISTINCT
@@ -201,8 +262,7 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
             var class_list = con.Query<class_list>(query1 );
 
@@ -212,18 +272,17 @@ namespace SMS.Models
         public IEnumerable<pickup_list> pickup_Name()
         {
             string query1 = @"SELECT 
-                                pickup_id, pickup_point
-                            FROM
-                                mst_transport
-                            WHERE
-                                pickup_id != 1000
-                                    AND session = (SELECT 
-                                        session
-                                    FROM
-                                        mst_session
-                                    WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                    pickup_id, pickup_point
+                                FROM
+                                    mst_transport
+                                WHERE
+                                    pickup_id != 1000
+                                        AND session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')";
 
             var class_list = con.Query<pickup_list>(query1);
 
