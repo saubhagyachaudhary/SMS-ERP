@@ -139,11 +139,11 @@ namespace SMS.Models
                                 a.class_id = b.class_id
                                     AND a.user_id = c.user_id
                                     AND a.finalizer = d.user_id
-                                    AND a.class_id = 12
-                                    AND a.user_id = 1011
-                                    AND a.finalizer = 1007
+                                    AND a.class_id = @class_id
+                                    AND a.user_id = @user_id
+                                    AND a.finalizer = @finalizer_user_id
                                     AND a.section_id = e.section_id
-                                    AND a.section_id = 111
+                                    AND a.section_id = @section_id
                                     AND b.session = e.session
                                     AND e.session = (SELECT 
                                         session

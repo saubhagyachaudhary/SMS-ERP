@@ -1298,13 +1298,17 @@ namespace SMS.report
                     IEnumerable<repAttendance_sheet> absent_details = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
 
-                    string body = "Total number of students Present " + T_P_count_day +"<br>" + "Total number of students Absent "+T_A_count_day ;
+                    //string body = "Total number of students Present " + T_P_count_day +"<br>" + "Total number of students Absent "+T_A_count_day ;
+
+
+
+                    string body1 = @"";
 
 
                     if (absent_details.Count() > 0)
                     {
-                        body = body + "<br><br>" + "Following are the details of Absent students:" + "<br><br>";
-                        string body1 = @"";
+                       
+                        
                         int serial = 0;
                         foreach (var details in absent_details)
                         {
@@ -1339,34 +1343,350 @@ namespace SMS.report
 
                             serial = serial + 1;
 
-                            body1 = body1 + @" <tr style='border: 1px solid black'>
-                                    <td style='border: 1px solid black' align='center'>" + serial + @"</td>
-                                    <td style='border: 1px solid black' align='center'>" + details.sr_num + @"</td> 
-                                    <td style='border: 1px solid black' align='center'>" + details.std_name + @"</td>
-                                    <td style='border: 1px solid black' align='center'>" + details.contact + @"</td>
-                                    <td style='border: 1px solid black' align='center'>" + serial_count + @"</td>
+                            body1 = body1 + @" <tr>
+                                    <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + serial + @"</td>
+                                    <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + details.sr_num + @"</td>
+                                    <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + details.std_name + @"</td>
+                                    <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + details.contact + @"</td>
+                                    <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' align='center'>" + serial_count + @"</td>
                                   </tr>";
 
                             // body1 = body1 + details.sr_num + " " + details.std_name + " " + details.contact + Environment.NewLine;
                         }
 
-                        body1 = @"<table style='border: 1px solid black'>
-                                  <tr style='border: 1px solid black'>
-                                    <th style='border: 1px solid black' align='center'>Serial No.</th>
-                                    <th style='border: 1px solid black' align='center'>Admission No.</th> 
-                                    <th style='border: 1px solid black' align='center'>Student Name</th>
-                                    <th style='border: 1px solid black' align='center'>Contact No</th> 
-                                    <th style='border: 1px solid black' align='center'>Cont Absent Days</th> 
-                                  </tr>" + body1 +
-                                   "</table>";
+                        body1 = @"<tr>
+                                   <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Serial No.</th>
+                                   <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Admission No.</th>
+                                   <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Student Name</th>
+                                   <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Contact No</th>
+                                   <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Cont Absent Days</th>
+                                   </tr>" + body1;
 
                        
-                             body = body + body1;
+                            
                     }
-                   
-                  
-                    body = body + @"<br><br><a href=""" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/attendance_register/finalize_class_attendance_sheet?section_id="+section_id+"&session="+ session +"&att_date="+att_date.ToString("yyyy-MM-dd")+@""">Click Here </a>to finalize attendance sheet";
-                    _sendMail(ms, mail_id, name, class_name, body);
+
+                    string Subject = "Attendance Sheet of class " + class_name + " date " + DateTime.Now.Date.ToString("dd/MM/yyyy");
+
+                    string body2 = @"<div style='margin:0;background-color:#f7f7f7'>
+
+<table width='100%' bgcolor='#f7f7f7' cellpadding='0' cellspacing='0' border='0' style='border-collapse:collapse;border-spacing:0'>
+  <tbody><tr>
+    <td>
+      
+      <table bgcolor='#f7f7f7' width='600' cellpadding='0' cellspacing='0' border='0' align='center'  style='border-collapse:collapse;border-spacing:0;background-color:#f7f7f7'>
+        <tbody><tr>
+          <td style='padding:0px;margin:0px'><table bgcolor='#f7f7f7' cellpadding='0' cellspacing='0' border='0' align='center'  style='border-collapse:collapse;border-spacing:0'>
+              <tbody><tr>
+                <td><table bgcolor='#f7f7f7' width='551' cellpadding='0' cellspacing='0' border='0' align='center'  style='border-collapse:collapse;border-spacing:0'>
+                    <tbody><tr>
+                      <td style='padding:0px'><table width='100%' border='0' style='border-collapse:collapse;border-spacing:0'>
+                          <tbody><tr>
+                            <td style='padding:0px'><table align='left' width='100%' border='0' style='border-collapse:collapse;border-spacing:0'>
+                                <tbody><tr>
+                                  <td style='line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='16'>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                  <td style='padding:0px;text-align:center'><img src='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/logo.jpg' width='50' height='50' alt='speaker'></td>
+                                </tr>
+                                <tr>
+                                  <td style='line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='16'>&nbsp;</td>
+                                </tr>
+                              </tbody></table></td>
+                          </tr>
+                        </tbody></table></td>
+                    </tr>
+                  </tbody></table></td>
+              </tr>
+            </tbody></table></td>
+        </tr>
+      </tbody></table>
+      <table bgcolor='#2d1846' width='600' cellpadding='0' cellspacing='0' border='0' align='center' style='border-collapse:collapse;border-spacing:0;background-color:#2d1846'>
+        <tbody><tr>
+          <td style='padding:0px;margin:0px;border-bottom:4px solid #2d1846'><table bgcolor='#2d1846' cellpadding='0' cellspacing='0' border='0' align='center' style='border-collapse:collapse;border-spacing:0'>
+              <tbody><tr>
+                <td><table bgcolor='#2d1846' width='551' cellpadding='0' cellspacing='0' border='0' align='center' style='border-collapse:collapse;border-spacing:0'>
+                    <tbody><tr>
+                      <td style='padding:0px;vertical-align:top;text-align:center'><img style='max-width:200px;vertical-align:bottom' <img src='https://www.techgig.com/files/nicUploads/824168872795083.png' alt='logo'></td>
+                    </tr>
+                    <tr>
+                      <td style = 'padding:0px' ><table width ='100%' border = '0' style = 'border-collapse:collapse;border-spacing:0' >
+         
+                                   <tbody><tr>
+         
+                                     <td style = 'padding:0px' ><table align = 'left' width = '100%' border = '0' style = 'border-collapse:collapse;border-spacing:0' >
+                    
+                                                    <tbody><tr>
+                    
+                                                      <td style = 'padding:0px;padding-left:10px' ><table width = '100%' border = '0' style = 'border-collapse:collapse;border-spacing:0'>
+                             
+                                                                   <tbody><tr>
+                             
+                                                                     <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height = '16' > &nbsp;</td>
+                                    
+                                                                          </tr>
+                                    
+                                                                          <tr>
+                                    
+                                                                            <td style = 'margin:0;padding:0;font-size:22px;text-align:center;color:#ffffff;line-height:28px;font-family:Helvetica,Arial,sans-serif;font-weight:bold;text-transform:uppercase'> " + Subject + @"</td>
+                                      </tr>
+                                      <tr>
+                                        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='4'>&nbsp;</td>
+                                      </tr>
+                                  
+                                    </tbody></table></td>
+                                </tr>
+                                <tr>
+                                  <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='16'>&nbsp;</td>
+                                </tr>
+                              </tbody></table></td>
+                          </tr>
+                        </tbody></table></td>
+                    </tr>
+                  </tbody></table></td>
+              </tr>
+            </tbody></table></td>
+        </tr>
+      </tbody></table></td>
+  </tr>
+</tbody></table>
+
+<table bgcolor = '#ffffff' width='600' cellpadding='0' cellspacing='0' border='0' align='center' style='border-collapse:collapse;border-spacing:0;background-color:#ffffff'>
+    <tbody><tr>
+  
+  <td style = 'padding:0px;margin:0px' ><table bgcolor='#ffffff' cellpadding='0' cellspacing='0' border='0' align='center' style='border-collapse:collapse;border-spacing:0'>
+      <tbody><tr>
+        <td><table bgcolor = '#ffffff' width='551' cellpadding='0' cellspacing='0' border='0' align='center' style='border-collapse:collapse;border-spacing:0'>
+                <tbody>
+                    <tr>
+                        <td style = 'padding:0px' >
+                            <table width='100%' border='0' style='border-collapse:collapse;border-spacing:0'>
+                                <tbody>
+                                    <tr>
+                                        <td style = 'padding:0px' >
+                                            <table width='100%' border='0' style='border-collapse:collapse;border-spacing:0'>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style = 'padding:0px' ></td>
+                                                    </tr>
+                                                </tbody >
+                                            </table >
+                                            <table width='580' align='left' border='0' style='border-collapse:collapse;border-spacing:0'>
+
+                                                <tbody>
+                                                    <tr>
+                                                        <td style = 'padding:0px' >
+                                                            <table width='100%' border='0' style='border-collapse:collapse;border-spacing:0'>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='20'>&nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan='5' style = 'margin:0;padding:0;font-size:16px;text-align:left;color:#4b4649;line-height:22px;font-family:Helvetica,Arial,sans-serif;font-weight:bold' > Following are the details of Absent students:</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='12'>&nbsp;</td>
+                                                                    </tr>
+                                                                 "+body1+ @"
+                                                                 </tbody>
+ 
+                                                             </table>
+ 
+                                                         </td>
+ 
+                                                     </tr>
+ 
+
+
+                                                     <tr>
+ 
+                                                         <td style= 'padding:0px'>
+ 
+                                                             <table width= '100%' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
+ 
+                                                                 <tbody>
+ 
+                                                                     <tr>
+ 
+                                                                         <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '24' > &nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style = 'margin:0;padding:0;font-size:16px;text-align:left;color:#4b4649;line-height:21px;font-family:Helvetica,Arial,sans-serif;font-weight:bold' > Attendance Summary</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='7'>&nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style = 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > Total number of students Present</td>
+                                                                        <td style = 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > "+ T_P_count_day + @" </ td >
+   
+                                                                       </tr>
+   
+                                                                       <tr>
+   
+                                                                           <td style= 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > Total number of students Absent</td>
+                                                                        <td style = 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > " + T_A_count_day + @" </ td >
+   
+                                                                       </tr>
+   
+                                                                   <tbody>
+   
+                                                                       <tr>
+   
+                                                                           <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '24' > &nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style = 'margin:0;padding:0;font-size:16px;text-align:left;color:#4b4649;line-height:21px;font-family:Helvetica,Arial,sans-serif;font-weight:bold' > Note: Please find the attached attendance sheet with this mail.</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '7' > &nbsp;</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <table width = '165' align= 'right' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
+    
+                                                    <tbody>
+    
+                                                        <tr>
+    
+                                                            <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '16' > &nbsp;</td>
+                                                    </tr>
+
+
+
+                                                    <tr>
+                                                        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '16' > &nbsp;</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                    <tr>
+                        <td align = 'center' >
+    
+                                <table style= 'border-collapse:collapse;border-spacing:0' width= '300' >
+    
+                                    <tbody>
+    
+                                        <tr>
+    
+                                            <td style= 'background-color:#d7263d;text-align:center;color:#ffffff;border-radius:3px;font-size:16px;text-decoration:none;font-weight:bold' ><a href='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/attendance_register/finalize_class_attendance_sheet?section_id=" + section_id + "&session=" + session + "&att_date=" + att_date.ToString("yyyy-MM-dd") + @"' style= 'margin:0;padding:0px 3px 0px 3px;display:block;color:#ffffff;font-size:16px;line-height:18px;font-family:Arial,Helvetica,sans-serif;text-align:center;font-weight:bold;text-align:center;text-decoration:none;border:10px solid #d7263d;border-radius:3px' target= '_blank' > Yes! Finalize Attendance Sheet</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+</td>
+            </tr>
+          </tbody></table></td>
+
+      </tr><tr>
+        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '40' > &nbsp;</td>
+      </tr>
+          
+      <tr>
+        <td style = 'margin:0;color:#4b4649;font-size:14px;line-height:21px;font-family:Arial,Helvetica,sans-serif;font-style:normal;font-weight:normal;text-align:left' > Warm Regards,<br>
+
+              Team ERP </td>
+      </tr>
+      <tr>
+        <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height= '16' > &nbsp;</td>
+      </tr>
+        
+      
+    </tbody>
+</table>
+
+
+<table bgcolor = '#f7f7f7' width= '600' cellpadding= '0' cellspacing= '0' border= '0' align= 'center' style= 'border-collapse:collapse;border-spacing:0;background-color:#f7f7f7' >
+    
+      <tbody><tr>
+    
+        <td style= 'padding:0px;margin:0px' ><table bgcolor= '#f7f7f7' cellpadding= '0' cellspacing= '0' border= '0' align= 'center' style= 'border-collapse:collapse;border-spacing:0' >
+    
+            <tbody><tr>
+    
+              <td><table bgcolor= '#f7f7f7' width= '100%' cellpadding= '0' cellspacing= '0' border= '0' align= 'center' style= 'border-collapse:collapse;border-spacing:0' >
+    
+                  <tbody><tr>
+    
+                    <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '24' > &nbsp;</td>
+              </tr>
+              <tr>
+                <td style = 'padding:0px' ><table align= 'left' width= '290' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
+    
+                        <tbody><tr>
+    
+                          <td style= 'margin:0;padding:0;font-size:14px;text-align:left;color:#c2c2c2;line-height:18px;font-family:Arial,Helvetica,sans-serif;font-weight:normal' > " + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @" </td>
+                    </tr>
+                    <tr>
+                      <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '4' > &nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td style = 'margin:0;padding:0;font-size:12px;text-align:left;color:#c2c2c2;line-height:18px;font-family:Arial,Helvetica,sans-serif;font-weight:normal' > "+Address+@" </td>
+                        </tr>
+                  </tbody></table>
+                  <table align = 'right' width= '290' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
+    
+                        <tbody><tr>
+    
+                          <td style= 'padding:0px' ><table width= '100%' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
+    
+                              <tbody><tr>
+    
+                                <td width= '185' style= 'padding:0px' ><table width= '100%' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
+    
+                                    <tbody>
+    
+                                    <tr>
+    
+                                      <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '4' > &nbsp;</td>
+                                </tr>
+                                
+                              </tbody></table></td>
+							
+                          </tr>
+                        </tbody></table></td>
+                    </tr>
+                  </tbody></table></td>
+              </tr>
+              <tr>
+                <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center;border-bottom:1px solid #dadada' height= '30' > &nbsp;</td>
+              </tr>
+              <tr>
+                <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '7' > &nbsp;</td>
+              </tr>
+              <tr>
+                <td style = 'margin:0;padding:0;font-size:12px;text-align:left;color:#c2c2c2;line-height:18px;font-family:Arial,Helvetica,sans-serif;font-weight:normal' > Note: For your privacy and protection, please do not forward this mail to anyone.To make sure this email is not sent to your 'junk/spam' folder, select the email and add the sender to your Address Book. <div style = 'display:none' >< img src='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/logo.jpg' style= 'display:none' ></ div ></ td >
+    
+                  </tr>
+    
+                  <tr>
+    
+                    <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '24' > &nbsp;</td>
+              </tr>
+            </tbody></table></td>
+        </tr>
+      </tbody></table></td>
+  </tr>
+</tbody></table><div></div></div>";
+
+
+                    //body = body + @"<br><br><a href=""" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/attendance_register/finalize_class_attendance_sheet?section_id="+section_id+"&session="+ session +"&att_date="+att_date.ToString("yyyy-MM-dd")+@""">Click Here </a>to finalize attendance sheet";
+
+                    //body = body + "<br><br><a href='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/attendance_register/finalize_class_attendance_sheet?section_id=" + section_id + "&session=" + session + "&att_date=" + att_date.ToString("yyyy-MM-dd") + "'><button class='button' style='background-color:#4CAF50;border-style:none;color:white;padding-top:15px;padding-bottom:15px;padding-right:32px;padding-left:32px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin-top:4px;margin-bottom:4px;margin-right:2px;margin-left:2px;cursor:pointer;-webkit-transition-duration:0.4s;transition-duration:0.4s;box-shadow:0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);'>Finalize attendance sheet</button></a>";
+
+
+                    _sendMail(ms, mail_id, name, class_name, body2);
 
                     //HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
                     //HttpContext.Current.Response.OutputStream.Flush();
