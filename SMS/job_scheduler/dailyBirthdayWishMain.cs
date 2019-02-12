@@ -43,6 +43,7 @@ namespace SMS.job_scheduler
                                     AND DAY(dob) = DAY(CURDATE())
                                     AND emp_active = 1";
 
+#if !DEBUG
             std = con.Query<dailyBirthdayWish>(query);
 
             SMSMessage sms = new SMSMessage();
@@ -51,6 +52,7 @@ namespace SMS.job_scheduler
             {
                 foreach (var bdy in sms.smsbody("birthday"))
                 {
+                
                     await sms.SendSMS(bdy.Replace("#name#", item.std_name), item.std_contact,false);
 
                  
@@ -60,6 +62,7 @@ namespace SMS.job_scheduler
             DashboardHub hub = new DashboardHub();
 
             hub.SMSCreditLeft();
+#endif
         }
     }
 }

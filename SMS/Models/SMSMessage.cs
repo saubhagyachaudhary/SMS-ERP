@@ -43,23 +43,9 @@ namespace SMS.Models
                 
 
                 postURL = String.Format(postURL, sendTo, smsText);
-                // byte[] data = new System.Text.ASCIIEncoding().GetBytes(postData.ToString());
-               // byte[] data = new System.Text.UTF8Encoding().GetBytes(postURL.ToString());
-
-
-                // Prepare web request
+           
                 request = (HttpWebRequest)WebRequest.Create(postURL);
-                //request.Method = "POST";
-                //request.ContentType = "application/x-www-form-urlencoded";
-                //request.MediaType = "text/plain";
-                //request.ContentLength = data.Length;
-
-                // Write data to stream
-               // using (Stream newStream = request.GetRequestStream())
-               // {
-                //    newStream.Write(data, 0, data.Length);
-               // }
-
+           
 
 
                 // Send the request and get a response
@@ -72,49 +58,26 @@ namespace SMS.Models
                         
                     }
 
-                    // Logic to interpret response from your gateway goes here
-                    //Response.Write(String.Format("Response from gateway: {0}", responseMessage));
+                    string query = @"INSERT INTO sms_record
+                                    (`phoneNumber`,
+                                    `message`,
+                                    `sms_status`,
+                                      date_time)
+                                    VALUES
+                                    (@phone,
+                                    @message,
+                                    @status,
+                                   @date_time)";
+                    con.Execute(query,
+                       new
+                       {
+                           phone = sendTo,
+                           message = smsText,
+                           status = "Success",
+                           date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
+                       });
 
-                    //string msg = responseMessage.Substring(0,1);
 
-                    //string query = @"INSERT INTO sms_record
-                    //                (`phoneNumber`,
-                    //                `message`,
-                    //                `sms_status`,
-                    //                  date_time)
-                    //                VALUES
-                    //                (@phone,
-                    //                @message,
-                    //                @status,
-                    //               @date_time)";
-
-                    //DateTime dt = System.DateTime.Now.AddMinutes(dateTimeOffSet);
-
-                    //if (msg == "S")
-                    //{
-                    //    con.Execute(query,
-                    //   new
-                    //   {
-                    //       phone = sendTo,
-                    //       message = smsText,
-                    //       status = "Success",
-                    //       date_time = dt
-
-                    //   });
-                    //}
-                    //else
-                    //{
-                    //    con.Execute(query,
-                    // new
-                    // {
-                    //     phone = sendTo,
-                    //     message = smsText,
-                    //     status = "Failed",
-                    //     date_time = dt
-                    // });
-                    //}
-
-                    
 
                 }
 
@@ -340,29 +303,25 @@ namespace SMS.Models
             
         }
 
-        public async Task SendMultiSms(string smsText, string sendTo,IEnumerable<string> phone)
+        public async Task SendMultiSms(string smsText, string sendTo, IEnumerable<string> phone)
         {
-          
+
             string responseMessage = string.Empty;
             HttpWebRequest request = null;
             string postURL = ConfigurationManager.AppSettings["SMSGatewayPostURL"];
 
             try
             {
-                postURL = String.Format(postURL,sendTo,smsText);
-                // byte[] data = new System.Text.ASCIIEncoding().GetBytes(postData.ToString());
-                //byte[] data = new System.Text.UTF8Encoding().GetBytes(postURL.ToString());
 
-                // Prepare web request
+                postURL = String.Format(postURL, sendTo, smsText);
+
                 request = (HttpWebRequest)WebRequest.Create(postURL);
-                request.Method = "GET";
-                //request.ContentType = "application/x-www-form-urlencoded";
-                //request.ContentLength = data.Length;
 
-               // Send the request and get a response
-                using (HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync())
+
+                // Send the request and get a response
+                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
                 {
-                    
+
                     // Read the response
                     using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
                     {
@@ -372,10 +331,11 @@ namespace SMS.Models
                     // Logic to interpret response from your gateway goes here
                     //Response.Write(String.Format("Response from gateway: {0}", responseMessage));
 
-                    string msg = responseMessage.Substring(0, 1);
+
 
                     foreach (var i in phone)
                     {
+
 
                         string query = @"INSERT INTO sms_record
                                     (`phoneNumber`,
@@ -387,34 +347,14 @@ namespace SMS.Models
                                     @message,
                                     @status,
                                    @date_time)";
-
-                        DateTime dt = System.DateTime.Now.AddMinutes(dateTimeOffSet);
-
-                        if (msg == "S")
-                        {
-                            con.Execute(query,
+                        con.Execute(query,
                            new
                            {
                                phone = i,
                                message = smsText,
                                status = "Success",
-                               date_time = dt
-
+                               date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
                            });
-                        }
-                        else
-                        {
-                            con.Execute(query,
-                         new
-                         {
-                             phone = i,
-                             message = smsText,
-                             status = "Failed",
-                             date_time = dt
-                         });
-
-                           
-                        }
 
                     }
 

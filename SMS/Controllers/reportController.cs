@@ -76,6 +76,93 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
+        public ActionResult duesListNotice()
+        {
+
+            mst_sessionMain session = new mst_sessionMain();
+
+            DDclass_name(session.findFinal_Session());
+
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult duesListNotice_students(int section_id, decimal amount, string operation, string month_name)
+        {
+
+            repDues_listMain dues = new repDues_listMain();
+            IEnumerable<repDues_list> result;
+            result = dues.duesList_Notice(section_id, amount, operation,month_name);
+            foreach(var i in result)
+            {
+                i.month_name = month_name;
+            }
+            return View(result);
+        }
+
+        [HttpPost]
+        public async System.Threading.Tasks.Task<ActionResult> duesListNotice_students(IEnumerable<repDues_list> list)
+        {
+
+            repDues_listMain dues = new repDues_listMain();
+            List<repDues_list> result = new List<repDues_list>();
+
+            bool flag = false;
+
+            foreach (repDues_list li in list)
+            {
+                if (li.check)
+                {
+                    result.Add(new repDues_list { sr_number = li.sr_number, amount = li.amount, month_name = li.month_name, std_father_name = li.std_father_name, name = li.name });
+                    if (li.flag_sms)
+                        flag = true;
+                    else
+                        flag = false;
+                }
+            }
+
+#if !DEBUG
+            if (flag)
+            {
+
+                SMSMessage sms = new SMSMessage();
+                foreach (var std in result)
+                {
+                    string contact = @"SELECT 
+                                        COALESCE(std_contact, std_contact1, std_contact2)
+                                    FROM
+                                        sr_register
+                                    WHERE
+                                        sr_number = @sr_number
+                                            AND std_active = 'Y'";
+                    string number = con.Query<string>(contact, new { sr_number = std.sr_number }).SingleOrDefault();
+
+                    foreach (var item in sms.smsbody("fees_notice"))
+                    {
+                        string body = item.Replace("#father_name#", std.std_father_name);
+
+                        body = body.Replace("#amount#", std.amount.ToString());
+
+                        body = body.Replace("#month_name#", std.month_name);
+
+                        body = body.Replace("#std_name#", std.name);
+
+                        await sms.SendSMS(body, number, true);
+                    }
+                }
+                return View("success");
+            }
+#endif
+
+            repDues_listMain ll = new repDues_listMain();
+
+            ll.pdfDuesList_notice(result);
+
+
+            return View(list);
+        }
+
+        [HttpGet]
         public ActionResult duesListTransportWise()
         {
 

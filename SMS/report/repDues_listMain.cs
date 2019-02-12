@@ -6,6 +6,7 @@ using SMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -436,6 +437,359 @@ namespace SMS.report
                 doc.Add(pt);
 
 
+
+                doc.Close();
+
+                HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
+                HttpContext.Current.Response.OutputStream.Flush();
+                HttpContext.Current.Response.OutputStream.Close();
+
+
+
+
+
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                doc.Close();
+                ms.Flush();
+            }
+        }
+
+        public IEnumerable<repDues_list> duesList_Notice(int section_id, decimal amt, string operation,string month_name)
+        {
+            IEnumerable<repDues_list> result;
+            string query;
+
+            string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
+
+            string session = con.Query<string>(query1).SingleOrDefault();
+
+            int month_no = 0;
+
+            switch (month_name)
+            {
+                case "January":
+                    month_no = 1;
+                    break;
+                case "February":
+                    month_no = 2;
+                    break;
+                case "March":
+                    month_no = 3;
+                    break;
+                case "April":
+                    month_no = 4;
+                    break;
+                case "May":
+                    month_no = 5;
+                    break;
+                case "June":
+                    month_no = 6;
+                    break;
+                case "July":
+                    month_no = 7;
+                    break;
+                case "August":
+                    month_no = 8;
+                    break;
+                case "September":
+                    month_no = 9;
+                    break;
+                case "October":
+                    month_no = 10;
+                    break;
+                case "November":
+                    month_no = 11;
+                    break;
+                case "December":
+                    month_no = 12;
+                    break;
+               
+            }
+
+            if (month_no >= 4 && month_no  <= 12)
+            {
+                query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                            month_no
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            AND month_no <= @month_no
+                                            AND month_no BETWEEN 4 AND 12
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
+            }
+            else if (month_no  == 1)
+            {
+
+                query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                            month_no
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            and month_no not in (2,3)
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
+            }
+            else if (month_no  == 2)
+            {
+
+                query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                            month_no
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            and month_no != 3
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
+
+
+            }
+            else
+            {
+
+                query = @"SELECT 
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.sr_number,
+                                            CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) name,
+                                            b.std_father_name,
+                                            COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                            c.pickup_point,
+                                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) amount,
+                                            month_no
+                                    FROM
+                                        out_standing a, sr_register b, mst_transport c, mst_std_section d
+                                    WHERE
+                                        a.sr_number = b.sr_number
+                                            AND b.sr_number = d.sr_num
+                                            AND d.section_id = @section_id
+                                            AND a.session = @session
+                                            AND a.session = c.session
+                                            AND c.session = d.session
+                                            AND b.std_active = 'Y'
+                                            AND b.std_pickup_id = c.pickup_id
+                                    GROUP BY sr_number) a
+                                WHERE
+	                                a.amount " + operation + " @amt ORDER BY pickup_point";
+
+            }
+
+             result = con.Query<repDues_list>(query, new { section_id = section_id, session = session, amt = amt,month_no = month_no });
+
+            return result;
+        }
+
+        public void pdfDuesList_notice(IEnumerable<repDues_list> list)
+        {
+
+           
+
+            MemoryStream ms = new MemoryStream();
+
+            HttpContext.Current.Response.ContentType = "application/pdf";
+            string name = "DL_Notice.pdf";
+            HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + name);
+            HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+            //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
+            var doc = new Document(PageSize.A4);
+
+            // MemoryStream stream = new MemoryStream();
+            doc.SetMargins(40f, 40f, 30f, 70f);
+            try
+            {
+
+              
+
+
+                PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
+
+
+
+                doc.Open();
+                // string imageURL = "E:\\HPS\\logo.jpg";
+
+
+
+                PdfPTable pt;
+
+
+                PdfPCell _cell;
+                Chunk text;
+                Phrase ph;
+                foreach (var li in list)
+                {
+                    pt = new PdfPTable(9);
+                    pt.WidthPercentage = 90;
+                    // string imageURL = "E:\\HPS\\logo.jpg";
+                    string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                    Image jpg = Image.GetInstance(imageURL);
+                    jpg.ScaleAbsolute(60f, 60f);
+
+                    _cell = new PdfPCell(jpg);
+                    _cell.Border = 0;
+
+                    _cell.Border = Rectangle.NO_BORDER;
+                    _cell.PaddingBottom = 5;
+
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+
+                    text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 24));
+                    ph = new Phrase();
+                    ph.Add(text);
+                    ph.Add("\n");
+                    ph.Add("\n");
+                    text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 12));
+                    ph.Add(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 8;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    _cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                    _cell.PaddingBottom = 5;
+                    //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    pt.AddCell(_cell);
+
+                    doc.Add(pt);
+
+                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
+                    Paragraph para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("To", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk(li.std_father_name, FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("Date: " + System.DateTime.Now.ToString("dd/MM/yyyy"), FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.SpacingBefore = 10;
+                    para.SpacingAfter = 10;
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("Subject: Reminder about pending fees", FontFactory.GetFont("Times New Roman", 12, Font.BOLD));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("Dear Parents,", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+                    text = new Chunk("Most respectfully, it is stated that an amount of " + li.amount + ", fee upto the month of "+ li.month_name +" is pending against school fee of your son/daughter " + li.name + ". We earnestly request you to kindly settle the payment as early as possible so that " + li.name + " can smoothly continue his studies at our prestigious institute. Also please be informed that we have a policy of accepting fees in instalments. Your prompt attention in this matter will be highly appreciated.", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+                    doc.Add(para);
+
+
+
+
+
+                    text = new Chunk("Signature", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.SpacingBefore = 40;
+                    para.Alignment = 0;
+
+                    doc.Add(para);
+
+                    text = new Chunk("Head Master/Principal", FontFactory.GetFont("Times New Roman", 12));
+                    para = new Paragraph(text);
+                    para.Alignment = 0;
+
+                    doc.Add(para);
+                    doc.NewPage();
+                }
 
                 doc.Close();
 

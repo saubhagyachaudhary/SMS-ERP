@@ -20,5 +20,8 @@ namespace SMS.Models
 
         public string operation { get; set; }
 
+        [Display(Name = "Month")]
+        public string month_name { get; set; }
+
     }
 }

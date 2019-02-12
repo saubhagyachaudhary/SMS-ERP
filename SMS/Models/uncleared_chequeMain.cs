@@ -110,7 +110,7 @@ namespace SMS.Models
                         std.session = val.session;
                         outstd.AddOutStanding(std);
                     }
-
+#if !DEBUG
                     if (unclear.chq_reject == "Bounce")
                     {
                         query = @"select coalesce(std_contact, std_contact1, std_contact2) from sr_register where sr_number = @sr_number";
@@ -128,19 +128,10 @@ namespace SMS.Models
                             await sms.SendSMS(body, phone,true);
                         }
 
-                        // SMSMessage sms = new SMSMessage();
-
-                        // string text = @"Your Cheque No "+ unclear.chq_no + " is unfortunately Bounce INR "+ unclear.bnk_charges + " will be charged against it. kindly make the payment as soon as possible. Thank You. Hariti Public School ";
-
-                        //sms.SendSMS(text,phone);
-
-                        // SMSMessage sms1 = new SMSMessage();
-
-                        // string text1 = @"आपका चेक नंबर " + unclear.chq_no + " बाउंस हो गया है। जिसका बाउंस शुल्क " + unclear.bnk_charges + " देय होगा। कृपया जितनी जल्दी हो सके भुगतान करें।  धन्यवाद। Hariti Public School.";
-
-                        // sms1.SendSMS(text1, phone);
+                    
 
                     }
+#endif
                 }
 
                

@@ -42,73 +42,79 @@ namespace SMS.report
                 if (mode == "Both")
                 {
                     string query = @"SELECT 
-                                            *
+                                        *
+                                    FROM
+                                        (SELECT 
+                                            receipt_no,
+                                                receipt_date,
+                                                a.sr_number,
+                                                CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) std_name,
+                                                fees_name,
+                                                c.class_name,
+                                                IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) amount,
+                                                CASE mode_flag
+                                                    WHEN 'Cheque' THEN 'Bank'
+                                                    ELSE mode_flag
+                                                END mode_flag,
+                                                CASE mode_flag
+                                                    WHEN 'Cash' THEN 'Cleared'
+                                                    ELSE CASE
+                                                        WHEN chq_reject IS NULL THEN 'Not Cleared'
+                                                        ELSE chq_reject
+                                                    END
+                                                END AS chq_reject
                                         FROM
-                                            (SELECT 
-                                                receipt_no,
-                                                    receipt_date,
-                                                    a.sr_number,
-                                                    CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) std_name,
-                                                    fees_name,
-                                                    c.class_name,
-                                                    IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) amount,
-                                                    CASE mode_flag
-                                                        WHEN 'Cheque' THEN 'Bank'
-                                                        ELSE mode_flag
-                                                    END mode_flag,
-                                                    CASE mode_flag
-                                                        WHEN 'Cash' THEN 'Cleared'
-                                                        ELSE CASE
-                                                            WHEN chq_reject IS NULL THEN 'Not Cleared'
-                                                            ELSE chq_reject
-                                                        END
-                                                    END AS chq_reject
-                                            FROM
-                                                fees_receipt a, sr_register b, mst_class c, mst_std_class d
-                                            WHERE
-                                                a.sr_number = b.sr_number
-                                                    AND c.class_id = d.class_id
-                                                    AND b.sr_number = d.sr_num
-                                                    AND receipt_date BETWEEN @fromdt and @todt
-                                                    AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
-                                                    AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
-                                                    AND c.session = d.session
+                                            fees_receipt a, sr_register b, mst_class c, mst_std_class d
+                                        WHERE
+                                            a.sr_number = b.sr_number
+                                                AND c.class_id = d.class_id
+                                                AND b.sr_number = d.sr_num
+                                                AND receipt_date BETWEEN @fromdt AND @todt
+                                                AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
+                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0
+                                                AND c.session = d.session
                                                 AND d.session = (SELECT 
                                                     session
                                                 FROM
                                                     mst_session
                                                 WHERE
-                                                    session_finalize = 'Y')
-                                                    UNION ALL SELECT 
-                                                receipt_no,
-                                                    receipt_date,
-                                                    0 sr_number,
-                                                    CONCAT(IFNULL(a.std_first_name, ''), ' ', IFNULL(a.std_last_name, '')) std_name,
-                                                    fees_name,
-                                                    c.class_name,
-                                                    IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) amount,
-                                                    CASE mode_flag
-                                                        WHEN 'Cheque' THEN 'Bank'
-                                                        ELSE mode_flag
-                                                    END mode_flag,
-                                                    CASE mode_flag
-                                                        WHEN 'Cash' THEN 'Cleared'
-                                                        ELSE CASE
-                                                            WHEN chq_reject IS NULL THEN 'Not Cleared'
-                                                            ELSE chq_reject
-                                                        END
-                                                    END AS chq_reject
-                                            FROM
-                                                std_registration a, fees_receipt b, mst_class c
-                                            WHERE
-                                                a.reg_no = b.reg_no
-                                                    AND a.reg_date = b.reg_date
-                                                    AND a.session = b.session
-                                                    AND a.std_class_id = c.class_id
-                                                    AND b.receipt_date BETWEEN @fromdt and @todt
-                                                    AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
-                                                    AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0) a
-                                        ORDER BY a.receipt_date";
+                                                    session_finalize = 'Y') UNION ALL SELECT 
+                                            receipt_no,
+                                                receipt_date,
+                                                0 sr_number,
+                                                CONCAT(IFNULL(a.std_first_name, ''), ' ', IFNULL(a.std_last_name, '')) std_name,
+                                                fees_name,
+                                                c.class_name,
+                                                IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) amount,
+                                                CASE mode_flag
+                                                    WHEN 'Cheque' THEN 'Bank'
+                                                    ELSE mode_flag
+                                                END mode_flag,
+                                                CASE mode_flag
+                                                    WHEN 'Cash' THEN 'Cleared'
+                                                    ELSE CASE
+                                                        WHEN chq_reject IS NULL THEN 'Not Cleared'
+                                                        ELSE chq_reject
+                                                    END
+                                                END AS chq_reject
+                                        FROM
+                                            std_registration a, fees_receipt b, mst_class c
+                                        WHERE
+                                            a.reg_no = b.reg_no
+                                                AND a.reg_date = b.reg_date
+                                                AND a.session = b.session
+                                                AND b.session = c.session
+                                                AND c.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_active = 'Y')
+                                                AND a.std_class_id = c.class_id
+                                                AND b.receipt_date BETWEEN @fromdt AND @todt
+                                                AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
+                                                AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0) a
+                                    ORDER BY a.receipt_date";
 
 
                    result = con.Query<repDaily_reportMain>(query, new { fromdt = fromdt, todt = todt });
@@ -180,6 +186,13 @@ namespace SMS.report
                                             a.reg_no = b.reg_no
                                                 AND a.reg_date = b.reg_date
                                                 AND a.session = b.session
+                                                 AND b.session = c.session
+                                                            AND c.session = (SELECT 
+                                                                session
+                                                            FROM
+                                                                mst_session
+                                                            WHERE
+                                                                session_active = 'Y')
                                                 AND a.std_class_id = c.class_id
                                                 AND b.receipt_date BETWEEN @fromdt AND @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
@@ -256,6 +269,13 @@ namespace SMS.report
                                                 a.reg_no = b.reg_no
                                                     AND a.reg_date = b.reg_date
                                                     AND a.session = b.session
+                                                     AND b.session = c.session
+                                                    AND c.session = (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_active = 'Y')
                                                     AND a.std_class_id = c.class_id
                                                     AND b.receipt_date BETWEEN @fromdt AND @todt
                                                     AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
@@ -697,6 +717,13 @@ namespace SMS.report
                                             a.reg_no = b.reg_no
                                                 AND a.reg_date = b.reg_date
                                                 AND a.session = b.session
+                                                 AND b.session = c.session
+                                                            AND c.session = (SELECT 
+                                                                session
+                                                            FROM
+                                                                mst_session
+                                                            WHERE
+                                                                session_active = 'Y')
                                                 AND a.std_class_id = c.class_id
                                                 AND b.receipt_date BETWEEN @fromdt and @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
@@ -788,6 +815,13 @@ namespace SMS.report
                                             a.reg_no = b.reg_no
                                                 AND a.reg_date = b.reg_date
                                                 AND a.session = b.session
+                                                 AND b.session = c.session
+                                                AND c.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_active = 'Y')
                                                 AND a.std_class_id = c.class_id
                                                 AND b.receipt_date BETWEEN @fromdt AND @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
@@ -871,6 +905,13 @@ namespace SMS.report
                                             a.reg_no = b.reg_no
                                                 AND a.reg_date = b.reg_date
                                                 AND a.session = b.session
+                                                 AND b.session = c.session
+                                                AND c.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_active = 'Y')
                                                 AND a.std_class_id = c.class_id
                                                 AND b.receipt_date BETWEEN @fromdt and @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'

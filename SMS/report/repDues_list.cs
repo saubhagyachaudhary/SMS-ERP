@@ -20,5 +20,13 @@ namespace SMS.report
         public string contact { get; set; }
 
         public decimal amount { get; set; }
+
+        public bool check { get; set; }
+
+        public bool flag_sms { get; set; }
+        
+        public string month_name { get; set; }
+
+        public string address { get; set; }
     }
 }

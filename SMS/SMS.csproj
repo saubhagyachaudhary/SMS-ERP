@@ -2510,6 +2510,9 @@
     <Content Include="Views\ChangePassword\Change_Password.cshtml" />
     <Content Include="Views\ChangePassword\success.cshtml" />
     <Content Include="Views\report\class_wise_std_list.cshtml" />
+    <Content Include="Views\report\duesListNotice.cshtml" />
+    <Content Include="Views\report\duesListNotice_students.cshtml" />
+    <Content Include="Views\report\success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

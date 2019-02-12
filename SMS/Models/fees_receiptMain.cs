@@ -215,7 +215,7 @@ namespace SMS.Models
 
                     }
 
-
+#if !DEBUG
                     query1 = @"select coalesce(std_contact, std_contact1, std_contact2) from sr_register where sr_number = @sr_number";
 
                     phone = con.Query<string>(query1, new { sr_number = sr_num }).SingleOrDefault();
@@ -297,7 +297,7 @@ namespace SMS.Models
                     DashboardHub dash = new DashboardHub();
 
                     dash.DailyFeesUpdate();
-
+#endif
                     return rect_no;
                 }
                 else

@@ -96,8 +96,9 @@ namespace SMS.Controllers
                     if(jk == 50)
                     {
                         jk = 0;
+#if !DEBUG
                         await sms.SendMultiSms(ph.toText, String.Join(",", tmp), tmp);
-
+#endif
                         tmp = new List<string>();
                     }
                     jk++;
@@ -105,7 +106,9 @@ namespace SMS.Controllers
 
                 if(tmp.Count() != 0)
                 {
-                         await sms.SendMultiSms(ph.toText, String.Join(",", tmp), tmp);
+#if !DEBUG
+                          await sms.SendMultiSms(ph.toText, String.Join(",", tmp), tmp);
+#endif
                 }
 
 

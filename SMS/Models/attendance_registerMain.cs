@@ -196,7 +196,7 @@ namespace SMS.Models
                                                 sr_number = @sr_number";
                     std = con.Query<sr_register>(phone_query, new { sr_number = att.sr_num }).SingleOrDefault();
 
-
+#if !DEBUG
                     SMSMessage sms = new SMSMessage();
 
                     foreach (var item in sms.smsbody("absent"))
@@ -207,6 +207,7 @@ namespace SMS.Models
 
                         await sms.SendSMS(body, std.std_contact,true);
                     }
+#endif
                 }
             }
                 

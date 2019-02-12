@@ -261,8 +261,8 @@ namespace SMS.Models
                     out_stdMain.updateOutstanding(out_std);
 
                     var p = new DynamicParameters();
-
-                    SMSMessage sms = new SMSMessage();
+#if !DEBUG
+                SMSMessage sms = new SMSMessage();
 
                     foreach (var item in sms.smsbody("admission"))
                     {
@@ -274,7 +274,7 @@ namespace SMS.Models
 
                         await sms.SendSMS(body, std.std_contact,true);
                     }
-
+#endif
 
                     //string text = @"Admission of " + std.std_first_name + " " + std.std_last_name + " is confirmed in class " + std.std_admission_class + " via admission number " + std.sr_number + ". Congratulation for being a part of hariti family. Thank You. Hariti Public School.";
 

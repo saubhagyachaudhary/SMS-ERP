@@ -114,7 +114,9 @@ namespace SMS.job_scheduler
                                     AND b.std_active = 'Y'
                             GROUP BY sr_number";
             }
-            std = con.Query<duesReminder>(query, new { session = session.findActive_finalSession() });
+
+#if !DEBUG
+            std = con.Query<duesReminder>(query, new { session = session.findFinal_Session() });
 
             SMSMessage sms = new SMSMessage();
 
@@ -137,7 +139,7 @@ namespace SMS.job_scheduler
             DashboardHub hub = new DashboardHub();
 
             hub.SMSCreditLeft();
-
+#endif
         }
     }
 }

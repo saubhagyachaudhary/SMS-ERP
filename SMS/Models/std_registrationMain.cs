@@ -172,7 +172,7 @@ namespace SMS.Models
 
 
                     out_stdMain.AddOutStanding(out_std);
-
+#if !DEBUG
                     SMSMessage sms = new SMSMessage();
 
                    
@@ -208,7 +208,7 @@ namespace SMS.Models
                     // text = std.std_first_name + " " + std.std_last_name + " का पंजीकरण कक्षा " + className + " में सफलतापूर्वक हो गया है। यह पंजीकरण 3 दिन तक मान्य रहेगा। कक्षा में सीटों की उपलब्धता सीमित हैं। धन्यवाद। Hariti Public School";
 
                     //sms.SendSMS(text, std.std_contact);
-
+#endif
                 }
                 
             }

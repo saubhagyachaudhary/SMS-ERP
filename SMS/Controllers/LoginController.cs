@@ -22,8 +22,7 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-            SMSMessage sms = new SMSMessage();
-
+          
             return View(u);
         }
 
