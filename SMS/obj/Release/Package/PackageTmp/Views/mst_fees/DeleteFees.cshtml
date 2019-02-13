@@ -1,0 +1,60 @@
+﻿@model SMS.Models.mst_fees
+
+@{
+    ViewBag.Title = "DeleteFees";
+}
+
+<div class="right_col" role="main">
+    <h2>Delete Fees</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    
+                  
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <h3>Are you sure you want to delete this?</h3>
+                    <div>
+                        
+                        <hr />
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.class_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.class_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.fees_amount)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.fees_amount)
+                            </dd>
+
+                         
+
+                         
+
+                        </dl>
+
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+
+                            <div class="form-actions no-color">
+                                <input type="submit" value="Delete" class="btn btn-default" /> 
+                                @Html.ActionLink("Back to List", "AllFeesList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                            </div>
+                        }
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

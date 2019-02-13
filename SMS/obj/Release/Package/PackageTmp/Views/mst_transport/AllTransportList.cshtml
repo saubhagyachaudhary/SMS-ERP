@@ -1,0 +1,90 @@
+﻿@model IEnumerable<SMS.Models.mst_transport>
+
+@{
+    ViewBag.Title = "AllTransportList";
+}
+
+<div class="right_col" role="main">
+    <p>
+        @Html.ActionLink("Add New Pickup Point", "AddTransport", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+    </p>
+    <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    @*<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">*@
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+
+                    <h2>Transport List</h2>
+
+                    <table  id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.session)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.pickup_point)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.transport_fees)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.transport_number)
+                                </th>
+                                <th>Control Panel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.session)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.pickup_point)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.transport_fees)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.transport_number)
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "EditTransport", new { id = item.pickup_id, session = item.session }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                        @Html.ActionLink("Delete", "DeleteTransport", new { id = item.pickup_id, session = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+</div>
+</div>
+</div>
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    @*<script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="~/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
+    <script src="~/vendors/jszip/dist/jszip.min.js"></script>
+    <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>*@
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+}

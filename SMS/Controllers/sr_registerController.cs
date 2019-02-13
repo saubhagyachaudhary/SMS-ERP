@@ -59,20 +59,22 @@ namespace SMS.Controllers
         {
             try
             {
-                if (std.std_contact == null)
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError(String.Empty, "Primary contact is mandatory.");
+                    if (std.std_contact == null)
+                    {
+                        ModelState.AddModelError(String.Empty, "Primary contact is mandatory.");
 
 
-                    DDclass_name(std);
+                        DDclass_name(std);
 
-                    DDtransport_id(std);
+                        DDtransport_id(std);
 
-                    return View(std);
-                }
-                sr_registerMain stdMain = new sr_registerMain();
+                        return View(std);
+                    }
+                    sr_registerMain stdMain = new sr_registerMain();
 
-                string query = @"SELECT 
+                    string query = @"SELECT 
                                     class_id
                                 FROM
                                     mst_class
@@ -85,37 +87,44 @@ namespace SMS.Controllers
                                         WHERE
                                             session_active = 'Y')";
 
-                int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
+                    int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
-                if (std.class_id < id)
-                {
-                    ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
+                    if (std.class_id < id)
+                    {
+                        ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
 
 
-                    DDclass_name(std);
+                        DDclass_name(std);
 
-                    DDtransport_id(std);
+                        DDtransport_id(std);
 
-                    return View(std);
+                        return View(std);
+                    }
+
+                    if (std.std_pickup_id == null)
+                    {
+                        ModelState.AddModelError(String.Empty, "Avail Transport cannot be blank.");
+
+
+                        DDclass_name(std);
+
+                        DDtransport_id(std);
+
+                        return View(std);
+                    }
+
+                    await stdMain.AddStudent(std);
+
+
+
+                    return RedirectToAction("AllRegistrationList", "std_registration");
                 }
 
-                if (std.std_pickup_id == null)
-                {
-                    ModelState.AddModelError(String.Empty, "Avail Transport cannot be blank.");
+                DDclass_name(std);
 
+                DDtransport_id(std);
 
-                    DDclass_name(std);
-
-                    DDtransport_id(std);
-
-                    return View(std);
-                }
-
-                await stdMain.AddStudent(std);
-
-                
-
-                return RedirectToAction("AllRegistrationList", "std_registration");
+                return View(std);
             }
             catch
             {

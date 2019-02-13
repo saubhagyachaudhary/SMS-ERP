@@ -1,0 +1,94 @@
+﻿@model IEnumerable<SMS.Models.mst_term_rules>
+
+@{
+    ViewBag.Title = "ALLTermRuleList";
+}
+
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+<div class="right_col" role="main">
+    <p>
+        @Html.ActionLink("Create New Rule", "AddTermRules",new {area = "" }, new { @class = "btn btn-primary please_wait" })
+    </p>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+                    <h2>Select class for attendance</h2>
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.term_name)
+
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.class_name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.evaluation_name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.exam_name1)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.rule)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.exam_name2)
+                                </th>
+                                
+                                <th>
+                                    Control Panel
+                                </th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.term_name)
+                                        @Html.HiddenFor(modelItem => item.session)
+                                        @Html.HiddenFor(modelItem => item.evaluation_id)
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.class_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.evaluation_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.exam_name1)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.rule)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.exam_name2)
+                                    </td>
+                                    
+                                    <td>
+                                        @Html.ActionLink("Delete", "DeleteTermRule", new { session = item.session, term_id = item.term_id, class_id = item.class_id, evaluation_id = item.evaluation_id },new { @class = "btn btn-success btn-sm please_wait" }) 
+                                       
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+</div>
+</div>
+</div>
+</div>
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+}

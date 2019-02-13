@@ -1,0 +1,204 @@
+﻿@model List<SMS.report.repDues_list>
+
+@{
+    ViewBag.Title = "duesListNotice_students";
+}
+
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 20px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 13px;
+            width: 13px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 20px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+    .submit-progress {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        height: 6em;
+        padding-top: 2.3em;
+        /* The following rules are the
+     ones most likely to change */
+        width: 25em;
+        /* Set 'margin-left' to a negative number
+     that is 1/2 of 'width' */
+        margin-left: -10em;
+        padding-left: 2.1em;
+        background-color: black;
+        color: white;
+        -webkit-border-radius: 0.4em;
+        -moz-border-radius: 0.4em;
+        border-radius: 0.4em;
+        box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+        -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+        -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+    }
+
+    .submit-progress-bg {
+        background-color: lightgray;
+        opacity: .5;
+    }
+</style>
+
+<div class="right_col" role="main">
+    <div class="row">
+
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+            <div class="x_panel">
+
+                <div class="x_title" style="overflow-x:auto;">
+                
+                    @using (Html.BeginForm("duesListNotice_students", "report", FormMethod.Post, new { target = "_blank",id = "submit" }))
+                    {
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Admission No
+                                </th>
+                                <th>
+                                    Student Name
+                                </th>
+                                <th>
+                                    Father's Name
+                                </th>
+                                
+                                <th>
+                                   Dues
+                                </th>
+                                <th></th>
+                            </tr>
+
+                            @for (int i = 0; i < Model.Count(); i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(model => model[i].sr_number)
+                                        @Html.HiddenFor(model => model[i].sr_number)
+                                        @Html.HiddenFor(model => model[i].month_name)
+                                        @Html.HiddenFor(model => model[i].std_father_name)
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => model[i].name)
+                                        @Html.HiddenFor(model => model[i].name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => model[i].std_father_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => model[i].amount)
+                                        @Html.HiddenFor(model => model[i].amount)
+                                        @Html.HiddenFor(model => model[i].flag_sms, new { id = "ch_sms_" + i })
+                                    </td>
+                                    <td>
+                                        <label class="switch">
+                                            <input type="checkbox" id="ch_@i">
+                                            <span class="slider round"></span>
+                                        </label>
+                                        @Html.HiddenFor(model => model[i].check, new { id = "ch_hidden_" + i })
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>
+
+                        <button type="submit"
+                                id="submitButton"
+                                class="btn btn-primary"
+                                onclick="return monthCheckValue();">
+                            Generate Fees Notice
+                        </button>
+
+                        <button type="submit"
+                                id="submitButton"
+                                class="btn btn-primary"
+                                onclick="return monthCheckValue_withSMS();">
+                            Send SMS
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function monthCheckValue()
+    {
+        for (i = 0; i < @Model.Count() ; i++)
+        {
+     
+            document.getElementById("ch_hidden_"+i.toString()).value = document.getElementById("ch_"+i.toString()).checked;
+           
+            document.getElementById("ch_sms_"+i.toString()).value = false;
+
+        }
+
+    }
+
+    function monthCheckValue_withSMS()
+    {
+        for (i = 0; i < @Model.Count() ; i++)
+        {
+     
+            document.getElementById("ch_hidden_"+i.toString()).value = document.getElementById("ch_"+i.toString()).checked;
+           
+            document.getElementById("ch_sms_"+i.toString()).value = true;
+        }
+
+    }
+
+</script>

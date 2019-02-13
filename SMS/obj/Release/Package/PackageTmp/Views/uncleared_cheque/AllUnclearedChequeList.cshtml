@@ -1,0 +1,240 @@
+﻿@using SMS.Models;
+@model List<uncleared_cheque>
+
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+@*<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">*@
+<style>
+    .submit-progress {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 6em;
+  padding-top: 2.3em;
+  /* The following rules are the
+     ones most likely to change */
+  width: 25em;
+  /* Set 'margin-left' to a negative number
+     that is 1/2 of 'width' */
+  margin-left: -10em;
+  padding-left: 2.1em;
+  background-color: black;
+  color: white;
+  -webkit-border-radius: 0.4em;
+  -moz-border-radius: 0.4em;
+  border-radius: 0.4em;
+  box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+  -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+  -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+}
+
+.submit-progress-bg {
+    background-color: lightgray;
+    opacity: .5;
+  }
+</style>
+@using (Html.BeginForm("AllUnclearedChequeList", "uncleared_cheque", FormMethod.Post, new { id = "submit"}))
+{
+<div class="right_col" role="main">
+   
+    <div class="row">
+        <div class="submit-progress hidden">
+            <i class="fa fa-2x fa-spinner fa-spin"></i>
+            <label> Please wait while finalizing attendance...</label>
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+
+                    <h2>All Uncleared Instruments</h2>
+
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <tr>
+                            
+                           
+                           
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].bnk_name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].chq_no)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].chq_date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].amount)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].clear_flag)
+                            </th>
+                            <th>
+                                Bank Charges
+                            </th>
+                            <th>
+                                Narration
+                            </th>
+                            <th>
+                                Select
+                            </th>
+                        </tr>
+                        @{
+
+                            for (int i = 0; i < Model.Count(); i++)
+                            {
+
+                            <tr>
+                                
+                                
+                                <td>
+                                    @Html.DisplayFor(model => model[i].bnk_name)
+                                    @Html.HiddenFor(model => model[i].bnk_name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model[i].chq_no)
+                                    @Html.HiddenFor(model => model[i].chq_no)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model[i].chq_date)
+                                    @Html.HiddenFor(model => model[i].chq_date, new { id = "dtt_" + i.ToString() })
+                                    @Html.HiddenFor(model => model[i].str_date, new { id = "dt_" + i.ToString() })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model[i].amount)
+                                    @Html.HiddenFor(model => model[i].amount)
+                                </td>
+                                <td>
+                                    <input id="Clear_@i" type="radio" value="True" name="item.CheckerApproved_@i" checked="checked" onchange="findselected(@i)"> @("Clear")
+                                    <input id="NotClear_@i" type="radio" value="False" name="item.CheckerApproved_@i" onchange="findselected(@i)"> @("Not Clear")
+                                    @Html.HiddenFor(model => model[i].clear_flag, new { id = "clear_" + i.ToString() })
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        @Html.HiddenFor(model => model[i].bnk_charges, new { id = "bnkchrge_" + i.ToString() })
+                                       
+                                        <input type="text" class="form-control" name="bank_charge" id="bnk_charges_@i" , disabled>
+                                    </div>
+                                </td>
+                                 <td>
+                                     <div class="form-group">
+                                         @Html.TextAreaFor(model => model[i].narration, new { htmlAttributes = new { @class = "form-control", @id = "narration" } })
+                                     </div>
+
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(model => model[i].check, new { @class = "form-control" })
+                                </td>
+                                </tr>
+                            }
+                      }
+                    </table>
+                    </div>
+                <div class="col-md-10 col-xs-12 col-sm-10">
+                    @*<input type="submit" value="Save" class="btn btn-default please_wait"  onclick="addchkItem()"/>*@
+                    <button type="submit"
+                            id="submitButton"
+                            class="btn btn-primary"
+                            onclick="return DisplayProgressMessage(this, 'Saving...');">
+                        Save
+                    </button>
+                </div>
+
+</div>
+</div>
+</div>
+</div>
+}
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+
+    <script>
+
+        function DisplayProgressMessage(ctl, msg) 
+        {
+       
+                
+            if(confirm("Are you sure you want to save?"))
+            {
+                addchkItem();
+           
+              
+                $(".submit-progress").text(" Please wait...");
+                $(".submit-progress").removeClass("hidden");
+                document.forms["submit"].submit();
+            }
+            else
+                return false;
+
+       
+
+            return true;
+        }
+
+        function findselected(i) {
+
+
+
+            var check = document.getElementById('Clear_'+i);
+            
+
+
+
+            if (check.checked == 1) {
+
+                document.getElementById('bnk_charges_' + i).disabled = 'disabled';
+               // document.getElementById('bnk_charges_' + i).value = "0.00";
+
+
+            }
+            else {
+                document.getElementById('bnk_charges_' + i).disabled = '';
+               // document.getElementById('bnk_charges_' + i).value = "0.00";
+
+
+           }
+
+        }
+
+        function addchkItem()
+        {
+            for (i = 0; i < @Model.Count() ; i++)
+            {
+
+                if(document.getElementById("bnk_charges_"+i.toString()).value == '')
+                {
+                    document.getElementById("bnkchrge_"+i.toString()).value = '0'
+                }
+                else
+                {
+                    document.getElementById("bnkchrge_"+i.toString()).value = document.getElementById("bnk_charges_"+i.toString()).value;
+                }
+
+                var check = document.getElementById('Clear_'+i);
+                            
+                if (check.checked == 1) 
+                {
+                    document.getElementById("clear_"+i.toString()).value = true;
+                }
+                else
+                {
+                    document.getElementById("clear_"+i.toString()).value = false;
+                }
+                
+                
+
+                document.getElementById("dt_"+i.toString()).value = document.getElementById("dtt_"+i.toString()).value;
+            }
+
+          
+        }
+            </script>
+}
+ 

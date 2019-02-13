@@ -1,0 +1,58 @@
+﻿@model SMS.Models.mst_section
+
+@{
+    ViewBag.Title = "EditSection";
+}
+<div class="right_col" role="main">
+    <h2>EditSection</h2>
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>mst_section</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.section_id)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.class_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                <div class="col-md-10 col-xs-12 col-sm-10">
+                    @Html.EditorFor(model => model.class_id, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.class_id, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                <div class="col-md-10 col-xs-12 col-sm-10">
+                    @Html.EditorFor(model => model.class_name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.class_name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Section_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                <div class="col-md-10 col-xs-12 col-sm-10">
+                    @Html.EditorFor(model => model.Section_name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Section_name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "AllSectionList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+    </div>
+    </div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

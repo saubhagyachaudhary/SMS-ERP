@@ -99,7 +99,7 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y')";
+                                            session_active = 'Y')";
 
             var result = con.Query<mst_transport>(query);
 

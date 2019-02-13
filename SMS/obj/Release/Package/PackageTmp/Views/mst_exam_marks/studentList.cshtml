@@ -1,0 +1,268 @@
+﻿@model List<SMS.Models.mst_exam_marks>
+
+@{
+    ViewBag.Title = "studentList";
+}
+<style>
+    .submit-progress {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        height: 6em;
+        padding-top: 2.3em;
+        /* The following rules are the
+     ones most likely to change */
+        width: 25em;
+        /* Set 'margin-left' to a negative number
+     that is 1/2 of 'width' */
+        margin-left: -10em;
+        padding-left: 2.1em;
+        background-color: black;
+        color: white;
+        -webkit-border-radius: 0.4em;
+        -moz-border-radius: 0.4em;
+        border-radius: 0.4em;
+        box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+        -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+        -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+    }
+
+    .submit-progress-bg {
+        background-color: lightgray;
+        opacity: .5;
+    }
+</style>
+<div class="right_col" role="main">
+    <h2>Assign Marks</h2>
+    <div class="row">
+        <div class="submit-progress hidden">
+            <i class="fa fa-2x fa-spinner fa-spin"></i>
+            <label> Please wait while saving marks...</label>
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+                    
+@using (Html.BeginForm("studentListSubmit", "mst_exam_marks", FormMethod.Post, new { id = "submit", onsubmit = "Are you sure you want to submit?" }))
+{
+    <div class="table-responsive">
+        <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+            <thead class="blue-grey">
+                <tr>
+                    <th>
+                        Roll Number
+                    </th>
+                    <th>
+                        Admission Number
+                    </th>
+                    <th>
+                        Student Name
+                    </th>
+                    <th>
+                        Exam Name
+                    </th>
+                    <th>
+                        Subject Name
+                    </th>
+                    <th>
+                        Marks Out of @ViewData["MaxMarks"]
+                    </th>
+                    <th>
+                        Present
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(model => model[i].roll_no)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(model => model[i].session)
+                            @Html.DisplayFor(model => model[i].sr_num)
+                            @Html.HiddenFor(model => model[i].sr_num)
+                            @Html.HiddenFor(model => model[i].exam_id)
+                            @Html.HiddenFor(model => model[i].class_id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model[i].std_name)
+                            @Html.HiddenFor(model => model[i].section_id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model[i].exam_name)
+                           
+                        </td>
+                        <td>
+                            @Html.HiddenFor(model => model[i].subject_id)
+                            @Html.DisplayFor(model => model[i].subject_name)
+                            @Html.HiddenFor(model => model[i].user_id)
+                            @Html.HiddenFor(model => model[i].marks_assigned_user_id)
+                        </td>
+                        <td>
+                            @*@Html.TextBoxFor(model => model[i].marks, new { @style = "text-align: center" })*@
+
+                          
+                            @Html.HiddenFor(model => model[i].marks, new { id = "std_marks_" + i.ToString() })
+                            @if (Model[i].present)
+                            {
+                                <input type="number" min="0" max="@ViewData["MaxMarks"]" class="form-control" value="@Model[i].marks" name="marks" id="marks_@i" onchange = "OnChangeEvent(this)" style="text-align:center">
+                            }
+                            else
+                            {
+                                <input type="number" min="0" max="@ViewData["MaxMarks"]" class="form-control" name="marks" id="marks_@i" onchange="OnChangeEvent(this)" style="text-align:center" disabled>
+                            }
+                         </td>
+                        <td>
+                            @if (Model[i].present)
+                            {
+                                <input id="Std_Presentr_@i" type="radio" value="True" name="item.CheckerApproved_@i" checked="checked" onchange="findselected(@i)"> @("Present")
+                                <input id="Std_NotPresent_@i" type="radio" value="False" name="item.CheckerApproved_@i" onchange="findselected(@i)"> @("Absent")
+                            }
+                            else
+                            {
+                                <input id="Std_Presentr_@i" type="radio" value="True" name="item.CheckerApproved_@i"  onchange="findselected(@i)"> @("Present")
+                                <input id="Std_NotPresent_@i" type="radio" value="False" name="item.CheckerApproved_@i" checked="checked" onchange="findselected(@i)"> @("Absent")
+                            }
+
+                            @Html.HiddenFor(model => model[i].present, new { id = "present_" + i.ToString() })
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        </div>
+        <div class="col-md-10 col-xs-12 col-sm-10">
+            @*<input type="submit" value="Save" class="btn btn-default please_wait"  onclick="addchkItem()"/>*@
+            <button type="submit"
+                    id="submitButton"
+                    class="btn btn-primary"
+                    onclick="return DisplayProgressMessage(this, 'Saving...');">
+                Save
+            </button>
+        </div>
+}
+    </div>
+</div>
+</div>
+</div>
+</div>
+@section scripts{
+   
+
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+
+    <script>
+
+        function OnChangeEvent(obj) {
+
+            var max = @int.Parse(ViewData["MaxMarks"].ToString());
+
+            if(obj.value < 0 )
+            {
+                var input = document.getElementById(obj.id);
+                alert("Marks must be between 0 to "+max);
+                input.value = "";
+                input.focus();
+               
+            }
+
+            if(obj.value > max )
+            {
+                var input = document.getElementById(obj.id);
+                alert("Marks must be between 0 to "+max);
+                input.value = "";
+                input.focus();
+                
+            }
+
+        }
+
+        function DisplayProgressMessage(ctl, msg)
+        {
+
+
+            if(confirm("Are you sure you want to save?"))
+            {
+                addchkItem();
+
+
+                $(".submit-progress").text(" Please wait...");
+                $(".submit-progress").removeClass("hidden");
+                document.forms["submit"].submit();
+            }
+            else
+                return false;
+
+
+
+            return true;
+        }
+
+        function findselected(i) {
+
+
+
+            var check = document.getElementById('Std_Presentr_'+i);
+
+
+
+
+            if (check.checked == 1) {
+
+                document.getElementById('marks_' + i).disabled = '';
+               // document.getElementById('bnk_charges_' + i).value = "0.00";
+
+
+            }
+            else {
+                document.getElementById('marks_' + i).disabled = 'disabled';
+                document.getElementById('marks_' + i).value = "";
+
+
+           }
+
+        }
+
+        function addchkItem()
+        {
+            for (i = 0; i < @Model.Count() ; i++)
+            {
+
+                if(document.getElementById("marks_"+i.toString()).value == '')
+                {
+                    document.getElementById("marks_"+i.toString()).value = '0'
+                }
+                else
+                {
+                    document.getElementById("std_marks_"+i.toString()).value = document.getElementById("marks_"+i.toString()).value;
+                }
+
+                var check = document.getElementById('Std_Presentr_'+i);
+
+                if (check.checked == 1)
+                {
+                    document.getElementById("present_"+i.toString()).value = true;
+                }
+                else
+                {
+                    document.getElementById("present_"+i.toString()).value = false;
+                }
+
+
+
+
+            }
+
+
+        }
+    </script>
+}

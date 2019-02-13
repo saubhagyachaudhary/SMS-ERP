@@ -1,0 +1,177 @@
+﻿@model SMS.Models.fees_collect
+
+
+@{
+    ViewBag.Title = "fees_collect";
+}
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.sr_num, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.sr_num, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.sr_num, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                           </div>
+
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.reg_num, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.EditorFor(model => model.reg_num, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.reg_num, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.session, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownListFor(model => model.session, ViewData["session"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+
+                                    @Html.ValidationMessageFor(model => model.session, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                    <input type="submit" value="Search" class="btn btn-success please_wait" />
+                                </div>
+                            </div>
+                    }
+
+                            @using (Html.BeginForm())
+                            {
+                                
+                                @Html.AntiForgeryToken()
+                                <div class="form-horizontal">
+                                   
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.section_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                        <div class="col-md-10 col-xs-12 col-sm-10">
+                                            @Html.DropDownList("section_id", ViewData["section_id"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.section_id, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                    <h2>All Student List</h2>
+
+
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    SR_Number
+                                </th>
+                                <th>
+                                    Student First Name
+                                </th>
+                                <th>
+                                    Student Last Name
+                                </th>
+                                <th>
+                                    Father Name
+                                </th>
+                                <th>
+                                    Class
+                                </th>
+                                <th>
+                                    Section
+                                </th>
+                                
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.list)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.sr_number)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_first_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_last_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.std_father_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.class_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.section_name)
+                                    </td>
+                                   
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                            
+                    }
+                        </div>
+            </div>
+        </div>
+       
+
+    </div>
+</div>
+
+
+
+@section scripts{
+
+<script>
+    
+        if (@ViewBag.recpt_no != null)
+        {
+             window.onload = function()
+             {
+       
+                 var url = '@Html.Raw(@Url.Action("FeesStatement", "Fees_collect"))'+ '?rcpt_no=' + @ViewBag.recpt_no
+                window.open(url);
+                };
+         }
+</script>
+<script>
+                        $('#section_id').on('change', function (event) {
+                            var form = $(event.target).parents('form');
+
+                            form.submit();
+                        });
+</script>
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    @*<script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+        <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+        <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+        <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+        <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+        <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+        <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+        <script src="~/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
+        <script src="~/vendors/jszip/dist/jszip.min.js"></script>
+        <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
+        <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>*@
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+}

@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewBag.Title = "Form Viewer";
+}
+
+<div class="right_col" role="main">
+    <h2>Student Admission Form Preview</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" src="@ViewData["link"]" allowfullscreen></iframe>
+                      <div style="width: 80px; height: 80px; position: absolute; opacity: 0; right: 0px; top: 0px;"></div>
+                    
+                    </div>
+
+                    </div>
+                @Html.ActionLink("Back to details", "StudentDetails", new { id = ViewData["sr_number"] }, new { @class = "btn btn-success btn-sm please_wait" })
+                
+                </div>
+            </div>
+        </div>
+    </div>
+

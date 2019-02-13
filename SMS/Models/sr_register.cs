@@ -109,9 +109,11 @@ namespace SMS.Models
         public virtual string std_admission_class { get; set; }
         
         [Display(Name = "Section Name")]
+        [Required]
         public string section_name { get; set; }
 
         [Display(Name = "Class Name")]
+        [Required]
         public string class_name { get; set; }
 
         public int class_id { get; set; }
@@ -130,6 +132,7 @@ namespace SMS.Models
         [Display(Name = "Remark")]
         public virtual string std_remark { get; set; }
         [Display(Name = "Avail Transport")]
+        [Required]
         public String pickup_point { get; set; }
 
         [ForeignKey("mst_transport")]

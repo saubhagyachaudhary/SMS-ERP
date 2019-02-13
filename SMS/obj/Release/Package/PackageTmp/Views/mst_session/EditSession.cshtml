@@ -1,0 +1,105 @@
+﻿@model SMS.Models.mst_session
+
+@{
+    ViewBag.Title = "EditSession";
+}
+
+<div class="right_col" role="main">
+    <h2>Edit Session</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+
+                    
+
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-horizontal">
+                            
+                            <hr />
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.session)
+
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.session)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.session)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.session_start_date)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.session_start_date)
+                                    @Html.HiddenFor(model => model.session_start_date)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.session_end_date)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.session_end_date)
+                                    @Html.HiddenFor(model => model.session_end_date)
+                                </dd>
+
+                            </dl>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.session_active, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                   
+                                   
+                                    @Html.RadioButtonFor(model => model.session_active, "Y", new { htmlAttributes = new { @class = "form-control" } }) Open
+                                    @Html.RadioButtonFor(model => model.session_active, "N", new { htmlAttributes = new { @class = "form-control" } }) Close
+
+
+
+                                     @Html.ValidationMessageFor(model => model.session_active, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.session_finalize, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+
+
+                                    @Html.RadioButtonFor(model => model.session_finalize, "Y", new { htmlAttributes = new { @class = "form-control" } }) Yes
+                                    @Html.RadioButtonFor(model => model.session_finalize, "N", new { htmlAttributes = new { @class = "form-control" } }) No
+
+
+
+                                    @Html.ValidationMessageFor(model => model.session_finalize, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                    <input type="submit" value="Save" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        @Html.ActionLink("Back to List", "AllSessionList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    @section Scripts {
+                        @Scripts.Render("~/bundles/jqueryval")
+                    }
