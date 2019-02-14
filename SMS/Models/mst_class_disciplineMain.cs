@@ -29,7 +29,7 @@ namespace SMS.Models
                                    @class_id,
                                    @discipline_id)";
 
-                mst.session = sess.findActive_finalSession();
+                mst.session = sess.findFinal_Session();
 
                 con.Execute(query, new
                 {
@@ -50,15 +50,24 @@ namespace SMS.Models
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT a.session,a.class_id,a.discipline_id,c.class_name,b.discipline_name FROM mst_class_discipline a, mst_discipline b, mst_class c
-                                where
+            string query = @"SELECT 
+                                a.session,
+                                a.class_id,
+                                a.discipline_id,
+                                c.class_name,
+                                b.discipline_name
+                            FROM
+                                mst_class_discipline a,
+                                mst_discipline b,
+                                mst_class c
+                            WHERE
                                 a.class_id = c.class_id
-                                and
-                                a.discipline_id = b.discipline_id
-                                and
-                                a.session = @session";
+                                    AND a.discipline_id = b.discipline_id
+                                    AND a.session = @session
+                                    AND b.session = a.session
+                                    AND c.session = b.session";
 
-            var result = con.Query<mst_class_discipline>(query, new { session = sess.findActive_finalSession() });
+            var result = con.Query<mst_class_discipline>(query, new { session = sess.findFinal_Session() });
 
             return result;
         }

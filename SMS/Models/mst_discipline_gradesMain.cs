@@ -18,7 +18,7 @@ namespace SMS.Models
             {
                 mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findActive_finalSession();
+                string session = sess.findFinal_Session();
 
                 string query = @"INSERT INTO `mst_discipline_grades`
                                 (`session`,
@@ -99,7 +99,7 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+            string session_name = sess.findFinal_Session();
 
             string query = @"SELECT 
                                 b.class_id,
@@ -158,13 +158,13 @@ namespace SMS.Models
                                     AND c.session = d.session
                                     AND d.session = @session";
 
-            var result = con.Query<mst_discipline_grades>(query, new { session = sess.findActive_finalSession() });
+            var result = con.Query<mst_discipline_grades>(query, new { session = sess.findFinal_Session() });
 
             return result;
         }
 
 
-        public IEnumerable<mst_discipline_grades> FindDisciplineGrades(int class_id, int section_id, int discipline_id)
+        public IEnumerable<mst_discipline_grades> FindDisciplineGrades(int class_id, int section_id, int discipline_id,int term_id)
         {
             mst_sessionMain session = new mst_sessionMain();
 
@@ -195,9 +195,10 @@ namespace SMS.Models
                                     AND d.class_id = @class_id
                                     AND e.section_id = @section_id
                                     AND a.discipline_id = @discipline_id
+                                     AND a.term_id = @term_id
                             ORDER BY roll_number";
 
-            return con.Query<mst_discipline_grades>(Query, new { class_id = class_id, discipline_id = discipline_id,section_id = section_id ,session = session.findActive_finalSession() });
+            return con.Query<mst_discipline_grades>(Query, new { class_id = class_id, discipline_id = discipline_id,section_id = section_id ,session = session.findFinal_Session(),term_id = term_id });
         }
 
         public mst_discipline_grades DeleteDisciplineGrades(int class_id, int discipline_id, string session)

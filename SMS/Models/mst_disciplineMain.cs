@@ -30,12 +30,11 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
                 int id = con.ExecuteScalar<int>(maxid);
 
-                mst.session = session.findActive_finalSession();
+                mst.session = session.findFinal_Session();
                 mst.discipline_id = id;
                 mst.discipline_name = mst.discipline_name.Trim();
 
@@ -58,7 +57,7 @@ namespace SMS.Models
 
             string query = "SELECT discipline_id,discipline_name FROM mst_discipline where session = @session";
 
-            var result = con.Query<mst_discipline>(query,new {session = session.findActive_finalSession() });
+            var result = con.Query<mst_discipline>(query,new {session = session.findFinal_Session() });
 
             return result;
         }
@@ -70,7 +69,7 @@ namespace SMS.Models
 
             string Query = "SELECT discipline_id,discipline_name FROM mst_discipline where discipline_id = @discipline_id and session = @session";
 
-            return con.Query<mst_discipline>(Query, new { discipline_id = id,session = session.findActive_finalSession() }).SingleOrDefault();
+            return con.Query<mst_discipline>(Query, new { discipline_id = id,session = session.findFinal_Session() }).SingleOrDefault();
         }
 
         public void EditDiscipline(mst_discipline mst)
@@ -82,7 +81,7 @@ namespace SMS.Models
 
                 string query = "UPDATE mst_discipline SET discipline_name = @discipline_name WHERE discipline_id = @discipline_id and session = @session";
 
-                mst.session = session.findActive_finalSession();
+                mst.session = session.findFinal_Session();
 
                 con.Execute(query, mst);
             }
@@ -100,7 +99,7 @@ namespace SMS.Models
 
                 string Query = "DELETE FROM mst_discipline WHERE discipline_id = @discipline_id and session = @session";
 
-                return con.Query<mst_discipline>(Query, new { discipline_id = id,session = session.findActive_finalSession() }).SingleOrDefault();
+                return con.Query<mst_discipline>(Query, new { discipline_id = id,session = session.findFinal_Session() }).SingleOrDefault();
             }
             catch (Exception ex)
             {

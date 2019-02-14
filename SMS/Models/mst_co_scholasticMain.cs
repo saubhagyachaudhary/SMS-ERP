@@ -28,8 +28,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
                 int id = con.ExecuteScalar<int>(maxid);
 
@@ -63,7 +62,7 @@ namespace SMS.Models
                                 WHERE
                                     session = @session";
 
-            var result = con.Query<mst_co_scholastic>(query,new {session = session.findActive_finalSession() });
+            var result = con.Query<mst_co_scholastic>(query,new {session = session.findFinal_Session() });
 
             return result;
         }
@@ -81,7 +80,7 @@ namespace SMS.Models
                                 co_scholastic_id = @co_scholastic_id
                                     AND session = @session";
 
-            return con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id ,session = session.findActive_finalSession()}).SingleOrDefault();
+            return con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id ,session = session.findFinal_Session()}).SingleOrDefault();
         }
 
         public void EditCoScholastic(mst_co_scholastic mst)
@@ -91,7 +90,7 @@ namespace SMS.Models
             {
                 mst_sessionMain session = new mst_sessionMain();
 
-                mst.session = session.findActive_finalSession();
+                mst.session = session.findFinal_Session();
 
                 string query = @"UPDATE mst_co_scholastic 
                                     SET
@@ -119,7 +118,7 @@ namespace SMS.Models
                                         co_scholastic_id = @co_scholastic_id
                                         AND session = @session";
 
-                con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id,session = session.findActive_finalSession()}).SingleOrDefault();
+                con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id,session = session.findFinal_Session()}).SingleOrDefault();
             }
             catch (Exception ex)
             {

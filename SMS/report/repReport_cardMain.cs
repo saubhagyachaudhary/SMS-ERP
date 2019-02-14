@@ -416,7 +416,7 @@ namespace SMS.report
                             ph.Add(text);
                             ph.Add("\n");
                             _cell = new PdfPCell(ph);
-                             _cell.Colspan = exam_count/term_list.Count();
+                            _cell.Colspan = term.Count();//exam_count/term_list.Count();
                             _cell.BackgroundColor = BaseColor.YELLOW;
                             _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                             pt.AddCell(_cell);
@@ -971,20 +971,29 @@ namespace SMS.report
                         string remark = con.Query<string>(remark_query, new { sr_number = std.sr_num, session = session, section_id = section_id, term_id = list.term_id, class_id = class_id }).SingleOrDefault();
 
                         ph = new Phrase();
-                        text = new Chunk("Class Teacher Remark: ", FontFactory.GetFont("Areal", 8));
+                        text = new Chunk(list.term_name+" Remark: ", FontFactory.GetFont("Areal", 8));
                         ph.Add(text);
                         _cell = new PdfPCell(ph);
                         _cell.Border = Rectangle.NO_BORDER;
                         _cell.Colspan = 2;
                         _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                         pt.AddCell(_cell);
-
+                        
                         ph = new Phrase();
                         text = new Chunk(remark, FontFactory.GetFont("Areal", 8));
                         ph.Add(text);
                         _cell = new PdfPCell(ph);
                         _cell.Border = Rectangle.BOTTOM_BORDER;
                         _cell.Colspan = 6;
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("\n", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 8;
+                        _cell.Border = Rectangle.NO_BORDER;
                         _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                         pt.AddCell(_cell);
 

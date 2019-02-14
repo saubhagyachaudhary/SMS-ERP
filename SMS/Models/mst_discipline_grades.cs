@@ -24,8 +24,10 @@ namespace SMS.Models
         [Display(Name = "Discipline Area")]
         public int discipline_id { get; set; }
 
+        [Display(Name ="Class")]
         public int class_id { get; set; }
 
+        [Display(Name ="Section")]
         public int section_id { get; set; }
 
         public int user_id { get; set; }

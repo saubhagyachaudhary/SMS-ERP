@@ -58,7 +58,7 @@ namespace SMS.Controllers
 
             List<mst_discipline_grades> list = new List<mst_discipline_grades>();
 
-            grades = mstMain.FindDisciplineGrades(mst.class_id, mst.section_id, mst.discipline_id);
+            grades = mstMain.FindDisciplineGrades(mst.class_id, mst.section_id, mst.discipline_id,mst.term_id);
 
             subject = subjectMain.FindDiscipline(mst.discipline_id);
 
@@ -116,7 +116,7 @@ namespace SMS.Controllers
                                     AND a.session = b.session";
 
 
-            var exam_list = con.Query<mst_discipline>(query, new { class_id = id, session = sess.findActive_finalSession(), term_id = term_id });
+            var exam_list = con.Query<mst_discipline>(query, new { class_id = id, session = sess.findFinal_Session(), term_id = term_id });
 
             IEnumerable<SelectListItem> list = new SelectList(exam_list, "discipline_id", "discipline_name");
 
@@ -143,8 +143,7 @@ namespace SMS.Controllers
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                        session_finalize = 'Y')";
 
 
             var exam_list = con.Query<mst_section>(query, new { class_id = id });

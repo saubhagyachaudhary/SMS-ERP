@@ -29,7 +29,7 @@ namespace SMS.Models
                                    @class_id,
                                    @exam_id)";
 
-                mst.session = sess.findActive_finalSession();
+                mst.session = sess.findFinal_Session();
 
                 con.Execute(query, new
                 {
@@ -63,7 +63,7 @@ namespace SMS.Models
                                         AND a.session = b.session
                                         AND b.session = c.session";
 
-            var result = con.Query<mst_exam_class>(query, new { session = sess.findActive_finalSession() });
+            var result = con.Query<mst_exam_class>(query, new { session = sess.findFinal_Session() });
 
             return result;
         }

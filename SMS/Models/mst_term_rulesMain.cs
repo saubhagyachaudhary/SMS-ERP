@@ -26,7 +26,7 @@ namespace SMS.Models
                                     WHERE
                                         session = @session";
 
-                int id = con.Query<int>(maxid,new {session = sess.findActive_finalSession() }).SingleOrDefault();
+                int id = con.Query<int>(maxid,new {session = sess.findFinal_Session() }).SingleOrDefault();
 
                 string query = @"INSERT INTO `mst_term_rules`
                                 (`session`,
@@ -47,7 +47,7 @@ namespace SMS.Models
                                 @exam_id2,
                                 @rule)";
 
-                mst.session = sess.findActive_finalSession();
+                mst.session = sess.findFinal_Session();
 
                 mst.evaluation_id = id;
 
@@ -100,9 +100,12 @@ namespace SMS.Models
                                 a.class_id = b.class_id
                                     AND a.term_id = c.term_id
                                     AND a.session = @session
+                                    AND a.session = b.session
+                                    AND b.session = c.session
+                                    AND c.session = d.session
                                     AND a.exam_id1 = d.exam_id";
 
-            var result = con.Query<mst_term_rules>(query, new { session = sess.findActive_finalSession() });
+            var result = con.Query<mst_term_rules>(query, new { session = sess.findFinal_Session() });
 
             return result;
         }
@@ -112,7 +115,7 @@ namespace SMS.Models
             string Query = @"SELECT 
                                     evaluation_name, session, term_id, evaluation_id, class_id
                                 FROM
-                                    sms.mst_term_rules
+                                    mst_term_rules
                                 WHERE
                                     session = @session
                                         AND class_id = @class_id

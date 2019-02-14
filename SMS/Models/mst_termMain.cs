@@ -31,8 +31,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
                 //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
@@ -41,7 +40,7 @@ namespace SMS.Models
 
                 mst.term_id = id;
                 mst.term_name = mst.term_name.Trim();
-                mst.session = sess.findActive_finalSession();
+                mst.session = sess.findFinal_Session();
                 con.Execute(query, new
                 {
                     mst.session,
@@ -67,8 +66,7 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
             var result = con.Query<mst_term>(query);
 
@@ -89,8 +87,7 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
-                                            session_finalize = 'Y'
-                                                AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
             return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
         }
@@ -110,8 +107,7 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
                 con.Execute(query, mst);
             }
@@ -134,8 +130,7 @@ namespace SMS.Models
                                             mst_session
 
                                         WHERE
-                                            session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                            session_finalize = 'Y')";
 
                 return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
             }

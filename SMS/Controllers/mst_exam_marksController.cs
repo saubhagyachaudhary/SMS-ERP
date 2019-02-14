@@ -130,7 +130,7 @@ namespace SMS.Controllers
                                         AND a.session = b.session";
 
 
-            var exam_list = con.Query<mst_exam>(query, new { class_id = id,session = sess.findActive_finalSession() });
+            var exam_list = con.Query<mst_exam>(query, new { class_id = id,session = sess.findFinal_Session() });
 
             IEnumerable<SelectListItem> list = new SelectList(exam_list, "exam_id", "exam_name");
 
@@ -155,7 +155,7 @@ namespace SMS.Controllers
 
 
 
-            var exam_list = con.Query<mst_subject>(query, new {class_id = class_id,session = sess.findActive_finalSession() });
+            var exam_list = con.Query<mst_subject>(query, new {class_id = class_id,session = sess.findFinal_Session() });
 
             IEnumerable<SelectListItem> list = new SelectList(exam_list, "subject_id", "subject_name");
 
@@ -181,8 +181,7 @@ namespace SMS.Controllers
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')";
+                                        session_finalize = 'Y')";
 
 
             var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });

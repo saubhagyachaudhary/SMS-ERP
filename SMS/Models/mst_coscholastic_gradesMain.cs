@@ -18,7 +18,7 @@ namespace SMS.Models
             {
                 mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findActive_finalSession();
+                string session = sess.findFinal_Session();
 
                 string query = @"INSERT INTO `mst_coscholastic_grades`
                                 (`session`,
@@ -99,7 +99,7 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+            string session_name = sess.findFinal_Session();
 
             string query = @"SELECT 
                                 b.class_id,
@@ -112,13 +112,20 @@ namespace SMS.Models
                             FROM
                                 sr_register a,
                                 mst_section b,
-                                mst_rollnumber c
+                                mst_rollnumber c,
+                                mst_std_section d,
+                                mst_std_class e
                             WHERE
-                                a.std_section_id = b.section_id
+                                a.sr_number = c.sr_num
+                                    AND c.sr_num = d.sr_num
+                                    AND d.sr_num = e.sr_num
+                                    AND d.section_id = b.section_id
                                     AND b.section_id = @section_id
                                     AND b.class_id = @class_id
-                                    AND c.class_id = b.class_id
-                                    AND c.section_id = b.section_id
+                                    AND e.class_id = b.class_id
+                                    AND d.section_id = b.section_id
+                                    AND e.session = d.session
+                                    AND d.session = b.session
                                     AND b.session = c.session
                                     AND c.session = @session
                                     AND a.sr_number = c.sr_num
@@ -179,7 +186,7 @@ namespace SMS.Models
                                     AND a.co_scholastic_id = @co_scholastic_id
                             ORDER BY roll_number";
 
-            return con.Query<mst_coscholastic_grades>(Query, new { class_id = class_id, co_scholastic_id = co_scholastic_id, session = session.findActive_finalSession(), section_id = section_id });
+            return con.Query<mst_coscholastic_grades>(Query, new { class_id = class_id, co_scholastic_id = co_scholastic_id, session = session.findFinal_Session(), section_id = section_id });
         }
 
         public mst_coscholastic_grades DeleteCoscholasticGrades(int class_id, int co_scholastic_id, string session)

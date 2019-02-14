@@ -29,7 +29,7 @@ namespace SMS.Models
                                    @class_id,
                                    @co_scholastic_id)";
 
-                mst.session = sess.findActive_finalSession();
+                mst.session = sess.findFinal_Session();
 
                 con.Execute(query, new
                 {
@@ -50,15 +50,24 @@ namespace SMS.Models
 
             mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT a.session,a.class_id,a.co_scholastic_id,c.class_name,b.co_scholastic_name FROM mst_class_coscholastic a, mst_co_scholastic b, mst_class c
-                                where
-                                a.class_id = c.class_id
-                                and
-                                a.co_scholastic_id = b.co_scholastic_id
-                                and
-                                a.session = @session";
+            string query = @"SELECT 
+                                    a.session,
+                                    a.class_id,
+                                    a.co_scholastic_id,
+                                    c.class_name,
+                                    b.co_scholastic_name
+                                FROM
+                                    mst_class_coscholastic a,
+                                    mst_co_scholastic b,
+                                    mst_class c
+                                WHERE
+                                    a.class_id = c.class_id
+                                        AND a.co_scholastic_id = b.co_scholastic_id
+                                        AND a.session = @session
+                                        AND b.session = a.session
+                                        AND c.session = b.session";
 
-            var result = con.Query<mst_class_coscholastic>(query, new { session = sess.findActive_finalSession() });
+            var result = con.Query<mst_class_coscholastic>(query, new { session = sess.findFinal_Session() });
 
             return result;
         }

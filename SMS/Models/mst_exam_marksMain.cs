@@ -18,7 +18,7 @@ namespace SMS.Models
             {
                 mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findActive_finalSession();
+                string session = sess.findFinal_Session();
 
                 string query = @"INSERT INTO `mst_exam_marks`
                                         (`session`,
@@ -108,7 +108,7 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+            string session_name = sess.findFinal_Session();
 
             string query = @"SELECT 
                                 d.class_id,
@@ -150,7 +150,7 @@ namespace SMS.Models
         {
             mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+            string session_name = sess.findFinal_Session();
 
             string query = @"SELECT 
                                 e.class_id,
@@ -207,12 +207,11 @@ namespace SMS.Models
                                     FROM
                                         mst_session
                                     WHERE
-                                        session_finalize = 'Y'
-                                            AND session_active = 'Y')
+                                        session_finalize = 'Y')
                                     AND a.sr_num = b.sr_num
                                     AND b.sr_num = c.sr_num";
 
-            return con.Query<mst_exam_marks>(Query, new { class_id = class_id,section_id = section_id, exam_id = exam_id,subject_id = subject_id ,session = session.findActive_finalSession() });
+            return con.Query<mst_exam_marks>(Query, new { class_id = class_id,section_id = section_id, exam_id = exam_id,subject_id = subject_id ,session = session.findFinal_Session() });
         }
 
         public IEnumerable<mst_exam_class> AllExamClassList()
@@ -233,7 +232,7 @@ namespace SMS.Models
                                         AND a.session = b.session
                                         AND b.session = c.session";
 
-            var result = con.Query<mst_exam_class>(query, new { session = sess.findActive_finalSession() });
+            var result = con.Query<mst_exam_class>(query, new { session = sess.findFinal_Session() });
 
             return result;
         }

@@ -41,14 +41,13 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
 
 
                 int id = con.ExecuteScalar<int>(maxid);
 
-                mst.session = session.findActive_finalSession();
+                mst.session = session.findFinal_Session();
                 mst.exam_id = id;
                 mst.exam_name = mst.exam_name.Trim();
 
@@ -73,7 +72,7 @@ namespace SMS.Models
 
             string query = "SELECT * FROM mst_exam where session = @session;";
 
-            var result = con.Query<mst_exam>(query,new {session = session.findActive_finalSession() });
+            var result = con.Query<mst_exam>(query,new {session = session.findFinal_Session() });
 
             return result;
         }
@@ -85,7 +84,7 @@ namespace SMS.Models
 
             string Query = "SELECT * FROM mst_exam where exam_id = @exam_id and session = @session ";
 
-            return con.Query<mst_exam>(Query, new { exam_id = id, session= session.findActive_finalSession() }).SingleOrDefault();
+            return con.Query<mst_exam>(Query, new { exam_id = id, session= session.findFinal_Session() }).SingleOrDefault();
         }
 
         public void EditExam(mst_exam mst)
@@ -97,7 +96,7 @@ namespace SMS.Models
 
                 string query = "UPDATE mst_exam SET exam_name = @exam_name,max_no = @max_no,convert_to = @convert_to WHERE exam_id = @exam_id and session = @session ";
 
-                mst.session = session.findActive_finalSession();
+                mst.session = session.findFinal_Session();
 
                 con.Execute(query, mst);
             }
@@ -115,7 +114,7 @@ namespace SMS.Models
 
                 string Query = "DELETE FROM mst_exam WHERE exam_id = @exam_id and session = @session";
 
-                return con.Query<mst_exam>(Query, new { exam_id = id, session = session.findActive_finalSession() }).SingleOrDefault();
+                return con.Query<mst_exam>(Query, new { exam_id = id, session = session.findFinal_Session() }).SingleOrDefault();
             }
             catch (Exception ex)
             {

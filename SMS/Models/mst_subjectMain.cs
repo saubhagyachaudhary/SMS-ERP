@@ -30,13 +30,12 @@ namespace SMS.Models
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y'
-                                                    AND session_active = 'Y')";
+                                                session_finalize = 'Y')";
 
                 int id = con.ExecuteScalar<int>(maxid);
 
 
-                mst.session = session.findActive_finalSession();
+                mst.session = session.findFinal_Session();
                 mst.subject_id = id;
                 mst.subject_name = mst.subject_name.Trim();
 
@@ -64,7 +63,7 @@ namespace SMS.Models
                             WHERE
                                 session = @session";
 
-            var result = con.Query<mst_subject>(query, new {session = session.findActive_finalSession() });
+            var result = con.Query<mst_subject>(query, new {session = session.findFinal_Session() });
 
             return result;
         }
@@ -82,7 +81,7 @@ namespace SMS.Models
                                     subject_id = @subject_id
                                         AND session = @session";
 
-            return con.Query<mst_subject>(Query, new { subject_id = id,session = session.findActive_finalSession() }).SingleOrDefault();
+            return con.Query<mst_subject>(Query, new { subject_id = id,session = session.findFinal_Session() }).SingleOrDefault();
         }
 
         public void EditSubject(mst_subject mst)
@@ -120,7 +119,7 @@ namespace SMS.Models
                                         subject_id = @subject_id
                                         AND session = @session";
 
-                return con.Query<mst_subject>(Query, new { subject_id = id,session=session.findActive_finalSession() }).SingleOrDefault();
+                return con.Query<mst_subject>(Query, new { subject_id = id,session=session.findFinal_Session() }).SingleOrDefault();
             }
             catch (Exception ex)
             {
