@@ -401,6 +401,11 @@ namespace SMS.report
 
                 int line = 1;
 
+                decimal amt_fees = 0;
+                decimal paid_fees = 0;
+                decimal amt_fine = 0;
+                decimal amt_discount = 0;
+
                 foreach (var list in result)
                 {
                     sr_no++;
@@ -461,6 +466,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.out_standing.ToString(), FontFactory.GetFont("Areal", 8));
+                        amt_fees = amt_fees + list.out_standing;
                     }
                     ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
@@ -476,6 +482,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.paid.ToString(), FontFactory.GetFont("Areal", 8));
+                        paid_fees = paid_fees + list.paid;
                     }
                     
                     ph = new Phrase(text);
@@ -492,6 +499,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.dc_fine.ToString(), FontFactory.GetFont("Areal", 8));
+                        amt_fine = amt_fine + list.dc_fine;
                     }
                     
                     ph = new Phrase(text);
@@ -508,6 +516,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.dc_discount.ToString(), FontFactory.GetFont("Areal", 8));
+                        amt_discount = amt_discount + list.dc_discount;
                     }
                    
                     ph = new Phrase(text);
@@ -532,6 +541,8 @@ namespace SMS.report
                     else
                         line++;
                 }
+
+
 
                 query = @"SELECT 
                                 *
@@ -642,6 +653,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.out_standing.ToString(), FontFactory.GetFont("Areal", 8));
+                        amt_fees = amt_fees + list.out_standing;
                     }
                     ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
@@ -657,6 +669,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.paid.ToString(), FontFactory.GetFont("Areal", 8));
+                        paid_fees = paid_fees + list.paid;
                     }
 
                     ph = new Phrase(text);
@@ -673,6 +686,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.dc_fine.ToString(), FontFactory.GetFont("Areal", 8));
+                        amt_fine = amt_fine + list.dc_fine;
                     }
 
                     ph = new Phrase(text);
@@ -689,6 +703,7 @@ namespace SMS.report
                     else
                     {
                         text = new Chunk(list.dc_discount.ToString(), FontFactory.GetFont("Areal", 8));
+                        amt_discount = amt_discount + list.dc_discount;
                     }
 
                     ph = new Phrase(text);
@@ -714,7 +729,82 @@ namespace SMS.report
                         line++;
                 }
 
-               
+                text = new Chunk("Total", FontFactory.GetFont("Areal", 8));
+                ph = new Phrase(text);
+                _cell = new PdfPCell(ph);
+                _cell.Colspan = 8;
+                if (line == 2)
+                    _cell.BackgroundColor = new BaseColor(224, 224, 224);
+                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                pt.AddCell(_cell);
+
+                if (amt_fees == 0m)
+                {
+                    text = new Chunk(" ", FontFactory.GetFont("Areal", 8));
+                }
+                else
+                {
+                    text = new Chunk(amt_fees.ToString(), FontFactory.GetFont("Areal", 8));
+                }
+                ph = new Phrase(text);
+                _cell = new PdfPCell(ph);
+                if (line == 2)
+                    _cell.BackgroundColor = new BaseColor(224, 224, 224);
+                _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                pt.AddCell(_cell);
+
+                if (paid_fees == 0m)
+                {
+                    text = new Chunk(" ", FontFactory.GetFont("Areal", 8));
+                }
+                else
+                {
+                    text = new Chunk(paid_fees.ToString(), FontFactory.GetFont("Areal", 8));
+                }
+                ph = new Phrase(text);
+                _cell = new PdfPCell(ph);
+                if (line == 2)
+                    _cell.BackgroundColor = new BaseColor(224, 224, 224);
+                _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                pt.AddCell(_cell);
+
+                if(amt_fine == 0m)
+                {
+                    text = new Chunk(" ", FontFactory.GetFont("Areal", 8));
+                }
+                else
+                {
+                    text = new Chunk(amt_fine.ToString(), FontFactory.GetFont("Areal", 8));
+                }
+                ph = new Phrase(text);
+                _cell = new PdfPCell(ph);
+                if (line == 2)
+                    _cell.BackgroundColor = new BaseColor(224, 224, 224);
+                _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                pt.AddCell(_cell);
+
+                if (amt_discount == 0m)
+                {
+                    text = new Chunk(" ", FontFactory.GetFont("Areal", 8));
+                }
+                else
+                {
+                    text = new Chunk(amt_discount.ToString(), FontFactory.GetFont("Areal", 8));
+                }
+                ph = new Phrase(text);
+                _cell = new PdfPCell(ph);
+                if (line == 2)
+                    _cell.BackgroundColor = new BaseColor(224, 224, 224);
+                _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                pt.AddCell(_cell);
+
+                text = new Chunk(" ", FontFactory.GetFont("Areal", 8));
+                ph = new Phrase(text);
+                _cell = new PdfPCell(ph);
+                if (line == 2)
+                    _cell.BackgroundColor = new BaseColor(224, 224, 224);
+                _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                pt.AddCell(_cell);
 
 
                 doc.Add(pt);
