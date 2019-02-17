@@ -18,7 +18,7 @@ namespace SMS.Models
             {
                 mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findActive_finalSession();
+                string session = sess.findFinal_Session();
 
                 string query = @"INSERT INTO `teacher_exam_remark`
                                 (`session`,
@@ -195,7 +195,7 @@ namespace SMS.Models
                                                     AND c.section_id = @section_id)) a
                                 ORDER BY a.roll_no";
 
-            return con.Query<teacher_exam_remark>(Query, new { class_id = class_id, term_id = term_id, session = session.findActive_finalSession(), section_id = section_id });
+            return con.Query<teacher_exam_remark>(Query, new { class_id = class_id, term_id = term_id, session = session.findFinal_Session(), section_id = section_id });
         }
     }
 }
