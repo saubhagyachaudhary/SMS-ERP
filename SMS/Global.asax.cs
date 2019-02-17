@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using Hangfire.MySql;
-using SMS.App_Start;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -23,7 +22,6 @@ namespace SMS
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
 
         }
     }
