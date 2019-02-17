@@ -656,3 +656,9 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.pdb
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Net.Http.Formatting.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Net.Http.Formatting.xml
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.xml
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.WebHost.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.WebHost.xml
