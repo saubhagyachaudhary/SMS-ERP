@@ -29,7 +29,20 @@ namespace SMS.APIControllers
 
             repReport_cardMain rep = new repReport_cardMain();
 
-            byte[] bytes = rep.WebsiteReportCard(sr_number, "2018-19");
+            string query = @"SELECT
+                                    b.session
+                                FROM
+                                    mst_std_class a,
+                                    website_declare b
+                                WHERE
+                                    a.session = b.session
+                                        AND a.class_id = b.class_id
+                                        AND a.sr_num = @sr_number
+                                        AND CURDATE() BETWEEN b.declare_from AND b.declare_to";
+
+            string session = con.Query<string>(query, new { sr_number = sr_number }).SingleOrDefault();
+
+            byte[] bytes = rep.WebsiteReportCard(sr_number, session);
 
             //Set the Response Content.
             response.Content = new ByteArrayContent(bytes);
@@ -75,7 +88,16 @@ namespace SMS.APIControllers
                                         AND a.sr_num = @sr_number
                                         AND CURDATE() BETWEEN b.declare_from AND b.declare_to";
 
-                int month_no = con.Query<int>(query).SingleOrDefault();
+                website_declare declare = con.Query<website_declare>(query,new {sr_number = sr_number }).SingleOrDefault();
+
+            if(declare == null)
+            {
+                response.Content = new StringContent(String.Format("Report card of admission number {0} is not yet declared. Thank You", sr_number.ToString()), System.Text.Encoding.UTF8, "text/plain");
+
+                return response;
+            }
+
+            int month_no = declare.dues_month_no;
 
                 if (month_no >= 4 && month_no <= 12)
                 {
@@ -86,7 +108,8 @@ namespace SMS.APIControllers
                                     out_standing a
                                 WHERE
                                     a.sr_number = @sr_number
-	                                AND month_no <= @month_no";
+	                                AND month_no <= @month_no
+                                    AND session = @session";
                 }
                 else if (month_no == 1)
                 {
@@ -97,7 +120,8 @@ namespace SMS.APIControllers
                                     out_standing a
                                 WHERE
                                     a.sr_number = @sr_number
-	                               and month_no not in (2,3)";
+	                               and month_no not in (2,3)
+                                    AND session = @session";
                 }
                 else if (month_no == 2)
                 {
@@ -109,7 +133,8 @@ namespace SMS.APIControllers
                                     out_standing a
                                 WHERE
                                     a.sr_number = @sr_number
-	                                and month_no != 3";
+	                                and month_no != 3
+                                    AND session = @session";
 
                 }
                 else
@@ -120,20 +145,57 @@ namespace SMS.APIControllers
                                 FROM
                                     out_standing a
                                 WHERE
-                                    a.sr_number = @sr_number";
+                                    a.sr_number = @sr_number
+                                    AND session = @session";
 
                 }
 
-                decimal dues = con.Query<decimal>(query, new { sr_number = sr_number }).SingleOrDefault();
+                decimal dues = con.Query<decimal>(query, new { sr_number = sr_number,session = declare.session }).SingleOrDefault();
 
-               response.Content = new StringContent(dues.ToString(), System.Text.Encoding.UTF8, "text/plain");
-
+            if(dues == 0m)
+               response.Content = new StringContent("True", System.Text.Encoding.UTF8, "text/plain");
+            else
+                response.Content = new StringContent(String.Format("Note: Account of admission number {0} show's some dues kindly clear it in order to download the report card.",sr_number.ToString()), System.Text.Encoding.UTF8, "text/plain");
 
             return response;
             
 
 
           
+        }
+
+        [HttpGet]
+        [Route("api/FileAPI/checkEnable")]
+        public HttpResponseMessage checkEnable()
+        {
+            //Create HTTP Response.
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+
+            //Set the File Path.
+            //string filePath = HttpContext.Current.Server.MapPath("~/images/") + fileName;
+
+            //Check whether File exists.
+
+            string query = @"SELECT 
+                                COUNT(*)
+                            FROM
+                                website_declare
+                            WHERE
+                                CURDATE() BETWEEN declare_from AND declare_to";
+
+            int check = con.Query<int>(query).SingleOrDefault();
+
+           
+            if (check == 0)
+                response.Content = new StringContent("False", System.Text.Encoding.UTF8, "text/plain");
+            else
+                response.Content = new StringContent("True", System.Text.Encoding.UTF8, "text/plain");
+
+            return response;
+
+
+
+
         }
     }
 

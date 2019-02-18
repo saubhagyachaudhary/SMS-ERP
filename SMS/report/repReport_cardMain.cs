@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace SMS.report
@@ -1304,15 +1305,23 @@ namespace SMS.report
                                 a.class_id = @class_id
                                     AND a.session = @session
                                     AND a.term_id = b.term_id
-                                    AND a.session = b.session
-                                    AND b.website = 1";
+                                    AND a.session = b.session";
 
                         term_list = con.Query<mst_term>(query, new { class_id = class_id, session = session });
 
+                        
 
+                        PdfWriter writer = PdfWriter.GetInstance(doc, ms);
 
+                        writer.PageEvent = new PDFFooter();
 
-                        PdfWriter.GetInstance(doc, ms).PageEvent = new PDFFooter();
+                        string password = sr_list.std_dob.ToString("ddMMyyyy");
+
+                        byte[] USER = Encoding.ASCII.GetBytes(password);
+
+                        byte[] OWNER = Encoding.ASCII.GetBytes("@sau4651@");
+
+                        writer.SetEncryption(USER, OWNER, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 
                         IEnumerable<mst_coscholastic_grades> coscholastic;
 
