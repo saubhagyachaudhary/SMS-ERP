@@ -134,4 +134,20 @@ namespace SMS.APIControllers
           
         }
     }
+
+    public class website_declare
+    {
+        public string website_code { get; set; }
+
+        public string session { get; set; }
+
+        public DateTime declare_from { get; set; }
+
+        public DateTime declare_to { get; set; }
+
+        public int class_id { get; set; }
+
+        public int dues_month_no { get; set; }
+
+    }
 }
