@@ -60,18 +60,20 @@ namespace SMS.APIControllers
             //Check whether File exists.
            
                 string query = @"SELECT 
-                                    MONTH(declare_date)
+                                    website_code,
+                                    b.session,
+                                    declare_from,
+                                    declare_to,
+                                    b.class_id,
+                                    dues_month_no
                                 FROM
-                                    hariti.mst_term
+                                    mst_std_class a,
+                                    website_declare b
                                 WHERE
-                                    session = (SELECT 
-                                            session
-                                        FROM
-                                            mst_session
-                                        WHERE
-                                            session_finalize = 'Y')
-                                ORDER BY term_id DESC
-                                LIMIT 1";
+                                    a.session = b.session
+                                        AND a.class_id = b.class_id
+                                        AND a.sr_num = @sr_number
+                                        AND CURDATE() BETWEEN b.declare_from AND b.declare_to";
 
                 int month_no = con.Query<int>(query).SingleOrDefault();
 
