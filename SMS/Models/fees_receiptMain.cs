@@ -314,7 +314,7 @@ namespace SMS.Models
 
                                 body = body.Replace("#fees_amount#", amount.ToString());
 
-                                await sms.SendSMS(body, phone,true);
+                                sms.SendSMS(body, phone,true);
                             }
 
 
@@ -343,7 +343,7 @@ namespace SMS.Models
 
                                 body = body.Replace("#fees_amount#", amount.ToString());
 
-                                await sms.SendSMS(body, phone,true);
+                                sms.SendSMS(body, phone,true);
                             }
 
 
