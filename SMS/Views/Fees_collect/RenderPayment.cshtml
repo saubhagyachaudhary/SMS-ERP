@@ -2,7 +2,7 @@
 @model List<fees_payment>
 
 <link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
-@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post, new { id = "submit", onsubmit = "return confirm('Are you sure you want to submit fees?');" }))
+@using (Html.BeginForm("submit_fees", "Fees_collect", FormMethod.Post, new { id = "submit" }))
 {
     <div style="overflow-x:auto;">
 
@@ -219,7 +219,40 @@
         </div>
 
         }
+
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+
         <script type="text/javascript">
+
+            $(document).ready(function () {
+            
+                $('form').submit(function()
+                {
+                   
+                    var check = confirm('Do you really want to save?');
+
+                    
+
+                    if(check)
+                    {
+                        $("input[type='submit']", this)
+                      .val("Please Wait...")
+                      .attr('disabled', 'disabled');
+
+                        return true;
+                    }else
+                    {
+                       
+
+                        return false;
+                    }
+ 
+                   
+                });
+            });
+
+        
+
             function recalculate() {
                 var total = 0.00;
                 var amt = 0.00;
@@ -358,6 +391,8 @@
                     document.getElementById("mdf"+i.toString()).value = 'Cash';
                 }
             }
+
+            
 
 
 

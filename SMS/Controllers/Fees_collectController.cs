@@ -255,7 +255,7 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> submit_fees(List<fees_payment> fees)
+        public ActionResult submit_fees(List<fees_payment> fees)
         {
            
 
@@ -301,6 +301,7 @@ namespace SMS.Controllers
                                 mode_flag = fee.mode_flag,
                                 month_no = fee.month_no,
                                 session = fee.session,
+                                due_amount = fee.due_amount,
                                 user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())
 
                             });
@@ -327,6 +328,7 @@ namespace SMS.Controllers
                                 chq_date = fee.cheque_date,
                                 mode_flag = fee.mode_flag,
                                 session = fee.session,
+                                due_amount = fee.due_amount,
                                 user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())
                             });
 
@@ -338,7 +340,7 @@ namespace SMS.Controllers
 
 
 
-                int rcpt_no = await main.AddReceipt(rec);
+                int rcpt_no = main.AddReceipt(rec);
                 return RedirectToAction("fees_collect", new { rcpt_no = rcpt_no});
           
             

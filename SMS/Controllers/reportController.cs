@@ -459,6 +459,26 @@ namespace SMS.Controllers
             return View();
         }
 
+        //trach tranport
+        [HttpGet]
+        public ActionResult track_vehicle()
+        {
+            mst_transportMain stdMain = new mst_transportMain();
+
+            return View(stdMain.AllTransportNumber());
+            
+        }
+
+        [HttpGet]
+        public ActionResult track_live_location(string transport_number)
+        {
+
+            ViewData["tranport_name"] = transport_number;
+            ViewData["database"] = String.Format("{0}/{1}/{2}/{3}",transport_number,DateTime.Now.ToString("yyyy"),DateTime.Now.ToString("MM"), DateTime.Now.ToString("dd"));
+            return View();
+
+        }
+
         public JsonResult GetSection(int id)
         {
             bool flag;
@@ -595,5 +615,6 @@ namespace SMS.Controllers
             //ViewData["pickup_id"] = list1;
         }
 
+        
     }
 }

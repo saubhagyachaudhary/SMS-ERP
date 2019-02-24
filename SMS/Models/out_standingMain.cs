@@ -188,30 +188,27 @@ namespace SMS.Models
 
      
 
-        public void updateOutstandingReceipt(out_standing std)
+        public void updateOutstandingReceipt(out_standing std,MySqlCommand myCommand)
         {
-
-            try
-            {
-                
-                string query = @"UPDATE out_standing 
+    
+                    string query = @"UPDATE out_standing 
                                     SET 
-                                        receipt_no = @receipt_no,
-                                        receipt_date = @receipt_date,
-                                        rmt_amount = IFNULL(rmt_amount, 0) + @rmt_amount,
-                                        dc_fine = IFNULL(dc_fine, 0) + @dc_fine,
-                                        dc_discount = IFNULL(dc_discount, 0) + @dc_discount,
-                                        clear_flag = @clear_flag
+                                        receipt_no = "+std.receipt_no+ @",
+                                        receipt_date = '"+ std.receipt_date.ToString("yyyy-MM-dd") +@"',
+                                        rmt_amount = IFNULL(rmt_amount, 0) + "+std.rmt_amount+@",
+                                        dc_fine = IFNULL(dc_fine, 0) + "+std.dc_fine+@",
+                                        dc_discount = IFNULL(dc_discount, 0) + "+std.dc_discount+@",
+                                        clear_flag = "+std.clear_flag+@"
                                     WHERE
-                                        session = @session AND serial = @serial";
+                                        session = '"+std.session+"' AND serial = "+std.serial;
 
-                con.Execute(query, std);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+                myCommand.CommandText = query;
+
+                //con.Execute(query, std);
+                myCommand.ExecuteNonQuery();
+
+           
+    }
 
         public void markStdNSO(int sr_num)
         {

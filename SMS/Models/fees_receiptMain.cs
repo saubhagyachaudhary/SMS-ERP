@@ -20,7 +20,7 @@ namespace SMS.Models
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
-        public async Task<int> AddReceipt(List<fees_receipt> fees)
+        public int AddReceipt(List<fees_receipt> fees)
         {
             string phone;
             int sr_num =0;
@@ -46,9 +46,38 @@ namespace SMS.Models
 
                     DateTime rect_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
 
+                    con.Open();
 
-                    foreach (fees_receipt fee in fees)
+                    MySqlCommand myCommand = con.CreateCommand();
+
+                    MySqlTransaction myTrans;
+
+                    myTrans = con.BeginTransaction();
+
+                    myCommand.Connection = con;
+
+                    myCommand.Transaction = myTrans;
+
+                    try
                     {
+                        foreach (fees_receipt fee in fees)
+                        {
+
+                        query1 = @"SELECT 
+                                        IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)
+                                    FROM
+                                        out_standing
+                                    WHERE
+                                        serial = @serial AND session = @session";
+
+                        decimal dues = con.Query<decimal>(query1, new { serial = fee.serial, session = fee.session }).SingleOrDefault();
+
+                        if (dues != fee.due_amount)
+                        {
+                            rect_no = 0;
+                            myTrans.Rollback();
+                            throw new System.InvalidOperationException("trying to update double entry in a single out_standing serial");
+                        }
 
                         if (fee.fin_id == null)
                         {
@@ -69,13 +98,12 @@ namespace SMS.Models
                                                 FROM
                                                     mst_session
                                                 WHERE
-                                                    session_active = 'Y'
-                                                        AND session_finalize = 'Y')";
+                                                   session_finalize = 'Y')";
 
                             int id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
                             fee.section_id = id;
-                            
+
                             query1 = @"SELECT 
                                             class_id
                                         FROM
@@ -87,8 +115,7 @@ namespace SMS.Models
                                                 FROM
                                                     mst_session
                                                 WHERE
-                                                    session_active = 'Y'
-                                                        AND session_finalize = 'Y')";
+                                                    session_finalize = 'Y')";
 
                             id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
 
@@ -105,17 +132,43 @@ namespace SMS.Models
 
                         fee.dt_date = rect_date;
 
+                        string reg_date;
+                        string chq_date;
+
                         if (fee.reg_date == DateTime.MinValue)
                         {
-                            fee.reg_date = null;
+                            reg_date = "null";
+                        }
+                        else
+                        {
+                            reg_date = String.Format("'{0}'", fee.reg_date.Value.ToString("yyyy-MM-dd"));
                         }
 
                         if (fee.chq_date == DateTime.MinValue)
                         {
-                            fee.chq_date = null;
+                            chq_date = "null";
+                        }
+                        else
+                        {
+                            chq_date = String.Format("'{0}'", fee.chq_date.Value.ToString("yyyy-MM-dd"));
                         }
 
-                        string query = @"INSERT INTO fees_receipt
+
+
+                            ot_std.serial = fee.serial;
+                            ot_std.rmt_amount = fee.amount;
+                            ot_std.receipt_no = fee.receipt_no;
+                            ot_std.receipt_date = fee.receipt_date;
+                            ot_std.session = fee.session;
+                            ot_std.dt_date = fee.dt_date;
+                            ot_std.clear_flag = fee.clear_flag;
+                            ot_std.month_no = fee.month_no;
+                            ot_std.dc_fine = fee.dc_fine;
+                            ot_std.dc_discount = fee.dc_discount;
+
+                            out_main.updateOutstandingReceipt(ot_std, myCommand);
+
+                            string query = String.Format(@"INSERT INTO fees_receipt
                                (fin_id
                                 ,session
                                ,receipt_no
@@ -140,81 +193,98 @@ namespace SMS.Models
                                ,clear_flag
                                 ,user_id)
                          VALUES
-                               (@fin_id
-                                ,@session
-                               ,@receipt_no
-                               ,@receipt_date
-                               ,@acc_id
-                               ,@fees_name
-                               ,@sr_number
-                               ,@class_id
-                               ,@section_id
-                               ,@amount
-                               ,@reg_no
-                               ,@reg_date
-                               ,@dc_fine
-                               ,@dc_discount
-                               ,@narration
-                               ,@serial
-                               ,@dt_date
-                               ,@bnk_name
-                               ,@chq_no
-                               ,@chq_date
-                               ,@mode_flag
-                               ,@clear_flag
-                                ,@user_id)";
+                               ('{0}'
+                                ,'{1}'
+                               ,{2}
+                               ,'{3}'
+                               ,{4}
+                               ,'{5}'
+                               ,{6}
+                               ,{7}
+                               ,{8}
+                               ,{9}
+                               ,{10}
+                               ,{11}
+                               ,{12}
+                               ,{13}
+                               ,'{14}'
+                               ,{15}
+                               ,'{16}'
+                               ,'{17}'
+                               ,'{18}'
+                               ,{19}
+                               ,'{20}'
+                               ,{21}
+                                ,{22})", fee.fin_id,
+                                        fee.session,
+                                        fee.receipt_no,
+                                        fee.receipt_date.ToString("yyyy-MM-dd"),
+                                        fee.acc_id,
+                                        fee.fees_name,
+                                        fee.sr_number,
+                                        fee.class_id,
+                                        fee.section_id,
+                                        fee.amount,
+                                        fee.reg_no,
+                                        reg_date,
+                                        fee.dc_fine,
+                                        fee.dc_discount,
+                                        fee.narration,
+                                        fee.serial,
+                                        fee.dt_date.ToString("yyyy-MM-dd"),
+                                        fee.bnk_name,
+                                        fee.chq_no,
+                                        chq_date,
+                                        fee.mode_flag,
+                                        fee.clear_flag,
+                                        fee.user_id);
 
-                        await con.ExecuteAsync(query,
-                                new
-                                {
-                                    fee.fin_id,
-                                    fee.session,
-                                    fee.receipt_no,
-                                    fee.receipt_date,
-                                    fee.acc_id,
-                                    fee.fees_name,
-                                    fee.sr_number,
-                                    fee.class_id,
-                                    fee.section_id,
-                                    fee.amount,
-                                    fee.reg_no,
-                                    fee.reg_date,
-                                    fee.dc_fine,
-                                    fee.dc_discount,
-                                    fee.narration,
-                                    fee.serial,
-                                    fee.dt_date,
-                                    fee.bnk_name,
-                                    fee.chq_no,
-                                    fee.chq_date,
-                                    fee.mode_flag,
-                                    fee.clear_flag,
-                                    fee.user_id
-                                });
 
-                        ot_std.serial = fee.serial;
-                        ot_std.rmt_amount = fee.amount;
-                        ot_std.receipt_no = fee.receipt_no;
-                        ot_std.receipt_date = fee.receipt_date;
-                        ot_std.session = fee.session;
-                        ot_std.dt_date = fee.dt_date;
-                        ot_std.clear_flag = fee.clear_flag;
-                        ot_std.month_no = fee.month_no;
-                        ot_std.dc_fine = fee.dc_fine;
-                        ot_std.dc_discount = fee.dc_discount;
+                            myCommand.CommandText = query;
 
-                        out_main.updateOutstandingReceipt(ot_std);
+                            myCommand.ExecuteNonQuery();
 
-                        sr_num = fee.sr_number;
 
-                        amount = amount + fee.amount;
-                        amount = amount + fee.dc_fine;
-                        amount = amount - fee.dc_discount;
 
-                        flag = fee.mode_flag;
+                            sr_num = fee.sr_number;
 
+                            amount = amount + fee.amount;
+                            amount = amount + fee.dc_fine;
+                            amount = amount - fee.dc_discount;
+
+                            flag = fee.mode_flag;
+
+                            
+                            }
+                        myTrans.Commit();
                     }
+                        catch (Exception e)
+                        {
+                            try
+                            {
+                                rect_no = 0;
+                                myTrans.Rollback();
 
+                            }
+                            catch (MySqlException ex)
+                            {
+                                if (myTrans.Connection != null)
+                                {
+                                    Console.WriteLine("An exception of type " + ex.GetType() +
+                                    " was encountered while attempting to roll back the transaction.");
+                                }
+                            }
+
+                            Console.WriteLine("An exception of type " + e.GetType() +
+                            " was encountered while inserting the data.");
+                            Console.WriteLine("Neither record was written to database.");
+                        }
+                        finally
+                        {
+                            con.Close();
+                        }
+
+                   
 #if !DEBUG
                     query1 = @"select coalesce(std_contact, std_contact1, std_contact2) from sr_register where sr_number = @sr_number";
 

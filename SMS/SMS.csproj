@@ -2527,6 +2527,8 @@
     <Content Include="Views\report\duesListNotice.cshtml" />
     <Content Include="Views\report\duesListNotice_students.cshtml" />
     <Content Include="Views\report\success.cshtml" />
+    <Content Include="Views\report\track_vehicle.cshtml" />
+    <Content Include="Views\report\track_live_location.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -49,9 +49,9 @@ namespace SMS.Models
         [Required]
         [Display(Name = "Contact")]
         public virtual string std_contact { get; set; }
-        [Display(Name = "Contact 1")]
+        [Display(Name = "Contact Father")]
         public virtual string std_contact1 { get; set; }
-        [Display(Name = "Contact 2")]
+        [Display(Name = "Contact Mother")]
         public virtual string std_contact2 { get; set; }
         [Display(Name = "Email")]
         public virtual string std_email { get; set; }

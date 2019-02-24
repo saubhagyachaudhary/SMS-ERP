@@ -377,8 +377,11 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Generate/Send Fees Notice", "duesListNotice", "report")</li>
                                         }
+                                        @if (list.Contains("track_vehicle"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Track Vehicle Location", "track_vehicle", "report")</li>
 
-                                       
+                                        }
                                     </ul>
                                 </li>
                                 }

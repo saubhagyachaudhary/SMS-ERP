@@ -84,6 +84,7 @@ namespace SMS.Models
         public int month_no{ get; set; }
         public string chq_reject { get; set; }
         public int user_id{ get; set; }
+        public decimal due_amount { get; set; }
 
     }
 }

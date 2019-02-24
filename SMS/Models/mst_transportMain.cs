@@ -106,6 +106,27 @@ namespace SMS.Models
             return result;
         }
 
+        public IEnumerable<mst_transport> AllTransportNumber()
+        {
+            string query = @"SELECT DISTINCT
+                                transport_number
+                            FROM
+                                mst_transport
+                            WHERE
+                                session = (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y')
+                                    AND transport_number IS NOT NULL
+                                    AND transport_number != ''";
+
+            var result = con.Query<mst_transport>(query);
+
+            return result;
+        }
+
         public mst_transport FindTransport(int? id,string session)
         {
             string Query = @"SELECT 

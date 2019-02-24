@@ -1,0 +1,103 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geolocation</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <span class="metadata-marker" style="display: none;" data-region_tag="css"></span>
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <span class="metadata-marker" style="display: none;" data-region_tag="html-body"></span>    <div id="map"></div>
+    <span class="metadata-marker" style="display: none;" data-region_tag="script-body"></span>
+    <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-database.js"></script>
+    <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCrj8N_oHQtYiwpUWCdkCaVcArY5Fi1pEw",
+    authDomain: "hariti-location-tracker.firebaseapp.com",
+    databaseURL: "https://hariti-location-tracker.firebaseio.com",
+    projectId: "hariti-location-tracker",
+    storageBucket: "hariti-location-tracker.appspot.com",
+    messagingSenderId: "361228540507"
+  };
+  firebase.initializeApp(config);
+    </script>
+
+    <script>
+      // Note: This example requires that you consent to location sharing when
+      // prompted by your browser. If you see the error "The Geolocation service
+      // failed.", it means you probably did not give permission for the browser to
+      // locate you.
+      var map, infoWindow,marker,flag;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 15,
+		  mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+        infoWindow = new google.maps.InfoWindow();
+
+	var d = new Date();
+
+	var saubhagya = firebase.database().ref().child("@ViewData["database"]");
+
+
+
+	var icon = {
+    url: "https://image.flaticon.com/icons/png/512/8/8110.png", // url
+    scaledSize: new google.maps.Size(50, 50), // scaled size
+    origin: new google.maps.Point(0,0), // origin
+    anchor: new google.maps.Point(0, 0) // anchor
+};
+	flag = true;
+	saubhagya.on("child_added",snap => {
+
+		/*var pos = {
+              lat: parseFloat(snap.child("latitude").val()),
+              lng: parseFloat(snap.child("longitude").val())
+			  };*/
+
+		var position = new google.maps.LatLng(parseFloat(snap.child("latitude").val()), parseFloat(snap.child("longitude").val()));
+
+	  if (marker && marker.setMap) {
+    marker.setMap(null);
+  }
+
+        marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: "@ViewData["tranport_name"]",
+			icon: icon
+        });
+
+	    map.setCenter(position);
+	   
+            });
+
+          
+
+	};
+
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAW1Pd-UVOsYqWMwHBWb9LBms1LTabtd-Q&callback=initMap">
+    </script>
+</body>
+</html>
