@@ -479,71 +479,30 @@ namespace SMS.Controllers
 
         }
 
-        public JsonResult GetSection(int id)
+       
+
+        public JsonResult GetSubject(int id,string session)
         {
-            bool flag;
-
-            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
-            {
-                flag = true;
-            }
-            else
-            {
-                flag = false;
-            }
-
-            if(flag)
-            {
-                string query = @"SELECT 
-                                    a.section_id, b.section_name
+            string query = @"SELECT 
+                                    a.subject_id,a.subject_name
                                 FROM
-                                    mst_attendance a,
-                                    mst_section b
+                                    mst_subject a,
+                                    mst_class_subject b
                                 WHERE
-                                    a.section_id = b.section_id
-                                        AND a.class_id = @class_id
-                                        AND b.session = (SELECT 
-                                            session
-                                        FROM
-                                            mst_session
-                                        WHERE
-                                            session_finalize = 'Y')";
-
-
-                var exam_list = con.Query<mst_section>(query, new { class_id = id});
-
-                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
-
-                return Json(list);
-            }
-            else
-            {
-                string query = @"SELECT 
-                                    a.section_id, b.section_name
-                                FROM
-                                    mst_attendance a,
-                                    mst_section b
-                                WHERE
-                                    a.section_id = b.section_id
-                                        AND a.class_id = @class_id
-                                        AND a.user_id = @user_id
-                                        AND b.session = (SELECT 
-                                            session
-                                        FROM
-                                            mst_session
-                                        WHERE
-                                            session_finalize = 'Y')";
-
-
-                var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });
-
-                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
-
-                return Json(list);
-            }
+                                    a.session = b.session
+                                        AND a.subject_id = b.subject_id
+                                        AND a.session = @session
+                                        AND b.class_id = @class_id";
            
 
+
+                var subject_list = con.Query<mst_subject>(query, new { class_id = id, session = session });
+
+                IEnumerable<SelectListItem> list = new SelectList(subject_list, "subject_id", "subject_name");
+
+            return Json(list);
             
+        
 
         }
 
@@ -615,6 +574,31 @@ namespace SMS.Controllers
             //ViewData["pickup_id"] = list1;
         }
 
-        
+        #region Academic Report
+        [HttpGet]
+        public ActionResult subject_comparative_study()
+        {
+           
+            DDsession_name();
+            return View();
+
+            
+        }
+
+        [HttpPost]
+        public ActionResult subject_comparative_study(mst_exam_marks marks)
+        {
+            comparative_result_analysis study = new comparative_result_analysis();
+
+            study.pdfComparative_result_analysis(marks.subject_id, marks.class_id, marks.section_id, marks.session);
+
+            DDsession_name();
+            return View();
+
+
+        }
+
+
+        #endregion
     }
 }

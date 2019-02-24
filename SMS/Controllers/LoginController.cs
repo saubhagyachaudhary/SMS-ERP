@@ -22,7 +22,10 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-          
+            //comparative_result_analysis cc = new comparative_result_analysis();
+
+            //cc.pdfComparative_result_analysis(2, 12, 111, "2018-19");
+
             return View(u);
         }
 

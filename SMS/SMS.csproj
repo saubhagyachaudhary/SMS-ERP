@@ -354,6 +354,7 @@
     <Compile Include="Models\usersMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="report\birth_certificateMain.cs" />
+    <Compile Include="report\comparative_result_analysis.cs" />
     <Compile Include="report\repAttendance_sheet.cs" />
     <Compile Include="report\repAttendance_sheetMain.cs" />
     <Compile Include="report\repClass_Wise_Std_List.cs" />
@@ -2529,6 +2530,7 @@
     <Content Include="Views\report\success.cshtml" />
     <Content Include="Views\report\track_vehicle.cshtml" />
     <Content Include="Views\report\track_live_location.cshtml" />
+    <Content Include="Views\report\subject_comparative_study.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

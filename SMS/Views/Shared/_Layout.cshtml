@@ -382,9 +382,24 @@
                                             <li class="please_wait">@Html.ActionLink("Track Vehicle Location", "track_vehicle", "report")</li>
 
                                         }
+
+
+                                        
                                     </ul>
                                 </li>
                                 }
+                                    @if (list.Contains("subject_comparative_study"))
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-file-text-o"></i> Exam Analysis <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+
+                                                <li class="please_wait">@Html.ActionLink("Comparative Study/Result Analysis", "subject_comparative_study", "report")</li>
+
+                                            </ul>
+                                        </li>
+                                    }
+
                                @* <li>
                                     <a><i class="fa fa-desktop"></i> UI Elements <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">

@@ -16,7 +16,7 @@ namespace SMS.report
     public class student_ledgerMain
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-        int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+       
         string Affiliation = ConfigurationManager.AppSettings["Affiliation"].ToString();
         string Address = ConfigurationManager.AppSettings["Address"].ToString();
         string SchoolName = ConfigurationManager.AppSettings["SchoolName"].ToString();
