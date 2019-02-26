@@ -109,7 +109,8 @@ namespace SMS.APIControllers
                                 WHERE
                                     a.sr_number = @sr_number
 	                                AND month_no <= @month_no
-                                    AND session = @session";
+                                    AND session = @session
+                                    AND acc_id != 6";
                 }
                 else if (month_no == 1)
                 {
@@ -121,7 +122,8 @@ namespace SMS.APIControllers
                                 WHERE
                                     a.sr_number = @sr_number
 	                               and month_no not in (2,3)
-                                    AND session = @session";
+                                    AND session = @session
+                                    AND acc_id != 6";
                 }
                 else if (month_no == 2)
                 {
@@ -134,7 +136,8 @@ namespace SMS.APIControllers
                                 WHERE
                                     a.sr_number = @sr_number
 	                                and month_no != 3
-                                    AND session = @session";
+                                    AND session = @session
+                                    AND acc_id != 6";
 
                 }
                 else
@@ -146,7 +149,8 @@ namespace SMS.APIControllers
                                     out_standing a
                                 WHERE
                                     a.sr_number = @sr_number
-                                    AND session = @session";
+                                    AND session = @session
+                                    AND acc_id != 6";
 
                 }
 

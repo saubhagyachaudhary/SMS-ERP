@@ -18,6 +18,15 @@
 
                         <hr />
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                         <div class="form-group">
+                            @Html.LabelFor(model => model.session, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownListFor(model => model.session, ViewData["session"] as IEnumerable<SelectListItem>, "Please Select Class", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.session, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             @Html.LabelFor(model => model.class_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
@@ -35,13 +44,7 @@
                         </div>
 
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.session, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
-                            <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownListFor(model => model.session, ViewData["session"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.session, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
+                       
 
                         <div class="form-group">
                             <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
@@ -60,60 +63,109 @@
 
    <script type="text/javascript">
 
-                           $(document).ready(function () {
+                            $(document).ready(function () {
 
                                     //Dropdownlist Selectedchange event
+
+                               $("#session").change(function () {
+
+                                   $("#class_id").empty();
+                                   $("#section_id").empty();
+                                   $("#class_id").append('<option value=0>Select Class</option>');
+                                   $("#section_id").append('<option value=0>Select Section</option>');
+                                   $.ajax({
+
+                                       type: 'POST',
+
+                                       url: '@Url.Action("GetCLass")', dataType: 'json', data: { session: $("#session").val() }, success: function (class_list) {
+
+                                           // states contains the JSON formatted list
+
+                                           // of states passed from the controller
+
+
+
+                                           $.each(class_list, function (i, class_list) {
+
+                                               $("#class_id").append('<option value="' + class_list.Value + '">' +
+
+                                                class_list.Text + '</option>');
+
+                                               // here we are adding option for States
+
+
+
+                                           });
+
+                                       },
+
+                                       error: function (ex) {
+
+                                           //alert('Failed to retrieve sections.' + ex);
+
+                                       }
+
+                                   });
+
+
+
+                                   return false;
+
+                               })
+
+
+
 
                                $("#class_id").change(function () {
 
                                    $("#section_id").empty();
+                                   
+                                   $.ajax({
 
-                                        $.ajax({
+                                       type: 'POST',
 
-                                            type: 'POST',
+                                       url: '@Url.Action("GetSections")', dataType: 'json', data: { id: $("#class_id").val(), session: $("#session").val() }, success: function (section) {
 
-                                            url: '@Url.Action("GetSection")', dataType: 'json', data: { id: $("#class_id").val() }, success: function (sections)
-                                            {
+                                           // states contains the JSON formatted list
 
-                                                // states contains the JSON formatted list
-
-                                                // of states passed from the controller
-
-
-
-                                                $.each(sections, function (i, sections) {
-
-                                                $("#section_id").append('<option value="' + sections.Value + '">' +
-
-                                                     sections.Text + '</option>');
-
-                                                // here we are adding option for States
+                                           // of states passed from the controller
 
 
 
-                                                });
+                                           $.each(section, function (i, section) {
 
-                                            },
+                                               $("#section_id").append('<option value="' + section.Value + '">' +
 
-                                            error: function (ex) {
+                                                section.Text + '</option>');
 
-                                                //alert('Failed to retrieve sections.' + ex);
 
-                                            }
-
-                                        });
+                                               // here we are adding option for States
 
 
 
-                                        return false;
+                                           });
+
+                                       },
+
+                                       error: function (ex) {
+
+                                           //alert('Failed to retrieve sections.' + ex);
+
+                                       }
+
+                                   });
+
+
+                                  
+                                   return false;
 
                                })
 
-                          
 
                                return false;
 
                            })
+
 
 </script>
 }
