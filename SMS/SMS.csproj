@@ -212,6 +212,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcademicControllers\class_subject_teacherController.cs" />
+    <Compile Include="AcademicControllers\mstSubjectChapterController.cs" />
     <Compile Include="APIControllers\ReportCardAPIController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -2531,6 +2533,19 @@
     <Content Include="Views\report\track_vehicle.cshtml" />
     <Content Include="Views\report\track_live_location.cshtml" />
     <Content Include="Views\report\subject_comparative_study.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AllSubjectOfTeacher.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AllChapterList.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AddChapter.cshtml" />
+    <Content Include="Views\mstSubjectChapter\EditChapter.cshtml" />
+    <Content Include="Views\class_subject_teacher\AllSubjectTeacher.cshtml" />
+    <Content Include="Views\class_subject_teacher\AddSubjectTeacher.cshtml" />
+    <Content Include="Views\class_subject_teacher\DeleteSubjectTeacher.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AllCWWorkList.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AddCW.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AllHWWorkList.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AddHW.cshtml" />
+    <Content Include="Views\mstSubjectChapter\DeleteCW.cshtml" />
+    <Content Include="Views\mstSubjectChapter\DeleteHW.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

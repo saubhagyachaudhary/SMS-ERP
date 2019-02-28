@@ -1,0 +1,46 @@
+﻿@model SMS.AcademicControllers.mst_class_notebook
+
+@{
+    ViewBag.Title = "DeleteHW";
+}
+
+
+<div class="right_col" role="main">
+    <h2>Delete Class Work</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+                    <h3>Are you sure you want to delete this?</h3>
+                    <div>
+
+                        <hr />
+                        <dl class="dl-horizontal">
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.work_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.work_name)
+                            </dd>
+
+                        </dl>
+
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+
+                            <div class="form-actions no-color">
+                                <input type="submit" value="Delete" class="btn btn-default" /> |
+                                @Html.ActionLink("Back to List", "AllHWWorkList", new { session = Model.session, subject_id = Model.subject_id, class_id = Model.class_id, section_id = Model.section_id, chapter_id = Model.chapter_id }, new { @class = "btn btn-primary please_wait" })
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

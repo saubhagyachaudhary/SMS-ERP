@@ -22,5 +22,8 @@ namespace SMS.Models
 
         [Display(Name = "Subject Name")]
         public string subject_name { get; set; }
+
+      
+
     }
 }

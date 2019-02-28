@@ -133,8 +133,7 @@ namespace SMS.Models
 
             return result;
         }
-
-
+        
         public mst_class FindClass(int? id)
         {
             string Query = @"SELECT 

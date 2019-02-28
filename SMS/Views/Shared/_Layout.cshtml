@@ -133,7 +133,7 @@
                             <ul class="nav side-menu">
 
 
-                               @if (list.Contains("class_master") || list.Contains("financial_year") || list.Contains("session_master") || list.Contains("section_master") || list.Contains("transport_master") || list.Contains("account_master") || list.Contains("fees_master") || list.Contains("discount_master") || list.Contains("employee_master") || list.Contains("user_master") || list.Contains("class_teacher") || list.Contains("update_roll_number")|| list.Contains("users_features") || User.IsInRole("superadmin"))
+                               @if (list.Contains("class_master") || list.Contains("financial_year") || list.Contains("session_master") || list.Contains("section_master") || list.Contains("transport_master") || list.Contains("account_master") || list.Contains("fees_master") || list.Contains("discount_master") || list.Contains("employee_master") || list.Contains("user_master") || list.Contains("class_teacher") || list.Contains("update_roll_number") || list.Contains("users_features") || User.IsInRole("superadmin"))
                                {
                                 <li>
                                     <a><i class="fa fa-cog"></i> Masters <span class="fa fa-chevron-down"></span></a>
@@ -144,7 +144,7 @@
                                             <li class="please_wait"><a href="~/job_scheduled">Hangfire Dashboard</a></li>
                                              <li class="please_wait">@Html.ActionLink("Enable Features", "AllUserList", "enable_feature")</li>
                                              <li class="please_wait">@Html.ActionLink("Enable Wedget", "AllUserList", "enable_wedget")</li>
-                                             
+
                                          }
                                             @if (list.Contains("class_master"))
                                             {
@@ -205,7 +205,7 @@
                                        </ul>
                                        </li>
                                }
-                                @if (list.Contains("registration_form")|| list.Contains("mark_attendance"))
+                                @if (list.Contains("registration_form") || list.Contains("mark_attendance"))
                                 {
                                 <li>
 
@@ -226,7 +226,7 @@
                                 </li>
                                 }
 
-                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades")|| list.Contains("teacher_exam_remark"))
+                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades") || list.Contains("teacher_exam_remark"))
                                 {
                                 <li>
                                     <a><i class="fa fa-edit"></i> Examination <span class="fa fa-chevron-down"></span></a>
@@ -302,7 +302,7 @@
                                     </ul>
                                 </li>
                                 }
-                                @if (list.Contains("fees_collection")|| list.Contains("uncleared_cheque"))
+                                @if (list.Contains("fees_collection") || list.Contains("uncleared_cheque"))
                                 {
                                 <li>
                                     <a><i class="fa fa-money"></i> Fees Collection <span class="fa fa-chevron-down"></span></a>
@@ -332,7 +332,7 @@
                                     </li>
                                 }
 
-                                @if (list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger")|| list.Contains("birth_certificate")|| list.Contains("transport_dues_list"))
+                                @if (list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list"))
                                 {
                                 <li>
                                     <a><i class="fa fa-file-text-o"></i>MIS Reports <span class="fa fa-chevron-down"></span></a>
@@ -388,16 +388,29 @@
                                     </ul>
                                 </li>
                                 }
-                                    @if (list.Contains("subject_comparative_study"))
+                                    @if (list.Contains("subject_comparative_study") || list.Contains("AllSubjectTeacher") || list.Contains("AllSubjectOfTeacher"))
                                     {
                                         <li>
-                                            <a><i class="fa fa-file-text-o"></i> Exam Analysis <span class="fa fa-chevron-down"></span></a>
+                                            <a><i class="fa fa-file-text-o"></i> Academics <span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
+                                                @if (list.Contains("subject_comparative_study"))
+                                                {
+                                                    <li class="please_wait">@Html.ActionLink("Comparative Study/Result Analysis", "subject_comparative_study", "report")</li>
+                                                }
 
-                                                <li class="please_wait">@Html.ActionLink("Comparative Study/Result Analysis", "subject_comparative_study", "report")</li>
-
+                                                @if (list.Contains("AllSubjectTeacher"))
+                                                {
+                                                     <li class="please_wait">@Html.ActionLink("Assign Subject teacher", "AllSubjectTeacher", "class_subject_teacher")</li>
+                                                }
+                                               
+                                                @if (list.Contains("AllSubjectOfTeacher"))
+                                                {
+                                                    <li class="please_wait">@Html.ActionLink("Assign CW/HW", "AllSubjectOfTeacher", "mstSubjectChapter")</li>
+                                                }
                                             </ul>
                                         </li>
+
+                                       
                                     }
 
                                @* <li>

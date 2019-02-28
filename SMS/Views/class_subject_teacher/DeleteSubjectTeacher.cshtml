@@ -1,0 +1,69 @@
+﻿@model SMS.AcademicControllers.mst_class_subject_teacher
+
+@{
+    ViewBag.Title = "DeleteSubjectTeacher";
+}
+
+
+<div class="right_col" role="main">
+    <h2>Assign Teacher to Class</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+
+                    <h3>Are you sure you want to delete this?</h3>
+                    <div>
+                       
+                        <hr />
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.class_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.class_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.section_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.section_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.subject_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.subject_name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.subject_teacher_name)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.subject_teacher_name)
+                            </dd>
+
+                        </dl>
+
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+
+                            <div class="form-actions no-color">
+                                <input type="submit" value="Delete" class="btn btn-default" /> |
+                               @Html.ActionLink("Back to List", "AllSubjectTeacher", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                            </div>
+                        }
+                    </div>
+                    </div>
+</div>
+</div>
+</div>
+</div>

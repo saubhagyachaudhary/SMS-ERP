@@ -1,0 +1,178 @@
+﻿@model SMS.AcademicControllers.mst_class_subject_teacher
+
+@{
+    ViewBag.Title = "AddSubjectTeacher";
+}
+
+<div class="right_col" role="main">
+    <h2>Assign Teacher to Class</h2>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+
+
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-horizontal">
+
+                            <hr />
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.class_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownListFor(model => model.class_id, ViewData["class_id"] as IEnumerable<SelectListItem>, "Please Select Class", htmlAttributes: new { @class = "form-control" })
+
+                                    @Html.ValidationMessageFor(model => model.class_id, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.section_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownList("section_id", new SelectList(string.Empty, "section_id", "section_name"), "Select Section", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.section_id, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.subject_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownList("subject_id", new SelectList(string.Empty, "subject_id", "subject_name"), "Select subject", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.subject_id, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.subject_teacher_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownListFor(model => model.subject_teacher_id, ViewData["subject_teacher_id"] as IEnumerable<SelectListItem>, "Please Select Subject Teacher", htmlAttributes: new { @class = "form-control" })
+
+                                    @Html.ValidationMessageFor(model => model.subject_teacher_id, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                    <input type="submit" value="Save" class="btn btn-default please_wait" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        @Html.ActionLink("Back to List", "AllSubjectTeacher", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                    </div>
+                   
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+@Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+
+
+                           $(document).ready(function () {
+
+                                    //Dropdownlist Selectedchange event
+
+
+                               $("#class_id").change(function () {
+
+                                   $("#section_id").empty();
+                                   $("#subject_id").empty();
+                                   $.ajax({
+
+                                       type: 'POST',
+
+                                       url: '@Url.Action("GetSections")', dataType: 'json', data: { id: $("#class_id").val() }, success: function (section) {
+
+                                           // states contains the JSON formatted list
+
+                                           // of states passed from the controller
+
+
+
+                                           $.each(section, function (i, section) {
+
+                                               $("#section_id").append('<option value="' + section.Value + '">' +
+
+                                                section.Text + '</option>');
+
+
+                                               // here we are adding option for States
+
+
+
+                                           });
+
+                                       },
+
+                                       error: function (ex) {
+
+                                           //alert('Failed to retrieve sections.' + ex);
+
+                                       }
+
+                                   });
+
+
+                                   $("#subject_id").empty();
+                                   $.ajax({
+
+                                       type: 'POST',
+
+                                        url: '@Url.Action("GetSubject")', dataType: 'json', data: { id: $("#class_id").val() }, success: function (section) {
+
+                                           // states contains the JSON formatted list
+
+                                           // of states passed from the controller
+
+
+
+                                           $.each(section, function (i, section) {
+
+                                               $("#subject_id").append('<option value="' + section.Value + '">' +
+
+                                                section.Text + '</option>');
+
+
+                                               // here we are adding option for States
+
+
+
+                                           });
+
+                                       },
+
+                                       error: function (ex) {
+
+                                           alert('Failed to retrieve sections.' + ex.Text);
+
+                                       }
+
+                                   });
+
+
+
+                                   return false;
+
+                               })
+
+
+                               return false;
+
+                           })
+
+    </script>
+}

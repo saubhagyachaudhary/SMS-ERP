@@ -16,6 +16,7 @@ namespace SMS.Controllers
         {
             mst_classMain mstClass = new mst_classMain();
             mst_subjectMain mstsubject = new mst_subjectMain();
+           
 
             mst_sessionMain sess = new mst_sessionMain();
 
@@ -23,12 +24,15 @@ namespace SMS.Controllers
 
             var subject_list = mstsubject.AllSubjectList();
 
+           
+
             IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
             IEnumerable<SelectListItem> list1 = new SelectList(subject_list, "subject_id", "subject_name");
-
+      
 
             ViewData["class_id"] = list;
             ViewData["subject_id"] = list1;
+          
 
             return View();
         }
@@ -50,6 +54,7 @@ namespace SMS.Controllers
             {
                 mst_classMain mstClass = new mst_classMain();
                 mst_subjectMain mstsubject = new mst_subjectMain();
+               
 
                 mst_sessionMain sess = new mst_sessionMain();
 
@@ -57,12 +62,16 @@ namespace SMS.Controllers
 
                 var subject_list = mstsubject.AllSubjectList();
 
+              
+
                 IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
                 IEnumerable<SelectListItem> list1 = new SelectList(subject_list, "subject_id", "subject_name");
+               
 
 
                 ViewData["class_id"] = list;
                 ViewData["subject_id"] = list1;
+              
 
                 ModelState.AddModelError(String.Empty, "Subject Already Assigned");
 
@@ -79,8 +88,6 @@ namespace SMS.Controllers
 
             return View(stdMain.AllClassSubjectList());
         }
-
-      
 
         [HttpGet]
         public ActionResult DeleteClassSubject(int class_id, int subject_id, string session)
