@@ -1,0 +1,48 @@
+﻿@model SMS.AcademicControllers.mst_chapter
+
+@{
+    ViewBag.Title = "AddChapter";
+}
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+                <h2>Add Chapter</h2>
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.chapter_name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.chapter_name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.chapter_name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Create" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+                <div>
+                    @Html.ActionLink("Back to List", "AllChapterList",new {session = Model.session, class_id = Model.class_id, subject_id  = Model.subject_id, section_id = Model.section_id }, new { @class = "btn btn-primary please_wait" })
+                </div>
+                
+</div>
+</div>
+</div>

@@ -659,6 +659,6 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Newtonsoft.Json.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\es\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core.resources.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.pdb
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache

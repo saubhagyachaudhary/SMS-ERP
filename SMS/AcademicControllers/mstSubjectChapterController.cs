@@ -13,6 +13,8 @@ namespace SMS.AcademicControllers
 {
     public class mstSubjectChapterController : Controller
     {
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
         [HttpGet]
         public ActionResult AddChapter(string session,int class_id,int subject_id, int section_id)
         {
@@ -221,6 +223,315 @@ namespace SMS.AcademicControllers
             main.deleteWork(notebook);
 
             return RedirectToAction("AllHWWorkList", new { session = notebook.session, subject_id = notebook.subject_id, class_id = notebook.class_id, section_id = notebook.section_id, chapter_id = notebook.chapter_id });
+        }
+
+        [HttpGet]
+        public ActionResult Student_Copy(string session, int subject_id, int class_id, int section_id)
+        {
+            
+            copy_correction copy = new copy_correction();
+
+            copy.subject_id = subject_id;
+            copy.session = session;
+            copy.class_id = class_id;
+            copy.section_id = section_id;
+            
+            return View(copy);
+        }
+
+        [HttpPost]
+        public ActionResult Student_Copy(copy_correction copy)
+        {
+            string query = @"SELECT 
+                                    COUNT(*)
+                                FROM
+                                    mst_std_class a,
+                                    mst_std_section b
+                                WHERE
+                                    a.session = b.session
+                                        AND a.sr_num = b.sr_num
+                                        AND a.class_id = @class_id
+                                        AND b.section_id = @section_id
+                                        AND a.sr_num = @sr_number";
+
+            int flag = con.Query<int>(query, new { sr_number = copy.sr_number,class_id = copy.class_id, section_id = copy.section_id }).SingleOrDefault();
+
+            if (flag == 0)
+            {
+                ModelState.AddModelError(String.Empty, "Student not found.");
+                return View(copy);
+            } 
+
+            return RedirectToAction("AllUncheckedChapters", new { sr_number = copy.sr_number,session = copy.session, subject_id = copy.subject_id, class_id = copy.class_id, section_id = copy.section_id });
+        }
+
+        [HttpGet]
+        public ActionResult AllUncheckedChapters(int sr_number,string session, int subject_id, int class_id, int section_id)
+        {
+            copy_correctionMain main = new copy_correctionMain();
+            copy_correction copy = new copy_correction();
+
+            copy.sr_number = sr_number;
+            copy.session = session;
+            copy.subject_id = subject_id;
+            copy.class_id = class_id;
+            copy.section_id = section_id;
+
+            
+            ViewData["session"] = session;
+            ViewData["subject_id"] = subject_id;
+            ViewData["class_id"] = class_id;
+            ViewData["section_id"] = section_id;
+            ViewData["sr_number"] = sr_number;
+
+            return View(main.AllUncheckedChapterList(copy));
+        }
+
+        [HttpGet]
+        public ActionResult AllUncheckedQuestions(int sr_number,string session ,int class_id ,int subject_id ,int chapter_id ,int section_id )
+        {
+            copy_correctionMain main = new copy_correctionMain();
+            copy_correction copy = new copy_correction();
+
+            copy.sr_number = sr_number;
+            copy.session = session;
+            copy.subject_id = subject_id;
+            copy.class_id = class_id;
+            copy.section_id = section_id;
+            copy.chapter_id = chapter_id;
+
+
+            ViewData["session"] = session;
+            ViewData["subject_id"] = subject_id;
+            ViewData["class_id"] = class_id;
+            ViewData["section_id"] = section_id;
+            ViewData["sr_number"] = sr_number;
+
+            var result = main.AllUncheckedQuestions(copy);
+
+            foreach (var corr in result)
+            {
+                corr.sr_number = sr_number;
+                corr.chapter_id = chapter_id;
+                corr.teacher_correctby= int.Parse(Request.Cookies["loginUserId"].Value.ToString());
+                corr.class_id = class_id;
+                corr.section_id = section_id;
+                corr.subject_id = subject_id;
+            }
+
+            return View(result);
+        }
+
+        [HttpPost]
+        public ActionResult AddCheckedQuestion(IEnumerable<copy_correction> correction)
+        {
+            copy_correctionMain main = new copy_correctionMain();
+
+            main.AddCheckedQuestion(correction);
+
+            int sr_number = 0 ;
+            string session="";
+            int class_id=0;
+            int subject_id=0;
+            int chapter_id=0;
+            int section_id=0;
+            foreach (var i in correction)
+            {
+                sr_number = i.sr_number;
+                session = i.session;
+                class_id = i.class_id;
+                subject_id = i.subject_id;
+                chapter_id = i.chapter_id;
+                section_id = i.section_id;
+                break;
+            }
+
+            return RedirectToAction("Student_Copy", new {  session= session, class_id= class_id, subject_id= subject_id,section_id = section_id });
+        }
+
+        
+    }
+
+    public class copy_correction
+    {
+        [Key]
+        [Display(Name = "Session")]
+        [Required]
+        public string session { get; set; }
+
+        [Key]
+        [Display(Name = "Admission No.")]
+        [Required]
+        public int sr_number { get; set; }
+
+        [Key]
+        [Display(Name = "Work")]
+        [Required]
+        public string work_id { get; set; }
+
+        [Display(Name = "Work")]
+        public string work_name { get; set; }
+
+        [Display(Name = "Class Name")]
+        [Required]
+        public int class_id { get; set; }
+
+        [Display(Name = "Section Name")]
+        [Required]
+        public int section_id { get; set; }
+
+        [Display(Name = "Chapter Name")]
+        [Required]
+        public int chapter_id { get; set; }
+
+        [Display(Name = "Subject Name")]
+        [Required]
+        public int subject_id { get; set; }
+
+        [Display(Name = "Correction Date")]
+        [Required]
+        public DateTime correction_date { get; set; }
+
+        
+        [Display(Name = "Correct")]
+        [Required]
+        public bool que_correct { get; set; }
+
+        [Display(Name = "Remark")]
+        public string remark { get; set; }
+
+        [Display(Name = "Work Type")]
+        public string work_type { get; set; }
+
+        [Display(Name = "Work")]
+        [Required]
+        public int teacher_correctby { get; set; }
+
+        public bool work_done { get; set; }
+
+        [Display(Name = "Work Date")]
+        [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
+        public DateTime work_date { get; set; }
+
+
+    }
+
+    public class copy_correctionMain
+    {
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
+        public IEnumerable<mst_chapter> AllUncheckedChapterList(copy_correction copy)
+        {
+            string query = @"SELECT 
+                                    session,
+                                    class_id,
+                                    section_id,
+                                    subject_id,
+                                    chapter_id,
+                                    chapter_name,
+                                    chapter_start_date,
+                                    chapter_end_date
+                                FROM
+                                    mst_chapter
+                                WHERE
+                                    CONCAT(class_id,
+                                            section_id,
+                                            subject_id,
+                                            chapter_id) IN (SELECT DISTINCT
+                                            CONCAT(class_id,
+                                                        section_id,
+                                                        subject_id,
+                                                        chapter_id)
+                                        FROM
+                                            mst_class_notebook
+                                        WHERE
+                                            work_id NOT IN (SELECT 
+                                                    work_id
+                                                FROM
+                                                    copy_correction
+                                                WHERE
+                                                    sr_number = @sr_number AND session = @session)
+                                                AND session = @session)
+                                        AND session = @session
+                                        AND subject_id = @subject_id
+                                        AND class_id = @class_id
+                                        AND section_id = @section_id";
+
+            var result = con.Query<mst_chapter>(query, new { sr_number = copy.sr_number, session = copy.session, subject_id = copy.subject_id ,class_id = copy.class_id,section_id = copy.section_id });
+
+            return result;
+        }
+
+        public IEnumerable<copy_correction>  AllUncheckedQuestions(copy_correction copy)
+        {
+            string query = @"SELECT 
+                                session,
+                                class_id,
+                                section_id,
+                                subject_id,
+                                chapter_id,
+                                work_type,
+                                work_id,
+                                work_name,
+                                work_date
+                            FROM
+                                mst_class_notebook
+                            WHERE
+                                work_id NOT IN (SELECT 
+                                        work_id
+                                    FROM
+                                        copy_correction
+                                    WHERE
+                                        sr_number = @sr_number AND session = @session)
+                                    AND session = @session
+                                    AND subject_id = @subject_id
+                                    AND class_id = @class_id
+                                    AND section_id = @section_id
+                                    AND chapter_id = @chapter_id
+                            ORDER BY work_date DESC , work_type";
+
+            var result = con.Query<copy_correction>(query, new { sr_number = copy.sr_number, session = copy.session, subject_id = copy.subject_id, class_id = copy.class_id, section_id = copy.section_id,chapter_id = copy.chapter_id });
+            
+            return result;
+        }
+
+
+        public void AddCheckedQuestion(IEnumerable<copy_correction> copy)
+        {
+
+            try
+            {
+
+                string query = @"INSERT INTO `copy_correction`
+                                (`session`,
+                                `sr_number`,
+                                `work_id`,
+                                `correction_date`,
+                                `que_correct`,
+                                `remark`,
+                                `teacher_correctby`)
+                                VALUES
+                                (@session,
+                                @sr_number,
+                                @work_id,
+                                curdate(),
+                                @que_correct,
+                                @remark,
+                                @teacher_correctby)";
+                foreach (var ob in copy)
+                {
+                    if (ob.work_done)
+                    {
+                        
+                        con.Execute(query, ob);
+                    }
+                }
+
+            }
+            catch(Exception ex)
+            {
+                //do exception handling
+            }
         }
 
     }
@@ -491,6 +802,8 @@ namespace SMS.AcademicControllers
         [Display(Name = "Work Type")]
         [Required]
         public string work_type { get; set; }
+
+       
     }
 
     public class mst_class_notebookMain
@@ -528,14 +841,9 @@ namespace SMS.AcademicControllers
                                     FROM
                                         mst_class_notebook
                                     WHERE
-                                        session = @session
-                                            AND subject_id = @subject_id
-                                            AND class_id = @class_id
-                                            AND section_id = @section_id
-                                            AND chapter_id  = @chapter_id
-                                            AND work_type = @work_type";
+                                        session = @session";
 
-                notbook.work_id = con.ExecuteScalar<int>(maxid, new { session = notbook.session, subject_id = notbook.subject_id, class_id = notbook.class_id, section_id = notbook.section_id, chapter_id = notbook.chapter_id, work_type = notbook.work_type});
+                notbook.work_id = con.ExecuteScalar<int>(maxid, new { session = notbook.session});
 
                 con.Execute(query, notbook);
             }

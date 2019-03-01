@@ -1,61 +1,66 @@
 ﻿@model IEnumerable<SMS.AcademicControllers.mst_chapter>
 
 @{
-    ViewBag.Title = "AllSubjectOfTeacher";
+    ViewBag.Title = "AllUncheckedChapters";
 }
 <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <div class="right_col" role="main">
-   
+  
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title" style="overflow-x:auto;">
 
-                    <h2>List of all Subject Assigned</h2>
+                    <h2>List of all Unchecked Chapters</h2>
 
                     <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
+                               
                                 <th>
-                                    @Html.DisplayNameFor(model => model.class_name)
+                                    @Html.DisplayNameFor(model => model.chapter_name)
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.section_name)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.subject_name)
+                                    @Html.DisplayNameFor(model => model.chapter_start_date)
                                 </th>
                                
-                                <th>Control Panel</th>
+                                <th>Cantrol Panel</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
                                 <tr>
+                                    
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.class_name)
+                                        @Html.DisplayFor(modelItem => item.chapter_name)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.section_name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.subject_name)
+                                        @Html.DisplayFor(modelItem => item.chapter_start_date)
                                     </td>
                                    
+
+
                                     <td>
-                                        @Html.ActionLink("View Chapters", "AllChapterList", new {session = item.session,  subject_id =item.subject_id,class_id = item.class_id, section_id = item.section_id}, new { @class = "btn btn-success btn-sm please_wait" })
-                                        @Html.ActionLink("Copy Correction", "Student_Copy", new { session = item.session, subject_id = item.subject_id, class_id = item.class_id, section_id = item.section_id }, new { @class = "btn btn-success btn-sm please_wait" })
+
+                                        
+                                        @Html.ActionLink("Unchecked Questions", "AllUncheckedQuestions", new {sr_number = ViewData["sr_number"], session = item.session, class_id = item.class_id, subject_id = item.subject_id, chapter_id = item.chapter_id, section_id = item.section_id}, new { @class = "btn btn-success btn-sm please_wait" })
+                                           
+
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                    </div>
                 </div>
+            </div>
+            <div>
+                @Html.ActionLink("Back", "Student_Copy", new { session = ViewData["session"],subject_id = ViewData["subject_id"],class_id = ViewData["class_id"], section_id = ViewData["section_id"] }, new { @class = "btn btn-primary please_wait" })
             </div>
         </div>
     </div>
+</div>
 
 @section scripts{
     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>

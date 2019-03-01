@@ -2546,6 +2546,9 @@
     <Content Include="Views\mstSubjectChapter\AddHW.cshtml" />
     <Content Include="Views\mstSubjectChapter\DeleteCW.cshtml" />
     <Content Include="Views\mstSubjectChapter\DeleteHW.cshtml" />
+    <Content Include="Views\mstSubjectChapter\Student_Copy.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AllUncheckedChapters.cshtml" />
+    <Content Include="Views\mstSubjectChapter\AllUncheckedQuestions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

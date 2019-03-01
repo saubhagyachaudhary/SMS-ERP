@@ -166,7 +166,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>02/25/2019 12:00:48</publishTime>
+      <publishTime>02/28/2019 18:28:55</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -6261,6 +6261,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/ChangePassword/success.cshtml">
       <publishTime>12/16/2018 15:22:53</publishTime>
     </File>
+    <File Include="Views/class_subject_teacher/AddSubjectTeacher.cshtml">
+      <publishTime>02/27/2019 22:13:00</publishTime>
+    </File>
+    <File Include="Views/class_subject_teacher/AllSubjectTeacher.cshtml">
+      <publishTime>02/27/2019 22:55:07</publishTime>
+    </File>
+    <File Include="Views/class_subject_teacher/DeleteSubjectTeacher.cshtml">
+      <publishTime>02/27/2019 22:55:54</publishTime>
+    </File>
     <File Include="Views/emp_detail/AddEmp.cshtml">
       <publishTime>09/09/2018 15:21:07</publishTime>
     </File>
@@ -6324,6 +6333,36 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Mentor/deleteObservation.cshtml">
       <publishTime>09/09/2018 14:45:13</publishTime>
     </File>
+    <File Include="Views/mstSubjectChapter/AddChapter.cshtml">
+      <publishTime>02/28/2019 13:19:38</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/AddCW.cshtml">
+      <publishTime>02/28/2019 13:39:27</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/AddHW.cshtml">
+      <publishTime>02/28/2019 14:00:12</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/AllChapterList.cshtml">
+      <publishTime>02/28/2019 17:48:20</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/AllCWWorkList.cshtml">
+      <publishTime>02/28/2019 17:26:32</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/AllHWWorkList.cshtml">
+      <publishTime>02/28/2019 17:40:44</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/AllSubjectOfTeacher.cshtml">
+      <publishTime>02/28/2019 17:50:45</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/DeleteCW.cshtml">
+      <publishTime>02/28/2019 17:19:05</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/DeleteHW.cshtml">
+      <publishTime>02/28/2019 17:39:58</publishTime>
+    </File>
+    <File Include="Views/mstSubjectChapter/EditChapter.cshtml">
+      <publishTime>02/28/2019 17:35:56</publishTime>
+    </File>
     <File Include="Views/mst_acc_head/AddAccount.cshtml">
       <publishTime>01/12/2019 13:54:01</publishTime>
     </File>
@@ -6376,10 +6415,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/09/2018 16:42:08</publishTime>
     </File>
     <File Include="Views/mst_class_subject/AddClassSubject.cshtml">
-      <publishTime>09/09/2018 16:37:02</publishTime>
+      <publishTime>02/27/2019 22:21:12</publishTime>
     </File>
     <File Include="Views/mst_class_subject/AllClassSubjectList.cshtml">
-      <publishTime>09/09/2018 14:45:14</publishTime>
+      <publishTime>02/27/2019 22:20:48</publishTime>
     </File>
     <File Include="Views/mst_class_subject/DeleteClassSubject.cshtml">
       <publishTime>09/09/2018 16:37:27</publishTime>
@@ -6610,7 +6649,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/07/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>02/24/2019 22:59:02</publishTime>
+      <publishTime>02/28/2019 18:10:12</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>02/15/2019 17:06:35</publishTime>
@@ -6682,7 +6721,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/24/2019 23:04:57</publishTime>
+      <publishTime>02/28/2019 18:30:10</publishTime>
     </File>
   </ItemGroup>
 </Project>

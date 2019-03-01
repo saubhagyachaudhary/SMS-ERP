@@ -45,7 +45,6 @@
                                    
                                     <td>
                                         @Html.ActionLink("View Chapters", "AllChapterList", new {session = item.session,  subject_id =item.subject_id,class_id = item.class_id, section_id = item.section_id}, new { @class = "btn btn-success btn-sm please_wait" })
-                                        @Html.ActionLink("Copy Correction", "Student_Copy", new { session = item.session, subject_id = item.subject_id, class_id = item.class_id, section_id = item.section_id }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }

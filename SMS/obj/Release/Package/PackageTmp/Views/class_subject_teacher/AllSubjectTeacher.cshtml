@@ -1,23 +1,23 @@
-﻿@model IEnumerable<SMS.Models.mst_class_subject>
+﻿@model IEnumerable<SMS.AcademicControllers.mst_class_subject_teacher>
 
 @{
-    ViewBag.Title = "AllClassSubjectList";
+    ViewBag.Title = "AllSubjectTeacher";
 }
 
 <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
 
 <div class="right_col" role="main">
     <p>
-        @Html.ActionLink("Assign Subject", "AddClassSubject", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+        @Html.ActionLink("Assign Subject Teacher", "AddSubjectTeacher", new { area = "" }, new { @class = "btn btn-primary please_wait" })
     </p>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title" style="overflow-x:auto;">
 
-                    <h2>All Class Subject List</h2>
+                    <h2>All Class Subject Teacher</h2>
 
-                    <table id="datatable"class="table table-condensed table-striped table-bordered table-hover">
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th>
@@ -27,9 +27,14 @@
                                     @Html.DisplayNameFor(model => model.class_name)
                                 </th>
                                 <th>
+                                    @Html.DisplayNameFor(model => model.section_name)
+                                </th>
+                                <th>
                                     @Html.DisplayNameFor(model => model.subject_name)
                                 </th>
-                               
+                                <th>
+                                    @Html.DisplayNameFor(model => model.subject_teacher_name)
+                                </th>
                                 <th>
                                     Control Panel
                                 </th>
@@ -46,21 +51,26 @@
                                         @Html.DisplayFor(modelItem => item.class_name)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.section_name)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.subject_name)
                                     </td>
-                                   
                                     <td>
-                                      
-                                        @Html.ActionLink("Delete", "DeleteClassSubject", new { class_id = item.class_id, subject_id = item.subject_id, session = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
+                                        @Html.DisplayFor(modelItem => item.subject_teacher_name)
+                                    </td>
+                                    <td>
+                                        
+                                        @Html.ActionLink("Delete", "DeleteSubjectTeacher", new { class_id = item.class_id, subject_id = item.subject_id, session = item.session, section_id = item.section_id, subject_teacher_id = item.subject_teacher_id }, new { @class = "btn btn-success btn-sm please_wait" })
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                    </div>
                 </div>
             </div>
-       </div>
+        </div>
+    </div>
 </div>
 @section scripts{
     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
