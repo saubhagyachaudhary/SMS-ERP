@@ -18,9 +18,7 @@
                     <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>
-                                    Serial
-                                </th>
+                                
                                 <th>
                                     @Html.DisplayNameFor(model => model.chapter_name)
                                 </th>
@@ -30,7 +28,7 @@
                                 <th>
                                     @Html.DisplayNameFor(model => model.chapter_end_date)
                                 </th>
-                                <th>Control Panel</th>
+                                <th>Cantrol Panel</th>
                                 
                             </tr>
                         </thead>
@@ -38,9 +36,7 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.chapter_id)
-                                    </td>
+                                   
                                     <td>
                                         @Html.DisplayFor(modelItem => item.chapter_name)
                                     </td>

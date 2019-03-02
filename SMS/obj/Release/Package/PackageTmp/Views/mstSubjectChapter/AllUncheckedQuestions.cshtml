@@ -1,0 +1,184 @@
+﻿@model List<SMS.AcademicControllers.copy_correction>
+
+@{
+    ViewBag.Title = "AllUncheckedQuestions";
+}
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 20px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 13px;
+            width: 13px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 20px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>
+<div class="right_col" role="main">
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                
+                <div class="x_title" style="overflow-x:auto;">
+                    <h2>List of all Unchecked Work</h2>
+                    
+@using (Html.BeginForm("AddCheckedQuestion", "mstSubjectChapter", FormMethod.Post, new { id = "submit" }))
+{
+                    <table class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Work Date
+                                </th>
+                                <th>
+                                    Work Given
+                                </th>
+                                <th>
+                                    Work Type
+                                </th>
+                                <th>Work Done</th>
+                                <th>Correct</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           @for (int i = 0; i < Model.Count(); i++)
+                           {
+                                <tr>
+                                    <th>
+                                        @Html.DisplayFor(model => model[i].work_date)
+                                        @Html.HiddenFor(model => model[i].sr_number)
+                                        @Html.HiddenFor(model => model[i].work_id)
+                                       @Html.HiddenFor(model => model[i].chapter_id)
+                                        @Html.HiddenFor(model => model[i].session)
+                                        @Html.HiddenFor(model => model[i].teacher_correctby)
+                                        @Html.HiddenFor(model => model[i].section_id)
+                                        @Html.HiddenFor(model => model[i].class_id)
+                                        @Html.HiddenFor(model => model[i].subject_id)
+
+                                    </th>
+                                    <td>
+                                        @Html.DisplayFor(model => model[i].work_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => model[i].work_type)
+                                    </td>
+
+                                    <td>
+                                        <label class="switch">
+                                          
+                                                <input id="ch_wd_@i" type="checkbox" />
+                                         
+                                            <span class="slider round"></span>
+                                        </label>
+
+                                        @Html.HiddenFor(model => model[i].work_done, new { id = "ch_wd_hidden_" + i })
+                                    </td>
+
+                                    <td>
+                                        <label class="switch">
+
+                                            <input id="ch_wc_@i" type="checkbox" onclick="recalculate()" />
+
+                                            <span class="slider round"></span>
+                                        </label>
+
+                                        @Html.HiddenFor(model => model[i].que_correct, new { id = "ch_wc_hidden_" + i })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+</table>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <input type="submit" value="Save" class="btn btn-primary please_wait" onclick="assignvalue()"/>
+                        </div>
+                    </div>
+}
+                </div>
+               
+</div>
+            <div>
+                @Html.ActionLink("Back to List", "AllUncheckedChapters", new { sr_number = ViewData["sr_number"], session = ViewData["session"], class_id = ViewData["class_id"], subject_id = ViewData["subject_id"], section_id = ViewData["section_id"] }, new { @class = "btn btn-primary please_wait" })
+            </div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+
+
+    function assignvalue()
+    {
+        for (i = 0; i < @Model.Count() ; i++)
+        {
+            document.getElementById("ch_wd_hidden_"+i.toString()).value = document.getElementById("ch_wd_"+i.toString()).checked;
+            document.getElementById("ch_wc_hidden_"+i.toString()).value = document.getElementById("ch_wc_"+i.toString()).checked;
+        }
+
+    }
+
+    function recalculate()
+    {
+        
+        for (i = 0; i < @Model.Count() ; i++)
+        {
+            var wd = document.getElementById("ch_wd_"+i.toString());
+            var wc = document.getElementById("ch_wc_"+i.toString());
+           
+            if(wc.checked)
+            {
+                wd.checked = true;
+            }
+        }
+    }
+
+
+</script>

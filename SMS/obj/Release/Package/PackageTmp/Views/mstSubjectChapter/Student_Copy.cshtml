@@ -1,0 +1,54 @@
+﻿@model SMS.AcademicControllers.copy_correction
+
+@{
+    ViewBag.Title = "Student_Copy";
+}
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+                <h2>Enter Admission Number</h2>
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                       
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                       
+                        @Html.HiddenFor(model => model.subject_id)
+                        @Html.HiddenFor(model => model.session)
+                        @Html.HiddenFor(model => model.class_id)
+                        @Html.HiddenFor(model => model.section_id)
+
+                         <div class="form-group">
+                            @Html.LabelFor(model => model.sr_number, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.sr_number, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.sr_number, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Open" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+               
+               
+
+            </div>
+            <div>
+                @Html.ActionLink("Back to List", "AllSubjectOfTeacher", new { }, new { @class = "btn btn-primary please_wait" })
+            </div>
+        </div>
+    </div>
+</div>
