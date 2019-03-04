@@ -600,5 +600,33 @@ namespace SMS.Controllers
 
 
         #endregion
+
+        #region Half day report
+
+        [HttpGet]
+        public ActionResult pdfstd_half_day()
+        {
+
+            DDsession_name();
+            return View();
+
+
+        }
+
+        [HttpPost]
+        public ActionResult pdfstd_half_day(DateTime fromDate,DateTime toDate,string session)
+        {
+            repStd_half_day study = new repStd_half_day();
+
+            study.pdfstd_half_day(fromDate,toDate,session);
+
+            DDsession_name();
+            return View();
+
+
+        }
+
+
+        #endregion
     }
 }

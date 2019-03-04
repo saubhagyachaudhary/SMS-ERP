@@ -22,9 +22,9 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-            //comparative_result_analysis cc = new comparative_result_analysis();
+            //repStd_half_day cc = new repStd_half_day();
 
-            //cc.pdfComparative_result_analysis(2, 12, 111, "2018-19");
+            //cc.pdfstd_half_day(DateTime.ParseExact("2019-03-01","yyyy-MM-dd",null), DateTime.ParseExact("2019-03-04", "yyyy-MM-dd", null), "2018-19");
 
             return View(u);
         }

@@ -368,6 +368,7 @@
     <Compile Include="report\repFees_receipt.cs" />
     <Compile Include="report\repReport_card.cs" />
     <Compile Include="report\repReport_cardMain.cs" />
+    <Compile Include="report\repStd_half_day.cs" />
     <Compile Include="report\reptransportListMain.cs" />
     <Compile Include="report\rep_fees.cs" />
     <Compile Include="report\student_ledger.cs" />
@@ -375,6 +376,7 @@
     <Compile Include="report\transportList.cs" />
     <Compile Include="SMSRoleProvider.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="VisitorsControllers\std_halfday_logController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bootstrap\checkbox\bootstrap-switch.css" />
@@ -2549,6 +2551,9 @@
     <Content Include="Views\mstSubjectChapter\Student_Copy.cshtml" />
     <Content Include="Views\mstSubjectChapter\AllUncheckedChapters.cshtml" />
     <Content Include="Views\mstSubjectChapter\AllUncheckedQuestions.cshtml" />
+    <Content Include="Views\std_halfday_log\std_half_day.cshtml" />
+    <Content Include="Views\std_halfday_log\success.cshtml" />
+    <Content Include="Views\report\pdfstd_half_day.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
