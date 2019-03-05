@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 5</_PublishTargetUrl>
+    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 4</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="ApplicationInsights.config">
@@ -166,7 +166,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>03/02/2019 21:48:27</publishTime>
+      <publishTime>03/05/2019 16:08:58</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -6373,7 +6373,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/01/2019 19:14:13</publishTime>
     </File>
     <File Include="Views/mst_acc_head/AddAccount.cshtml">
-      <publishTime>01/12/2019 13:54:01</publishTime>
+      <publishTime>03/04/2019 13:07:26</publishTime>
     </File>
     <File Include="Views/mst_acc_head/AllAccountList.cshtml">
       <publishTime>01/12/2019 13:53:19</publishTime>
@@ -6633,6 +6633,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/report/feesStatement.cshtml">
       <publishTime>09/06/2018 18:54:31</publishTime>
     </File>
+    <File Include="Views/report/pdfstd_half_day.cshtml">
+      <publishTime>03/04/2019 16:46:32</publishTime>
+    </File>
     <File Include="Views/report/report_card.cshtml">
       <publishTime>02/25/2019 09:47:07</publishTime>
     </File>
@@ -6658,7 +6661,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/07/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>02/28/2019 18:10:12</publishTime>
+      <publishTime>03/04/2019 16:32:16</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>02/15/2019 17:06:35</publishTime>
@@ -6689,6 +6692,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Views/std_discount/EditDiscount.cshtml">
       <publishTime>09/09/2018 14:45:17</publishTime>
+    </File>
+    <File Include="Views/std_halfday_log/std_half_day.cshtml">
+      <publishTime>03/04/2019 15:02:38</publishTime>
+    </File>
+    <File Include="Views/std_halfday_log/success.cshtml">
+      <publishTime>03/04/2019 15:05:31</publishTime>
     </File>
     <File Include="Views/std_registration/AddRegistration.cshtml">
       <publishTime>09/09/2018 14:45:17</publishTime>
@@ -6730,7 +6739,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/28/2019 18:30:10</publishTime>
+      <publishTime>03/05/2019 16:10:10</publishTime>
     </File>
   </ItemGroup>
 </Project>

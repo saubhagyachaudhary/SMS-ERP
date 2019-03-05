@@ -354,5 +354,33 @@ namespace SMS.report
                 ms.Flush();
             }
         }
+
+        public class PDFFooter : PdfPageEventHelper
+        {
+            // write on top of document
+            public override void OnOpenDocument(PdfWriter writer, Document document)
+            {
+                base.OnOpenDocument(writer, document);
+
+            }
+
+            // write on start of each page
+            public override void OnStartPage(PdfWriter writer, Document document)
+            {
+                base.OnStartPage(writer, document);
+            }
+
+            // write on end of each page
+            public override void OnEndPage(PdfWriter writer, Document document)
+            {
+                base.OnEndPage(writer, document);
+            }
+
+            //write on close of document
+            public override void OnCloseDocument(PdfWriter writer, Document document)
+            {
+                base.OnCloseDocument(writer, document);
+            }
+        }
     }
 }

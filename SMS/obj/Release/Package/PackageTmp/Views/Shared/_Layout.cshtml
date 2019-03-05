@@ -229,7 +229,7 @@
                                 @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades") || list.Contains("teacher_exam_remark"))
                                 {
                                 <li>
-                                    <a><i class="fa fa-edit"></i> Examination <span class="fa fa-chevron-down"></span></a>
+                                    <a><i class="fa fa-bar-chart"></i> Examination <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         @if (list.Contains("subject_master"))
                                         {
@@ -377,6 +377,10 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Generate/Send Fees Notice", "duesListNotice", "report")</li>
                                         }
+                                        @if (list.Contains("pdfstd_half_day"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Student Half Day Report", "pdfstd_half_day", "report")</li>
+                                        }
                                         @if (list.Contains("track_vehicle"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Track Vehicle Location", "track_vehicle", "report")</li>
@@ -391,7 +395,7 @@
                                     @if (list.Contains("subject_comparative_study") || list.Contains("AllSubjectTeacher") || list.Contains("AllSubjectOfTeacher"))
                                     {
                                         <li>
-                                            <a><i class="fa fa-file-text-o"></i> Academics <span class="fa fa-chevron-down"></span></a>
+                                            <a><i class="fa fa-book"></i> Academics <span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 @if (list.Contains("subject_comparative_study"))
                                                 {
@@ -407,10 +411,32 @@
                                                 {
                                                     <li class="please_wait">@Html.ActionLink("Assign CW/HW", "AllSubjectOfTeacher", "mstSubjectChapter")</li>
                                                 }
+
+                                               
+
                                             </ul>
                                         </li>
 
                                        
+                                    }
+
+                                    @if (list.Contains("std_half_day"))
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-child"></i> Visitors <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                              
+                                                @if (list.Contains("std_half_day"))
+                                                {
+                                                    <li class="please_wait">@Html.ActionLink("Student Halfday", "std_half_day", "std_halfday_log")</li>
+                                                }
+
+                                                
+
+                                            </ul>
+                                        </li>
+
+
                                     }
 
                                @* <li>

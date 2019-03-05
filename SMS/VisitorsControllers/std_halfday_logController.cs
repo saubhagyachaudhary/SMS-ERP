@@ -98,13 +98,16 @@ namespace SMS.VisitorsControllers
 
         public JsonResult GetStd_name(int id)
         {
-            string query = @"SELECT 
-                               std_father_name
+           
+
+            string query = @"SELECT
+                                CONCAT(IFNULL(std_first_name, ''),
+                                        ' ',
+                                        IFNULL(std_last_name, '')) std_name
                             FROM
                                 sr_register
                             WHERE
                                 std_active = 'Y' AND sr_number = @sr_number";
-
 
 
             var std_class = con.Query<string>(query, new { sr_number = id });
@@ -115,15 +118,13 @@ namespace SMS.VisitorsControllers
 
         public JsonResult GetFathers_name(int id)
         {
-            string query = @"SELECT
-                                CONCAT(IFNULL(std_first_name, ''),
-                                        ' ',
-                                        IFNULL(std_last_name, '')) std_name
+
+            string query = @"SELECT 
+                               std_father_name
                             FROM
                                 sr_register
                             WHERE
                                 std_active = 'Y' AND sr_number = @sr_number";
-
 
 
             var std_class = con.Query<string>(query, new { sr_number = id });

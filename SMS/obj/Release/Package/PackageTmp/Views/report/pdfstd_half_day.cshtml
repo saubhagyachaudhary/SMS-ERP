@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "std_half_day";
+
+    
+}
+<link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
+
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+
+                <h2>Download Student Halfday Report</h2>
+
+                @using (Html.BeginForm("pdfstd_half_day", "report", FormMethod.Post, new { target = "_blank" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2">Session</label>
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownList("Session", ViewData["session"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                               
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2">From Date</label>
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+
+                                @Html.Editor("fromDate", new { htmlAttributes = new { @class = "form-control" } })
+                                
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2">To Date</label>
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.Editor("toDate", new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                <input type="submit" value="Display" class="btn btn-success" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/vendors/datetimepicker/jquery-1.10.2.js"></script>
+    <script src="~/vendors/datetimepicker/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#fromDate").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true
+            });
+
+        });
+
+        $(function () {
+            $("#toDate").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+
+            });
+
+        });
+    </script>
+
+
+
+}
