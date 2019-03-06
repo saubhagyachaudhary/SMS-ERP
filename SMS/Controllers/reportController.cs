@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using SMS.AcademicReport;
 using SMS.Models;
 using SMS.report;
 using System;
@@ -598,10 +599,30 @@ namespace SMS.Controllers
 
         }
 
+        [HttpGet]
+        public ActionResult assignment_chart()
+        {
+
+            DDsession_name();
+            //DDclass_name();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult assignment_chart(int class_id, int section_id, int month_no, string session)
+        {
+
+            repClassAssignments chart = new repClassAssignments();
+
+            chart.pdfClassAssignment(class_id, section_id, month_no, session);
+            DDsession_name();
+            //DDclass_name();
+            return View();
+        }
 
         #endregion
 
-        #region Half day report
+        #region visitors
 
         [HttpGet]
         public ActionResult pdfstd_half_day()

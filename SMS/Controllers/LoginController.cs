@@ -1,4 +1,5 @@
-﻿using SMS.Models;
+﻿using SMS.AcademicReport;
+using SMS.Models;
 using SMS.report;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,9 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-            //repStd_half_day cc = new repStd_half_day();
+            //repClassAssignments cc = new repClassAssignments();
 
-            //cc.pdfstd_half_day(DateTime.ParseExact("2019-03-01","yyyy-MM-dd",null), DateTime.ParseExact("2019-03-04", "yyyy-MM-dd", null), "2018-19");
+            //cc.pdfClassAssignment(12,111,3,"2018-19");
 
             return View(u);
         }

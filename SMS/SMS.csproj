@@ -214,6 +214,7 @@
   <ItemGroup>
     <Compile Include="AcademicControllers\class_subject_teacherController.cs" />
     <Compile Include="AcademicControllers\mstSubjectChapterController.cs" />
+    <Compile Include="AcademicReport\repClassAssignments.cs" />
     <Compile Include="APIControllers\ReportCardAPIController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -2554,6 +2555,7 @@
     <Content Include="Views\std_halfday_log\std_half_day.cshtml" />
     <Content Include="Views\std_halfday_log\success.cshtml" />
     <Content Include="Views\report\pdfstd_half_day.cshtml" />
+    <Content Include="Views\report\assignment_chart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

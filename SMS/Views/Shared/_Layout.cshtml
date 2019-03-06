@@ -386,8 +386,12 @@
                                             <li class="please_wait">@Html.ActionLink("Track Vehicle Location", "track_vehicle", "report")</li>
 
                                         }
+                                        
+                                        @if (list.Contains("assignment_chart"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Class Assignment Report", "assignment_chart", "report")</li>
 
-
+                                        }
                                         
                                     </ul>
                                 </li>
