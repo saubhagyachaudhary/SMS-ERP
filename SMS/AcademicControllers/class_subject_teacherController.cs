@@ -19,7 +19,7 @@ namespace SMS.AcademicControllers
         public ActionResult AllSubjectTeacher()
         {
             mst_class_subject_teacherMain main = new mst_class_subject_teacherMain();
-
+            //jjjj
             return View(main.AllSubjectTeacher());
         }
 
