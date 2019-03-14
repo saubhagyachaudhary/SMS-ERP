@@ -92,12 +92,45 @@ namespace SMS.Controllers
             {
                 try
                 {
+                    mst_sessionMain sess = new mst_sessionMain();
+
+                    if(sess.findActive_Session() == col.session)
+                    {
+                        string query = @"SELECT 
+                                               SUM(IFNULL(outstd_amount, 0)) - SUM(IFNULL(rmt_amount, 0)) amt
+                                            FROM
+                                                out_standing
+                                            WHERE
+                                                sr_number = @sr_number AND session != @session";
+
+                        decimal amt = con.Query<decimal>(query, new { sr_number = col.sr_num, session = col.session }).SingleOrDefault();
+
+                        if(amt != 0m)
+                        {
+                            ModelState.AddModelError(string.Empty, "Kindly clear previous session fees first.");
+                            fees_collect fee = new fees_collect();
+
+                            sr_registerMain stdMain = new sr_registerMain();
+
+                            fee.list = stdMain.AllStudentList(GetDefaultSection());
+
+
+                            DDsession_name();
+                            DDClassWiseSection();
+
+
+
+                            return View(fee);
+                        }
+
+                    }
+
                     if (col.sr_num > 0)
                     {
                         sr_registerMain reg = new sr_registerMain();
                         sr_register register = new sr_register();
-
-                        register = reg.FindStudent(col.sr_num,col.session);
+                        
+                        register = reg.FindStudent(col.sr_num,sess.findFinal_Session());
 
                         col.std_Name = register.std_first_name + " " + register.std_last_name;
 
