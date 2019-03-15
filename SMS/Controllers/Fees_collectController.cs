@@ -97,7 +97,7 @@ namespace SMS.Controllers
                     if(sess.findActive_Session() == col.session)
                     {
                         string query = @"SELECT 
-                                               SUM(IFNULL(outstd_amount, 0)) - SUM(IFNULL(rmt_amount, 0)) amt
+                                               ifnull(SUM(IFNULL(outstd_amount, 0)) - SUM(IFNULL(rmt_amount, 0)),0) amt
                                             FROM
                                                 out_standing
                                             WHERE
@@ -131,6 +131,11 @@ namespace SMS.Controllers
                         sr_register register = new sr_register();
                         
                         register = reg.FindStudent(col.sr_num,sess.findFinal_Session());
+
+                        if(register == null)
+                        {
+                            register = reg.FindStudent(col.sr_num, col.session);
+                        }
 
                         col.std_Name = register.std_first_name + " " + register.std_last_name;
 

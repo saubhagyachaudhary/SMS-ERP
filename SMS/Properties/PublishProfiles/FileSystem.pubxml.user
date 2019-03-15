@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 5</_PublishTargetUrl>
+    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 6</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="ApplicationInsights.config">
@@ -166,7 +166,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>03/06/2019 22:07:33</publishTime>
+      <publishTime>03/14/2019 22:33:04</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -6742,7 +6742,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>03/06/2019 22:08:39</publishTime>
+      <publishTime>03/14/2019 22:34:00</publishTime>
     </File>
   </ItemGroup>
 </Project>
