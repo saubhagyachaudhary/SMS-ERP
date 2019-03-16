@@ -58,7 +58,8 @@ namespace SMS.report
                                         class_id,
                                         amount + dc_fine - dc_discount amount,
                                         reg_no,
-                                        reg_date
+                                        reg_date,
+                                        session
                                     FROM
                                         fees_receipt
                                     WHERE
@@ -123,9 +124,10 @@ namespace SMS.report
                                         AND a.sr_number = @sr_number
                                         AND b.session = c.session
                                         AND c.session = d.session
-                                        AND d.session = e.session";
+                                        AND d.session = e.session
+                                        AND e.session = @session";
 
-                    rep = con.Query<rep_fees>(query, new { sr_number = result.First<fees_receipt>().sr_number }).SingleOrDefault();
+                    rep = con.Query<rep_fees>(query, new { sr_number = result.First<fees_receipt>().sr_number, session = result.First<fees_receipt>().session }).SingleOrDefault();
                 }
 
                 rep.receipt_no = receipt_no;

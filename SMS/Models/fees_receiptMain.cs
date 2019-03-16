@@ -93,14 +93,9 @@ namespace SMS.Models
                                             mst_std_section 
                                         WHERE
                                             sr_num = @sr_number 
-                                        AND session = (SELECT 
-                                                    session
-                                                FROM
-                                                    mst_session
-                                                WHERE
-                                                   session_finalize = 'Y')";
+                                        AND session = @session";
 
-                            int id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
+                            int id = con.Query<int>(query1, new { sr_number = fee.sr_number, session = fee.session }).SingleOrDefault();
 
                             fee.section_id = id;
 
@@ -110,14 +105,9 @@ namespace SMS.Models
                                             mst_std_class
                                         WHERE
                                             sr_num = @sr_number
-                                        AND session = (SELECT 
-                                                    session
-                                                FROM
-                                                    mst_session
-                                                WHERE
-                                                    session_finalize = 'Y')";
+                                        AND session = @session";
 
-                            id = con.Query<int>(query1, new { sr_number = fee.sr_number }).SingleOrDefault();
+                            id = con.Query<int>(query1, new { sr_number = fee.sr_number, session = fee.session }).SingleOrDefault();
 
 
                             fee.class_id = id;

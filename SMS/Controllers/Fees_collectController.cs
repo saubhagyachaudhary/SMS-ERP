@@ -129,12 +129,13 @@ namespace SMS.Controllers
                     {
                         sr_registerMain reg = new sr_registerMain();
                         sr_register register = new sr_register();
-                        
-                        register = reg.FindStudent(col.sr_num,sess.findFinal_Session());
 
-                        if(register == null)
+                        register = reg.FindStudent(col.sr_num, col.session);
+
+                        if (register == null)
                         {
-                            register = reg.FindStudent(col.sr_num, col.session);
+                            
+                            register = reg.FindStudent(col.sr_num, sess.findFinal_Session());
                         }
 
                         col.std_Name = register.std_first_name + " " + register.std_last_name;
