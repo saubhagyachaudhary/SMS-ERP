@@ -260,6 +260,44 @@ namespace SMS.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult Reimbursement_certificate()
+        {
+            DDsession_name();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Reimbursement_certificate(int sr_num, string session)
+        {
+            try
+            {
+                string query = @"select count(*) from sr_register where std_active = 'Y' and sr_number = @sr_num;";
+
+                int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
+
+                if (count == 1)
+                {
+
+                    birth_certificateMain certificate = new birth_certificateMain();
+
+                    certificate.pdfReimbursementCertificate(sr_num, session);
+                    DDsession_name();
+                    return View();
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, "Student not found.");
+                    DDsession_name();
+                    return View();
+                }
+            }
+            catch
+            {
+                DDsession_name();
+                return View();
+            }
+        }
 
         [HttpGet]
         public ActionResult student_ledger()

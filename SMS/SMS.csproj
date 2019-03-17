@@ -2556,6 +2556,7 @@
     <Content Include="Views\std_halfday_log\success.cshtml" />
     <Content Include="Views\report\pdfstd_half_day.cshtml" />
     <Content Include="Views\report\assignment_chart.cshtml" />
+    <Content Include="Views\report\Reimbursement_certificate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

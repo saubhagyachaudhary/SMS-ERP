@@ -23,10 +23,7 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-            //repClassAssignments cc = new repClassAssignments();
-
-            //cc.pdfClassAssignment(12,111,3,"2018-19");
-
+           
             return View(u);
         }
 

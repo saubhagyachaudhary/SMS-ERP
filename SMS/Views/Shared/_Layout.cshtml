@@ -332,7 +332,7 @@
                                     </li>
                                 }
 
-                                @if (list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list"))
+                                @if (list.Contains("reimbursement_certificate") || list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list"))
                                 {
                                 <li>
                                     <a><i class="fa fa-file-text-o"></i>MIS Reports <span class="fa fa-chevron-down"></span></a>
@@ -390,6 +390,12 @@
                                         @if (list.Contains("assignment_chart"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Assignment Report", "assignment_chart", "report")</li>
+
+                                        }
+
+                                        @if (list.Contains("reimbursement_certificate"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Download Reimbursement Certificate", "Reimbursement_certificate", "report")</li>
 
                                         }
                                         
