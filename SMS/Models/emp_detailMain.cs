@@ -137,7 +137,7 @@ namespace SMS.Models
 
         public IEnumerable<emp_detail> DDFacultyList()
         {
-            string query = @"SELECT user_id,concat(FirstName,' ',LastName) user_name FROM emp_profile where emp_active = 1";
+            string query = @"SELECT user_id,concat(ifnull(FirstName,''),' ',ifnull(LastName,'')) user_name FROM emp_profile where emp_active = 1";
 
             var result = con.Query<emp_detail>(query);
 

@@ -72,6 +72,7 @@ namespace SMS.report
                                                 AND receipt_date BETWEEN @fromdt AND @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0
+                                                AND a.session = c.session
                                                 AND c.session = d.session
                                                 UNION ALL SELECT 
                                             receipt_no,
@@ -149,6 +150,7 @@ namespace SMS.report
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND a.mode_flag = 'Cheque'
                                                 AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                AND a.session = c.session
                                                 AND c.session = d.session
                                                 UNION ALL SELECT 
                                             receipt_no,
@@ -226,6 +228,7 @@ namespace SMS.report
                                                     AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                     AND a.mode_flag = 'Cash'
                                                     AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                    AND a.session = c.session
                                                     AND c.session = d.session                                
                                                     UNION ALL SELECT 
                                                 receipt_no,
@@ -669,6 +672,7 @@ namespace SMS.report
                                                 AND receipt_date BETWEEN @fromdt and @todt
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0
+                                                AND a.session = c.session
                                                 AND c.session = d.session                                                
                                                 UNION ALL SELECT 
                                             receipt_no,
@@ -758,6 +762,7 @@ namespace SMS.report
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND a.mode_flag = 'Cheque'
                                                 AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                AND a.session = c.session
                                                 AND c.session = d.session
                                                 UNION ALL SELECT 
                                             receipt_no,
@@ -845,6 +850,7 @@ namespace SMS.report
                                                 AND IFNULL(chq_reject, 'Cleared') = 'Cleared'
                                                 AND a.mode_flag = 'Cash'
                                                 AND IFNULL(amount, 0) + IFNULL(dc_fine, 0) - IFNULL(dc_discount, 0) != 0 
+                                                AND a.session = c.session
                                                 AND c.session = d.session
                                                 UNION ALL SELECT 
                                             receipt_no,

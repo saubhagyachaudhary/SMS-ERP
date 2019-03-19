@@ -317,7 +317,7 @@ namespace SMS.report
                 para.Add(text);
                 para.Add(std_dob);
 
-                text = new Chunk(" Son/Daughter of Mr.Mrs. ", FontFactory.GetFont("Times New Roman", 12));
+                text = new Chunk(" Son/Daughter of Mr/Mrs. ", FontFactory.GetFont("Times New Roman", 12));
                 para.Add(text);
                 para.Add(std_father);
 
@@ -422,9 +422,6 @@ namespace SMS.report
                 HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
                 HttpContext.Current.Response.OutputStream.Flush();
                 HttpContext.Current.Response.OutputStream.Close();
-
-
-
 
 
             }

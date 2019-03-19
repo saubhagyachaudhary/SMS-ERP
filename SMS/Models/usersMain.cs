@@ -123,7 +123,7 @@ namespace SMS.Models
 
         public IEnumerable<ddemp_list> employees()
         {
-            string query = @"SELECT user_id,concat(FirstName,' ',LastName,' (',user_id,')') id FROM emp_profile where emp_active = 1 and user_id not in (select user_id from users)";
+            string query = @"SELECT user_id,concat(FirstName,' ',ifnull(LastName,''),' (',user_id,')') id FROM emp_profile where emp_active = 1 and user_id not in (select user_id from users)";
 
             var result = con.Query<ddemp_list>(query);
 
