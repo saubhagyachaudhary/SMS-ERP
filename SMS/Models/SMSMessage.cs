@@ -31,6 +31,33 @@ namespace SMS.Models
             return con.Query<string>(query, new { sms_code = sms_code });
         }
 
+        public string getRecentSMS(string sms_code,int sms_serial)
+        {
+            string query = @"SELECT 
+                                sms_body
+                            FROM
+                                sms_format
+                            WHERE
+                                sms_serial = @sms_serial
+                                    AND sms_code = @sms_code
+                                    AND enable = 1";
+
+            return con.Query<string>(query, new { sms_code = sms_code, sms_serial = sms_serial }).SingleOrDefault();
+        }
+
+        public void setRecentSMS(string sms_body,int serial,string sms_code)
+        {
+            string query = @"UPDATE `sms_format` 
+                                SET 
+                                    `sms_body` = @sms_body
+                                WHERE
+                                    (`sms_serial` = @serial)
+                                        AND (`sms_code` = @sms_code);";
+
+            con.Execute(query, new {sms_body = sms_body, serial = serial, sms_code = sms_code });
+
+        }
+
         public async Task SendSMS(string smsText, string sendTo,bool flag)
         {
            

@@ -87,6 +87,8 @@
     });
 }
 
+<link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
+
 <div class="right_col" role="main">
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -131,6 +133,64 @@
                         </div>
 
                         <div class="form-group">
+                            @Html.LabelFor(model => model.payment_by, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.EditorFor(model => model.payment_by, new { htmlAttributes = new { id = "payment_by", required = "required",  @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.payment_by, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.TextAreaFor(model => model.message, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.message, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="control-label col-md-2 col-sm-2">
+
+
+                                <label>Important Tags</label>
+                            </div>
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                <table style="width:100%">
+                                    <tr>
+                                        <th>Tag Name</th>
+                                        <th>Description</th>
+                                      
+                                    </tr>
+                                    <tr>
+                                        <td>#father_name#</td>
+                                        <td>Student Father Name</td>
+                                      
+                                    </tr>
+                                    <tr>
+                                        <td>#amount#</td>
+                                        <td>Student due amount</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>#month_name#</td>
+                                        <td>Name of the month upto which fees is demanded</td>
+                                      
+                                    </tr>
+                                    <tr>
+                                        <td>#std_name#</td>
+                                        <td>Name of the student.</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>#date#</td>
+                                        <td>Last date upto which fees is required</td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
                                 <input type="submit" value="Display" class="btn btn-success" />
                             </div>
@@ -142,4 +202,20 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/vendors/datetimepicker/jquery-1.10.2.js"></script>
+    <script src="~/vendors/datetimepicker/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#payment_by").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true
+            });
+
+        });
+    </script>
+    }
+
 

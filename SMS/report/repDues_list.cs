@@ -28,5 +28,9 @@ namespace SMS.report
         public string month_name { get; set; }
 
         public string address { get; set; }
+
+        public DateTime payment_by { get; set; }
+
+        public string message { get; set; }
     }
 }

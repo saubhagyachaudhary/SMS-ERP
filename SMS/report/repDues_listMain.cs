@@ -757,17 +757,18 @@ namespace SMS.report
                     para.Alignment = 0;
                     doc.Add(para);
 
-                    text = new Chunk("Dear Parents,", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    string body = li.message.Replace("#father_name#", li.std_father_name);
 
-                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    body = body.Replace("#amount#", li.amount.ToString());
 
-                    text = new Chunk("Most respectfully, it is stated that an amount of " + li.amount + ", fee upto the month of "+ li.month_name +" is pending against school fee of your son/daughter " + li.name + ". We earnestly request you to kindly settle the payment as early as possible so that " + li.name + " can smoothly continue his studies at our prestigious institute. Also please be informed that we have a policy of accepting fees in instalments. Your prompt attention in this matter will be highly appreciated.", FontFactory.GetFont("Times New Roman", 12));
+                    body = body.Replace("#month_name#", li.month_name);
+
+                    body = body.Replace("#std_name#", li.name);
+
+                    body = body.Replace("#date#", li.payment_by.ToString("dd/MM/yyyy"));
+
+                    //text = new Chunk("Most respectfully, it is stated that an amount of " + li.amount + ", fee upto the month of "+ li.month_name +" is pending against school fee of your son/daughter " + li.name + ". We earnestly request you to kindly settle the payment by "+li.payment_by.ToString("dd/MM/yyyy")+". Also please be informed that we have a policy of accepting fees in instalments. Your prompt attention in this matter will be highly appreciated.", FontFactory.GetFont("Times New Roman", 12));
+                    text = new Chunk(body, FontFactory.GetFont("Times New Roman", 12));
                     para = new Paragraph(text);
                     para.Alignment = 0;
                     doc.Add(para);

@@ -23,5 +23,12 @@ namespace SMS.Models
         [Display(Name = "Month")]
         public string month_name { get; set; }
 
+        [Display(Name = "Due Date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime payment_by { get; set; }
+
+        [Display(Name = "Message")]
+        public string message { get; set; }
+
     }
 }

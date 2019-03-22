@@ -58,6 +58,8 @@ namespace SMS.Controllers
 
             DDclass_name(session.findFinal_Session());
 
+         
+
             return View();
         }
 
@@ -84,12 +86,24 @@ namespace SMS.Controllers
 
             DDclass_name(session.findFinal_Session());
 
-            return View();
+            repDues_Statement model = new repDues_Statement();
+
+            SMSMessage sms = new SMSMessage();
+
+            model.message = sms.getRecentSMS("fees_notice", 15);
+
+            model.payment_by = DateTime.Now;
+
+            return View(model);
         }
 
         [HttpGet]
-        public ActionResult duesListNotice_students(int section_id, decimal amount, string operation, string month_name)
+        public ActionResult duesListNotice_students(int section_id, decimal amount, string operation, string month_name, string  payment_by, string message)
         {
+            if(payment_by == null)
+            {
+                ModelState.AddModelError(String.Empty, "Due Date is mandatory.");
+            }
 
             repDues_listMain dues = new repDues_listMain();
             IEnumerable<repDues_list> result;
@@ -97,6 +111,8 @@ namespace SMS.Controllers
             foreach(var i in result)
             {
                 i.month_name = month_name;
+                i.payment_by = DateTime.Parse(payment_by);
+                i.message = message;
             }
             return View(result);
         }
@@ -105,6 +121,7 @@ namespace SMS.Controllers
         public async System.Threading.Tasks.Task<ActionResult> duesListNotice_students(IEnumerable<repDues_list> list)
         {
 
+          
             repDues_listMain dues = new repDues_listMain();
             List<repDues_list> result = new List<repDues_list>();
 
@@ -114,7 +131,7 @@ namespace SMS.Controllers
             {
                 if (li.check)
                 {
-                    result.Add(new repDues_list { sr_number = li.sr_number, amount = li.amount, month_name = li.month_name, std_father_name = li.std_father_name, name = li.name });
+                    result.Add(new repDues_list { sr_number = li.sr_number, amount = li.amount, month_name = li.month_name, std_father_name = li.std_father_name, name = li.name, payment_by = li.payment_by, message = li.message });
                     if (li.flag_sms)
                         flag = true;
                     else
@@ -123,10 +140,12 @@ namespace SMS.Controllers
             }
 
 #if !DEBUG
+            SMSMessage sms = new SMSMessage();
+            sms.setRecentSMS(result.FirstOrDefault().message, 15, "fees_notice");
             if (flag)
             {
 
-                SMSMessage sms = new SMSMessage();
+                
                 foreach (var std in result)
                 {
                     string contact = @"SELECT 
@@ -138,9 +157,8 @@ namespace SMS.Controllers
                                             AND std_active = 'Y'";
                     string number = con.Query<string>(contact, new { sr_number = std.sr_number }).SingleOrDefault();
 
-                    foreach (var item in sms.smsbody("fees_notice"))
-                    {
-                        string body = item.Replace("#father_name#", std.std_father_name);
+                   
+                        string body = std.message.Replace("#father_name#", std.std_father_name);
 
                         body = body.Replace("#amount#", std.amount.ToString());
 
@@ -148,8 +166,10 @@ namespace SMS.Controllers
 
                         body = body.Replace("#std_name#", std.name);
 
+                        body = body.Replace("#date#", std.payment_by.ToString("dd/MM/yyyy"));
+
                         await sms.SendSMS(body, number, true);
-                    }
+                    
                 }
                 return View("success");
             }
