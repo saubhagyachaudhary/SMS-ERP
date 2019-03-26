@@ -93,19 +93,34 @@ namespace SMS.Models
             else
             {
                 string query = @"SELECT DISTINCT
-                                        a.class_id, b.class_name
+                                        *
                                     FROM
-                                        mst_attendance a,
-                                        mst_class b
-                                    WHERE
-                                        a.class_id = b.class_id
-                                            AND a.user_id = @user_id
-                                            AND b.session = (SELECT 
-                                                session
-                                            FROM
-                                                mst_session
-                                            WHERE
-                                                session_finalize = 'Y')";
+                                        (SELECT 
+                                            a.class_id, b.class_name
+                                        FROM
+                                            mst_attendance a, mst_class b
+                                        WHERE
+                                            a.class_id = b.class_id
+                                                AND a.user_id = @user_id
+                                                AND b.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y') UNION ALL SELECT 
+                                            a.class_id, b.class_name
+                                        FROM
+                                            mst_attendance a, mst_class b
+                                        WHERE
+                                            a.class_id = b.class_id
+                                                AND a.finalizer = @user_id
+                                                AND b.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y')) a
+                                    ORDER BY a.class_id";
 
                 var result = con.Query<mst_class>(query, new { user_id = user_id });
                 return result;

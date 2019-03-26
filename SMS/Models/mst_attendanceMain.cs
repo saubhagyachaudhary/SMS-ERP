@@ -43,32 +43,36 @@ namespace SMS.Models
         public IEnumerable<mst_attendance> assignList()
         {
             String query = @"SELECT 
-                                a.user_id,
-                                a.class_id,
-                                a.section_id,
-                                e.section_name,
-                                CONCAT(c.FirstName, ' ', c.LastName) faculty_name,
-                                b.class_name,
-                                a.finalizer finalizer_user_id,
-                                CONCAT(d.FirstName, ' ', d.LastName) finalizer_name
-                            FROM
-                                mst_attendance a,
-                                mst_class b,
-                                emp_profile c,
-                                emp_profile d,
-                                mst_section e
-                            WHERE
-                                a.class_id = b.class_id
-                                    AND a.user_id = c.user_id
-                                    AND a.finalizer = d.user_id
-                                    AND a.section_id = e.section_id
-                                    AND b.session = e.session
-                                    AND e.session = (SELECT 
-                                        session
-                                    FROM
-                                        mst_session
-                                    WHERE
-                                        session_finalize = 'Y')";
+                                    a.user_id,
+                                    a.class_id,
+                                    a.section_id,
+                                    e.section_name,
+                                    CONCAT(IFNULL(c.FirstName, ''),
+                                            ' ',
+                                            IFNULL(c.LastName, '')) faculty_name,
+                                    b.class_name,
+                                    a.finalizer finalizer_user_id,
+                                    CONCAT(IFNULL(d.FirstName, ''),
+                                            ' ',
+                                            IFNULL(d.LastName, '')) finalizer_name
+                                FROM
+                                    mst_attendance a,
+                                    mst_class b,
+                                    emp_profile c,
+                                    emp_profile d,
+                                    mst_section e
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.user_id = c.user_id
+                                        AND a.finalizer = d.user_id
+                                        AND a.section_id = e.section_id
+                                        AND b.session = e.session
+                                        AND e.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')";
 
             var result = con.Query<mst_attendance>(query);
 
@@ -132,10 +136,10 @@ namespace SMS.Models
                                 a.user_id,
                                 a.class_id,
                                 e.section_name,
-                                CONCAT(c.FirstName, ' ', c.LastName) faculty_name,
+                                CONCAT(ifnull(c.FirstName,''), ' ', ifnull(c.LastName,'')) faculty_name,
                                 b.class_name,
                                 a.finalizer finalizer_user_id,
-                                CONCAT(d.FirstName, ' ', d.LastName) finalizer_name
+                                CONCAT(ifnull(d.FirstName,''), ' ', ifnull(d.LastName,'')) finalizer_name
                             FROM
                                 mst_attendance a,
                                 mst_class b,

@@ -165,23 +165,68 @@ namespace SMS.Controllers
 
         public JsonResult GetSection(int id)
         {
-            
+            bool flag;
+            string query;
 
-            string query = @"SELECT 
-                                a.section_id, b.section_name
+            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+            {
+                flag = true;
+            }
+            else
+            {
+                flag = false;
+            }
+
+            if(flag)
+            {
+                query = @"SELECT 
+                                section_id, section_name
                             FROM
-                                mst_attendance a,
-                                mst_section b
+                                mst_section
                             WHERE
-                                a.section_id = b.section_id
-                                    AND a.class_id = @class_id
-                                    AND a.user_id = @user_id
-                                    AND b.session = (SELECT 
+                                class_id = @class_id
+                                    AND session = (SELECT 
                                         session
                                     FROM
                                         mst_session
                                     WHERE
                                         session_finalize = 'Y')";
+            }
+            else
+            {
+                query = @"SELECT DISTINCT
+                                    *
+                                FROM
+                                    (SELECT 
+                                        a.section_id, b.section_name
+                                    FROM
+                                        mst_attendance a, mst_section b
+                                    WHERE
+                                        a.section_id = b.section_id
+                                            AND a.class_id = @class_id
+                                            AND a.user_id = @user_id
+                                            AND b.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y') UNION ALL SELECT 
+                                        a.section_id, b.section_name
+                                    FROM
+                                        mst_attendance a, mst_section b
+                                    WHERE
+                                        a.section_id = b.section_id
+                                            AND a.class_id = @class_id
+                                            AND a.finalizer = @user_id
+                                            AND b.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y')) a";
+            }
+
+          
 
 
             var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });
