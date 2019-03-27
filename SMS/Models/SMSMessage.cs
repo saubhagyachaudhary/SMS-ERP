@@ -212,6 +212,12 @@ namespace SMS.Models
                                     mst_std_class b
                                 WHERE
                                     a.sr_number = b.sr_num
+                                        AND b.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')
                                         AND b.class_id = @class_id
                                         AND a.std_active = 'Y'";
 
