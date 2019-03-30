@@ -215,6 +215,7 @@
     <Compile Include="AcademicControllers\class_subject_teacherController.cs" />
     <Compile Include="AcademicControllers\mstSubjectChapterController.cs" />
     <Compile Include="AcademicReport\repClassAssignments.cs" />
+    <Compile Include="AcademicReport\repTC_form.cs" />
     <Compile Include="APIControllers\ReportCardAPIController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />

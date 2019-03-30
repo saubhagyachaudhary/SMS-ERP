@@ -108,7 +108,7 @@ namespace SMS.Models
                                 FROM
                                     fees_receipt
                                 WHERE
-                                    fin_id = fin_id
+                                    fin_id = @fin_id
                                         AND mode_flag = 'Cash'
                                         AND IFNULL(chq_reject, 'Cleared') = 'Cleared'";
 
@@ -132,7 +132,7 @@ namespace SMS.Models
                                 FROM
                                     fees_receipt
                                 WHERE
-                                    fin_id = fin_id
+                                    fin_id = @fin_id
                                         AND mode_flag = 'Cheque'
                                         AND IFNULL(chq_reject, 'Cleared') = 'Cleared'";
 

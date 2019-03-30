@@ -74,18 +74,17 @@ namespace SMS.Models
             if (flag)
             {
                 string query = @"SELECT DISTINCT
-                                        a.class_id, b.class_name
+                                        class_id, class_name
                                     FROM
-                                        mst_attendance a,
-                                        mst_class b
+                                        mst_class
                                     WHERE
-                                        a.class_id = b.class_id
-                                            AND session = (SELECT 
+                                        session = (SELECT 
                                                 session
                                             FROM
                                                 mst_session
                                             WHERE
-                                                session_finalize = 'Y')";
+                                                session_finalize = 'Y')
+                                    ORDER BY class_id";
 
                 var result = con.Query<mst_class>(query);
                 return result;
