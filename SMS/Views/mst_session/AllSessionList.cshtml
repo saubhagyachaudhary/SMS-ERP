@@ -66,7 +66,7 @@
                             }
                             else
                             {
-                                @("Close");
+                                @("Closed");
                             }
                         </td>
 
@@ -76,6 +76,10 @@
                             {
                                 @("Finalized");
                             }
+                            else if(item.session_finalize == "C")
+                            {
+                                @("Closed");
+                            }
                             else
                             {
                                 @("Not Finalized");
@@ -83,9 +87,13 @@
                         </td>
 
                         <td>
-                            @Html.ActionLink("Edit", "EditSession", new { id = item.session }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                            @if (item.session_finalize != "C")
+                            {
+                                @Html.ActionLink("Edit", "EditSession", new { id = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
 
-                            @Html.ActionLink("Delete", "DeleteSession", new { id = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
+                                @Html.ActionLink("Delete", "DeleteSession", new { id = item.session }, new { @class = "btn btn-success btn-sm please_wait" })
+                            }
+                           
                         </td>
                     </tr>
                 }

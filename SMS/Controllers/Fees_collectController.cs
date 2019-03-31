@@ -225,13 +225,14 @@ namespace SMS.Controllers
             else
             {
                 ModelState.AddModelError(string.Empty, "Financial Year Expired cannot submit fees create new Financial  year.");
+              
                 fees_collect fee = new fees_collect();
 
                 sr_registerMain stdMain = new sr_registerMain();
 
-                fee.list = stdMain.AllStudentList(GetDefaultSection());
+                fee.list = stdMain.AllStudentList(col.section_id);
 
-
+                DDsession_name();
 
                 DDClassWiseSection();
 
