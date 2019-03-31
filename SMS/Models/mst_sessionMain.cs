@@ -174,6 +174,18 @@ namespace SMS.Models
                                         session = @session";
 
                 con.Execute(query, mst);
+
+                if(mst.session_finalize == "Y")
+                {
+                     query = @"UPDATE mst_session 
+                                    SET
+                                        session_finalize = 'C'
+                                    WHERE
+                                        session != @session";
+
+                    con.Execute(query, mst);
+                }
+
             }
             catch (Exception ex)
             {

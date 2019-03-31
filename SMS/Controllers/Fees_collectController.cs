@@ -260,7 +260,7 @@ namespace SMS.Controllers
                                     a.class_id = b.class_id
                                         AND a.session = @session
                                         AND a.session = b.session
-                                ORDER BY b.class_name";
+                                order by b.order_by";
 
 
             var section_list = con.Query<mst_section>(query, new { session = sess.findFinal_Session() });

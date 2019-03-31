@@ -440,7 +440,8 @@ namespace SMS.Controllers
                             FROM
                                 mst_class
                             WHERE
-                                session = @session";
+                                session = @session
+                                order by order_by";
 
 
 

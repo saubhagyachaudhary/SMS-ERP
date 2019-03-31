@@ -233,7 +233,8 @@ namespace SMS.AcademicControllers
                                     AND a.session = @session
                                     AND b.session = a.session
                                     AND a.session = c.session
-                                    AND c.session = d.session";
+                                    AND c.session = d.session
+                                    order by order_by";
 
             var result = con.Query<mst_class_subject_teacher>(query, new { session = sess.findFinal_Session() });
 

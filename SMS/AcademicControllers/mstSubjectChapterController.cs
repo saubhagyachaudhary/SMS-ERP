@@ -685,7 +685,8 @@ namespace SMS.AcademicControllers
                                     AND a.subject_id = b.subject_id
                                     AND a.class_id = c.class_id
                                     AND a.section_id = d.section_id
-                                    AND a.subject_teacher_id = @subject_teacher_id";
+                                    AND a.subject_teacher_id = @subject_teacher_id
+                                    order by c.order_by";
 
             var result = con.Query<mst_chapter>(query, new { session = session, subject_teacher_id= subject_teacher_id });
 

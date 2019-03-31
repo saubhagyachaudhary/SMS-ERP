@@ -17,10 +17,12 @@ namespace SMS.Models
             try
             {
                 string query = @"INSERT INTO mst_acc_head
-                               (acc_id
+                               (session
+                                ,acc_id
                                 ,acc_name)
                                 VALUES
-                               (@acc_id
+                               (@session
+                                ,@acc_id
                                 ,@acc_name)";
 
                 string maxid = "select ifnull(MAX(acc_id),0)+1 from mst_acc_head where session = @session";
@@ -35,12 +37,13 @@ namespace SMS.Models
                 
 
                 mst.acc_id = id;
-                
+                mst.session = ses;
 
                 con.Execute(query, new
                 {
                     mst.acc_id,
-                    mst.acc_name
+                    mst.acc_name,
+                    mst.session
                 });
             }
             catch (Exception ex)
