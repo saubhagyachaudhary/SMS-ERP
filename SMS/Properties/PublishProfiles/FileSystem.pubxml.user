@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 6</_PublishTargetUrl>
+    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 5</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="ApplicationInsights.config">
@@ -64,7 +64,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/29/2015 20:45:38</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.PerfCounterCollector.dll">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>10/29/2015 20:58:00</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.ServerTelemetryChannel.dll">
       <publishTime>10/29/2015 20:49:14</publishTime>
@@ -79,7 +79,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/28/2015 17:10:06</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.SignalR.Core.dll">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>06/26/2018 02:03:00</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.SignalR.SystemWeb.dll">
       <publishTime>06/26/2018 02:03:06</publishTime>
@@ -166,7 +166,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>03/31/2019 08:18:16</publishTime>
+      <publishTime>03/31/2019 16:44:21</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -175,7 +175,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/28/2015 04:04:30</publishTime>
     </File>
     <File Include="bin/System.Web.Http.dll">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>11/28/2018 13:01:00</publishTime>
     </File>
     <File Include="bin/System.Web.Http.WebHost.dll">
       <publishTime>11/28/2018 13:02:56</publishTime>
@@ -391,7 +391,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/02/2018 16:38:31</publishTime>
     </File>
     <File Include="images/favicon.ico">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>05/23/2018 11:30:00</publishTime>
     </File>
     <File Include="images/load.gif">
       <publishTime>09/09/2018 08:41:20</publishTime>
@@ -6262,7 +6262,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/16/2018 15:22:53</publishTime>
     </File>
     <File Include="Views/class_subject_teacher/AddSubjectTeacher.cshtml">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>02/27/2019 22:13:00</publishTime>
     </File>
     <File Include="Views/class_subject_teacher/AllSubjectTeacher.cshtml">
       <publishTime>02/27/2019 22:55:07</publishTime>
@@ -6295,7 +6295,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/09/2018 14:56:38</publishTime>
     </File>
     <File Include="Views/Fees_collect/fees_collect.cshtml">
-      <publishTime>03/31/2019 08:00:22</publishTime>
+      <publishTime>03/31/2019 15:53:55</publishTime>
     </File>
     <File Include="Views/Fees_collect/RenderPaid.cshtml">
       <publishTime>01/12/2019 17:25:44</publishTime>
@@ -6682,7 +6682,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/16/2018 13:34:08</publishTime>
     </File>
     <File Include="Views/sr_register/FormViewer.cshtml">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>12/16/2018 18:03:00</publishTime>
     </File>
     <File Include="Views/sr_register/StudentDetails.cshtml">
       <publishTime>12/16/2018 13:23:48</publishTime>
@@ -6745,7 +6745,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>03/31/2019 16:44:26</publishTime>
     </File>
   </ItemGroup>
 </Project>

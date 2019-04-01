@@ -252,7 +252,29 @@ namespace SMS.Models
 
                     out_stdMain.AddOutStanding(out_std);
 
-                    out_std.reg_num = std.reg_no;
+                query = @"SELECT 
+                                acc_id, fees_amount outstd_amount
+                            FROM
+                                taps.mst_fees
+                            WHERE
+                                session = @session AND bl_onetime = 1
+                                    AND acc_id != 2
+                                    AND class_id = @class_id";
+
+                out_standing out_std_onetime = new out_standing();
+
+                out_std_onetime = con.Query<out_standing>(query, new {session = sess.findActive_Session(), class_id = std.class_id }).SingleOrDefault();
+
+                if(out_std_onetime != null)
+                {
+                    out_std_onetime.sr_number = std.sr_number;
+
+                    out_std_onetime.class_id = std.class_id;
+
+                    out_stdMain.AddOutStanding(out_std_onetime);
+                }
+                
+                out_std.reg_num = std.reg_no;
 
                     out_std.dt_date = std.reg_date;
 

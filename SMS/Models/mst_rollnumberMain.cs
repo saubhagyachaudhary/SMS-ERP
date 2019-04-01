@@ -96,6 +96,7 @@ namespace SMS.Models
                                     a.user_id = @user_id
                                         AND a.class_id = b.class_id
                                         AND c.session = @session
+                                        AND b.session = c.session
                                         AND a.section_id = c.section_id
                                         AND c.section_id IN (SELECT DISTINCT
                                             b.section_id
