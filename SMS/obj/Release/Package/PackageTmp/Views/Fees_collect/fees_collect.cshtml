@@ -11,10 +11,10 @@
             <div class="x_panel">
                 <div class="x_title" style="overflow-x:auto;">
 
-                    @using (Html.BeginForm())
+                    @using (Html.BeginForm("fees_collect", "Fees_collect", FormMethod.Post, new { id = "myID" }))
                     {
-                        @Html.AntiForgeryToken()
-                        <div class="form-horizontal">
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-horizontal">
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                             <div class="form-group">
                                 @Html.LabelFor(model => model.sr_num, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
@@ -102,10 +102,12 @@
                         </thead>
                         <tbody>
                             @foreach (var item in Model.list)
-                            {
+                    {
                                 <tr>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.sr_number)
+                                       @* @Html.DisplayFor(modelItem => item.sr_number)*@
+                                      
+                                        <label onclick="search(@item.sr_number)"><a href="#">@item.sr_number</a></label>
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.std_first_name)
@@ -151,14 +153,23 @@
                  var url = '@Html.Raw(@Url.Action("FeesStatement", "Fees_collect"))'+ '?rcpt_no=' + @ViewBag.recpt_no
                 window.open(url);
                 };
-         }
+        }
+
 </script>
 <script>
+
                         $('#section_id').on('change', function (event) {
                             var form = $(event.target).parents('form');
 
                             form.submit();
                         });
+
+                        function search(sr_number)
+                        {
+                            document.getElementById("sr_num").value = sr_number;
+
+                            document.getElementById("myID").submit();
+                        }
 </script>
     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>

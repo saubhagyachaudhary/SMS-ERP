@@ -110,7 +110,7 @@ namespace SMS.Models
                                                 AND a.sr_number NOT IN (SELECT 
                                                     sr_num
                                                 FROM
-                                                    mst_rollnumber))";
+                                                    mst_rollnumber where session = @session))";
 
             var result = con.Query<mst_attendance>(query, new { user_id = user_id,session = sess });
 
