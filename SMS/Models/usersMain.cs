@@ -22,8 +22,8 @@ namespace SMS.Models
                 string query = @"SELECT a.user_id
                                   ,a.username
                                   ,a.password
-                                  ,b.FirstName
-                                  ,b.lastname
+                                  ,ifnull(b.FirstName,'') FirstName
+                                  ,ifnull(b.lastname,'') lastname
                                   ,a.roles
                                  FROM users a,emp_profile b
                                  where username = @username

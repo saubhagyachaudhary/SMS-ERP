@@ -76,34 +76,35 @@ namespace SMS.Models
             mst_sessionMain sess = new mst_sessionMain();
 
             string query = @"SELECT 
-                                a.session,
-                                a.term_id,
-                                a.class_id,
-                                c.term_name,
-                                b.class_name,
-                                evaluation_name,
-                                evaluation_id,
-                                d.exam_name exam_name1,
-                                (SELECT 
-                                        exam_name
-                                    FROM
-                                        mst_exam
-                                    WHERE
-                                        exam_id = a.exam_id2) exam_name2,
-                                a.rule
-                            FROM
-                                mst_term_rules a,
-                                mst_class b,
-                                mst_term c,
-                                mst_exam d
-                            WHERE
-                                a.class_id = b.class_id
-                                    AND a.term_id = c.term_id
-                                    AND a.session = @session
-                                    AND a.session = b.session
-                                    AND b.session = c.session
-                                    AND c.session = d.session
-                                    AND a.exam_id1 = d.exam_id";
+                                    a.session,
+                                    a.term_id,
+                                    a.class_id,
+                                    c.term_name,
+                                    b.class_name,
+                                    evaluation_name,
+                                    evaluation_id,
+                                    d.exam_name exam_name1,
+                                    (SELECT 
+                                            exam_name
+                                        FROM
+                                            mst_exam
+                                        WHERE
+                                            exam_id = a.exam_id2
+                                                AND session = @session) exam_name2,
+                                    a.rule
+                                FROM
+                                    mst_term_rules a,
+                                    mst_class b,
+                                    mst_term c,
+                                    mst_exam d
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.term_id = c.term_id
+                                        AND a.session = @session
+                                        AND a.session = b.session
+                                        AND b.session = c.session
+                                        AND c.session = d.session
+                                        AND a.exam_id1 = d.exam_id";
 
             var result = con.Query<mst_term_rules>(query, new { session = sess.findFinal_Session() });
 

@@ -382,19 +382,19 @@ namespace SMS.Controllers
 
             int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
-            if (std.class_id < id)
-            {
-                ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
+            //if (std.class_id < id)
+            //{
+            //    ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
 
 
-                DDclass_name(std);
+            //    DDclass_name(std);
 
-                DDtransport_id(std);
+            //    DDtransport_id(std);
 
-                DDSections(std);
+            //    DDSections(std);
 
-                return View(std);
-            }
+            //    return View(std);
+            //}
 
             query = @"SELECT 
                             class_id
