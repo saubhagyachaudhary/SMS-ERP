@@ -30,5 +30,8 @@ namespace SMS.Models
         public string section_name { get; set; }
 
         public int finalizer_user_id { get; set; }
+
+        [Display(Name = "Role")]
+        public string role { get; set; }
     }
 }

@@ -79,10 +79,56 @@ namespace SMS.Models
             return result;
         }
 
-        public IEnumerable<mst_attendance> Attendance_class_list(int user_id)
+        public IEnumerable<mst_attendance> Attendance_class_list(int user_id, bool flag, string role)
         {
-            string query = @"SELECT 
+            string query  = "";
+            if(flag)
+            {
+                 query = @"SELECT 
                                     b.class_id, b.class_name, a.section_id, c.section_name
+                                FROM
+                                    mst_attendance a,
+                                    mst_class b,
+                                    mst_section c
+                                WHERE
+                                         a.class_id = b.class_id
+                                        AND a.section_id NOT IN (SELECT DISTINCT
+                                            section_id
+                                        FROM
+                                            attendance_register d,
+                                            mst_std_section e
+                                        WHERE
+                                            d.sr_num = e.sr_num
+                                                AND att_date = DATE(DATE_ADD(NOW(),
+                                                    INTERVAL '00:00' HOUR_MINUTE))
+                                                AND d.session = e.session
+                                                AND e.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y'))
+                                        AND a.section_id = c.section_id
+                                        AND b.session = c.session
+                                        AND c.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')";
+                var result = con.Query<mst_attendance>(query, new { user_id = user_id });
+
+                foreach(var i in result)
+                {
+                    i.role = role;
+                }
+
+                return result;
+            }
+            else
+            {
+                 query = @"SELECT DISTINCT
+                                    b.class_id, b.class_name, a.section_id, c.section_name, 'Class Teacher' role
                                 FROM
                                     mst_attendance a,
                                     mst_class b,
@@ -113,11 +159,47 @@ namespace SMS.Models
                                         FROM
                                             mst_session
                                         WHERE
+                                            session_finalize = 'Y') 
+                                UNION ALL SELECT 
+                                    b.class_id, b.class_name, a.section_id, c.section_name, 'Finalizer' role
+                                FROM
+                                    mst_attendance a,
+                                    mst_class b,
+                                    mst_section c
+                                WHERE
+                                    a.finalizer = @user_id
+                                        AND a.class_id = b.class_id
+                                        AND a.section_id NOT IN (SELECT DISTINCT
+                                            section_id
+                                        FROM
+                                            attendance_register d,
+                                            mst_std_section e
+                                        WHERE
+                                            d.sr_num = e.sr_num
+                                                AND att_date = DATE(DATE_ADD(NOW(),
+                                                    INTERVAL '00:00' HOUR_MINUTE))
+                                                AND d.session = e.session
+                                                AND e.session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y'))
+                                        AND a.section_id = c.section_id
+                                        AND b.session = c.session
+                                        AND c.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
                                             session_finalize = 'Y')";
+                var result = con.Query<mst_attendance>(query, new { user_id = user_id });
 
-            var result = con.Query<mst_attendance>(query,new {user_id = user_id});
+                return result;
+            }
+           
 
-            return result;
+            
         }
 
         public void deleteFaculty(int user_id,int class_id,int finalizer_user_id,int section_id)

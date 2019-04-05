@@ -118,6 +118,7 @@ namespace SMS.Models
                                     AND a.acc_id = e.acc_id
                                     AND a.session = c.session
                                     AND c.session = d.session
+                                    AND d.session = e.session
                                     AND d.session = (SELECT 
                                         session
                                     FROM

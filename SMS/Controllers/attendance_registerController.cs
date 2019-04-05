@@ -19,8 +19,34 @@ namespace SMS.Controllers
         public ActionResult attendance_class_list()
         {
             mst_attendanceMain att = new mst_attendanceMain();
-            
-            return View(att.Attendance_class_list(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())));
+
+            bool flag;
+            string role = "";
+
+            if (User.IsInRole("superadmin") || User.IsInRole("principal") || User.IsInRole("admin"))
+            {
+                flag = true;
+                if (User.IsInRole("superadmin"))
+                {
+                    role = "Super Admin";
+                }
+                else if (User.IsInRole("principal"))
+                {
+                    role = "Principal";
+                }
+                else
+                {
+                    role = "Admin";
+                }
+
+            }
+            else
+            {
+                flag = false;
+                
+            }
+
+            return View(att.Attendance_class_list(Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()),flag,role));
 
             //test
         }

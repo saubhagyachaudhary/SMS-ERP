@@ -23,6 +23,9 @@
                                 <th>
                                     @Html.DisplayNameFor(model => model.section_name)
                                 </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.role)
+                                </th>
                                 <th>Control Panel
                                 </th>
                             </tr>
@@ -36,6 +39,9 @@
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.section_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.role)
                                     </td>
                                     <td>
                                         @Html.ActionLink("Mark Attendance", "attendance_class_student_list", new { class_id = item.class_id,section_id = item.section_id }, new { @class = "btn btn-success btn-sm please_wait" })

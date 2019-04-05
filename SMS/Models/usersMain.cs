@@ -187,7 +187,11 @@ namespace SMS.Models
 
             con.Query<users>(query, new { user_id = user_id }).SingleOrDefault();
 
-             query = @"DELETE FROM users WHERE user_id=@user_id";
+            query = @"DELETE FROM enable_wedget WHERE user_id=@user_id";
+
+            con.Query<users>(query, new { user_id = user_id }).SingleOrDefault();
+
+            query = @"DELETE FROM users WHERE user_id=@user_id";
 
             con.Query<users>(query, new { user_id = user_id }).SingleOrDefault();
 

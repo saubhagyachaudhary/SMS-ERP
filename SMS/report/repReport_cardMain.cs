@@ -521,12 +521,12 @@ namespace SMS.report
                                                 FROM
                                                     mst_exam
                                                 WHERE
-                                                    exam_id = a.exam_id) * (SELECT 
+                                                    exam_id = a.exam_id AND session = a.session) * (SELECT 
                                                     convert_to
                                                 FROM
                                                     mst_exam
                                                 WHERE
-                                                    exam_id = a.exam_id)),
+                                                    exam_id = a.exam_id AND session = a.session)),
                                             1)
                                 FROM
                                     mst_exam_marks a,
