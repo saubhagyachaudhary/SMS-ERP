@@ -285,7 +285,7 @@ namespace SMS.Controllers
                                 a.class_id = b.class_id
                                     AND a.session = @session
                                     AND a.session = b.session
-                            ORDER BY b.class_name 
+                            ORDER BY b.order_by 
                             LIMIT 1";
 
             int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
@@ -400,15 +400,61 @@ namespace SMS.Controllers
 
             std = outstd.AllOutStanding(sr_num,session);
 
-            
-            
-                foreach (out_standing val in std)
-                {
-                    //discount = discountMain.FindDiscount(sr_num,val.acc_id);
+            string query = @"SELECT 
+                                    fine, start_date, upper_limit
+                                FROM
+                                    mst_fine_rule
+                                WHERE
+                                    session = @session AND acc_id = @acc_id and enable = 1";
 
-                            payment.Add(new fees_payment { acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number, session = val.session });
+            string start_yr = @"SELECT 
+                                YEAR(session_start_date)
+                            FROM
+                                mst_session
+                            WHERE
+                                session = @session";
+
+            string end_yr = @"SELECT 
+                                YEAR(session_end_date)
+                            FROM
+                                mst_session
+                            WHERE
+                                session = @session";
+
+
+            foreach (out_standing val in std)
+                {
+                    decimal amt_fine =0;
+                    int year = 0;
+                    mst_fine_rule result = con.Query<mst_fine_rule>(query, new { acc_id = val.acc_id, session = val.session }).FirstOrDefault();
+
+                if (val.month_no >= 4 && val.month_no <= 12)
+                   {
+                        year = con.Query<int>(start_yr, new { session = val.session }).FirstOrDefault();
                         
-                 }
+                   }
+                    else
+                    {
+                        year = con.Query<int>(end_yr, new { session = val.session }).FirstOrDefault();
+                    }
+
+                if (result != null)
+                {
+                    DateTime dt = new DateTime(year, val.month_no, result.start_date);
+
+                    if (dt < System.DateTime.Now.AddMinutes(dateTimeOffSet))
+                    {
+
+                        amt_fine = (decimal)((System.DateTime.Now.Date - dt).TotalDays) * result.fine;
+
+                        if (amt_fine >= result.upper_limit)
+                        {
+                            amt_fine = result.upper_limit;
+                        }
+                    }
+                }
+                   payment.Add(new fees_payment {fine = amt_fine , acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number, session = val.session });
+                }
                 
                
 
@@ -519,5 +565,18 @@ namespace SMS.Controllers
 
 
 
+    }
+
+    public class mst_fine_rule
+    {
+        public string session { get; set; }
+
+        public int acc_id { get; set; }
+
+        public int start_date { get; set; }
+
+        public decimal fine { get; set; }
+
+        public decimal upper_limit { get; set; }
     }
 }
