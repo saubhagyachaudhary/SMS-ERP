@@ -416,6 +416,7 @@ namespace SMS.report
                                         AND c.session = e.session
                                         AND e.session = f.session
                                         AND b.class_id = e.class_id
+                                        AND e.class_id = f.class_id
                                         AND c.section_id = f.section_id
                                         AND a.adm_session = @session
                                         AND a.std_active = 'Y'
@@ -754,6 +755,7 @@ namespace SMS.report
                                         AND c.session = e.session
                                         AND e.session = f.session
                                         AND b.class_id = e.class_id
+                                        AND e.class_id = f.class_id
                                         AND c.section_id = f.section_id
                                         AND f.session = @session
                                         AND a.std_active = 'Y'

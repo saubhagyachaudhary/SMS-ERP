@@ -313,7 +313,7 @@
                                         }
                                         @if (list.Contains("uncleared_cheque"))
                                         {
-                                            <li class="please_wait">@Html.ActionLink("Uncleared Cheque", "AllUnclearedChequeList", "uncleared_cheque")</li>
+                                            <li class="please_wait">@Html.ActionLink("Uncleared Payments", "AllUnclearedChequeList", "uncleared_cheque")</li>
                                         }
 
 
@@ -361,6 +361,12 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Student List", "class_wise_std_list", "report")</li>
                                         }
+
+                                        @if (list.Contains("session_new_admission"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("New Student List", "session_new_admission", "report")</li>
+                                        }
+
                                         @if (list.Contains("student_ledger"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Student Ledger", "student_ledger", "report")</li>
