@@ -498,7 +498,7 @@ namespace SMS.Controllers
         {
 
             DDsession_name();
-            //DDclass_name();
+           
             return View();
         }
 
@@ -506,17 +506,61 @@ namespace SMS.Controllers
         public ActionResult class_wise_std_list(int class_id,int section_id, string session)
         {
 
-            //repAttendance_sheetMain attendance = new repAttendance_sheetMain();
-
-            // attendance.pdfAttendanceSheet(class_id,section_id,month_no,session);
-
             repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
 
             std_list.pdfClass_Wise_Std_List(class_id, section_id, session);
 
             DDsession_name();
-            //DDclass_name();
+          
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult session_new_admission()
+        {
+
+            DDsession_name();
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult session_new_admission(string session)
+        {
+
+            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+
+            std_list.session_new_admission(session);
+
+            DDsession_name();
+
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult session_new_admission_dashboard()
+        {
+
+            mst_sessionMain session = new mst_sessionMain();
+
+            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+
+            std_list.session_new_admission(session.findActive_Session());
+
+            return View("Error");
+        }
+
+        [HttpGet]
+        public ActionResult school_strength()
+        {
+
+            mst_sessionMain session = new mst_sessionMain();
+
+            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+
+            std_list.school_strength(session.findFinal_Session());
+
+            return View("Error");
         }
 
         //trach tranport

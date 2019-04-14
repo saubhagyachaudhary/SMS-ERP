@@ -23,9 +23,6 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-            //repTC_form tc = new repTC_form();
-
-            //tc.pdfTransferCertificate();
            
             return View(u);
         }

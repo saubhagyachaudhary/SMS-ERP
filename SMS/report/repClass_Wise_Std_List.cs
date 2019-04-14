@@ -20,5 +20,9 @@ namespace SMS.report
         public string pickup_point { get; set; }
 
         public string address { get; set; }
+
+        public string class_name { get; set; }
+
+        public string section_name { get; set; }
     }
 }

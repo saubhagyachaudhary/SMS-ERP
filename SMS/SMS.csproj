@@ -2558,6 +2558,7 @@
     <Content Include="Views\report\pdfstd_half_day.cshtml" />
     <Content Include="Views\report\assignment_chart.cshtml" />
     <Content Include="Views\report\Reimbursement_certificate.cshtml" />
+    <Content Include="Views\report\session_new_admission.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
