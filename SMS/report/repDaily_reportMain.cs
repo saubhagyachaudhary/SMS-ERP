@@ -34,5 +34,7 @@ namespace SMS.report
         public string chq_no { get; set; }
 
         public DateTime chq_date { get; set; }
+
+        public int acc_id { get; set; }
     }
 }

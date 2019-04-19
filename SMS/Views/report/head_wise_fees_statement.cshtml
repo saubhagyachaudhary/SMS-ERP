@@ -1,0 +1,182 @@
+﻿@model SMS.Models.repFeesStatement
+
+@{
+    ViewBag.Title = "head_wise_fees_statement";
+
+    List<SelectListItem> mode = new List<SelectListItem>();
+    mode.Add(new SelectListItem
+    {
+        Value = "Both",
+        Text = "Both Cash and Bank"
+    });
+    mode.Add(new SelectListItem
+    {
+        Value = "Cash",
+        Text = "Cash"
+    });
+    mode.Add(new SelectListItem
+    {
+        Value = "Bank",
+        Text = "Bank"
+    });
+
+}
+<link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
+
+
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+
+                <h2>Download Fees Statement</h2>
+
+                @using (Html.BeginForm("head_wise_fees_statement", "report", FormMethod.Post, new { target = "_blank" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.session, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownList("session", ViewData["session"] as IEnumerable<SelectListItem>, "Select Session", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.session, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.fromDt, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.EditorFor(model => model.fromDt, new { htmlAttributes = new { id = "fromdt", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.fromDt, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.toDt, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.EditorFor(model => model.toDt, new { htmlAttributes = new { id = "todt", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.toDt, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.mode, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownListFor(model => model.mode, mode as IEnumerable<SelectListItem>, htmlAttributes: new { id = "todt", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.mode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.acc_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownList("acc_id", new SelectList(string.Empty, "class_id", "class_name"), "Select Class", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.acc_id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
+                                <input type="submit" value="Display" class="btn btn-success" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/vendors/datetimepicker/jquery-1.10.2.js"></script>
+    <script src="~/vendors/datetimepicker/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#fromdt").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true
+            });
+
+        });
+
+        $(function () {
+            $("#todt").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+
+            });
+
+        });
+    </script>
+
+<script type="text/javascript">
+
+                           $(document).ready(function () {
+
+                                    //Dropdownlist Selectedchange event
+
+                               $("#session").change(function () {
+
+                                   $("#acc_id").empty();
+                                   $("#acc_id").append('<option value=0>Select Class</option>');
+                                        $.ajax({
+
+                                            type: 'POST',
+
+                                            url: '@Url.Action("GetAccountHead")', dataType: 'json', data: { session: $("#session").val() }, success: function (acc_id)
+                                            {
+
+                                                // states contains the JSON formatted list
+
+                                                // of states passed from the controller
+
+
+
+                                                $.each(acc_id, function (i, acc_id) {
+
+                                                    $("#acc_id").append('<option value="' + acc_id.Value + '">' +
+
+                                                     acc_id.Text + '</option>');
+
+                                                // here we are adding option for States
+
+
+
+                                                });
+
+                                            },
+
+                                            error: function (ex) {
+
+                                                //alert('Failed to retrieve sections.' + ex);
+
+                                            }
+
+                                        });
+
+
+
+                                        return false;
+
+                               })
+                                  
+
+                               return false;
+
+                           })
+
+</script>
+
+}

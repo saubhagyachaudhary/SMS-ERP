@@ -34,7 +34,70 @@
         Text = "Equal To",
         Value = "="
     });
+
+    List<SelectListItem> month = new List<SelectListItem>();
+    month.Add(new SelectListItem
+    {
+        Value = "April",
+        Text = "April"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "May",
+        Text = "May"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "June",
+        Text = "June"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "July",
+        Text = "July"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "August",
+        Text = "August"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "September",
+        Text = "September"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "October",
+        Text = "October"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "November",
+        Text = "November"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "December",
+        Text = "December"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "January",
+        Text = "January"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "February",
+        Text = "February"
+    });
+    month.Add(new SelectListItem
+    {
+        Value = "March",
+        Text = "March"
+    });
 }
+
 
 <div class="right_col" role="main">
     <div class="row">
@@ -48,33 +111,59 @@
                     @Html.AntiForgeryToken()
 
                     <div class="form-horizontal">
-                       
+
                         <hr />
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.session, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownList("session", ViewData["session"] as IEnumerable<SelectListItem>, "Select Session", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.session, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.class_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownList("class_id", new SelectList(string.Empty, "class_id", "class_name"), "Select Class", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.class_id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             @Html.LabelFor(model => model.section_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownListFor(model => model.section_id, ViewData["class_id"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                                @Html.DropDownList("section_id", new SelectList(string.Empty, "section_id", "section_name"), "Select Section", htmlAttributes: new { @class = "form-control" })
+
                                 @Html.ValidationMessageFor(model => model.section_id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.month_name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownListFor(model => model.month_name, month as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.month_name, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.amount, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
                             <div class="col-md-5 col-xs-6 col-sm-5">
-                                @Html.DropDownListFor(model => model.operation, operation as IEnumerable<SelectListItem>, htmlAttributes: new {  @class = "form-control" })
+                                @Html.DropDownListFor(model => model.operation, operation as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.operation, "", new { @class = "text-danger" })
                             </div>
                             <div class="col-md-5 col-xs-6 col-sm-5">
-                                @Html.EditorFor(model => model.amount, new { htmlAttributes = new { required = "required", @placeholder="Amount", @class = "form-control" } })
+                                @Html.EditorFor(model => model.amount, new { htmlAttributes = new { required = "required", @placeholder = "Amount", @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.amount, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         @*<div class="form-group">
-                            @Html.LabelFor(model => model.amount, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
-                           
-                        </div>*@
+                                @Html.LabelFor(model => model.amount, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+
+                            </div>*@
 
                         <div class="form-group">
                             <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
@@ -84,8 +173,118 @@
                     </div>
                 }
 
-               </div>
             </div>
         </div>
     </div>
+</div>
 
+@section Scripts{
+
+    <script type="text/javascript">
+
+                           $(document).ready(function () {
+
+                                    //Dropdownlist Selectedchange event
+
+                               $("#session").change(function () {
+
+                                   $("#class_id").empty();
+                                   $("#section_id").empty();
+                                   $("#class_id").append('<option value=0>Select Class</option>');
+                                   $("#section_id").append('<option value=0>Select Section</option>');
+                                        $.ajax({
+
+                                            type: 'POST',
+
+                                            url: '@Url.Action("GetCLass")', dataType: 'json', data: { session: $("#session").val() }, success: function (class_list)
+                                            {
+
+                                                // states contains the JSON formatted list
+
+                                                // of states passed from the controller
+
+
+
+                                                $.each(class_list, function (i, class_list) {
+
+                                                    $("#class_id").append('<option value="' + class_list.Value + '">' +
+
+                                                     class_list.Text + '</option>');
+
+                                                // here we are adding option for States
+
+
+
+                                                });
+
+                                            },
+
+                                            error: function (ex) {
+
+                                                //alert('Failed to retrieve sections.' + ex);
+
+                                            }
+
+                                        });
+
+
+
+                                        return false;
+
+                               })
+                                   $("#class_id").change(function () {
+
+                                       $("#section_id").empty();
+                                       $("#section_id").append('<option value=0>Select Section</option>');
+
+                                   $.ajax({
+
+                                       type: 'POST',
+
+                                       url: '@Url.Action("GetSections")', dataType: 'json', data: { id: $("#class_id").val(), session: $("#session").val() }, success: function (section) {
+
+                                           // states contains the JSON formatted list
+
+                                           // of states passed from the controller
+
+
+
+                                           $.each(section, function (i, section) {
+
+                                               $("#section_id").append('<option value="' + section.Value + '">' +
+
+                                                section.Text + '</option>');
+
+
+                                               // here we are adding option for States
+
+
+
+                                           });
+
+                                       },
+
+                                       error: function (ex) {
+
+                                           //alert('Failed to retrieve sections.' + ex);
+
+                                       }
+
+                                   });
+
+
+
+                                   return false;
+
+                               })
+
+
+
+                               return false;
+
+                           })
+
+    </script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}

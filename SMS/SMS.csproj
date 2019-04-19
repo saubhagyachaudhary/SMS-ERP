@@ -2559,6 +2559,7 @@
     <Content Include="Views\report\assignment_chart.cshtml" />
     <Content Include="Views\report\Reimbursement_certificate.cshtml" />
     <Content Include="Views\report\session_new_admission.cshtml" />
+    <Content Include="Views\report\head_wise_fees_statement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

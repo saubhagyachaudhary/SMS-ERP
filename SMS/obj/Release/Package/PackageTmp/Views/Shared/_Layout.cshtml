@@ -341,6 +341,14 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Fees Statement", "feesStatement", "report")</li>
                                         }
+
+                                        @if (list.Contains("head_wise_fees_statement"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Head Wise Fees Statement", "head_wise_fees_statement", "report")</li>
+                                        }
+
+                                        
+
                                         @if (list.Contains("class_dues_list"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Dues List", "duesList", "report")</li>

@@ -22,6 +22,11 @@ namespace SMS.Models
         [Display(Name = "Type")]
         public string detailed { get; set; }
 
+        [Display(Name = "Session")]
+        public string session { get; set; }
+
+        [Display(Name = "Account Name")]
+        public string acc_id { get; set; }
 
 
     }

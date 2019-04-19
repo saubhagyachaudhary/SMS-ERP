@@ -8,8 +8,11 @@ namespace SMS.Models
 {
     public class repDues_Statement
     {
-        [Display(Name = "Class Name")]
+        [Display(Name = "Section Name")]
         public int section_id { get; set; }
+
+        [Display(Name = "Class Name")]
+        public int class_id { get; set; }
 
         [Display(Name = "Pickup Point")]
         public int pickup_id { get; set; }
@@ -29,6 +32,9 @@ namespace SMS.Models
 
         [Display(Name = "Message")]
         public string message { get; set; }
+
+        [Display(Name = "Session")]
+        public string session { get; set; }
 
     }
 }

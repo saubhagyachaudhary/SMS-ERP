@@ -51,29 +51,78 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
+        public ActionResult head_wise_fees_statement()
+        {
+            repFeesStatement main = new repFeesStatement();
+
+            main.fromDt = (System.DateTime.Now.AddMinutes(dateTimeOffSet));
+
+            main.toDt = (System.DateTime.Now.AddMinutes(dateTimeOffSet));
+
+            DDsession_name();
+
+            return View(main);
+        }
+
+       
+
+        [HttpPost]
+        public ActionResult head_wise_fees_statement(DateTime fromDt, DateTime toDt, string mode, string session,int acc_id)
+        {
+            repDaily_report aa = new repDaily_report();
+
+            repFeesStatement main = new repFeesStatement();
+
+            main.fromDt = (System.DateTime.Now.AddMinutes(dateTimeOffSet));
+
+            main.toDt = (System.DateTime.Now.AddMinutes(dateTimeOffSet));
+
+            aa.pdfHeadWiseStatement(fromDt, toDt, mode,session,acc_id);
+
+            DDsession_name();
+
+            return View();
+        }
+
+        public JsonResult GetAccountHead(string session)
+        {
+            string query = @"SELECT 
+                                    acc_id, acc_name
+                                FROM
+                                    mst_acc_head
+                                WHERE
+                                    session = @session";
+
+
+
+            var acc_list = con.Query<mst_acc_head>(query, new { session = session });
+
+            IEnumerable<SelectListItem> list = new SelectList(acc_list, "acc_id", "acc_name");
+
+            return Json(list);
+
+        }
+
+        [HttpGet]
         public ActionResult duesList()
         {
 
-            mst_sessionMain session = new mst_sessionMain();
-
-            DDclass_name(session.findFinal_Session());
-
-         
+           
+            DDsession_name();
 
             return View();
         }
 
         [HttpPost] 
-        public ActionResult duesList(int section_id,decimal amount,string operation)
+        public ActionResult duesList(repDues_Statement rep)
         {
           
             repDues_listMain dues = new repDues_listMain();
 
-            dues.pdfDues_list(section_id, amount,operation);
+            dues.pdfDues_list(rep.section_id, rep.amount, rep.operation,rep.class_id,rep.session,rep.month_name);
 
-            mst_sessionMain session = new mst_sessionMain();
-
-            DDclass_name(session.findFinal_Session());
+           
+            DDsession_name();
 
             return View();
         }
@@ -82,9 +131,11 @@ namespace SMS.Controllers
         public ActionResult duesListNotice()
         {
 
-            mst_sessionMain session = new mst_sessionMain();
+            //mst_sessionMain session = new mst_sessionMain();
 
-            DDclass_name(session.findFinal_Session());
+            //DDclass_name(session.findFinal_Session());
+
+            DDsession_name();
 
             repDues_Statement model = new repDues_Statement();
 
@@ -98,7 +149,7 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult duesListNotice_students(int section_id, decimal amount, string operation, string month_name, string  payment_by, string message)
+        public ActionResult duesListNotice_students(int class_id,int section_id, decimal amount, string operation, string month_name, string  payment_by, string message,string session)
         {
             if(payment_by == null)
             {
@@ -107,7 +158,7 @@ namespace SMS.Controllers
 
             repDues_listMain dues = new repDues_listMain();
             IEnumerable<repDues_list> result;
-            result = dues.duesList_Notice(section_id, amount, operation,month_name);
+            result = dues.duesList_Notice(class_id,section_id, amount, operation,month_name,session);
             foreach(var i in result)
             {
                 i.month_name = month_name;
