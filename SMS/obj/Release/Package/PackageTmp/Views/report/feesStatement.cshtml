@@ -31,6 +31,18 @@
         Value = "Detailed",
         Text = "Detailed"
     });
+
+    List<SelectListItem> format = new List<SelectListItem>();
+    format.Add(new SelectListItem
+    {
+        Value = "PDF",
+        Text = "PDF"
+    });
+    format.Add(new SelectListItem
+    {
+        Value = "Excel",
+        Text = "Excel"
+    });
 }
 <link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
 
@@ -45,7 +57,7 @@
 
                 @using (Html.BeginForm("feesStatement", "report", FormMethod.Post, new { target = "_blank" }))
                 {
-                    @Html.AntiForgeryToken()
+                    @*@Html.AntiForgeryToken()*@
 
                     <div class="form-horizontal">
 
@@ -70,7 +82,7 @@
                         <div class="form-group">
                             @Html.LabelFor(model => model.mode, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownListFor(model => model.mode, mode as IEnumerable<SelectListItem>, htmlAttributes: new { id = "todt", @class = "form-control" })
+                                @Html.DropDownListFor(model => model.mode, mode as IEnumerable<SelectListItem>, htmlAttributes: new {@class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.mode, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -78,8 +90,16 @@
                         <div class="form-group">
                             @Html.LabelFor(model => model.detailed, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownListFor(model => model.detailed, detailed as IEnumerable<SelectListItem>, htmlAttributes: new { id = "todt", @class = "form-control" })
+                                @Html.DropDownListFor(model => model.detailed, detailed as IEnumerable<SelectListItem>, htmlAttributes: new {@class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.detailed, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.format, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownListFor(model => model.format, format as IEnumerable<SelectListItem>, htmlAttributes: new {@class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.format, "", new { @class = "text-danger" })
                             </div>
                         </div>
 

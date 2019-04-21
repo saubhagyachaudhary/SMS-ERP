@@ -598,6 +598,7 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\SMS.pdb
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Antlr3.Runtime.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Dapper.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EntityFramework.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EPPlus.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Hangfire.Core.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\itextsharp.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.Agent.Intercept.dll
@@ -631,6 +632,7 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.WebPages
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\WebGrease.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Dapper.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EntityFramework.xml
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EPPlus.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Hangfire.Core.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\itextsharp.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\Microsoft.AI.DependencyCollector.xml
@@ -661,4 +663,3 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh\Hangfire.Core.re
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.pdb
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache

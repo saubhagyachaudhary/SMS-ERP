@@ -1,4 +1,5 @@
 ﻿using SMS.AcademicReport;
+using SMS.ExcelReport;
 using SMS.Models;
 using SMS.report;
 using System;
@@ -23,7 +24,6 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
-           
             return View(u);
         }
 

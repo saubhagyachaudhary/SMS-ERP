@@ -54,6 +54,10 @@
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EPPlus, Version=4.5.3.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.3.1\lib\net40\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Hangfire.Core, Version=1.6.20.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hangfire.Core.1.6.20\lib\net45\Hangfire.Core.dll</HintPath>
       <Private>True</Private>
@@ -127,6 +131,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="ReportViewerForMvc, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ReportViewerForMvc.1.0.1\lib\net45\ReportViewerForMvc.dll</HintPath>
       <Private>True</Private>
@@ -139,6 +144,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -261,6 +267,7 @@
     <Compile Include="Controllers\teacher_exam_remarkController.cs" />
     <Compile Include="Controllers\uncleared_chequeController.cs" />
     <Compile Include="Controllers\usersController.cs" />
+    <Compile Include="ExcelReport\ExcelDaily_reportMain.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

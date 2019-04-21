@@ -508,3 +508,5 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.Web
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Net.Http.Formatting.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.xml
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\System.Web.Http.WebHost.xml
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EPPlus.dll
+E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\EPPlus.xml

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
 using SMS.AcademicReport;
+using SMS.ExcelReport;
 using SMS.Models;
 using SMS.report;
 using System;
@@ -34,20 +35,46 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult feesStatement(DateTime fromDt, DateTime toDt,string mode,string detailed)
+        public ActionResult feesStatement(DateTime fromDt, DateTime toDt,string mode,string detailed, string format)
         {
-            repDaily_report aa = new repDaily_report();
 
-            if (detailed == "Detailed")
+            if (format == "PDF")
             {
-                aa.pdfdetailed(fromDt, toDt, mode);
+                repDaily_report aa = new repDaily_report();
+
+                if (detailed == "Detailed")
+                {
+                    aa.pdfdetailed(fromDt, toDt, mode);
+                }
+                else
+                {
+                    aa.pdfCansolidated(fromDt, toDt, mode);
+                }
+
             }
             else
             {
-                aa.pdfCansolidated(fromDt, toDt, mode);
+                ExcelDaily_reportMain excel = new ExcelDaily_reportMain();
+
+                if(detailed == "Detailed")
+                {
+                    excel.ExcelDetailed(fromDt, toDt, mode);
+                }
+                else
+                {
+                    excel.ExcelCansolidated(fromDt, toDt, mode);
+                }
+
+                
             }
 
-            return View();
+           
+
+            repFeesStatement main = new repFeesStatement();
+            main.fromDt = fromDt;
+            main.toDt = toDt;
+
+            return View(main);
         }
 
         [HttpGet]
@@ -67,21 +94,31 @@ namespace SMS.Controllers
        
 
         [HttpPost]
-        public ActionResult head_wise_fees_statement(DateTime fromDt, DateTime toDt, string mode, string session,int acc_id)
+        public ActionResult head_wise_fees_statement(DateTime fromDt, DateTime toDt, string mode, string session,int acc_id, string format)
         {
-            repDaily_report aa = new repDaily_report();
+            
+
+            if (format == "PDF")
+            {
+                repDaily_report aa = new repDaily_report();
+                aa.pdfHeadWiseStatement(fromDt, toDt, mode, session, acc_id);
+            }
+            else
+            {
+                ExcelDaily_reportMain excel = new ExcelDaily_reportMain();
+                excel.ExcelHeadWiseStatement(fromDt, toDt, mode, session, acc_id);
+            }
+
 
             repFeesStatement main = new repFeesStatement();
+            
+            main.fromDt = fromDt;
 
-            main.fromDt = (System.DateTime.Now.AddMinutes(dateTimeOffSet));
-
-            main.toDt = (System.DateTime.Now.AddMinutes(dateTimeOffSet));
-
-            aa.pdfHeadWiseStatement(fromDt, toDt, mode,session,acc_id);
-
+            main.toDt = toDt;
+            
             DDsession_name();
 
-            return View();
+            return View(main);
         }
 
         public JsonResult GetAccountHead(string session)

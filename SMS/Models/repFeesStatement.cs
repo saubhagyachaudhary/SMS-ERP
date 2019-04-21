@@ -22,6 +22,9 @@ namespace SMS.Models
         [Display(Name = "Type")]
         public string detailed { get; set; }
 
+        [Display(Name = "Format")]
+        public string format { get; set; }
+
         [Display(Name = "Session")]
         public string session { get; set; }
 

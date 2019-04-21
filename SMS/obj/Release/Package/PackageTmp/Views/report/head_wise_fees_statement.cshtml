@@ -20,6 +20,17 @@
         Text = "Bank"
     });
 
+    List<SelectListItem> format = new List<SelectListItem>();
+    format.Add(new SelectListItem
+    {
+        Value = "PDF",
+        Text = "PDF"
+    });
+    format.Add(new SelectListItem
+    {
+        Value = "Excel",
+        Text = "Excel"
+    });
 }
 <link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
 
@@ -34,7 +45,7 @@
 
                 @using (Html.BeginForm("head_wise_fees_statement", "report", FormMethod.Post, new { target = "_blank" }))
                 {
-                    @Html.AntiForgeryToken()
+                    @*@Html.AntiForgeryToken()*@
 
                     <div class="form-horizontal">
 
@@ -83,6 +94,14 @@
                             </div>
                         </div>
                         
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.format, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.DropDownListFor(model => model.format, format as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.format, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
                                 <input type="submit" value="Display" class="btn btn-success" />
