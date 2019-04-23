@@ -23,6 +23,12 @@ namespace SMS.report
 
         public string class_name { get; set; }
 
+        public decimal fees { get; set; }
+
+        public decimal fine { get; set; }
+
+        public decimal discount { get; set; }
+
         public decimal amount { get; set; }
 
         public string mode_flag { get; set; }

@@ -98,7 +98,7 @@ namespace SMS.Models
             string query = @"SELECT 
                                 a.session,
                                 a.sr_num,
-                                CONCAT(b.std_first_name, ' ', b.std_last_name) stdName,
+                                CONCAT(ifnull(b.std_first_name,''), ' ', ifnull(b.std_last_name,'')) stdName,
                                 d.class_name stdclass,
                                 e.acc_name account_name,
                                 CONCAT(percent, '%') per,
