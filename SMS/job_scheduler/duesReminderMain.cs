@@ -27,7 +27,7 @@ namespace SMS.job_scheduler
             if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
             {
                 query = @"SELECT 
-                                std_name, sr_number, SUM(dues), std_contact
+                                std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
                                     CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) std_name,
@@ -74,7 +74,7 @@ namespace SMS.job_scheduler
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
             {
                 query = @"SELECT 
-                                std_name, sr_number, SUM(dues), std_contact
+                                std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
                                     CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) std_name,
@@ -120,7 +120,7 @@ namespace SMS.job_scheduler
             else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
             {
                 query = @"SELECT 
-                                std_name, sr_number, SUM(dues), std_contact
+                                std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
                                     CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) std_name,
@@ -168,7 +168,7 @@ namespace SMS.job_scheduler
             else
             {
                 query = @"SELECT 
-                                std_name, sr_number, SUM(dues), std_contact
+                                std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
                                     CONCAT(IFNULL(b.std_first_name, ''), ' ', IFNULL(b.std_last_name, '')) std_name,
@@ -211,7 +211,7 @@ namespace SMS.job_scheduler
                             GROUP BY a.sr_number";
             }
 
-#if !DEBUG
+
             std = con.Query<duesReminder>(query, new { session = session.findFinal_Session() });
 
             SMSMessage sms = new SMSMessage();
@@ -227,15 +227,16 @@ namespace SMS.job_scheduler
                     body = body.Replace("#dues#", item.dues.ToString());
 
                     body = body.Replace("#current_date#", DateTime.Now.ToString("dddd, dd MMMM yyyy"));
-
+#if !DEBUG
                     await sms.SendSMS(body, item.std_contact,false);
+#endif
                 }
             }
 
             DashboardHub hub = new DashboardHub();
 
             hub.SMSCreditLeft();
-#endif
+
         }
     }
 }

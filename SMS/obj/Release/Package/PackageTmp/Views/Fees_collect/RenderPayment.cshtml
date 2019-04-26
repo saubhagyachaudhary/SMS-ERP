@@ -279,14 +279,18 @@
 
                        
 
-                        if (parseFloat(amt) < 0 )
+                        if (parseFloat(amt) < 0 || parseFloat(dis) < 0 || parseFloat(fin) < 0 )
                         {
                             alert("Value cannot be negative");
                             document.getElementById("c"+i.toString()).checked = false;
                         }
                         else if (parseFloat(due) < (parseFloat(amt)))
                         {
-                            alert("Value should be less then Payable amount");
+                            alert("Amount cannot be greater then Payable amount");
+                            document.getElementById("c"+i.toString()).checked = false;
+                        } if (parseFloat(due) < parseFloat(dis))
+                        {
+                            alert("Discount cannot be greater then Payable amount");
                             document.getElementById("c"+i.toString()).checked = false;
                         }
                         else

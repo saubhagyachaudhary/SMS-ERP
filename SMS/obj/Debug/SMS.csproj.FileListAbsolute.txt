@@ -663,4 +663,3 @@ E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh\Hangfire.Core.re
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core.resources.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.dll
 E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.pdb
-E:\Hariti ERP MySQL\Project ERP\Hariti\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache
