@@ -578,8 +578,15 @@ namespace SMS.Models
                                         mst_std_section b
                                     WHERE
                                         b.sr_num = a.sr_num
-                                            AND att_date = CURDATE())
-                            ORDER BY a.class_id";
+                                            AND att_date = CURDATE()
+                                            AND a.session = b.session
+                                            AND b.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'))
+                            ORDER BY b.order_by";
 
                 result = con.Query<attendance_register>(query);
             }
@@ -611,12 +618,21 @@ namespace SMS.Models
                                     WHERE
                                         finalizer = @user_id)
                                     AND a.section_id NOT IN (SELECT DISTINCT
-                                        section_id
+                                        b.section_id
                                     FROM
-                                        attendance_register
+                                        attendance_register a,
+                                        mst_std_section b
                                     WHERE
-                                        att_date = CURDATE())
-                            ORDER BY a.class_id";
+                                        b.sr_num = a.sr_num
+                                            AND att_date = CURDATE()
+                                            AND a.session = b.session
+                                            AND b.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y'))
+                            ORDER BY b.order_by";
 
                 result = con.Query<attendance_register>(query, new { user_id = user_id });
             }

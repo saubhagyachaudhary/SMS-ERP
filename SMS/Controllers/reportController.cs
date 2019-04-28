@@ -420,7 +420,7 @@ namespace SMS.Controllers
         {
             try
             {
-                string query = @"select count(*) from sr_register where std_active = 'Y' and sr_number = @sr_num;";
+                string query = @"select count(*) from sr_register where sr_number = @sr_num;";
 
                 int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
 
