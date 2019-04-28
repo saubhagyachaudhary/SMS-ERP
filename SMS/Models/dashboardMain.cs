@@ -300,6 +300,56 @@ namespace SMS.Models
             return s;
         }
 
+        public string[] session()
+        {
+            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
+            string query = "";
+
+            IEnumerable<string> result;
+
+            query = @"SELECT 
+                            session
+                        FROM
+                            mst_session
+                        ORDER BY session_start_date";
+            
+
+                result = con.Query<string>(query);
+            
+
+            string[] s = result.ToArray<string>();
+
+            return s;
+        }
+
+        public decimal[] session_dues()
+        {
+            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
+            string query = "";
+
+            IEnumerable<decimal> result;
+
+            query = @"SELECT 
+                            SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) dues
+                        FROM
+                            out_standing a,
+                            mst_session b
+                        WHERE
+                            a.session = b.session
+                        GROUP BY a.session
+                        ORDER BY b.session_start_date";
+
+
+            result = con.Query<decimal>(query);
+
+
+            decimal[] s = result.ToArray<decimal>();
+
+            return s;
+        }
+
         public string[] date_list_for_attendance(int user_id, bool flag)
         {
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());

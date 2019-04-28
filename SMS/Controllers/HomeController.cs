@@ -50,6 +50,8 @@ namespace SMS.Controllers
             Task t25 = Task.FromResult<object>(null);
             Task t26 = Task.FromResult<object>(null);
             Task t27 = Task.FromResult<object>(null);
+            Task t28 = Task.FromResult<object>(null);
+            Task t29 = Task.FromResult<object>(null);
 
             if (list.Contains("fees_received"))
             {
@@ -237,8 +239,22 @@ namespace SMS.Controllers
                     t27 = Task.Factory.StartNew(() => db.staff_birthday_list = dmain.staff_birthday());
             }
 
+            if (list.Contains("session_wise_dues_chart"))
+            {
 
-            var tasklist = new List<Task> { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27 };
+                t28 = Task.Factory.StartNew(() => db.session = dmain.session());
+
+                t29 = Task.Factory.StartNew(() => db.session_dues = dmain.session_dues());
+            }
+            else
+            {
+                db.session = new string[] { "" };
+
+                db.session_dues = new decimal[] { 0 };
+            }
+
+
+            var tasklist = new List<Task> { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29 };
 
 
             Task.WaitAll(tasklist.ToArray());

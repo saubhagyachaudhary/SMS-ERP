@@ -41,6 +41,10 @@ namespace SMS.Models
 
         public string[] date_list { get; set; }
 
+        public string[] session { get; set; }
+
+        public decimal[] session_dues { get; set; }
+
         public decimal[] dues { get; set; }
 
         public decimal[] recovered { get; set; }
