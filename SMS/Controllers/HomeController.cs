@@ -53,7 +53,7 @@ namespace SMS.Controllers
             Task t28 = Task.FromResult<object>(null);
             Task t29 = Task.FromResult<object>(null);
 
-            if (list.Contains("fees_received"))
+            if (list.Contains("fees_received") || User.IsInRole("superadmin"))
             {
                 t1 = Task.Factory.StartNew(() => db.bank_received = dmain.bank_received());
 
@@ -61,7 +61,7 @@ namespace SMS.Controllers
 
                 
             }
-            if (list.Contains("school_strength"))
+            if (list.Contains("school_strength") || User.IsInRole("superadmin"))
             {
 
                 t3 = Task.Factory.StartNew(() => db.school_strength = dmain.school_strength());
@@ -73,7 +73,7 @@ namespace SMS.Controllers
                 
 
             }
-            if (list.Contains("transport_std"))
+            if (list.Contains("transport_std") || User.IsInRole("superadmin"))
             {
                 t5 = Task.Factory.StartNew(() => db.transport_male_std = dmain.transport_Male_std());
 
@@ -81,7 +81,7 @@ namespace SMS.Controllers
                
             }
             
-            if (list.Contains("newAdmission"))
+            if (list.Contains("newAdmission") || User.IsInRole("superadmin"))
             {
                 t7 = Task.Factory.StartNew(() => db.newAdmission = dmain.new_admission());
 
@@ -93,7 +93,7 @@ namespace SMS.Controllers
 
                 
             }
-            if (list.Contains("class_wise_dues_chart"))
+            if (list.Contains("class_wise_dues_chart") || User.IsInRole("superadmin"))
             {
                 t10 = Task.Factory.StartNew(() => db.name = dmain.school_class());
                 
@@ -103,7 +103,7 @@ namespace SMS.Controllers
                 db.name = new string[] { "" };
             }
 
-            if (list.Contains("class_wise_dues_chart")|| list.Contains("total_recovery"))
+            if (list.Contains("class_wise_dues_chart")|| list.Contains("total_recovery") || User.IsInRole("superadmin"))
             {
 
                 t11 = Task.Factory.StartNew(() => db.dues = dmain.dues());
@@ -123,7 +123,7 @@ namespace SMS.Controllers
             }
 
 
-            if (list.Contains("sms_credit_left"))
+            if (list.Contains("sms_credit_left") || User.IsInRole("superadmin"))
             {
                 t13 = Task.Factory.StartNew(() => db.sms_credit_left = dmain.SMSCredit());
 
@@ -131,7 +131,7 @@ namespace SMS.Controllers
                 
             }
           
-            if (list.Contains("class_wise_attendance_chart")|| list.Contains("attendance_summary"))
+            if (list.Contains("class_wise_attendance_chart")|| list.Contains("attendance_summary") || User.IsInRole("superadmin"))
             {
                 if (User.IsInRole("superadmin") || User.IsInRole("principal"))
                 {
@@ -163,7 +163,7 @@ namespace SMS.Controllers
                 db.absent = new int[] { 0 };
             }
 
-            if (list.Contains("date_wise_attendance_chart"))
+            if (list.Contains("date_wise_attendance_chart") || User.IsInRole("superadmin"))
             {
                 if (User.IsInRole("superadmin") || User.IsInRole("principal"))
                 {
@@ -197,7 +197,7 @@ namespace SMS.Controllers
 
 
 
-            if (list.Contains("finalize_list"))
+            if (list.Contains("finalize_list") || User.IsInRole("superadmin"))
             {
                 if(User.IsInRole("superadmin")|| User.IsInRole("principal"))
                     t21 = Task.Factory.StartNew(() => db.finalize_list = dmain.finalizer_list(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), true));
@@ -205,7 +205,7 @@ namespace SMS.Controllers
                     t21 = Task.Factory.StartNew(() => db.finalize_list = dmain.finalizer_list(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), false));
             }
 
-            if (list.Contains("list_att_left_class"))
+            if (list.Contains("list_att_left_class") || User.IsInRole("superadmin"))
             {
                 if (User.IsInRole("superadmin") || User.IsInRole("principal"))
                     t22 = Task.Factory.StartNew(() => db.list_att_left_class = dmain.att_left_classess(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), true));
@@ -214,7 +214,7 @@ namespace SMS.Controllers
                 
 
             }
-            if (list.Contains("total_cash_bank_received"))
+            if (list.Contains("total_cash_bank_received") || User.IsInRole("superadmin"))
             {
 
                 t23 = Task.Factory.StartNew(() => db.total_bank_received = dmain.total_bank_received());
@@ -225,7 +225,7 @@ namespace SMS.Controllers
             }
 
 
-            if (list.Contains("std_birthday_list"))
+            if (list.Contains("std_birthday_list") || User.IsInRole("superadmin"))
             {
                 if (User.IsInRole("superadmin") || User.IsInRole("principal"))
                     t25 = Task.Factory.StartNew(() => db.std_birthday_list = dmain.std_birthday_list(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), true));
@@ -233,13 +233,13 @@ namespace SMS.Controllers
                     t26 = Task.Factory.StartNew(() => db.std_birthday_list = dmain.std_birthday_list(int.Parse(Request.Cookies["loginUserId"].Value.ToString()), false));
             }
 
-            if (list.Contains("staff_birthday_list"))
+            if (list.Contains("staff_birthday_list") || User.IsInRole("superadmin"))
             {
                 
                     t27 = Task.Factory.StartNew(() => db.staff_birthday_list = dmain.staff_birthday());
             }
 
-            if (list.Contains("session_wise_dues_chart"))
+            if (list.Contains("session_wise_dues_chart") || User.IsInRole("superadmin"))
             {
 
                 t28 = Task.Factory.StartNew(() => db.session = dmain.session());
@@ -261,17 +261,17 @@ namespace SMS.Controllers
 
 
 
-            if (list.Contains("fees_received"))
+            if (list.Contains("fees_received") || User.IsInRole("superadmin"))
             {
                 db.fees_received = db.bank_received + db.cash_received;
             }
-            if (list.Contains("transport_std"))
+            if (list.Contains("transport_std") || User.IsInRole("superadmin"))
             {
 
                 db.transport_std = db.transport_male_std + db.transport_female_std;
             }
 
-            if (list.Contains("class_wise_dues_chart") || list.Contains("total_recovery"))
+            if (list.Contains("class_wise_dues_chart") || list.Contains("total_recovery") || User.IsInRole("superadmin"))
             {
 
                 db.total_dues = db.dues.Sum();
@@ -285,7 +285,7 @@ namespace SMS.Controllers
                 db.total_recovered = db.recovered.Sum();
             }
 
-            if (list.Contains("class_wise_attendance_chart") || list.Contains("attendance_summary"))
+            if (list.Contains("class_wise_attendance_chart") || list.Contains("attendance_summary") || User.IsInRole("superadmin"))
             {
                
                 db.daily_absent = db.absent.Sum();
@@ -301,7 +301,7 @@ namespace SMS.Controllers
                 db.absent = new int[] { 0 };
             }
 
-            if (list.Contains("finalize_list"))
+            if (list.Contains("finalize_list") || User.IsInRole("superadmin"))
             {   
                 foreach (var item in db.finalize_list)
                 {
@@ -310,7 +310,7 @@ namespace SMS.Controllers
                 }
             }
 
-            if (list.Contains("list_att_left_class"))
+            if (list.Contains("list_att_left_class") || User.IsInRole("superadmin"))
             {
                 
                 foreach (var item in db.list_att_left_class)
@@ -321,7 +321,7 @@ namespace SMS.Controllers
 
             }
 
-            if (list.Contains("total_cash_bank_received"))
+            if (list.Contains("total_cash_bank_received") || User.IsInRole("superadmin"))
             {
                 
                 db.total_cash_bank_received = db.total_bank_received + db.total_cash_received;

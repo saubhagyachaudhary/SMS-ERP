@@ -457,9 +457,15 @@ namespace SMS.Controllers
             }
             else
             {
-                if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+                if (User.IsInRole("superadmin") || User.IsInRole("principal"))
                 {
-                    query = @"SELECT 
+                    std.std_active = "N";
+                }
+                else
+                {
+                    if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+                    {
+                        query = @"SELECT 
                                         ifnull(SUM(dues),0)
                                     FROM
                                         (SELECT 
@@ -495,11 +501,11 @@ namespace SMS.Controllers
                                                 AND a.sr_number = b.sr_number
                                                 AND b.std_active = 'Y'
                                                 AND b.sr_number = @sr_number) a";
-                }
-                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
-                {
+                    }
+                    else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
+                    {
 
-                    query = @"SELECT 
+                        query = @"SELECT 
                                         ifnull(SUM(dues),0)
                                     FROM
                                         (SELECT 
@@ -534,10 +540,10 @@ namespace SMS.Controllers
                                                 AND a.sr_number = b.sr_number
                                                 AND b.std_active = 'Y'
                                                 AND b.sr_number = @sr_number) a";
-                }
-                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
-                {
-                    query = @"SELECT 
+                    }
+                    else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
+                    {
+                        query = @"SELECT 
                                         ifnull(SUM(dues),0)
                                     FROM
                                         (SELECT 
@@ -572,10 +578,10 @@ namespace SMS.Controllers
                                                 AND a.sr_number = b.sr_number
                                                 AND b.std_active = 'Y'
                                                 AND b.sr_number = @sr_number) a";
-                }
-                else
-                {
-                    query = @"SELECT 
+                    }
+                    else
+                    {
+                        query = @"SELECT 
                                         ifnull(SUM(dues),0)
                                     FROM
                                         (SELECT 
@@ -609,25 +615,27 @@ namespace SMS.Controllers
                                                 AND a.sr_number = b.sr_number
                                                 AND b.std_active = 'Y'
                                                 AND b.sr_number = @sr_number) a";
+                    }
+
+                    dues = con.Query<decimal>(query, new { sr_number = std.sr_number }).SingleOrDefault();
+
+                    if (dues != 0)
+                    {
+                        ModelState.AddModelError(String.Empty, "Sorry task cannot be completed. First clear all the dues upto current month.");
+
+                        DDclass_name(std);
+
+                        DDtransport_id(std);
+
+                        DDSections(std);
+
+                        return View(std);
+                    }
+
+                    std.std_active = "N";
+
                 }
-
-                dues = con.Query<decimal>(query, new { sr_number = std.sr_number }).SingleOrDefault();
-
-                if(dues != 0)
-                {
-                    ModelState.AddModelError(String.Empty, "Sorry task cannot be completed. First clear all the dues upto current month.");
-
-                    DDclass_name(std);
-
-                    DDtransport_id(std);
-
-                    DDSections(std);
-
-                    return View(std);
-                }
-
-
-                std.std_active = "N";
+               
             }
 
             stdMain.EditStudent(std);
