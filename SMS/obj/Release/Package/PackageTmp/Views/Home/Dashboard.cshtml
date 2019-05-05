@@ -43,32 +43,32 @@ window.odometerOptions = {
 
 <div class="right_col" role="main">
     
-    @if (list.Contains("school_strength") || list.Contains("fees_received") || list.Contains("transport_std") || list.Contains("newAdmission") || list.Contains("sms_credit_left") || list.Contains("total_cash_bank_received"))
+    @if (list.Contains("school_strength") || list.Contains("fees_received") || list.Contains("transport_std") || list.Contains("newAdmission") || list.Contains("sms_credit_left") || list.Contains("total_cash_bank_received") || User.IsInRole("superadmin"))
     {
     <div class="">
         @*<div class="col-md-12 col-sm-12 col-xs-12">*@
 
-        @if (list.Contains("school_strength"))
+        @if (list.Contains("school_strength") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("fees_received"))
+        @if (list.Contains("fees_received") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("transport_std"))
+        @if (list.Contains("transport_std") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("newAdmission"))
+        @if (list.Contains("newAdmission") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("sms_credit_left"))
+        @if (list.Contains("sms_credit_left") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("total_cash_bank_received"))
+        @if (list.Contains("total_cash_bank_received") || User.IsInRole("superadmin"))
         {
             format++;
         }
@@ -105,7 +105,7 @@ window.odometerOptions = {
        
         <!-- page content -->
         <div class="row top_tiles">
-            @if (list.Contains("school_strength"))
+            @if (list.Contains("school_strength") || User.IsInRole("superadmin"))
             {
 
                 <div class="@class_format">
@@ -124,7 +124,7 @@ window.odometerOptions = {
                 </div>
 
             }
-            @if (list.Contains("fees_received"))
+            @if (list.Contains("fees_received") || User.IsInRole("superadmin"))
             {
                 <div class="@class_format">
                     <div class="tile-stats">
@@ -141,7 +141,7 @@ window.odometerOptions = {
                     </div>
                 </div>
             }
-                @if (list.Contains("transport_std"))
+                @if (list.Contains("transport_std") || User.IsInRole("superadmin"))
                 {
                     <div class="@class_format">
                         <div class="tile-stats">
@@ -156,7 +156,7 @@ window.odometerOptions = {
                         </div>
                     </div>
                 }
-            @if (list.Contains("newAdmission"))
+            @if (list.Contains("newAdmission") || User.IsInRole("superadmin"))
             {
 
 
@@ -176,7 +176,7 @@ window.odometerOptions = {
                 </div>
 
             }
-            @if (list.Contains("sms_credit_left"))
+            @if (list.Contains("sms_credit_left") || User.IsInRole("superadmin"))
             {
 
                 <div class="@class_format">
@@ -194,7 +194,7 @@ window.odometerOptions = {
                     </div>
                 </div>
             }
-            @if (list.Contains("total_cash_bank_received"))
+            @if (list.Contains("total_cash_bank_received") || User.IsInRole("superadmin"))
             {
                 <div class="@class_format">
                     <div class="tile-stats">
@@ -215,29 +215,29 @@ window.odometerOptions = {
     }
    
     <!-- page content -->
-@if (list.Contains("class_wise_dues_chart") || list.Contains("total_recovery") || list.Contains("class_wise_attendance_chart") || list.Contains("attendance_summary")|| list.Contains("date_wise_attendance_chart")|| list.Contains("session_wise_dues_chart"))
+@if (list.Contains("class_wise_dues_chart") || list.Contains("total_recovery") || list.Contains("class_wise_attendance_chart") || list.Contains("attendance_summary")|| list.Contains("date_wise_attendance_chart")|| list.Contains("session_wise_dues_chart") || User.IsInRole("superadmin"))
 {
 
     <div class="row">
 
-        @if (list.Contains("class_wise_dues_chart"))
+        @if (list.Contains("class_wise_dues_chart") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("total_recovery"))
+        @if (list.Contains("total_recovery") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("class_wise_attendance_chart"))
+        @if (list.Contains("class_wise_attendance_chart") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("attendance_summary"))
+        @if (list.Contains("attendance_summary") || User.IsInRole("superadmin"))
         {
             format++;
         }
 
-        @if (format == 1 || list.Contains("class_wise_dues_chart") || list.Contains("class_wise_attendance_chart"))
+        @if (format == 1 || list.Contains("class_wise_dues_chart") || list.Contains("class_wise_attendance_chart") || User.IsInRole("superadmin"))
         {
 
             decimal tmp = 12m;
@@ -255,14 +255,14 @@ window.odometerOptions = {
 
         @if (format == 2)
         {
-            if (list.Contains("total_recovery") || list.Contains("attendance_summary"))
+            if (list.Contains("total_recovery") || list.Contains("attendance_summary") || User.IsInRole("superadmin"))
             {
                 decimal tmp = 4m;
                 class_format = String.Format("col-md-{0} col-sm-12 col-xs-12", (int)Math.Round(tmp));
 
             }
 
-            if (list.Contains("class_wise_dues_chart") || list.Contains("class_wise_attendance_chart"))
+            if (list.Contains("class_wise_dues_chart") || list.Contains("class_wise_attendance_chart") || User.IsInRole("superadmin"))
             {
                 decimal tmp = 8m;
                 class_format1 = String.Format("col-md-{0} col-sm-12 col-xs-12", (int)Math.Round(tmp));
@@ -286,7 +286,7 @@ window.odometerOptions = {
             format = 0;
         }
 
-        @if (list.Contains("class_wise_dues_chart"))
+        @if (list.Contains("class_wise_dues_chart") || User.IsInRole("superadmin"))
         {
         <div class="@class_format1">
             <div class="x_panel">
@@ -302,7 +302,7 @@ window.odometerOptions = {
             </div>
         </div>
         }
-        @if (list.Contains("total_recovery"))
+        @if (list.Contains("total_recovery") || User.IsInRole("superadmin"))
         {
         @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">*@
         <div class="@class_format">
@@ -320,7 +320,7 @@ window.odometerOptions = {
             </div>
         </div>
         }
-        @if (list.Contains("session_wise_dues_chart"))
+        @if (list.Contains("session_wise_dues_chart") || User.IsInRole("superadmin"))
         {
          <div class="col-md-12 col-sm-12 col-xs-12" >
             <div class="x_panel">
@@ -340,7 +340,7 @@ window.odometerOptions = {
             </div>
         </div>
         }
-        @if (list.Contains("class_wise_attendance_chart"))
+        @if (list.Contains("class_wise_attendance_chart") || User.IsInRole("superadmin"))
         {
         <div class="@class_format1">
 
@@ -361,7 +361,7 @@ window.odometerOptions = {
         </div>
 
         }
-        @if (list.Contains("attendance_summary"))
+        @if (list.Contains("attendance_summary") || User.IsInRole("superadmin"))
         {
 
         <div class="@class_format">
@@ -380,7 +380,7 @@ window.odometerOptions = {
         </div>
         }
 
-        @if (list.Contains("date_wise_attendance_chart"))
+        @if (list.Contains("date_wise_attendance_chart") || User.IsInRole("superadmin"))
         {
             <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -406,15 +406,15 @@ window.odometerOptions = {
    
 
 }
-@if (list.Contains("finalize_list") || list.Contains("list_att_left_class"))
+@if (list.Contains("finalize_list") || list.Contains("list_att_left_class") || User.IsInRole("superadmin"))
 {
-    
+
     <div class="row">
-        @if (list.Contains("finalize_list"))
+        @if (list.Contains("finalize_list") || User.IsInRole("superadmin"))
         {
             format++;
         }
-        @if (list.Contains("list_att_left_class"))
+        @if (list.Contains("list_att_left_class") || User.IsInRole("superadmin"))
         {
             format++;
         }
@@ -434,7 +434,7 @@ window.odometerOptions = {
         }
 
 
-        @if (list.Contains("finalize_list"))
+        @if (list.Contains("finalize_list") || User.IsInRole("superadmin"))
         {
         <div class="@class_format">
             <div class="x_panel">
@@ -462,7 +462,7 @@ window.odometerOptions = {
             </div>
         </div>
         }
-        @if (list.Contains("list_att_left_class"))
+        @if (list.Contains("list_att_left_class") || User.IsInRole("superadmin"))
         {
 
         <div class="@class_format">
@@ -494,7 +494,7 @@ window.odometerOptions = {
             </div>
         </div>
         }
-        @if (list.Contains("std_birthday_list"))
+        @if (list.Contains("std_birthday_list") || User.IsInRole("superadmin"))
         {
             <div class="col-md-6 col-xs-12 col-sm-12">
                 <div class="x_panel">
@@ -522,7 +522,7 @@ window.odometerOptions = {
                 </div>
             </div>
         }
-        @if (list.Contains("staff_birthday_list"))
+        @if (list.Contains("staff_birthday_list") || User.IsInRole("superadmin"))
         {
             <div class="col-md-6 col-xs-12 col-sm-12">
                 <div class="x_panel">

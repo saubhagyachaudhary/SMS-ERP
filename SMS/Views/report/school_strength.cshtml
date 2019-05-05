@@ -1,7 +1,7 @@
 ﻿@model SMS.Models.rep_Class_Wise_Std_List
 
 @{
-    ViewBag.Title = "session_new_admission";
+    ViewBag.Title = "school_strength";
 
     List<SelectListItem> format = new List<SelectListItem>();
     format.Add(new SelectListItem
@@ -20,11 +20,11 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
 
-                <h2>Download New Student List</h2>
+                <h2>Download All Student List</h2>
 
-                @using (Html.BeginForm("session_new_admission", "report", FormMethod.Post, new { target = "_blank" }))
+                @using (Html.BeginForm("school_strength", "report", FormMethod.Post, new { target = "_blank" }))
                 {
-                   
+                    
 
                     <div class="form-horizontal">
 

@@ -19,5 +19,8 @@ namespace SMS.Models
         [Display(Name = "Select Session")]
         [Required]
         public string session { get; set; }
+
+        [Display(Name = "Format")]
+        public string format { get; set; }
     }
 }

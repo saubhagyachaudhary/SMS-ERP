@@ -267,6 +267,7 @@
     <Compile Include="Controllers\teacher_exam_remarkController.cs" />
     <Compile Include="Controllers\uncleared_chequeController.cs" />
     <Compile Include="Controllers\usersController.cs" />
+    <Compile Include="ExcelReport\ExcelClass_Wise_Std_ListMain.cs" />
     <Compile Include="ExcelReport\ExcelDaily_reportMain.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -2567,6 +2568,7 @@
     <Content Include="Views\report\Reimbursement_certificate.cshtml" />
     <Content Include="Views\report\session_new_admission.cshtml" />
     <Content Include="Views\report\head_wise_fees_statement.cshtml" />
+    <Content Include="Views\report\school_strength.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

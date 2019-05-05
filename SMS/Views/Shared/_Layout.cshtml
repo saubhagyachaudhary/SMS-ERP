@@ -332,7 +332,7 @@
                                     </li>
                                 }
 
-                                @if (list.Contains("reimbursement_certificate") || list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list") || User.IsInRole("superadmin"))
+                                @if (list.Contains("reimbursement_certificate") || list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list") || User.IsInRole("superadmin")|| list.Contains("school_strength"))
                                 {
                                 <li>
                                     <a><i class="fa fa-file-text-o"></i>MIS Reports <span class="fa fa-chevron-down"></span></a>
@@ -368,6 +368,11 @@
                                         @if (list.Contains("class_wise_std_list") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Student List", "class_wise_std_list", "report")</li>
+                                        }
+
+                                        @if (list.Contains("school_strength") || User.IsInRole("superadmin"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("All Student List", "school_strength", "report")</li>
                                         }
 
                                         @if (list.Contains("session_new_admission") || User.IsInRole("superadmin"))

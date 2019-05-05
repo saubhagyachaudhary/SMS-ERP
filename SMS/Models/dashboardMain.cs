@@ -20,7 +20,34 @@ namespace SMS.Models
         {
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-            String query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y'";
+            String query = @"SELECT 
+                                    COUNT(*)
+                                FROM
+                                    sr_register a,
+                                    mst_std_class b,
+                                    mst_std_section c,
+                                    mst_transport d,
+                                    mst_class e,
+                                    mst_section f
+                                WHERE
+                                    a.sr_number = b.sr_num
+                                        AND b.sr_num = c.sr_num
+                                        AND a.std_pickup_id = d.pickup_id
+                                        AND d.session = b.session
+                                        AND b.session = c.session
+                                        AND c.session = e.session
+                                        AND e.session = f.session
+                                        AND b.class_id = e.class_id
+                                        AND e.class_id = f.class_id
+                                        AND c.section_id = f.section_id
+                                        AND f.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')
+                                        AND a.std_active = 'Y'
+                                ORDER BY e.order_by";
 
             var result = con.Query<int>(query).SingleOrDefault();
 
@@ -31,7 +58,35 @@ namespace SMS.Models
         {
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-            String query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y' and std_sex = 'M';";
+            String query = @"SELECT 
+                                    COUNT(*)
+                                FROM
+                                    sr_register a,
+                                    mst_std_class b,
+                                    mst_std_section c,
+                                    mst_transport d,
+                                    mst_class e,
+                                    mst_section f
+                                WHERE
+                                    a.sr_number = b.sr_num
+                                        AND b.sr_num = c.sr_num
+                                        AND a.std_pickup_id = d.pickup_id
+                                        AND d.session = b.session
+                                        AND b.session = c.session
+                                        AND c.session = e.session
+                                        AND e.session = f.session
+                                        AND b.class_id = e.class_id
+                                        AND e.class_id = f.class_id
+                                        AND c.section_id = f.section_id
+                                        AND f.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')
+                                        AND a.std_active = 'Y'
+                                        and a.std_sex = 'M'
+                                ORDER BY e.order_by";
 
             var result = con.Query<int>(query).SingleOrDefault();
 
@@ -42,7 +97,35 @@ namespace SMS.Models
         {
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-            String query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y' and std_sex = 'F';";
+            String query = @"SELECT 
+                                    COUNT(*)
+                                FROM
+                                    sr_register a,
+                                    mst_std_class b,
+                                    mst_std_section c,
+                                    mst_transport d,
+                                    mst_class e,
+                                    mst_section f
+                                WHERE
+                                    a.sr_number = b.sr_num
+                                        AND b.sr_num = c.sr_num
+                                        AND a.std_pickup_id = d.pickup_id
+                                        AND d.session = b.session
+                                        AND b.session = c.session
+                                        AND c.session = e.session
+                                        AND e.session = f.session
+                                        AND b.class_id = e.class_id
+                                        AND e.class_id = f.class_id
+                                        AND c.section_id = f.section_id
+                                        AND f.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')
+                                        AND a.std_active = 'Y'
+                                        and a.std_sex = 'F'
+                                ORDER BY e.order_by";
 
             var result = con.Query<int>(query).SingleOrDefault();
 

@@ -591,13 +591,21 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult class_wise_std_list(int class_id,int section_id, string session)
+        public ActionResult class_wise_std_list(int class_id,int section_id, string session, string format)
         {
 
-            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+            if (format == "Excel")
+            {
+                ExcelClass_Wise_Std_ListMain std_list = new ExcelClass_Wise_Std_ListMain();
 
-            std_list.pdfClass_Wise_Std_List(class_id, section_id, session);
+                std_list.ExcelClass_Wise_Std_List(class_id, section_id, session);
+            }
+            else
+            {
+                repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
 
+                std_list.pdfClass_Wise_Std_List(class_id, section_id, session);
+            }
             DDsession_name();
           
             return View();
@@ -613,42 +621,54 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult session_new_admission(string session)
+        public ActionResult session_new_admission(string session,string format)
         {
 
-            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+            if (format == "Excel")
+            {
+                ExcelClass_Wise_Std_ListMain std_list = new ExcelClass_Wise_Std_ListMain();
 
-            std_list.session_new_admission(session);
+                std_list.Excelsession_new_admission(session);
+            }
+            else
+            {
 
+                repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+
+                std_list.session_new_admission(session);
+            }
             DDsession_name();
 
             return View();
         }
 
         [HttpGet]
-        public ActionResult session_new_admission_dashboard()
-        {
-
-            mst_sessionMain session = new mst_sessionMain();
-
-            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
-
-            std_list.session_new_admission(session.findActive_Session());
-
-            return View("Error");
-        }
-
-        [HttpGet]
         public ActionResult school_strength()
         {
 
-            mst_sessionMain session = new mst_sessionMain();
+            DDsession_name();
 
-            repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+            return View();
+        }
 
-            std_list.school_strength(session.findFinal_Session());
+        [HttpPost]
+        public ActionResult school_strength(string session, string format)
+        {
 
-            return View("Error");
+           if(format == "Excel")
+            {
+                ExcelClass_Wise_Std_ListMain std_list = new ExcelClass_Wise_Std_ListMain();
+
+                std_list.ExcelSchool_Strength(session);
+            }
+           else
+            {
+                repClass_Wise_Std_ListMain std_list = new repClass_Wise_Std_ListMain();
+
+                std_list.school_strength(session);
+            }
+            DDsession_name();
+            return View();
         }
 
         //trach tranport

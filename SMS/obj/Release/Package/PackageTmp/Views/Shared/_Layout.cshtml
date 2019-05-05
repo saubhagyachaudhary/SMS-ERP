@@ -146,76 +146,76 @@
                                              <li class="please_wait">@Html.ActionLink("Enable Wedget", "AllUserList", "enable_wedget")</li>
 
                                          }
-                                            @if (list.Contains("class_master"))
+                                            @if (list.Contains("class_master") || User.IsInRole("superadmin"))
                                             {
                                                 <li class="please_wait">@Html.ActionLink("Class Master", "AllClassList", "mst_class")</li>
                                             }
-                                            @if (list.Contains("financial_year"))
+                                            @if (list.Contains("financial_year") || User.IsInRole("superadmin"))
                                             {
                                                 <li class="please_wait">@Html.ActionLink("Financial Year", "AllFinList", "mst_fin")</li>
                                             }
-                                            @if (list.Contains("session_master"))
+                                            @if (list.Contains("session_master") || User.IsInRole("superadmin"))
                                             {
                                                 <li class="please_wait">@Html.ActionLink("Session Master", "AllSessionList", "mst_session")</li>
                                             }
-                                            @if (list.Contains("section_master"))
+                                            @if (list.Contains("section_master") || User.IsInRole("superadmin"))
                                             {
                                                 <li class="please_wait">@Html.ActionLink("Section Master", "AllSectionList", "mst_section")</li>
                                             }
-                                            @if (list.Contains("transport_master"))
+                                            @if (list.Contains("transport_master") || User.IsInRole("superadmin"))
                                             {
                                                 <li class="please_wait">@Html.ActionLink("Transport Master", "AllTransportList", "mst_transport")</li>
                                             }
 
-                                         @if (list.Contains("account_master"))
+                                         @if (list.Contains("account_master") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Account Master", "AllAccountList", "mst_acc_head")</li>
                                          }
 
 
-                                         @if (list.Contains("fees_master"))
+                                         @if (list.Contains("fees_master") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
                                          }
 
-                                         @if (list.Contains("discount_master"))
+                                         @if (list.Contains("discount_master") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Discount Master", "AllStdDiscountList", "std_discount")</li>
                                          }
 
-                                         @if (list.Contains("employee_master"))
+                                         @if (list.Contains("employee_master") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Employee Master", "EmpList", "emp_detail")</li>
                                          }
 
-                                         @if (list.Contains("user_master"))
+                                         @if (list.Contains("user_master") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("User Master", "AllUsersList", "users")</li>
                                          }
 
-                                         @if (list.Contains("class_teacher"))
+                                         @if (list.Contains("class_teacher") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Class Teacher", "list", "mst_attendance")</li>
                                          }
 
-                                         @if (list.Contains("update_roll_number"))
+                                         @if (list.Contains("update_roll_number") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Update Roll Number", "roll_class_list", "mst_rollnumber")</li>
                                          }
                                        </ul>
                                        </li>
                                }
-                                @if (list.Contains("registration_form") || list.Contains("mark_attendance"))
+                                @if (list.Contains("registration_form") || list.Contains("mark_attendance") || User.IsInRole("superadmin"))
                                 {
                                 <li>
 
                                     <a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        @if (list.Contains("registration_form"))
+                                        @if (list.Contains("registration_form") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Registration Form", "AllRegistrationList", "std_registration")</li>
                                         }
-                                        @if (list.Contains("mark_attendance"))
+                                        @if (list.Contains("mark_attendance") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Mark Attendance", "attendance_class_list", "attendance_register")</li>
                                         }
@@ -226,71 +226,71 @@
                                 </li>
                                 }
 
-                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades") || list.Contains("teacher_exam_remark"))
+                                @if (list.Contains("subject_master") || list.Contains("co_scholastic_master") || list.Contains("discipline_master") || list.Contains("assign_subject_to_class") || list.Contains("assign_co_scholastic_to_class") || list.Contains("assign_discipline_to_class") || list.Contains("exam_master") || list.Contains("assign_class_to_exam") || list.Contains("term_master") || list.Contains("term_rule_for_report_card") || list.Contains("assign_marks") || list.Contains("assign_co_scholastic_grades") || list.Contains("assign_discipline_grades") || list.Contains("teacher_exam_remark") || User.IsInRole("superadmin"))
                                 {
                                 <li>
                                     <a><i class="fa fa-bar-chart"></i> Examination <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        @if (list.Contains("subject_master"))
+                                        @if (list.Contains("subject_master") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Subject Master", "AllSubjectList", "mst_subject")</li>
                                         }
-                                        @if (list.Contains("co_scholastic_master"))
+                                        @if (list.Contains("co_scholastic_master") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("CO-Scholastic Master", "AllCoScholasticList", "mst_Co_scholastic")</li>
                                         }
-                                        @if (list.Contains("discipline_master"))
+                                        @if (list.Contains("discipline_master") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Discipline Master", "AllDisciplineList", "mst_discipline")</li>
                                         }
-                                        @if (list.Contains("assign_subject_to_class"))
+                                        @if (list.Contains("assign_subject_to_class") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Subject To Class", "AllClassSubjectList", "mst_class_subject")</li>
                                         }
-                                        @if (list.Contains("assign_co_scholastic_to_class"))
+                                        @if (list.Contains("assign_co_scholastic_to_class") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Co-Scholastic To Class", "AllClassCoScholasticList", "mst_class_coscholastic")</li>
                                         }
-                                        @if (list.Contains("assign_discipline_to_class"))
+                                        @if (list.Contains("assign_discipline_to_class") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Discipline To Class", "AllClassDisciplineList", "mst_class_discipline")</li>
                                         }
-                                        @if (list.Contains("exam_master"))
+                                        @if (list.Contains("exam_master") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Exam Master", "AllExamList", "mst_exam")</li>
                                         }
-                                        @if (list.Contains("assign_class_to_exam"))
+                                        @if (list.Contains("assign_class_to_exam") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Class To Exam", "AllExamClassList", "mst_exam_class")</li>
                                         }
-                                        @if (list.Contains("term_master"))
+                                        @if (list.Contains("term_master") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Term Master", "AllTermList", "mst_term")</li>
                                         }
-                                        @if (list.Contains("term_rule_for_report_card"))
+                                        @if (list.Contains("term_rule_for_report_card") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Term Rule For Report Card", "AllTermRuleList", "mst_term_rules")</li>
                                         }
-                                        @if (list.Contains("assign_marks"))
+                                        @if (list.Contains("assign_marks") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Marks", "addExamMarks", "mst_exam_marks")</li>
                                         }
-                                        @if (list.Contains("teacher_exam_remark"))
+                                        @if (list.Contains("teacher_exam_remark") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Remarks", "AddRemarks", "teacher_exam_remark")</li>
                                         }
-                                        @if (list.Contains("assign_co_scholastic_grades"))
+                                        @if (list.Contains("assign_co_scholastic_grades") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Co-Scholastic Grades", "AddCoscholasticGrades", "mst_coscholastic_grades")</li>
                                         }
-                                        @if (list.Contains("assign_discipline_grades"))
+                                        @if (list.Contains("assign_discipline_grades") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Assign Discipline Grades", "AddDisciplineGrades", "mst_discipline_grades")</li>
                                         }
                                     </ul>
                                 </li>
                                 }
-                                @if (list.Contains("active_students_list"))
+                                @if (list.Contains("active_students_list") || User.IsInRole("superadmin"))
                                 {
                                 <li>
                                     <a><i class="fa fa-list"></i> Student List <span class="fa fa-chevron-down"></span></a>
@@ -302,16 +302,16 @@
                                     </ul>
                                 </li>
                                 }
-                                @if (list.Contains("fees_collection") || list.Contains("uncleared_cheque"))
+                                @if (list.Contains("fees_collection") || list.Contains("uncleared_cheque") || User.IsInRole("superadmin"))
                                 {
                                 <li>
                                     <a><i class="fa fa-money"></i> Fees Collection <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        @if (list.Contains("fees_collection"))
+                                        @if (list.Contains("fees_collection") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Fees Collection", "fees_collect", "Fees_collect")</li>
                                         }
-                                        @if (list.Contains("uncleared_cheque"))
+                                        @if (list.Contains("uncleared_cheque") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Uncleared Payments", "AllUnclearedChequeList", "uncleared_cheque")</li>
                                         }
@@ -320,7 +320,7 @@
                                     </ul>
                                 </li>
                                 }
-                                @if (list.Contains("send_sms"))
+                                @if (list.Contains("send_sms") || User.IsInRole("superadmin"))
                                 {
                                     <li>
                                         <a><i class="fa fa-wechat"></i> Send Message <span class="fa fa-chevron-down"></span></a>
@@ -332,82 +332,82 @@
                                     </li>
                                 }
 
-                                @if (list.Contains("reimbursement_certificate") || list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list"))
+                                @if (list.Contains("reimbursement_certificate") || list.Contains("fees_statement") || list.Contains("class_dues_list") || list.Contains("attendance_sheet") || list.Contains("transport_list") || list.Contains("student_ledger") || list.Contains("birth_certificate") || list.Contains("transport_dues_list") || User.IsInRole("superadmin"))
                                 {
                                 <li>
                                     <a><i class="fa fa-file-text-o"></i>MIS Reports <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        @if (list.Contains("fees_statement"))
+                                        @if (list.Contains("fees_statement") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Fees Statement", "feesStatement", "report")</li>
                                         }
 
-                                        @if (list.Contains("head_wise_fees_statement"))
+                                        @if (list.Contains("head_wise_fees_statement") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Head Wise Fees Statement", "head_wise_fees_statement", "report")</li>
                                         }
 
                                         
 
-                                        @if (list.Contains("class_dues_list"))
+                                        @if (list.Contains("class_dues_list") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Dues List", "duesList", "report")</li>
                                         }
-                                        @if (list.Contains("transport_dues_list"))
+                                        @if (list.Contains("transport_dues_list") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Transport Wise Dues List", "duesListTransportWise", "report")</li>
                                         }
-                                        @if (list.Contains("attendance_sheet"))
+                                        @if (list.Contains("attendance_sheet") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Attendace Sheet", "attendance_sheet", "report")</li>
                                         }
-                                        @if (list.Contains("transport_list"))
+                                        @if (list.Contains("transport_list") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Transport List", "transportList", "report")</li>
                                         }
-                                        @if (list.Contains("class_wise_std_list"))
+                                        @if (list.Contains("class_wise_std_list") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Student List", "class_wise_std_list", "report")</li>
                                         }
 
-                                        @if (list.Contains("session_new_admission"))
+                                        @if (list.Contains("session_new_admission") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("New Student List", "session_new_admission", "report")</li>
                                         }
 
-                                        @if (list.Contains("student_ledger"))
+                                        @if (list.Contains("student_ledger") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Student Ledger", "student_ledger", "report")</li>
                                         }
-                                        @if (list.Contains("birth_certificate"))
+                                        @if (list.Contains("birth_certificate") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Student Birth Certificate", "birth_certificate", "report")</li>
                                         }
-                                        @if (list.Contains("report_card"))
+                                        @if (list.Contains("report_card") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Generate Report Card", "report_card", "report")</li>
                                         }
-                                        @if (list.Contains("duesListNotice"))
+                                        @if (list.Contains("duesListNotice") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Generate/Send Fees Notice", "duesListNotice", "report")</li>
                                         }
-                                        @if (list.Contains("pdfstd_half_day"))
+                                        @if (list.Contains("pdfstd_half_day") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Student Half Day Report", "pdfstd_half_day", "report")</li>
                                         }
-                                        @if (list.Contains("track_vehicle"))
+                                        @if (list.Contains("track_vehicle") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Track Vehicle Location", "track_vehicle", "report")</li>
 
                                         }
                                         
-                                        @if (list.Contains("assignment_chart"))
+                                        @if (list.Contains("assignment_chart") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Class Assignment Report", "assignment_chart", "report")</li>
 
                                         }
 
-                                        @if (list.Contains("reimbursement_certificate"))
+                                        @if (list.Contains("reimbursement_certificate") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("Download Reimbursement Certificate", "Reimbursement_certificate", "report")</li>
 
@@ -416,22 +416,22 @@
                                     </ul>
                                 </li>
                                 }
-                                    @if (list.Contains("subject_comparative_study") || list.Contains("AllSubjectTeacher") || list.Contains("AllSubjectOfTeacher"))
+                                    @if (list.Contains("subject_comparative_study") || list.Contains("AllSubjectTeacher") || list.Contains("AllSubjectOfTeacher") || User.IsInRole("superadmin"))
                                     {
                                         <li>
                                             <a><i class="fa fa-book"></i> Academics <span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
-                                                @if (list.Contains("subject_comparative_study"))
+                                                @if (list.Contains("subject_comparative_study") || User.IsInRole("superadmin"))
                                                 {
                                                     <li class="please_wait">@Html.ActionLink("Comparative Study/Result Analysis", "subject_comparative_study", "report")</li>
                                                 }
 
-                                                @if (list.Contains("AllSubjectTeacher"))
+                                                @if (list.Contains("AllSubjectTeacher") || User.IsInRole("superadmin"))
                                                 {
                                                      <li class="please_wait">@Html.ActionLink("Assign Subject teacher", "AllSubjectTeacher", "class_subject_teacher")</li>
                                                 }
                                                
-                                                @if (list.Contains("AllSubjectOfTeacher"))
+                                                @if (list.Contains("AllSubjectOfTeacher") || User.IsInRole("superadmin"))
                                                 {
                                                     <li class="please_wait">@Html.ActionLink("Assign CW/HW", "AllSubjectOfTeacher", "mstSubjectChapter")</li>
                                                 }
@@ -444,13 +444,13 @@
                                        
                                     }
 
-                                    @if (list.Contains("std_half_day"))
+                                    @if (list.Contains("std_half_day") || User.IsInRole("superadmin"))
                                     {
                                         <li>
                                             <a><i class="fa fa-child"></i> Visitors <span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                               
-                                                @if (list.Contains("std_half_day"))
+                                                @if (list.Contains("std_half_day") || User.IsInRole("superadmin"))
                                                 {
                                                     <li class="please_wait">@Html.ActionLink("Student Halfday", "std_half_day", "std_halfday_log")</li>
                                                 }
