@@ -169,7 +169,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>04/29/2019 19:32:04</publishTime>
+      <publishTime>05/13/2019 22:27:49</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -6310,7 +6310,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/12/2019 16:59:09</publishTime>
     </File>
     <File Include="Views/Home/Dashboard.cshtml">
-      <publishTime>04/29/2019 19:15:00</publishTime>
+      <publishTime>05/05/2019 08:25:40</publishTime>
     </File>
     <File Include="Views/Home/Dashboard1.cshtml">
       <publishTime>08/20/2018 16:29:08</publishTime>
@@ -6622,7 +6622,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/06/2018 18:58:17</publishTime>
     </File>
     <File Include="Views/report/class_wise_std_list.cshtml">
-      <publishTime>02/14/2019 19:02:20</publishTime>
+      <publishTime>05/05/2019 07:16:55</publishTime>
     </File>
     <File Include="Views/report/duesList.cshtml">
       <publishTime>04/19/2019 09:38:49</publishTime>
@@ -6651,8 +6651,11 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/report/report_card.cshtml">
       <publishTime>02/25/2019 09:47:07</publishTime>
     </File>
+    <File Include="Views/report/school_strength.cshtml">
+      <publishTime>05/05/2019 08:17:51</publishTime>
+    </File>
     <File Include="Views/report/session_new_admission.cshtml">
-      <publishTime>04/14/2019 11:05:52</publishTime>
+      <publishTime>05/05/2019 07:40:28</publishTime>
     </File>
     <File Include="Views/report/student_ledger.cshtml">
       <publishTime>09/06/2018 18:54:38</publishTime>
@@ -6676,7 +6679,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/07/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>04/29/2019 19:10:29</publishTime>
+      <publishTime>05/05/2019 07:55:25</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>02/15/2019 17:06:35</publishTime>
@@ -6688,7 +6691,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/10/2016 23:42:08</publishTime>
     </File>
     <File Include="Views/sr_register/EditDetails.cshtml">
-      <publishTime>12/16/2018 13:34:08</publishTime>
+      <publishTime>05/13/2019 22:19:52</publishTime>
     </File>
     <File Include="Views/sr_register/FormViewer.cshtml">
       <publishTime>12/16/2018 18:03:00</publishTime>
@@ -6754,7 +6757,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>04/29/2019 19:32:19</publishTime>
+      <publishTime>05/13/2019 22:28:10</publishTime>
     </File>
   </ItemGroup>
 </Project>

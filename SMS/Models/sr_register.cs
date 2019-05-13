@@ -139,6 +139,10 @@ namespace SMS.Models
         [Required]
         [Display(Name = "Avail Transport")]
         public virtual int? std_pickup_id { get; set; }
+
+        [Display(Name = "Transport from")]
+        public int from_month_no { get; set; }
+
         [Display(Name = "Active")]
         public virtual string std_active { get; set; }
         [Required]

@@ -514,6 +514,8 @@ namespace SMS.Models
 
                         p.Add("@sr_num", std.sr_number);
 
+                        p.Add("@from_month_no", std.from_month_no);
+
                         con.Execute("StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
 
                         DashboardHub hub = new DashboardHub();

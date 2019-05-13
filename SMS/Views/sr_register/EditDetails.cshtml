@@ -35,6 +35,68 @@
         Value = "F",
         Text = "Female"
     });
+
+    List<SelectListItem> from_month_no = new List<SelectListItem>();
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "4",
+        Text = "April"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "5",
+        Text = "May"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "6",
+        Text = "June"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "7",
+        Text = "July"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "8",
+        Text = "August"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "9",
+        Text = "September"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "10",
+        Text = "October"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "11",
+        Text = "November"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "12",
+        Text = "December"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "1",
+        Text = "January"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "2",
+        Text = "February"
+    });
+    from_month_no.Add(new SelectListItem
+    {
+        Value = "3",
+        Text = "March"
+    });
 }
 <link href="~/vendors/datetimepicker/jquery-ui.css" rel="stylesheet" />
 <div class="right_col" role="main">
@@ -226,7 +288,7 @@
                                 <div class="form-group">
                                     @Html.LabelFor(model => model.std_category, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                                     <div class="col-md-10 col-xs-12 col-sm-10">
-                                        @Html.DropDownListFor(model => model.std_category, category as IEnumerable<SelectListItem>, "Select Pickup Point", htmlAttributes: new { @class = "form-control" })
+                                        @Html.DropDownListFor(model => model.std_category, category as IEnumerable<SelectListItem>, "Select Category", htmlAttributes: new { @class = "form-control" })
 
                                         @Html.ValidationMessageFor(model => model.std_category, "", new { @class = "text-danger" })
                                     </div>
@@ -362,6 +424,15 @@
                                         @Html.DropDownList("std_pickup_id", ViewData["pickup_id"] as IEnumerable<SelectListItem>, "Select Pickup Point", htmlAttributes: new { @class = "form-control" })
 
                                         @Html.ValidationMessageFor(model => model.pickup_point, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.from_month_no, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                    <div class="col-md-10 col-xs-12 col-sm-10">
+                                        @Html.DropDownList("from_month_no", from_month_no as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+
+                                        @Html.ValidationMessageFor(model => model.from_month_no, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
 
