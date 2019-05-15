@@ -538,7 +538,6 @@ namespace SMS.Models
                                     mst_session
                                 WHERE
                                     session_finalize = 'Y')
-                        GROUP BY d.class_id
                         ORDER BY date_num , d.class_id";
 
                  result = con.Query<attendance_register>(query);
@@ -582,7 +581,6 @@ namespace SMS.Models
                                         mst_session
                                     WHERE
                                         session_finalize = 'Y')
-                            GROUP BY d.class_id
                             ORDER BY date_num , d.class_id";
 
                 result = con.Query<attendance_register>(query,new { user_id = user_id });
