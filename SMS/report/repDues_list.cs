@@ -32,5 +32,7 @@ namespace SMS.report
         public DateTime payment_by { get; set; }
 
         public string message { get; set; }
+
+        public int font_size { get; set; }
     }
 }

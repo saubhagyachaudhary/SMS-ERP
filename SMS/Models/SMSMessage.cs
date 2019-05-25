@@ -52,7 +52,7 @@ namespace SMS.Models
                                     `sms_body` = @sms_body
                                 WHERE
                                     (`sms_serial` = @serial)
-                                        AND (`sms_code` = @sms_code);";
+                                        AND (`sms_code` = @sms_code) AND enable = 1;";
 
             con.Execute(query, new {sms_body = sms_body, serial = serial, sms_code = sms_code });
 

@@ -649,7 +649,7 @@ namespace SMS.report
             return result;
         }
 
-        public void pdfDuesList_notice(IEnumerable<repDues_list> list)
+        public void pdfDuesList_notice(IEnumerable<repDues_list> list,int font_size)
         {
 
            
@@ -723,47 +723,47 @@ namespace SMS.report
 
                     doc.Add(pt);
 
-                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
+                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", font_size));
                     Paragraph para = new Paragraph(text);
                     para.Alignment = 0;
                     doc.Add(para);
 
-                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk("\n", FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
-                    text = new Chunk("To", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk("To", FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
-                    text = new Chunk(li.std_father_name, FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk(li.std_father_name, FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
-                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk("\n", FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
-                    text = new Chunk("Date: " + System.DateTime.Now.ToString("dd/MM/yyyy"), FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.SpacingBefore = 10;
-                    para.SpacingAfter = 10;
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk("Date: " + System.DateTime.Now.ToString("dd/MM/yyyy"), FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.SpacingBefore = 10;
+                    //para.SpacingAfter = 10;
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
-                    text = new Chunk("Subject: Reminder about pending fees", FontFactory.GetFont("Times New Roman", 12, Font.BOLD));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk("Subject: Reminder about pending fees", FontFactory.GetFont("Times New Roman", font_size, Font.BOLD));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
-                    text = new Chunk("\n", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
-                    doc.Add(para);
+                    //text = new Chunk("\n", FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
+                    //doc.Add(para);
 
                     string body = li.message.Replace("#father_name#", li.std_father_name);
 
@@ -775,8 +775,10 @@ namespace SMS.report
 
                     body = body.Replace("#date#", li.payment_by.ToString("dd/MM/yyyy"));
 
+                    body = body.Replace("#curdate#", System.DateTime.Now.ToString("dd/MM/yyyy"));
+
                     //text = new Chunk("Most respectfully, it is stated that an amount of " + li.amount + ", fee upto the month of "+ li.month_name +" is pending against school fee of your son/daughter " + li.name + ". We earnestly request you to kindly settle the payment by "+li.payment_by.ToString("dd/MM/yyyy")+". Also please be informed that we have a policy of accepting fees in instalments. Your prompt attention in this matter will be highly appreciated.", FontFactory.GetFont("Times New Roman", 12));
-                    text = new Chunk(body, FontFactory.GetFont("Times New Roman", 12));
+                    text = new Chunk(body, FontFactory.GetFont("Times New Roman", font_size));
                     para = new Paragraph(text);
                     para.Alignment = 0;
                     doc.Add(para);
@@ -785,18 +787,18 @@ namespace SMS.report
 
 
 
-                    text = new Chunk("Signature", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.SpacingBefore = 40;
-                    para.Alignment = 0;
+                    //text = new Chunk("Signature", FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.SpacingBefore = 40;
+                    //para.Alignment = 0;
 
-                    doc.Add(para);
+                    //doc.Add(para);
 
-                    text = new Chunk("Head Master/Principal", FontFactory.GetFont("Times New Roman", 12));
-                    para = new Paragraph(text);
-                    para.Alignment = 0;
+                    //text = new Chunk("Head Master/Principal", FontFactory.GetFont("Times New Roman", font_size));
+                    //para = new Paragraph(text);
+                    //para.Alignment = 0;
 
-                    doc.Add(para);
+                    //doc.Add(para);
                     doc.NewPage();
                 }
 

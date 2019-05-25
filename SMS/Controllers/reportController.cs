@@ -182,27 +182,32 @@ namespace SMS.Controllers
 
             model.payment_by = DateTime.Now;
 
+            model.font_size = 12;
+
             return View(model);
         }
 
         [HttpGet]
-        public ActionResult duesListNotice_students(int class_id,int section_id, decimal amount, string operation, string month_name, string  payment_by, string message,string session)
+        public ActionResult duesListNotice_students(int class_id,int section_id, decimal amount, string operation, string month_name, string  payment_by, string message,string session, int font_size)
         {
-            if(payment_by == null)
-            {
-                ModelState.AddModelError(String.Empty, "Due Date is mandatory.");
-            }
+           
+                if (payment_by == null)
+                {
+                    ModelState.AddModelError(String.Empty, "Due Date is mandatory.");
+                }
 
-            repDues_listMain dues = new repDues_listMain();
-            IEnumerable<repDues_list> result;
-            result = dues.duesList_Notice(class_id,section_id, amount, operation,month_name,session);
-            foreach(var i in result)
-            {
-                i.month_name = month_name;
-                i.payment_by = DateTime.Parse(payment_by);
-                i.message = message;
-            }
-            return View(result);
+                repDues_listMain dues = new repDues_listMain();
+                IEnumerable<repDues_list> result;
+                result = dues.duesList_Notice(class_id, section_id, amount, operation, month_name, session);
+                foreach (var i in result)
+                {
+                    i.month_name = month_name;
+                    i.payment_by = DateTime.Parse(payment_by);
+                    i.message = message;
+                    i.font_size = font_size;
+                }
+                return View(result);
+           
         }
 
         [HttpPost]
@@ -215,6 +220,8 @@ namespace SMS.Controllers
 
             bool flag = false;
 
+            int font_size = 12;
+
             foreach (repDues_list li in list)
             {
                 if (li.check)
@@ -225,10 +232,15 @@ namespace SMS.Controllers
                     else
                         flag = false;
                 }
-            }
 
-#if !DEBUG
+                if(li.font_size != 0)
+                {
+                    font_size = li.font_size;
+                }
+            }
             SMSMessage sms = new SMSMessage();
+#if !DEBUG
+            
             sms.setRecentSMS(result.FirstOrDefault().message, 15, "fees_notice");
             if (flag)
             {
@@ -265,8 +277,19 @@ namespace SMS.Controllers
 
             repDues_listMain ll = new repDues_listMain();
 
-            ll.pdfDuesList_notice(result);
+            ll.pdfDuesList_notice(result, font_size);
 
+           
+            string msg="";
+
+            foreach(var i in result)
+            {
+                msg = i.message;
+
+                break;
+            }
+
+            sms.setRecentSMS(msg, 15, "fees_notice");
 
             return View(list);
         }

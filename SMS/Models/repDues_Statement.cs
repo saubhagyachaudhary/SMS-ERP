@@ -9,16 +9,18 @@ namespace SMS.Models
     public class repDues_Statement
     {
         [Display(Name = "Section Name")]
+        [Required(ErrorMessage = "Please Provide Section Name", AllowEmptyStrings = false)]
         public int section_id { get; set; }
 
         [Display(Name = "Class Name")]
+        [Required(ErrorMessage = "Please Provide Class", AllowEmptyStrings = false)]
         public int class_id { get; set; }
 
         [Display(Name = "Pickup Point")]
         public int pickup_id { get; set; }
 
         [Display(Name = "Amount")]
-        [Required]
+        [Required(ErrorMessage = "Please Provide Amount", AllowEmptyStrings = false)]
         public decimal amount { get; set; }
 
         public string operation { get; set; }
@@ -35,6 +37,9 @@ namespace SMS.Models
 
         [Display(Name = "Session")]
         public string session { get; set; }
+
+        [Display(Name = "Font Size")]
+        public int font_size { get; set; }
 
     }
 }

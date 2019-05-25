@@ -107,7 +107,7 @@
                         <div class="form-group">
                             @Html.LabelFor(model => model.session, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownList("session", ViewData["session"] as IEnumerable<SelectListItem>, "Select Session", htmlAttributes: new { @class = "form-control" })
+                                @Html.DropDownList("session", ViewData["session"] as IEnumerable<SelectListItem>, "Select Session", htmlAttributes: new { required = "required", @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.session, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -115,7 +115,7 @@
                         <div class="form-group">
                             @Html.LabelFor(model => model.class_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownList("class_id", new SelectList(string.Empty, "class_id", "class_name"), "Select Class", htmlAttributes: new { @class = "form-control" })
+                                @Html.DropDownList("class_id", new SelectList(string.Empty, "class_id", "class_name"), "Select Class", htmlAttributes: new { required = "required", @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.class_id, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                         <div class="form-group">
                             @Html.LabelFor(model => model.section_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownList("section_id", new SelectList(string.Empty, "section_id", "section_name"), "Select Section", htmlAttributes: new { @class = "form-control" })
+                                @Html.DropDownList("section_id", new SelectList(string.Empty, "section_id", "section_name"), "Select Section", htmlAttributes: new { required = "required", @class = "form-control" })
 
                                 @Html.ValidationMessageFor(model => model.section_id, "", new { @class = "text-danger" })
                             </div>
@@ -154,6 +154,14 @@
                             <div class="col-md-10 col-xs-12 col-sm-10">
                                 @Html.EditorFor(model => model.payment_by, new { htmlAttributes = new { id = "payment_by", required = "required",  @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.payment_by, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.font_size, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                            <div class="col-md-10 col-xs-12 col-sm-10">
+                                @Html.EditorFor(model => model.font_size, new { htmlAttributes = new { required = "required", @placeholder = "Font Size", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.font_size, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
@@ -201,6 +209,11 @@
                                     <tr>
                                         <td>#date#</td>
                                         <td>Last date upto which fees is required</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>#curdate#</td>
+                                        <td>Today date</td>
 
                                     </tr>
                                 </table>
