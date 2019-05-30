@@ -221,7 +221,6 @@
     <Compile Include="AcademicControllers\class_subject_teacherController.cs" />
     <Compile Include="AcademicControllers\mstSubjectChapterController.cs" />
     <Compile Include="AcademicReport\repClassAssignments.cs" />
-    <Compile Include="AcademicReport\repTC_form.cs" />
     <Compile Include="APIControllers\ReportCardAPIController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -269,6 +268,7 @@
     <Compile Include="Controllers\usersController.cs" />
     <Compile Include="ExcelReport\ExcelClass_Wise_Std_ListMain.cs" />
     <Compile Include="ExcelReport\ExcelDaily_reportMain.cs" />
+    <Compile Include="ExcelReport\ExcelTc_form.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

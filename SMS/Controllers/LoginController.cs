@@ -24,6 +24,10 @@ namespace SMS.Controllers
             users u = new users();
             u.ReturnUrl = ReturnUrl;
 
+            ExcelTc_form tc = new ExcelTc_form();
+
+            tc.Generate_TC(604,1001,"Saubhagya Chaudhary");
+
             return View(u);
         }
 

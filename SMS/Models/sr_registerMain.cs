@@ -255,7 +255,7 @@ namespace SMS.Models
                 query = @"SELECT 
                                 acc_id, fees_amount outstd_amount
                             FROM
-                                taps.mst_fees
+                                mst_fees
                             WHERE
                                 session = @session AND bl_onetime = 1
                                     AND acc_id != 2
