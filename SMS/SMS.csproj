@@ -233,6 +233,7 @@
     <Compile Include="Controllers\enable_featureController.cs" />
     <Compile Include="Controllers\enable_wedgetController.cs" />
     <Compile Include="Controllers\Fees_collectController.cs" />
+    <Compile Include="Controllers\GenerateTCController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\mst_acc_headController.cs" />
@@ -2569,6 +2570,9 @@
     <Content Include="Views\report\session_new_admission.cshtml" />
     <Content Include="Views\report\head_wise_fees_statement.cshtml" />
     <Content Include="Views\report\school_strength.cshtml" />
+    <Content Include="Views\GenerateTC\all_TC_List.cshtml" />
+    <Content Include="Views\GenerateTC\all_nso_students.cshtml" />
+    <Content Include="Views\GenerateTC\message.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

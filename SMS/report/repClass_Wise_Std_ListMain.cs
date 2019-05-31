@@ -51,7 +51,7 @@ namespace SMS.report
                                                 IFNULL(std_last_name, '')) std_name,
                                         std_father_name,
                                         std_mother_name,
-                                        COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                        COALESCE(std_contact, std_contact1, std_contact2) std_contact,
                                         d.pickup_point,
                                         CONCAT(IFNULL(a.std_address, ''),
                                                 ' ',
@@ -300,7 +300,7 @@ namespace SMS.report
                     pt.AddCell(_cell);
 
                     ph = new Phrase();
-                    text = new Chunk(list.contact, FontFactory.GetFont("Areal", 8));
+                    text = new Chunk(list.std_contact, FontFactory.GetFont("Areal", 8));
                     ph.Add(text);
                     ph.Add("\n");
                     _cell = new PdfPCell(ph);
@@ -396,7 +396,7 @@ namespace SMS.report
                                             IFNULL(std_last_name, '')) std_name,
                                     std_father_name,
                                     std_mother_name,
-                                    COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                    COALESCE(std_contact, std_contact1, std_contact2) std_contact,
                                     d.pickup_point,
                                     e.class_name,
                                     f.section_name
@@ -628,7 +628,7 @@ namespace SMS.report
                     pt.AddCell(_cell);
 
                     ph = new Phrase();
-                    text = new Chunk(list.contact, FontFactory.GetFont("Areal", 8));
+                    text = new Chunk(list.std_contact, FontFactory.GetFont("Areal", 8));
                     ph.Add(text);
                     ph.Add("\n");
                     _cell = new PdfPCell(ph);
@@ -735,7 +735,7 @@ namespace SMS.report
                                             IFNULL(std_last_name, '')) std_name,
                                     std_father_name,
                                     std_mother_name,
-                                    COALESCE(std_contact, std_contact1, std_contact2) contact,
+                                    COALESCE(std_contact, std_contact1, std_contact2) std_contact,
                                     d.pickup_point,
                                     e.class_name,
                                     f.section_name
@@ -967,7 +967,7 @@ namespace SMS.report
                     pt.AddCell(_cell);
 
                     ph = new Phrase();
-                    text = new Chunk(list.contact, FontFactory.GetFont("Areal", 8));
+                    text = new Chunk(list.std_contact, FontFactory.GetFont("Areal", 8));
                     ph.Add(text);
                     ph.Add("\n");
                     _cell = new PdfPCell(ph);

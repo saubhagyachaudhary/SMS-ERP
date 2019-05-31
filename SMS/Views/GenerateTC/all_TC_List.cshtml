@@ -1,0 +1,103 @@
+﻿@model IEnumerable<SMS.Controllers.TC>
+
+@{
+    ViewBag.Title = "all_TC_List";
+}
+
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+<div class="right_col" role="main">
+    <p>
+        @Html.ActionLink("Generate TC", "all_nso_students", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+    </p>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            
+            <div class="x_panel">
+                <h2>List of TC Issued</h2>
+                <div class="x_title" style="overflow-x:auto;">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.Label("Session", htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownList("session", ViewData["session"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.session)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.tc_no)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.tc_date)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.sr_num)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.std_name)
+                                    </th>
+                                    
+                                    <th>Control Panel</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.session)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.tc_no)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.tc_date)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.sr_num)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.std_name)
+                                        </td>
+                                        
+                                        <td>
+                                            @Html.ActionLink("Download", "DownloadTC", new { sr_number = item.sr_num, username = item.prepared_by, session = item.session, tc_number = item.tc_no, tc_date = item.tc_date }, new { @class = "btn btn-success btn-sm" })
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts{
+        <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+        <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+        <script>
+            $('#session').on('change', function (event) {
+                var form = $(event.target).parents('form');
+
+                form.submit();
+            });
+        </script>
+        <script>
+            $('#datatable').dataTable();
+        </script>
+    }
