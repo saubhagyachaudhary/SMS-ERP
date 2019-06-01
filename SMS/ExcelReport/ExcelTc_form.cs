@@ -1382,6 +1382,13 @@ namespace SMS.ExcelReport
 
                 con.Execute(query, new {session = sess,tc_no = tc_no,tc_date = System.DateTime.Now,sr_num = sr_number, user_id = user_id });
 
+                query = @"UPDATE `sr_register`
+                        SET
+                        `tc_generated` = 1
+                        WHERE `sr_number` = @sr_number";
+
+                con.Execute(query, new { sr_number = sr_number});
+
                 return pck.GetAsByteArray();
 
             }

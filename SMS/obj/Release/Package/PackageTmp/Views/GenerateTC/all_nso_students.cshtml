@@ -1,0 +1,99 @@
+﻿@model IEnumerable<SMS.Controllers.nso_students>
+
+@{
+    ViewBag.Title = "all_nso_students";
+}
+
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+<div class="right_col" role="main">
+   
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+            <div class="x_panel">
+                <h2>List of NSO Students</h2>
+                <div class="x_title" style="overflow-x:auto;">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="form-horizontal">
+                            
+                            <div class="form-group">
+                                @Html.Label("Session", htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-xs-12 col-sm-10">
+                                    @Html.DropDownList("session", ViewData["session"] as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                   
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.sr_number)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.std_name)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.std_father_name)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.std_mother_name)
+                                    </th>
+
+                                    <th>Control Panel</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.sr_number)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.std_name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.std_father_name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.std_mother_name)
+                                        </td>
+
+                                        <td>
+                                            @Html.ActionLink("Generate TC", "GenerateTC", new { sr_number = item.sr_number, session = item.session}, new { @class = "btn btn-success btn-sm", onclick = "return confirm('Are you sure, you want to Generate TC');" })
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+            $('#session').on('change', function (event) {
+                var form = $(event.target).parents('form');
+
+                form.submit();
+            });
+    </script>
+    <script>
+            $('#datatable').dataTable();
+    </script>
+}

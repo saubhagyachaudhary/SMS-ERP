@@ -205,7 +205,7 @@
                                        </ul>
                                        </li>
                                }
-                                @if (list.Contains("registration_form") || list.Contains("mark_attendance") || User.IsInRole("superadmin"))
+                                @if (list.Contains("registration_form") || list.Contains("mark_attendance") || User.IsInRole("superadmin") || User.IsInRole("generate_TC"))
                                 {
                                 <li>
 
@@ -220,7 +220,12 @@
                                             <li class="please_wait">@Html.ActionLink("Mark Attendance", "attendance_class_list", "attendance_register")</li>
                                         }
 
+                                        @if (list.Contains("generate_TC") || User.IsInRole("superadmin"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("TC Forms", "all_TC_List", "GenerateTC")</li>
+                                        }
 
+                                        
 
                                     </ul>
                                 </li>

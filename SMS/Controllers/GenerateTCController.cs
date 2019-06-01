@@ -55,7 +55,7 @@ namespace SMS.Controllers
 
             ExcelTc_form tc = new ExcelTc_form();            
             
-            return File(tc.Download_TC(sr_number,username,session,tc_number,tc_date), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","TC_"+sr_number);
+            return File(tc.Download_TC(sr_number,username,session,tc_number,tc_date), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","TC_"+sr_number + ".xlsx");
         }
 
         [HttpGet]
@@ -263,16 +263,10 @@ namespace SMS.Controllers
                      return View("message");
                 
                 }
-
                 
-
-            
-
-           
-
             ExcelTc_form tc = new ExcelTc_form();
 
-            return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), Request.Cookies["loginUserFullName"].Value.ToString()), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number);
+            return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), Request.Cookies["loginUserFullName"].Value.ToString()), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number+ ".xlsx");
         }
     }
 
@@ -358,7 +352,8 @@ namespace SMS.Controllers
         {
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-            string query = @"SELECT @session session,
+            string query = @"SELECT 
+                                    @session session,
                                     sr_number,
                                     CONCAT(IFNULL(std_first_name, ''),
                                             ' ',
@@ -380,10 +375,7 @@ namespace SMS.Controllers
                                         WHERE
                                             session = @session)
                                         AND std_active = 'N'
-                                        AND sr_number NOT IN (SELECT 
-                                            sr_num
-                                        FROM
-                                            tc_register)";
+                                        and ifnull(tc_generated,0) = 0";
 
             var result = con.Query<nso_students>(query, new { session = session });
 
