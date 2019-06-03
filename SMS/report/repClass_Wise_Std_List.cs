@@ -34,5 +34,7 @@ namespace SMS.report
         public string section_name { get; set; }
 
         public DateTime std_admission_date { get; set; }
+
+        public string std_sex { get; set; }
     }
 }

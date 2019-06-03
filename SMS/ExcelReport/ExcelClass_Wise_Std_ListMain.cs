@@ -25,35 +25,39 @@ namespace SMS.ExcelReport
                 IEnumerable<repClass_Wise_Std_List> result = Enumerable.Empty<repClass_Wise_Std_List>();
 
                 string query = @"SELECT 
-                                sr_number,
-                                (SELECT 
-                                        roll_number
-                                    FROM
-                                        mst_rollnumber
-                                    WHERE
-                                        session = c.session
-                                            AND sr_num = a.sr_number) roll_number,
-                                CONCAT(IFNULL(std_first_name, ''),
-                                        ' ',
-                                        IFNULL(std_last_name, '')) std_name,
-                                std_father_name,
-                                std_mother_name,
-                                std_dob,
-                                std_contact,
-                                std_contact1,
-                                std_contact2,
-                                d.pickup_point,
-                                CONCAT(IFNULL(a.std_address, ''),
-                                        ' ',
-                                        IFNULL(a.std_address1, ''),
-                                        ' ',
-                                        IFNULL(a.std_address2, ''),
-                                        ' ',
-                                        IFNULL(a.std_district, ''),
-                                        ' ',
-                                        IFNULL(a.std_state, ''),
-                                        ' ',
-                                        IFNULL(a.std_pincode, '')) address
+                                    sr_number,
+                                    (SELECT 
+                                            roll_number
+                                        FROM
+                                            mst_rollnumber
+                                        WHERE
+                                            session = c.session
+                                                AND sr_num = a.sr_number) roll_number,
+                                    CONCAT(IFNULL(std_first_name, ''),
+                                            ' ',
+                                            IFNULL(std_last_name, '')) std_name,
+                                    std_father_name,
+                                    std_mother_name,
+                                    std_dob,
+                                    CASE
+                                        WHEN std_sex = 'M' THEN 'Male'
+                                        ELSE 'Female'
+                                    END std_sex,
+                                    std_contact,
+                                    std_contact1,
+                                    std_contact2,
+                                    d.pickup_point,
+                                    CONCAT(IFNULL(a.std_address, ''),
+                                            ' ',
+                                            IFNULL(a.std_address1, ''),
+                                            ' ',
+                                            IFNULL(a.std_address2, ''),
+                                            ' ',
+                                            IFNULL(a.std_district, ''),
+                                            ' ',
+                                            IFNULL(a.std_state, ''),
+                                            ' ',
+                                            IFNULL(a.std_pincode, '')) address
                             FROM
                                 sr_register a,
                                 mst_std_class b,
@@ -136,40 +140,46 @@ namespace SMS.ExcelReport
                 ws.Cells["G1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells["G1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                ws.Cells["H1"].Value = "Student Contact";
+                ws.Cells["H1"].Value = "Student Gender";
                 ws.Cells["H1"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 ws.Cells["H1"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 ws.Cells["H1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells["H1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                ws.Cells["I1"].Value = "Father Contact";
+                ws.Cells["I1"].Value = "Student Contact";
                 ws.Cells["I1"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 ws.Cells["I1"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 ws.Cells["I1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells["I1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                ws.Cells["J1"].Value = "Mother Contact";
+                ws.Cells["J1"].Value = "Father Contact";
                 ws.Cells["J1"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 ws.Cells["J1"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 ws.Cells["J1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells["J1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                ws.Cells["K1"].Value = "Pickup Point";
+                ws.Cells["K1"].Value = "Mother Contact";
                 ws.Cells["K1"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 ws.Cells["K1"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 ws.Cells["K1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells["K1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                ws.Cells["L1"].Value = "Address";
+                ws.Cells["L1"].Value = "Pickup Point";
                 ws.Cells["L1"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 ws.Cells["L1"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 ws.Cells["L1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells["L1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
+                ws.Cells["M1"].Value = "Address";
+                ws.Cells["M1"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                ws.Cells["M1"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                ws.Cells["M1"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                ws.Cells["M1"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
                
-                ws.Cells["A1:L1"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                ws.Cells["A1:L1"].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#63A8E1"));
-                ws.Cells["A1:L1"].AutoFilter = true;
+                ws.Cells["A1:M1"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells["A1:M1"].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#63A8E1"));
+                ws.Cells["A1:M1"].AutoFilter = true;
                 
 
 
@@ -181,16 +191,16 @@ namespace SMS.ExcelReport
                     if (line == 2)
                     {
                        
-                            ws.Cells[string.Format("A{0}:L{0}", rowStart)].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                            ws.Cells[string.Format("A{0}:L{0}", rowStart)].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#C5D9F1"));
+                            ws.Cells[string.Format("A{0}:M{0}", rowStart)].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[string.Format("A{0}:M{0}", rowStart)].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#C5D9F1"));
                    
                     }
                     else
                     {
                        
                         
-                            ws.Cells[string.Format("A{0}:L{0}", rowStart)].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                            ws.Cells[string.Format("A{0}:L{0}", rowStart)].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#ffffff"));
+                            ws.Cells[string.Format("A{0}:M{0}", rowStart)].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[string.Format("A{0}:M{0}", rowStart)].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#ffffff"));
                     
 
                     }
@@ -239,35 +249,41 @@ namespace SMS.ExcelReport
                     ws.Cells[string.Format("G{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("G{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                    ws.Cells[string.Format("H{0}", rowStart)].Value = item.std_contact;
+                    ws.Cells[string.Format("H{0}", rowStart)].Value = item.std_sex;
                     ws.Cells[string.Format("H{0}", rowStart)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("H{0}", rowStart)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("H{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("H{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                    ws.Cells[string.Format("I{0}", rowStart)].Value = item.std_contact1;
+                    ws.Cells[string.Format("I{0}", rowStart)].Value = item.std_contact;
                     ws.Cells[string.Format("I{0}", rowStart)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("I{0}", rowStart)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("I{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("I{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                    ws.Cells[string.Format("J{0}", rowStart)].Value = item.std_contact2;
+                    ws.Cells[string.Format("J{0}", rowStart)].Value = item.std_contact1;
                     ws.Cells[string.Format("J{0}", rowStart)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("J{0}", rowStart)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("J{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("J{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                    ws.Cells[string.Format("K{0}", rowStart)].Value = item.pickup_point;
+                    ws.Cells[string.Format("K{0}", rowStart)].Value = item.std_contact2;
                     ws.Cells[string.Format("K{0}", rowStart)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("K{0}", rowStart)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("K{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("K{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                    ws.Cells[string.Format("L{0}", rowStart)].Value = item.address;
+                    ws.Cells[string.Format("L{0}", rowStart)].Value = item.pickup_point;
                     ws.Cells[string.Format("L{0}", rowStart)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("L{0}", rowStart)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("L{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                     ws.Cells[string.Format("L{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    ws.Cells[string.Format("M{0}", rowStart)].Value = item.address;
+                    ws.Cells[string.Format("M{0}", rowStart)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[string.Format("M{0}", rowStart)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[string.Format("M{0}", rowStart)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[string.Format("M{0}", rowStart)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                     
 
                     rowStart++;
