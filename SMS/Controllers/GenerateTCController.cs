@@ -15,6 +15,7 @@ namespace SMS.Controllers
     public class GenerateTCController : Controller
     {
         MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        string tc_format = ConfigurationManager.AppSettings["tc_format"].ToString();
 
         [HttpGet]
         public ActionResult all_TC_List()
@@ -53,9 +54,21 @@ namespace SMS.Controllers
         public ActionResult DownloadTC(int sr_number,string username,string session, int tc_number, DateTime tc_date)
         {
 
-            ExcelTc_form tc = new ExcelTc_form();            
+                      
             
-            return File(tc.Download_TC(sr_number,username,session,tc_number,tc_date), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","TC_"+sr_number + ".xlsx");
+            if(tc_format == "CBSE")
+            {
+                ExcelCBSE_TC_form tc = new ExcelCBSE_TC_form();
+
+                return File(tc.Download_TC(sr_number, session, tc_number, tc_date), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+            }
+            else
+            {
+                ExcelTc_form tc = new ExcelTc_form();
+                return File(tc.Download_TC(sr_number, username, session, tc_number, tc_date), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+            }
+
+           
         }
 
         [HttpGet]
@@ -264,9 +277,19 @@ namespace SMS.Controllers
                 
                 }
                 
-            ExcelTc_form tc = new ExcelTc_form();
+            if(tc_format == "CBSE")
+            {
+                ExcelCBSE_TC_form tc = new ExcelCBSE_TC_form();
 
-            return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), Request.Cookies["loginUserFullName"].Value.ToString()), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number+ ".xlsx");
+                return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+            }
+            else
+            {
+                ExcelTc_form tc = new ExcelTc_form();
+
+                return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), Request.Cookies["loginUserFullName"].Value.ToString()), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+            }
+           
         }
     }
 

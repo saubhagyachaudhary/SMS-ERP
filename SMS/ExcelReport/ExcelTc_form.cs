@@ -1,12 +1,14 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
 using OfficeOpenXml;
+using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Style;
 using SMS.Models;
 using SMS.report;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 
@@ -20,9 +22,27 @@ namespace SMS.ExcelReport
 
         public string std_father { get; set; }
 
+        public string std_mother { get; set; }
+
         public DateTime std_dob { get; set; }
 
         public string std_last_school { get; set; }
+
+        public string std_nationality { get; set; }
+
+        public string std_category { get; set; }
+
+        public DateTime std_admission_date { get; set; }
+
+        public string std_admission_class { get; set; }
+
+        public DateTime nso_date { get; set; }
+
+        public string std_pass_class { get; set; }
+
+        public int working_days { get; set; }
+
+        public int present_days { get; set; }
 
 
     }
@@ -41,6 +61,1527 @@ namespace SMS.ExcelReport
 
         public string session { get; set; }
 
+    }
+
+    public class ExcelCBSE_TC_form
+    {
+        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
+        string Address = ConfigurationManager.AppSettings["Address"].ToString();
+        string SchoolName = ConfigurationManager.AppSettings["SchoolName"].ToString();
+        string Affiliation = ConfigurationManager.AppSettings["Affiliation"].ToString();
+        string Affiliation_no = ConfigurationManager.AppSettings["Affiliation_no"].ToString();
+        string School_code = ConfigurationManager.AppSettings["School_code"].ToString();
+
+        public byte[] Generate_TC(int sr_number, int user_id)
+        {
+            try
+            {
+                string query = @"SELECT 
+                                        sr_number,
+                                        CONCAT(IFNULL(std_first_name, ''),
+                                                ' ',
+                                                IFNULL(std_last_name, '')) std_name,
+                                        std_mother_name std_mother,
+                                        std_father_name std_father,
+                                        std_nationality,
+                                        std_category,
+                                        std_admission_date,
+                                        std_admission_class,
+                                        std_dob,
+                                        (SELECT 
+                                                class_name
+                                            FROM
+                                                mst_std_Class a,
+                                                mst_class b
+                                            WHERE
+                                                sr_num = a.sr_number
+                                                    AND a.session = b.session
+                                                    AND a.class_id = b.class_id
+                                                    AND a.session != (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_finalize = 'Y')
+                                            ORDER BY order_by
+                                            LIMIT 1) std_pass_class,
+                                        (SELECT 
+                                                COUNT(*)
+                                            FROM
+                                                attendance_register
+                                            WHERE
+                                                sr_num = a.sr_number
+                                                    AND session = (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_finalize != 'Y'
+                                                    ORDER BY session_start_date DESC
+                                                    LIMIT 1)) working_days,
+                                        (SELECT 
+                                                COUNT(*)
+                                            FROM
+                                                attendance_register
+                                            WHERE
+                                                sr_num = a.sr_number
+                                                    AND session = (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_finalize != 'Y'
+                                                    ORDER BY session_start_date DESC
+                                                    LIMIT 1)
+                                                    AND attendance = 1) present_days,
+                                        nso_date
+                                    FROM
+                                        sr_register a
+                                    WHERE
+                                        std_active = 'N' AND sr_number = @sr_number";
+
+                tc_details result = con.Query<tc_details>(query, new { sr_number = sr_number }).SingleOrDefault();
+
+
+                mst_sessionMain session = new mst_sessionMain();
+                string sess = session.findFinal_Session();
+
+                string max_id = @"select lpad(ifnull(max(tc_no),0)+1,4,0) from tc_register where session = @session";
+
+                string tc_no = con.ExecuteScalar<string>(max_id, new { session = sess });
+
+                ExcelPackage pck = new ExcelPackage();
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("TC");
+
+                ws.PrinterSettings.TopMargin = 0.25m;
+                ws.PrinterSettings.BottomMargin = 0.25m;
+                ws.PrinterSettings.LeftMargin = 0.25m;
+                ws.PrinterSettings.RightMargin = 0.25m;
+                ws.PrinterSettings.HeaderMargin = 0.3m;
+                ws.PrinterSettings.FooterMargin = 0.3m;
+                ws.PrinterSettings.HorizontalCentered = true;
+
+                ws.Column(1).Width = ExcelTc_form.GetTrueColumnWidth(8.14);
+                ws.Column(2).Width = ExcelTc_form.GetTrueColumnWidth(9.86);
+                ws.Column(3).Width = ExcelTc_form.GetTrueColumnWidth(8.43);
+                ws.Column(4).Width = ExcelTc_form.GetTrueColumnWidth(8.43);
+                ws.Column(5).Width = ExcelTc_form.GetTrueColumnWidth(6.71);
+                ws.Column(6).Width = ExcelTc_form.GetTrueColumnWidth(10.86);
+                ws.Column(7).Width = ExcelTc_form.GetTrueColumnWidth(10.29);
+                ws.Column(8).Width = ExcelTc_form.GetTrueColumnWidth(8.43);
+                ws.Column(9).Width = ExcelTc_form.GetTrueColumnWidth(11.71);
+                ws.Column(10).Width = ExcelTc_form.GetTrueColumnWidth(10.29);
+
+                for(int i = 7; i<= 31; i++)
+                {
+                    ws.Row(i).Height = 19.5;
+                }
+               
+
+                ws.Row(1).Height = 108.75;
+
+                using (ExcelRange Rng = ws.Cells["A1:J1"])
+                {
+                    Rng.Merge = true;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    Rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    Rng.Style.WrapText = true;
+                     
+                    ExcelRichTextCollection RichTxtCollection = Rng.RichText;
+                    ExcelRichText RichText = RichTxtCollection.Add("TRANSFER CERTIFICATE\n");
+                    RichText.Size = 14;
+
+                    RichText = RichTxtCollection.Add(SchoolName+"\n");
+                    RichText.Size = 28;
+                    RichText.Bold = true;
+
+                    RichText = RichTxtCollection.Add(Address+"\n");
+                    RichText.Size = 11;
+                    
+
+                    RichText = RichTxtCollection.Add(Affiliation);
+                    RichText.Size = 11;
+                    RichText.Bold = false;
+
+                    Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
+                
+                using (System.Drawing.Image image = System.Drawing.Image.FromFile(HttpContext.Current.Server.MapPath("/images/logo.jpg")))
+                {
+                    var excelImage = ws.Drawings.AddPicture("My Logo", image);
+
+                    //add the image to row 20, column E
+                    excelImage.SetPosition(0, 30, 0,20);
+
+                    excelImage.SetSize(80, 100);
+                }
+
+                ws.Cells["A3:C3"].Merge = true;
+                ws.Cells["A3"].Value = "Affiliation No.: "+Affiliation_no;
+                ws.Cells["A3"].Style.Font.Name = "Calibri";
+                ws.Cells["A3"].Style.Font.Size = 11;
+                ws.Cells["A3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["A3"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I3:J3"].Merge = true;
+                ws.Cells["I3"].Value = "School Code: "+School_code;
+                ws.Cells["I3"].Style.Font.Name = "Calibri";
+                ws.Cells["I3"].Style.Font.Size = 11;
+                ws.Cells["I3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["I3"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A5"].Value = "Book No. ";
+                ws.Cells["A5"].Style.Font.Name = "Calibri";
+                ws.Cells["A5"].Style.Font.Size = 11;
+                ws.Cells["A5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B5"].Style.Font.Name = "Calibri";
+                ws.Cells["B5"].Style.Font.Size = 11;
+                ws.Cells["B5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["B5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["B5"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                ws.Cells["E5"].Value = "TC No. ";
+                ws.Cells["E5"].Style.Font.Name = "Calibri";
+                ws.Cells["E5"].Style.Font.Size = 11;
+                ws.Cells["E5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["E5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F5"].Value = sess + "/" + tc_no.ToString();
+                ws.Cells["F5"].Style.Font.Name = "Calibri";
+                ws.Cells["F5"].Style.Font.Size = 11;
+                ws.Cells["F5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["F5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["F5"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                ws.Cells["I5"].Value = "Admission No ";
+                ws.Cells["I5"].Style.Font.Name = "Calibri";
+                ws.Cells["I5"].Style.Font.Size = 11;
+                ws.Cells["I5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["I5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["J5"].Value = result.sr_number;
+                ws.Cells["J5"].Style.Font.Name = "Calibri";
+                ws.Cells["J5"].Style.Font.Size = 11;
+                ws.Cells["J5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["J5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["J5"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                ws.Cells["A7"].Value = "1";
+                ws.Cells["A7"].Style.Font.Name = "Calibri";
+                ws.Cells["A7"].Style.Font.Size = 11;
+                ws.Cells["A7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B7"].Value = "Name of Pupil ";
+                ws.Cells["B7"].Style.Font.Name = "Calibri";
+                ws.Cells["B7"].Style.Font.Size = 11;
+                ws.Cells["B7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["D7"].Value = result.std_name;
+                ws.Cells["D7"].Style.Font.Name = "Calibri";
+                ws.Cells["D7"].Style.Font.Size = 11;
+                ws.Cells["D7"].Style.Font.Bold = true;
+                ws.Cells["D7"].Style.Font.UnderLine = true;
+                ws.Cells["D7"].Style.Font.Italic = true;
+                ws.Cells["D7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A8"].Value = "2";
+                ws.Cells["A8"].Style.Font.Name = "Calibri";
+                ws.Cells["A8"].Style.Font.Size = 11;
+                ws.Cells["A8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A8"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B8"].Value = "Mother's Name ";
+                ws.Cells["B8"].Style.Font.Name = "Calibri";
+                ws.Cells["B8"].Style.Font.Size = 11;
+                ws.Cells["B8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B8"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["D8"].Value = result.std_mother;
+                ws.Cells["D8"].Style.Font.Name = "Calibri";
+                ws.Cells["D8"].Style.Font.Size = 11;
+                ws.Cells["D8"].Style.Font.Bold = true;
+                ws.Cells["D8"].Style.Font.UnderLine = true;
+                ws.Cells["D8"].Style.Font.Italic = true;
+                ws.Cells["D8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D8"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A9"].Value = "3";
+                ws.Cells["A9"].Style.Font.Name = "Calibri";
+                ws.Cells["A9"].Style.Font.Size = 11;
+                ws.Cells["A9"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A9"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B9"].Value = "Father's/Guardian's Name ";
+                ws.Cells["B9"].Style.Font.Name = "Calibri";
+                ws.Cells["B9"].Style.Font.Size = 11;
+                ws.Cells["B9"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B9"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["E9"].Value = result.std_father;
+                ws.Cells["E9"].Style.Font.Name = "Calibri";
+                ws.Cells["E9"].Style.Font.Size = 11;
+                ws.Cells["E9"].Style.Font.Bold = true;
+                ws.Cells["E9"].Style.Font.UnderLine = true;
+                ws.Cells["E9"].Style.Font.Italic = true;
+                ws.Cells["E9"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["E9"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A10"].Value = "4";
+                ws.Cells["A10"].Style.Font.Name = "Calibri";
+                ws.Cells["A10"].Style.Font.Size = 11;
+                ws.Cells["A10"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A10"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B10"].Value = "Nationality  ";
+                ws.Cells["B10"].Style.Font.Name = "Calibri";
+                ws.Cells["B10"].Style.Font.Size = 11;
+                ws.Cells["B10"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B10"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["C10"].Value = result.std_nationality;
+                ws.Cells["C10"].Style.Font.Name = "Calibri";
+                ws.Cells["C10"].Style.Font.Size = 11;
+                ws.Cells["C10"].Style.Font.Bold = true;
+                ws.Cells["C10"].Style.Font.UnderLine = true;
+                ws.Cells["C10"].Style.Font.Italic = true;
+                ws.Cells["C10"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["C10"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A11"].Value = "5";
+                ws.Cells["A11"].Style.Font.Name = "Calibri";
+                ws.Cells["A11"].Style.Font.Size = 11;
+                ws.Cells["A11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B11"].Value = "Whether the candidate belongs to Schedule caste or schedule Tribe or OBC";
+                ws.Cells["B11"].Style.Font.Name = "Calibri";
+                ws.Cells["B11"].Style.Font.Size = 11;
+                ws.Cells["B11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I11"].Value = result.std_category;
+                ws.Cells["I11"].Style.Font.Name = "Calibri";
+                ws.Cells["I11"].Style.Font.Size = 11;
+                ws.Cells["I11"].Style.Font.Bold = true;
+                ws.Cells["I11"].Style.Font.UnderLine = true;
+                ws.Cells["I11"].Style.Font.Italic = true;
+                ws.Cells["I11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["I11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A12"].Value = "6";
+                ws.Cells["A12"].Style.Font.Name = "Calibri";
+                ws.Cells["A12"].Style.Font.Size = 11;
+                ws.Cells["A12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B12"].Value = "Date of First admission in the School with class";
+                ws.Cells["B12"].Style.Font.Name = "Calibri";
+                ws.Cells["B12"].Style.Font.Size = 11;
+                ws.Cells["B12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G12"].Value = result.std_admission_date.ToString("dd/MM/yyyy");
+                ws.Cells["G12"].Style.Font.Name = "Calibri";
+                ws.Cells["G12"].Style.Font.Size = 11;
+                ws.Cells["G12"].Style.Font.Bold = true;
+                ws.Cells["G12"].Style.Font.UnderLine = true;
+                ws.Cells["G12"].Style.Font.Italic = true;
+                ws.Cells["G12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["H12"].Value = "Class";
+                ws.Cells["H12"].Style.Font.Name = "Calibri";
+                ws.Cells["H12"].Style.Font.Size = 11;
+                ws.Cells["H12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["H12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I12"].Value = result.std_admission_class;
+                ws.Cells["I12"].Style.Font.Name = "Calibri";
+                ws.Cells["I12"].Style.Font.Size = 11;
+                ws.Cells["I12"].Style.Font.Bold = true;
+                ws.Cells["I12"].Style.Font.UnderLine = true;
+                ws.Cells["I12"].Style.Font.Italic = true;
+                ws.Cells["I12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["I12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A13"].Value = "7";
+                ws.Cells["A13"].Style.Font.Name = "Calibri";
+                ws.Cells["A13"].Style.Font.Size = 11;
+                ws.Cells["A13"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A13"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B13"].Value = "Date of Birth (in Christian Era) according to Admission & withdrawal Register (in figures)";
+                ws.Cells["B13"].Style.Font.Name = "Calibri";
+                ws.Cells["B13"].Style.Font.Size = 11;
+                ws.Cells["B13"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B13"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["J13"].Value = result.std_dob.ToString("dd/MM/yyyy");
+                ws.Cells["J13"].Style.Font.Name = "Calibri";
+                ws.Cells["J13"].Style.Font.Size = 11;
+                ws.Cells["J13"].Style.Font.Bold = true;
+                ws.Cells["J13"].Style.Font.UnderLine = true;
+                ws.Cells["J13"].Style.Font.Italic = true;
+                ws.Cells["J13"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["J13"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B14"].Value = "(In Words)";
+                ws.Cells["B14"].Style.Font.Name = "Calibri";
+                ws.Cells["B14"].Style.Font.Size = 11;
+                ws.Cells["B14"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B14"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["C14"].Value = birth_certificateMain.DateToWritten(result.std_dob).ToString();
+                ws.Cells["C14"].Style.Font.Name = "Calibri";
+                ws.Cells["C14"].Style.Font.Size = 11;
+                ws.Cells["C14"].Style.Font.Bold = true;
+                ws.Cells["C14"].Style.Font.UnderLine = true;
+                ws.Cells["C14"].Style.Font.Italic = true;
+                ws.Cells["C14"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["C14"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A15"].Value = "8";
+                ws.Cells["A15"].Style.Font.Name = "Calibri";
+                ws.Cells["A15"].Style.Font.Size = 11;
+                ws.Cells["A15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B15"].Value = "Class in which the pupil last studied (in figures)";
+                ws.Cells["B15"].Style.Font.Name = "Calibri";
+                ws.Cells["B15"].Style.Font.Size = 11;
+                ws.Cells["B15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G15"].Value = result.std_pass_class;
+                ws.Cells["G15"].Style.Font.Name = "Calibri";
+                ws.Cells["G15"].Style.Font.Size = 11;
+                ws.Cells["G15"].Style.Font.Bold = true;
+                ws.Cells["G15"].Style.Font.UnderLine = true;
+                ws.Cells["G15"].Style.Font.Italic = true;
+                ws.Cells["G15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                //ws.Cells["H15"].Value = "(in words)";
+                //ws.Cells["H15"].Style.Font.Name = "Calibri";
+                //ws.Cells["H15"].Style.Font.Size = 11;
+                //ws.Cells["H15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //ws.Cells["H15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I15"].Value = "";
+                ws.Cells["I15"].Style.Font.Name = "Calibri";
+                ws.Cells["I15"].Style.Font.Size = 11;
+                ws.Cells["I15"].Style.Font.Bold = true;
+                ws.Cells["I15"].Style.Font.UnderLine = true;
+                ws.Cells["I15"].Style.Font.Italic = true;
+                ws.Cells["I15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["I15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A16"].Value = "9";
+                ws.Cells["A16"].Style.Font.Name = "Calibri";
+                ws.Cells["A16"].Style.Font.Size = 11;
+                ws.Cells["A16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B16"].Value = "School/Board Annual Examination last taken with result";
+                ws.Cells["B16"].Style.Font.Name = "Calibri";
+                ws.Cells["B16"].Style.Font.Size = 11;
+                ws.Cells["B16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A17"].Value = "10";
+                ws.Cells["A17"].Style.Font.Name = "Calibri";
+                ws.Cells["A17"].Style.Font.Size = 11;
+                ws.Cells["A17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B17"].Value = "Whether failed, if so once/twice in the same class";
+                ws.Cells["B17"].Style.Font.Name = "Calibri";
+                ws.Cells["B17"].Style.Font.Size = 11;
+                ws.Cells["B17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A18"].Value = "11";
+                ws.Cells["A18"].Style.Font.Name = "Calibri";
+                ws.Cells["A18"].Style.Font.Size = 11;
+                ws.Cells["A18"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A18"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B18"].Value = "Subjects Studied:";
+                ws.Cells["B18"].Style.Font.Name = "Calibri";
+                ws.Cells["B18"].Style.Font.Size = 11;
+                ws.Cells["B18"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B18"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                query = @"SELECT 
+                                subject_name
+                            FROM
+                                mst_class_subject a,
+                                mst_subject b
+                            WHERE
+                                a.subject_id = b.subject_id
+                                    AND a.session = b.session
+                                    AND a.class_id = (SELECT 
+                                        b.class_id
+                                    FROM
+                                        mst_std_Class a,
+                                        mst_class b
+                                    WHERE
+                                        sr_num = @sr_number AND a.session = b.session
+                                            AND a.class_id = b.class_id
+                                            AND a.session != (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y')
+                                    ORDER BY order_by
+                                    LIMIT 1)
+                                    AND a.session != (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                    ORDER BY session_start_date DESC
+                                    LIMIT 1)";
+
+                IEnumerable<string> subjects = con.Query<string>(query,new {sr_number = sr_number });
+
+                ws.Cells["D18"].Value = String.Join(",",subjects);
+                ws.Cells["D18"].Style.Font.Name = "Calibri";
+                ws.Cells["D18"].Style.Font.Size = 11;
+                ws.Cells["D18"].Style.Font.Bold = true;
+                ws.Cells["D18"].Style.Font.UnderLine = true;
+                ws.Cells["D18"].Style.Font.Italic = true;
+                ws.Cells["D18"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D18"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A19"].Value = "12";
+                ws.Cells["A19"].Style.Font.Name = "Calibri";
+                ws.Cells["A19"].Style.Font.Size = 11;
+                ws.Cells["A19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B19"].Value = "Whether qualified for promotion to the higher class";
+                ws.Cells["B19"].Style.Font.Name = "Calibri";
+                ws.Cells["B19"].Style.Font.Size = 12;
+                ws.Cells["B19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B20"].Value = "If so, to which class (in figures)";
+                ws.Cells["B20"].Style.Font.Name = "Calibri";
+                ws.Cells["B20"].Style.Font.Size = 11;
+                ws.Cells["B20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G20"].Value = "(in words)";
+                ws.Cells["G20"].Style.Font.Name = "Calibri";
+                ws.Cells["G20"].Style.Font.Size = 11;
+                ws.Cells["G20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A21"].Value = "13";
+                ws.Cells["A21"].Style.Font.Name = "Calibri";
+                ws.Cells["A21"].Style.Font.Size = 11;
+                ws.Cells["A21"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A21"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B21"].Value = "Month upto which the pupil has paid school dues";
+                ws.Cells["B21"].Style.Font.Name = "Calibri";
+                ws.Cells["B21"].Style.Font.Size = 11;
+                ws.Cells["B21"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B21"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                query = @"SELECT 
+                                month_name
+                            FROM
+                                out_standing
+                            WHERE
+                                sr_number = @sr_number
+                                    AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) = 0
+                            GROUP BY month_name
+                            ORDER BY dt_date DESC , serial DESC , receipt_no DESC
+                            LIMIT 1";
+
+                string month = con.Query<string>(query, new { sr_number = sr_number }).SingleOrDefault();
+
+                ws.Cells["G21"].Value = month;
+                ws.Cells["G21"].Style.Font.Name = "Calibri";
+                ws.Cells["G21"].Style.Font.Size = 11;
+                ws.Cells["G21"].Style.Font.Bold = true;
+                ws.Cells["G21"].Style.Font.UnderLine = true;
+                ws.Cells["G21"].Style.Font.Italic = true;
+                ws.Cells["G21"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G21"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A22"].Value = "14";
+                ws.Cells["A22"].Style.Font.Name = "Calibri";
+                ws.Cells["A22"].Style.Font.Size = 11;
+                ws.Cells["A22"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A22"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B22"].Value = "Any fee concession availed of: If so, the nature of such concession ";
+                ws.Cells["B22"].Style.Font.Name = "Calibri";
+                ws.Cells["B22"].Style.Font.Size = 11;
+                ws.Cells["B22"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B22"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A23"].Value = "15";
+                ws.Cells["A23"].Style.Font.Name = "Calibri";
+                ws.Cells["A23"].Style.Font.Size = 11;
+                ws.Cells["A23"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A23"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B23"].Value = "Total No. of Working days in the academic session";
+                ws.Cells["B23"].Style.Font.Name = "Calibri";
+                ws.Cells["B23"].Style.Font.Size = 11;
+                ws.Cells["B23"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B23"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G23"].Value = result.working_days;
+                ws.Cells["G23"].Style.Font.Name = "Calibri";
+                ws.Cells["G23"].Style.Font.Size = 11;
+                ws.Cells["G23"].Style.Font.Bold = true;
+                ws.Cells["G23"].Style.Font.UnderLine = true;
+                ws.Cells["G23"].Style.Font.Italic = true;
+                ws.Cells["G23"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G23"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A24"].Value = "16";
+                ws.Cells["A24"].Style.Font.Name = "Calibri";
+                ws.Cells["A24"].Style.Font.Size = 11;
+                ws.Cells["A24"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A24"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B24"].Value = "Total No. of Working days pupil present in school";
+                ws.Cells["B24"].Style.Font.Name = "Calibri";
+                ws.Cells["B24"].Style.Font.Size = 11;
+                ws.Cells["B24"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B24"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G24"].Value = result.present_days;
+                ws.Cells["G24"].Style.Font.Name = "Calibri";
+                ws.Cells["G24"].Style.Font.Size = 11;
+                ws.Cells["G24"].Style.Font.Bold = true;
+                ws.Cells["G24"].Style.Font.UnderLine = true;
+                ws.Cells["G24"].Style.Font.Italic = true;
+                ws.Cells["G24"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G24"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A25"].Value = "17";
+                ws.Cells["A25"].Style.Font.Name = "Calibri";
+                ws.Cells["A25"].Style.Font.Size = 11;
+                ws.Cells["A25"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A25"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B25"].Value = "Whether NCC Cadet/Boy scout/Girl Guide (details may be given)";
+                ws.Cells["B25"].Style.Font.Name = "Calibri";
+                ws.Cells["B25"].Style.Font.Size = 11;
+                ws.Cells["B25"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B25"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A26"].Value = "18";
+                ws.Cells["A26"].Style.Font.Name = "Calibri";
+                ws.Cells["A26"].Style.Font.Size = 11;
+                ws.Cells["A26"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A26"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B26"].Value = "Games played or extra curricular activities in which the pupil usually took part";
+                ws.Cells["B26"].Style.Font.Name = "Calibri";
+                ws.Cells["B26"].Style.Font.Size = 11;
+                ws.Cells["B26"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B26"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A27"].Value = "19";
+                ws.Cells["A27"].Style.Font.Name = "Calibri";
+                ws.Cells["A27"].Style.Font.Size = 11;
+                ws.Cells["A27"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A27"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B27"].Value = "General Conduct";
+                ws.Cells["B27"].Style.Font.Name = "Calibri";
+                ws.Cells["B27"].Style.Font.Size = 11;
+                ws.Cells["B27"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B27"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["D27"].Value = "Good";
+                ws.Cells["D27"].Style.Font.Name = "Calibri";
+                ws.Cells["D27"].Style.Font.Size = 11;
+                ws.Cells["D27"].Style.Font.Bold = true;
+                ws.Cells["D27"].Style.Font.UnderLine = true;
+                ws.Cells["D27"].Style.Font.Italic = true;
+                ws.Cells["D27"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D27"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A28"].Value = "20";
+                ws.Cells["A28"].Style.Font.Name = "Calibri";
+                ws.Cells["A28"].Style.Font.Size = 11;
+                ws.Cells["A28"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A28"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B28"].Value = "Date of Application for Certificate";
+                ws.Cells["B28"].Style.Font.Name = "Calibri";
+                ws.Cells["B28"].Style.Font.Size = 11;
+                ws.Cells["B28"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B28"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F28"].Value = result.nso_date.ToString("dd/MM/yyyy");
+                ws.Cells["F28"].Style.Font.Name = "Calibri";
+                ws.Cells["F28"].Style.Font.Size = 11;
+                ws.Cells["F28"].Style.Font.Bold = true;
+                ws.Cells["F28"].Style.Font.UnderLine = true;
+                ws.Cells["F28"].Style.Font.Italic = true;
+                ws.Cells["F28"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["F28"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A29"].Value = "21";
+                ws.Cells["A29"].Style.Font.Name = "Calibri";
+                ws.Cells["A29"].Style.Font.Size = 11;
+                ws.Cells["A29"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A29"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B29"].Value = "Date of Issue of Certificate ";
+                ws.Cells["B29"].Style.Font.Name = "Calibri";
+                ws.Cells["B29"].Style.Font.Size = 11;
+                ws.Cells["B29"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B29"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F29"].Value = System.DateTime.Now.ToString("dd/MM/yyyy");
+                ws.Cells["F29"].Style.Font.Name = "Calibri";
+                ws.Cells["F29"].Style.Font.Size = 11;
+                ws.Cells["F29"].Style.Font.Bold = true;
+                ws.Cells["F29"].Style.Font.UnderLine = true;
+                ws.Cells["F29"].Style.Font.Italic = true;
+                ws.Cells["F29"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["F29"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A30"].Value = "22";
+                ws.Cells["A30"].Style.Font.Name = "Calibri";
+                ws.Cells["A30"].Style.Font.Size = 11;
+                ws.Cells["A30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B30"].Value = "Reasons for leaving the School ";
+                ws.Cells["B30"].Style.Font.Name = "Calibri";
+                ws.Cells["B30"].Style.Font.Size = 11;
+                ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A30"].Value = "23";
+                ws.Cells["A30"].Style.Font.Name = "Calibri";
+                ws.Cells["A30"].Style.Font.Size = 11;
+                ws.Cells["A30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B30"].Value = "Any other remarks ";
+                ws.Cells["B30"].Style.Font.Name = "Calibri";
+                ws.Cells["B30"].Style.Font.Size = 11;
+                ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+
+                ws.Cells["B36"].Value = "Signature of Class Teacher";
+                ws.Cells["B36"].Style.Font.Name = "Calibri";
+                ws.Cells["B36"].Style.Font.Size = 11;
+                ws.Cells["B36"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B36"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F36"].Value = "Checked by";
+                ws.Cells["F36"].Style.Font.Name = "Calibri";
+                ws.Cells["F36"].Style.Font.Size = 11;
+                ws.Cells["F36"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["F36"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I36"].Value = "Sign of Principal";
+                ws.Cells["I36"].Style.Font.Name = "Calibri";
+                ws.Cells["I36"].Style.Font.Size = 11;
+                ws.Cells["I36"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["I36"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+
+                query = @"INSERT INTO `tc_register`
+                        (`session`,
+                        `tc_no`,
+                        `tc_date`,
+                        `sr_num`,
+                        `user_id`)
+                        VALUES
+                        (@session,
+                        @tc_no,
+                        @tc_date,
+                        @sr_num,
+                        @user_id)";
+
+
+
+                con.Execute(query, new { session = sess, tc_no = tc_no, tc_date = System.DateTime.Now, sr_num = sr_number, user_id = user_id });
+
+                query = @"UPDATE `sr_register`
+                        SET
+                        `tc_generated` = 1
+                        WHERE `sr_number` = @sr_number";
+
+                con.Execute(query, new { sr_number = sr_number });
+
+                return pck.GetAsByteArray();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return null;
+        }
+
+        public byte[] Download_TC(int sr_number, string session, int tc_number, DateTime tc_date)
+        {
+            try
+            {
+                string query = @"SELECT 
+                                        sr_number,
+                                        CONCAT(IFNULL(std_first_name, ''),
+                                                ' ',
+                                                IFNULL(std_last_name, '')) std_name,
+                                        std_mother_name std_mother,
+                                        std_father_name std_father,
+                                        std_nationality,
+                                        std_category,
+                                        std_admission_date,
+                                        std_admission_class,
+                                        std_dob,
+                                        (SELECT 
+                                                class_name
+                                            FROM
+                                                mst_std_Class a,
+                                                mst_class b
+                                            WHERE
+                                                sr_num = a.sr_number
+                                                    AND a.session = b.session
+                                                    AND a.class_id = b.class_id
+                                                    AND a.session != (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_finalize = 'Y')
+                                            ORDER BY order_by
+                                            LIMIT 1) std_pass_class,
+                                        (SELECT 
+                                                COUNT(*)
+                                            FROM
+                                                attendance_register
+                                            WHERE
+                                                sr_num = a.sr_number
+                                                    AND session = (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_finalize != 'Y'
+                                                    ORDER BY session_start_date DESC
+                                                    LIMIT 1)) working_days,
+                                        (SELECT 
+                                                COUNT(*)
+                                            FROM
+                                                attendance_register
+                                            WHERE
+                                                sr_num = a.sr_number
+                                                    AND session = (SELECT 
+                                                        session
+                                                    FROM
+                                                        mst_session
+                                                    WHERE
+                                                        session_finalize != 'Y'
+                                                    ORDER BY session_start_date DESC
+                                                    LIMIT 1)
+                                                    AND attendance = 1) present_days,
+                                        nso_date
+                                    FROM
+                                        sr_register a
+                                    WHERE
+                                        std_active = 'N' AND sr_number = @sr_number";
+
+                tc_details result = con.Query<tc_details>(query, new { sr_number = sr_number }).SingleOrDefault();
+
+
+
+                string sess = session;
+
+
+
+                string tc_no = tc_number.ToString().PadLeft(tc_number.ToString().Length + 3, '0');
+
+                ExcelPackage pck = new ExcelPackage();
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("TC");
+
+                ws.PrinterSettings.TopMargin = 0.25m;
+                ws.PrinterSettings.BottomMargin = 0.25m;
+                ws.PrinterSettings.LeftMargin = 0.25m;
+                ws.PrinterSettings.RightMargin = 0.25m;
+                ws.PrinterSettings.HeaderMargin = 0.3m;
+                ws.PrinterSettings.FooterMargin = 0.3m;
+                ws.PrinterSettings.HorizontalCentered = true;
+
+                ws.Column(1).Width = ExcelTc_form.GetTrueColumnWidth(8.14);
+                ws.Column(2).Width = ExcelTc_form.GetTrueColumnWidth(9.86);
+                ws.Column(3).Width = ExcelTc_form.GetTrueColumnWidth(8.43);
+                ws.Column(4).Width = ExcelTc_form.GetTrueColumnWidth(8.43);
+                ws.Column(5).Width = ExcelTc_form.GetTrueColumnWidth(6.71);
+                ws.Column(6).Width = ExcelTc_form.GetTrueColumnWidth(10.86);
+                ws.Column(7).Width = ExcelTc_form.GetTrueColumnWidth(10.29);
+                ws.Column(8).Width = ExcelTc_form.GetTrueColumnWidth(8.43);
+                ws.Column(9).Width = ExcelTc_form.GetTrueColumnWidth(11.71);
+                ws.Column(10).Width = ExcelTc_form.GetTrueColumnWidth(10.29);
+
+                for (int i = 7; i <= 31; i++)
+                {
+                    ws.Row(i).Height = 19.5;
+                }
+
+
+                ws.Row(1).Height = 108.75;
+
+                using (ExcelRange Rng = ws.Cells["A1:J1"])
+                {
+                    Rng.Merge = true;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    Rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    Rng.Style.WrapText = true;
+
+                    ExcelRichTextCollection RichTxtCollection = Rng.RichText;
+                    ExcelRichText RichText = RichTxtCollection.Add("TRANSFER CERTIFICATE\n");
+                    RichText.Size = 14;
+
+                    RichText = RichTxtCollection.Add(SchoolName + "\n");
+                    RichText.Size = 28;
+                    RichText.Bold = true;
+
+                    RichText = RichTxtCollection.Add(Address + "\n");
+                    RichText.Size = 11;
+
+
+                    RichText = RichTxtCollection.Add(Affiliation);
+                    RichText.Size = 11;
+                    RichText.Bold = false;
+
+                    Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
+
+                using (System.Drawing.Image image = System.Drawing.Image.FromFile(HttpContext.Current.Server.MapPath("/images/logo.jpg")))
+                {
+                    var excelImage = ws.Drawings.AddPicture("My Logo", image);
+
+                    //add the image to row 20, column E
+                    excelImage.SetPosition(0, 30, 0, 20);
+
+                    excelImage.SetSize(80, 100);
+                }
+
+                ws.Cells["A3:C3"].Merge = true;
+                ws.Cells["A3"].Value = "Affiliation No.: " + Affiliation_no;
+                ws.Cells["A3"].Style.Font.Name = "Calibri";
+                ws.Cells["A3"].Style.Font.Size = 11;
+                ws.Cells["A3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["A3"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I3:J3"].Merge = true;
+                ws.Cells["I3"].Value = "School Code: " + School_code;
+                ws.Cells["I3"].Style.Font.Name = "Calibri";
+                ws.Cells["I3"].Style.Font.Size = 11;
+                ws.Cells["I3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["I3"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A5"].Value = "Book No. ";
+                ws.Cells["A5"].Style.Font.Name = "Calibri";
+                ws.Cells["A5"].Style.Font.Size = 11;
+                ws.Cells["A5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B5"].Style.Font.Name = "Calibri";
+                ws.Cells["B5"].Style.Font.Size = 11;
+                ws.Cells["B5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["B5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["B5"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                ws.Cells["E5"].Value = "TC No. ";
+                ws.Cells["E5"].Style.Font.Name = "Calibri";
+                ws.Cells["E5"].Style.Font.Size = 11;
+                ws.Cells["E5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["E5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F5"].Value = sess + "/" + tc_no.ToString();
+                ws.Cells["F5"].Style.Font.Name = "Calibri";
+                ws.Cells["F5"].Style.Font.Size = 11;
+                ws.Cells["F5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["F5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["F5"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                ws.Cells["I5"].Value = "Admission No ";
+                ws.Cells["I5"].Style.Font.Name = "Calibri";
+                ws.Cells["I5"].Style.Font.Size = 11;
+                ws.Cells["I5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["I5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["J5"].Value = result.sr_number;
+                ws.Cells["J5"].Style.Font.Name = "Calibri";
+                ws.Cells["J5"].Style.Font.Size = 11;
+                ws.Cells["J5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["J5"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["J5"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                ws.Cells["A7"].Value = "1";
+                ws.Cells["A7"].Style.Font.Name = "Calibri";
+                ws.Cells["A7"].Style.Font.Size = 11;
+                ws.Cells["A7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B7"].Value = "Name of Pupil ";
+                ws.Cells["B7"].Style.Font.Name = "Calibri";
+                ws.Cells["B7"].Style.Font.Size = 11;
+                ws.Cells["B7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["D7"].Value = result.std_name;
+                ws.Cells["D7"].Style.Font.Name = "Calibri";
+                ws.Cells["D7"].Style.Font.Size = 11;
+                ws.Cells["D7"].Style.Font.Bold = true;
+                ws.Cells["D7"].Style.Font.UnderLine = true;
+                ws.Cells["D7"].Style.Font.Italic = true;
+                ws.Cells["D7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A8"].Value = "2";
+                ws.Cells["A8"].Style.Font.Name = "Calibri";
+                ws.Cells["A8"].Style.Font.Size = 11;
+                ws.Cells["A8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A8"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B8"].Value = "Mother's Name ";
+                ws.Cells["B8"].Style.Font.Name = "Calibri";
+                ws.Cells["B8"].Style.Font.Size = 11;
+                ws.Cells["B8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B8"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["D8"].Value = result.std_mother;
+                ws.Cells["D8"].Style.Font.Name = "Calibri";
+                ws.Cells["D8"].Style.Font.Size = 11;
+                ws.Cells["D8"].Style.Font.Bold = true;
+                ws.Cells["D8"].Style.Font.UnderLine = true;
+                ws.Cells["D8"].Style.Font.Italic = true;
+                ws.Cells["D8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D8"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A9"].Value = "3";
+                ws.Cells["A9"].Style.Font.Name = "Calibri";
+                ws.Cells["A9"].Style.Font.Size = 11;
+                ws.Cells["A9"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A9"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B9"].Value = "Father's/Guardian's Name ";
+                ws.Cells["B9"].Style.Font.Name = "Calibri";
+                ws.Cells["B9"].Style.Font.Size = 11;
+                ws.Cells["B9"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B9"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["E9"].Value = result.std_father;
+                ws.Cells["E9"].Style.Font.Name = "Calibri";
+                ws.Cells["E9"].Style.Font.Size = 11;
+                ws.Cells["E9"].Style.Font.Bold = true;
+                ws.Cells["E9"].Style.Font.UnderLine = true;
+                ws.Cells["E9"].Style.Font.Italic = true;
+                ws.Cells["E9"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["E9"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A10"].Value = "4";
+                ws.Cells["A10"].Style.Font.Name = "Calibri";
+                ws.Cells["A10"].Style.Font.Size = 11;
+                ws.Cells["A10"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A10"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B10"].Value = "Nationality  ";
+                ws.Cells["B10"].Style.Font.Name = "Calibri";
+                ws.Cells["B10"].Style.Font.Size = 11;
+                ws.Cells["B10"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B10"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["C10"].Value = result.std_nationality;
+                ws.Cells["C10"].Style.Font.Name = "Calibri";
+                ws.Cells["C10"].Style.Font.Size = 11;
+                ws.Cells["C10"].Style.Font.Bold = true;
+                ws.Cells["C10"].Style.Font.UnderLine = true;
+                ws.Cells["C10"].Style.Font.Italic = true;
+                ws.Cells["C10"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["C10"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A11"].Value = "5";
+                ws.Cells["A11"].Style.Font.Name = "Calibri";
+                ws.Cells["A11"].Style.Font.Size = 11;
+                ws.Cells["A11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B11"].Value = "Whether the candidate belongs to Schedule caste or schedule Tribe or OBC";
+                ws.Cells["B11"].Style.Font.Name = "Calibri";
+                ws.Cells["B11"].Style.Font.Size = 11;
+                ws.Cells["B11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I11"].Value = result.std_category;
+                ws.Cells["I11"].Style.Font.Name = "Calibri";
+                ws.Cells["I11"].Style.Font.Size = 11;
+                ws.Cells["I11"].Style.Font.Bold = true;
+                ws.Cells["I11"].Style.Font.UnderLine = true;
+                ws.Cells["I11"].Style.Font.Italic = true;
+                ws.Cells["I11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["I11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A12"].Value = "6";
+                ws.Cells["A12"].Style.Font.Name = "Calibri";
+                ws.Cells["A12"].Style.Font.Size = 11;
+                ws.Cells["A12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B12"].Value = "Date of First admission in the School with class";
+                ws.Cells["B12"].Style.Font.Name = "Calibri";
+                ws.Cells["B12"].Style.Font.Size = 11;
+                ws.Cells["B12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G12"].Value = result.std_admission_date.ToString("dd/MM/yyyy");
+                ws.Cells["G12"].Style.Font.Name = "Calibri";
+                ws.Cells["G12"].Style.Font.Size = 11;
+                ws.Cells["G12"].Style.Font.Bold = true;
+                ws.Cells["G12"].Style.Font.UnderLine = true;
+                ws.Cells["G12"].Style.Font.Italic = true;
+                ws.Cells["G12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["H12"].Value = "Class";
+                ws.Cells["H12"].Style.Font.Name = "Calibri";
+                ws.Cells["H12"].Style.Font.Size = 11;
+                ws.Cells["H12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["H12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I12"].Value = result.std_admission_class;
+                ws.Cells["I12"].Style.Font.Name = "Calibri";
+                ws.Cells["I12"].Style.Font.Size = 11;
+                ws.Cells["I12"].Style.Font.Bold = true;
+                ws.Cells["I12"].Style.Font.UnderLine = true;
+                ws.Cells["I12"].Style.Font.Italic = true;
+                ws.Cells["I12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["I12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A13"].Value = "7";
+                ws.Cells["A13"].Style.Font.Name = "Calibri";
+                ws.Cells["A13"].Style.Font.Size = 11;
+                ws.Cells["A13"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A13"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B13"].Value = "Date of Birth (in Christian Era) according to Admission & withdrawal Register (in figures)";
+                ws.Cells["B13"].Style.Font.Name = "Calibri";
+                ws.Cells["B13"].Style.Font.Size = 11;
+                ws.Cells["B13"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B13"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["J13"].Value = result.std_dob.ToString("dd/MM/yyyy");
+                ws.Cells["J13"].Style.Font.Name = "Calibri";
+                ws.Cells["J13"].Style.Font.Size = 11;
+                ws.Cells["J13"].Style.Font.Bold = true;
+                ws.Cells["J13"].Style.Font.UnderLine = true;
+                ws.Cells["J13"].Style.Font.Italic = true;
+                ws.Cells["J13"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                ws.Cells["J13"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B14"].Value = "(In Words)";
+                ws.Cells["B14"].Style.Font.Name = "Calibri";
+                ws.Cells["B14"].Style.Font.Size = 11;
+                ws.Cells["B14"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B14"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["C14"].Value = birth_certificateMain.DateToWritten(result.std_dob).ToString();
+                ws.Cells["C14"].Style.Font.Name = "Calibri";
+                ws.Cells["C14"].Style.Font.Size = 11;
+                ws.Cells["C14"].Style.Font.Bold = true;
+                ws.Cells["C14"].Style.Font.UnderLine = true;
+                ws.Cells["C14"].Style.Font.Italic = true;
+                ws.Cells["C14"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["C14"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A15"].Value = "8";
+                ws.Cells["A15"].Style.Font.Name = "Calibri";
+                ws.Cells["A15"].Style.Font.Size = 11;
+                ws.Cells["A15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B15"].Value = "Class in which the pupil last studied (in figures)";
+                ws.Cells["B15"].Style.Font.Name = "Calibri";
+                ws.Cells["B15"].Style.Font.Size = 11;
+                ws.Cells["B15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G15"].Value = result.std_pass_class;
+                ws.Cells["G15"].Style.Font.Name = "Calibri";
+                ws.Cells["G15"].Style.Font.Size = 11;
+                ws.Cells["G15"].Style.Font.Bold = true;
+                ws.Cells["G15"].Style.Font.UnderLine = true;
+                ws.Cells["G15"].Style.Font.Italic = true;
+                ws.Cells["G15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                //ws.Cells["H15"].Value = "(in words)";
+                //ws.Cells["H15"].Style.Font.Name = "Calibri";
+                //ws.Cells["H15"].Style.Font.Size = 11;
+                //ws.Cells["H15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //ws.Cells["H15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I15"].Value = "";
+                ws.Cells["I15"].Style.Font.Name = "Calibri";
+                ws.Cells["I15"].Style.Font.Size = 11;
+                ws.Cells["I15"].Style.Font.Bold = true;
+                ws.Cells["I15"].Style.Font.UnderLine = true;
+                ws.Cells["I15"].Style.Font.Italic = true;
+                ws.Cells["I15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["I15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A16"].Value = "9";
+                ws.Cells["A16"].Style.Font.Name = "Calibri";
+                ws.Cells["A16"].Style.Font.Size = 11;
+                ws.Cells["A16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B16"].Value = "School/Board Annual Examination last taken with result";
+                ws.Cells["B16"].Style.Font.Name = "Calibri";
+                ws.Cells["B16"].Style.Font.Size = 11;
+                ws.Cells["B16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A17"].Value = "10";
+                ws.Cells["A17"].Style.Font.Name = "Calibri";
+                ws.Cells["A17"].Style.Font.Size = 11;
+                ws.Cells["A17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B17"].Value = "Whether failed, if so once/twice in the same class";
+                ws.Cells["B17"].Style.Font.Name = "Calibri";
+                ws.Cells["B17"].Style.Font.Size = 11;
+                ws.Cells["B17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A18"].Value = "11";
+                ws.Cells["A18"].Style.Font.Name = "Calibri";
+                ws.Cells["A18"].Style.Font.Size = 11;
+                ws.Cells["A18"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A18"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B18"].Value = "Subjects Studied:";
+                ws.Cells["B18"].Style.Font.Name = "Calibri";
+                ws.Cells["B18"].Style.Font.Size = 11;
+                ws.Cells["B18"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B18"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                query = @"SELECT 
+                                subject_name
+                            FROM
+                                mst_class_subject a,
+                                mst_subject b
+                            WHERE
+                                a.subject_id = b.subject_id
+                                    AND a.session = b.session
+                                    AND a.class_id = (SELECT 
+                                        b.class_id
+                                    FROM
+                                        mst_std_Class a,
+                                        mst_class b
+                                    WHERE
+                                        sr_num = @sr_number AND a.session = b.session
+                                            AND a.class_id = b.class_id
+                                            AND a.session != (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y')
+                                    ORDER BY order_by
+                                    LIMIT 1)
+                                    AND a.session != (SELECT 
+                                        session
+                                    FROM
+                                        mst_session
+                                    WHERE
+                                        session_finalize = 'Y'
+                                    ORDER BY session_start_date DESC
+                                    LIMIT 1)";
+
+                IEnumerable<string> subjects = con.Query<string>(query, new { sr_number = sr_number });
+
+                ws.Cells["D18"].Value = String.Join(",", subjects);
+                ws.Cells["D18"].Style.Font.Name = "Calibri";
+                ws.Cells["D18"].Style.Font.Size = 11;
+                ws.Cells["D18"].Style.Font.Bold = true;
+                ws.Cells["D18"].Style.Font.UnderLine = true;
+                ws.Cells["D18"].Style.Font.Italic = true;
+                ws.Cells["D18"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D18"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A19"].Value = "12";
+                ws.Cells["A19"].Style.Font.Name = "Calibri";
+                ws.Cells["A19"].Style.Font.Size = 11;
+                ws.Cells["A19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B19"].Value = "Whether qualified for promotion to the higher class";
+                ws.Cells["B19"].Style.Font.Name = "Calibri";
+                ws.Cells["B19"].Style.Font.Size = 12;
+                ws.Cells["B19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B20"].Value = "If so, to which class (in figures)";
+                ws.Cells["B20"].Style.Font.Name = "Calibri";
+                ws.Cells["B20"].Style.Font.Size = 11;
+                ws.Cells["B20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G20"].Value = "(in words)";
+                ws.Cells["G20"].Style.Font.Name = "Calibri";
+                ws.Cells["G20"].Style.Font.Size = 11;
+                ws.Cells["G20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A21"].Value = "13";
+                ws.Cells["A21"].Style.Font.Name = "Calibri";
+                ws.Cells["A21"].Style.Font.Size = 11;
+                ws.Cells["A21"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A21"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B21"].Value = "Month upto which the pupil has paid school dues";
+                ws.Cells["B21"].Style.Font.Name = "Calibri";
+                ws.Cells["B21"].Style.Font.Size = 11;
+                ws.Cells["B21"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B21"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                query = @"SELECT 
+                                month_name
+                            FROM
+                                out_standing
+                            WHERE
+                                sr_number = @sr_number
+                                    AND IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0) = 0
+                            GROUP BY month_name
+                            ORDER BY dt_date DESC , serial DESC , receipt_no DESC
+                            LIMIT 1";
+
+                string month = con.Query<string>(query, new { sr_number = sr_number }).SingleOrDefault();
+
+                ws.Cells["G21"].Value = month;
+                ws.Cells["G21"].Style.Font.Name = "Calibri";
+                ws.Cells["G21"].Style.Font.Size = 11;
+                ws.Cells["G21"].Style.Font.Bold = true;
+                ws.Cells["G21"].Style.Font.UnderLine = true;
+                ws.Cells["G21"].Style.Font.Italic = true;
+                ws.Cells["G21"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G21"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A22"].Value = "14";
+                ws.Cells["A22"].Style.Font.Name = "Calibri";
+                ws.Cells["A22"].Style.Font.Size = 11;
+                ws.Cells["A22"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A22"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B22"].Value = "Any fee concession availed of: If so, the nature of such concession ";
+                ws.Cells["B22"].Style.Font.Name = "Calibri";
+                ws.Cells["B22"].Style.Font.Size = 11;
+                ws.Cells["B22"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B22"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A23"].Value = "15";
+                ws.Cells["A23"].Style.Font.Name = "Calibri";
+                ws.Cells["A23"].Style.Font.Size = 11;
+                ws.Cells["A23"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A23"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B23"].Value = "Total No. of Working days in the academic session";
+                ws.Cells["B23"].Style.Font.Name = "Calibri";
+                ws.Cells["B23"].Style.Font.Size = 11;
+                ws.Cells["B23"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B23"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G23"].Value = result.working_days;
+                ws.Cells["G23"].Style.Font.Name = "Calibri";
+                ws.Cells["G23"].Style.Font.Size = 11;
+                ws.Cells["G23"].Style.Font.Bold = true;
+                ws.Cells["G23"].Style.Font.UnderLine = true;
+                ws.Cells["G23"].Style.Font.Italic = true;
+                ws.Cells["G23"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G23"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A24"].Value = "16";
+                ws.Cells["A24"].Style.Font.Name = "Calibri";
+                ws.Cells["A24"].Style.Font.Size = 11;
+                ws.Cells["A24"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A24"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B24"].Value = "Total No. of Working days pupil present in school";
+                ws.Cells["B24"].Style.Font.Name = "Calibri";
+                ws.Cells["B24"].Style.Font.Size = 11;
+                ws.Cells["B24"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B24"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["G24"].Value = result.present_days;
+                ws.Cells["G24"].Style.Font.Name = "Calibri";
+                ws.Cells["G24"].Style.Font.Size = 11;
+                ws.Cells["G24"].Style.Font.Bold = true;
+                ws.Cells["G24"].Style.Font.UnderLine = true;
+                ws.Cells["G24"].Style.Font.Italic = true;
+                ws.Cells["G24"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["G24"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A25"].Value = "17";
+                ws.Cells["A25"].Style.Font.Name = "Calibri";
+                ws.Cells["A25"].Style.Font.Size = 11;
+                ws.Cells["A25"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A25"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B25"].Value = "Whether NCC Cadet/Boy scout/Girl Guide (details may be given)";
+                ws.Cells["B25"].Style.Font.Name = "Calibri";
+                ws.Cells["B25"].Style.Font.Size = 11;
+                ws.Cells["B25"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B25"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A26"].Value = "18";
+                ws.Cells["A26"].Style.Font.Name = "Calibri";
+                ws.Cells["A26"].Style.Font.Size = 11;
+                ws.Cells["A26"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A26"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B26"].Value = "Games played or extra curricular activities in which the pupil usually took part";
+                ws.Cells["B26"].Style.Font.Name = "Calibri";
+                ws.Cells["B26"].Style.Font.Size = 11;
+                ws.Cells["B26"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B26"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A27"].Value = "19";
+                ws.Cells["A27"].Style.Font.Name = "Calibri";
+                ws.Cells["A27"].Style.Font.Size = 11;
+                ws.Cells["A27"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A27"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B27"].Value = "General Conduct";
+                ws.Cells["B27"].Style.Font.Name = "Calibri";
+                ws.Cells["B27"].Style.Font.Size = 11;
+                ws.Cells["B27"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B27"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["D27"].Value = "Good";
+                ws.Cells["D27"].Style.Font.Name = "Calibri";
+                ws.Cells["D27"].Style.Font.Size = 11;
+                ws.Cells["D27"].Style.Font.Bold = true;
+                ws.Cells["D27"].Style.Font.UnderLine = true;
+                ws.Cells["D27"].Style.Font.Italic = true;
+                ws.Cells["D27"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["D27"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A28"].Value = "20";
+                ws.Cells["A28"].Style.Font.Name = "Calibri";
+                ws.Cells["A28"].Style.Font.Size = 11;
+                ws.Cells["A28"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A28"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B28"].Value = "Date of Application for Certificate";
+                ws.Cells["B28"].Style.Font.Name = "Calibri";
+                ws.Cells["B28"].Style.Font.Size = 11;
+                ws.Cells["B28"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B28"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F28"].Value = result.nso_date.ToString("dd/MM/yyyy");
+                ws.Cells["F28"].Style.Font.Name = "Calibri";
+                ws.Cells["F28"].Style.Font.Size = 11;
+                ws.Cells["F28"].Style.Font.Bold = true;
+                ws.Cells["F28"].Style.Font.UnderLine = true;
+                ws.Cells["F28"].Style.Font.Italic = true;
+                ws.Cells["F28"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["F28"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A29"].Value = "21";
+                ws.Cells["A29"].Style.Font.Name = "Calibri";
+                ws.Cells["A29"].Style.Font.Size = 11;
+                ws.Cells["A29"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A29"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B29"].Value = "Date of Issue of Certificate ";
+                ws.Cells["B29"].Style.Font.Name = "Calibri";
+                ws.Cells["B29"].Style.Font.Size = 11;
+                ws.Cells["B29"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B29"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F29"].Value = tc_date.ToString("dd/MM/yyyy");
+                ws.Cells["F29"].Style.Font.Name = "Calibri";
+                ws.Cells["F29"].Style.Font.Size = 11;
+                ws.Cells["F29"].Style.Font.Bold = true;
+                ws.Cells["F29"].Style.Font.UnderLine = true;
+                ws.Cells["F29"].Style.Font.Italic = true;
+                ws.Cells["F29"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["F29"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A30"].Value = "22";
+                ws.Cells["A30"].Style.Font.Name = "Calibri";
+                ws.Cells["A30"].Style.Font.Size = 11;
+                ws.Cells["A30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B30"].Value = "Reasons for leaving the School ";
+                ws.Cells["B30"].Style.Font.Name = "Calibri";
+                ws.Cells["B30"].Style.Font.Size = 11;
+                ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["A30"].Value = "23";
+                ws.Cells["A30"].Style.Font.Name = "Calibri";
+                ws.Cells["A30"].Style.Font.Size = 11;
+                ws.Cells["A30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["B30"].Value = "Any other remarks ";
+                ws.Cells["B30"].Style.Font.Name = "Calibri";
+                ws.Cells["B30"].Style.Font.Size = 11;
+                ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+
+                ws.Cells["B36"].Value = "Signature of Class Teacher";
+                ws.Cells["B36"].Style.Font.Name = "Calibri";
+                ws.Cells["B36"].Style.Font.Size = 11;
+                ws.Cells["B36"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B36"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["F36"].Value = "Checked by";
+                ws.Cells["F36"].Style.Font.Name = "Calibri";
+                ws.Cells["F36"].Style.Font.Size = 11;
+                ws.Cells["F36"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["F36"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Cells["I36"].Value = "Sign of Principal";
+                ws.Cells["I36"].Style.Font.Name = "Calibri";
+                ws.Cells["I36"].Style.Font.Size = 11;
+                ws.Cells["I36"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["I36"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                
+               
+                return pck.GetAsByteArray();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return null;
+        }
     }
 
     public class ExcelTc_form

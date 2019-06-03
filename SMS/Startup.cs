@@ -44,17 +44,17 @@ namespace SMS
             dailyBirthdayWishMain birthday = new dailyBirthdayWishMain();
 
             duesReminderMain dues = new duesReminderMain();
-
+#if !DEBUG
             foreach(var job in result)
             {
                
                RecurringJob.AddOrUpdate(job.job_name, () => birthday.SendBirthdayWish(), job.job_datetime, TimeZoneInfo.Local);
                
             }
-
+#endif
             //RecurringJob.AddOrUpdate("Birth Day Wish", () => birthday.SendBirthdayWish(), "0 6 * * *",TimeZoneInfo.Local);
 
-           // RecurringJob.AddOrUpdate("Dues Reminder date 5", () => dues.SendDuesReminder(), "0 9 5 * *",TimeZoneInfo.Local);
+            // RecurringJob.AddOrUpdate("Dues Reminder date 5", () => dues.SendDuesReminder(), "0 9 5 * *",TimeZoneInfo.Local);
 
             app.MapSignalR();
 
