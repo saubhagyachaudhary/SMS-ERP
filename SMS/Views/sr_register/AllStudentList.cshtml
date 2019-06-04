@@ -49,6 +49,9 @@
                                     @Html.DisplayNameFor(model => model.std_father_name)
                                 </th>
                                 <th>
+                                    @Html.DisplayNameFor(model => model.std_sex)
+                                </th>
+                                <th>
                                     @Html.DisplayNameFor(model => model.class_name)
                                 </th>
                                 <th>
@@ -79,6 +82,9 @@
                                         @Html.DisplayFor(modelItem => item.std_father_name)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.std_sex)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.class_name)
                                     </td>
                                     <td>
@@ -96,7 +102,7 @@
 
                                             }
                                         }
-                                        @Html.ActionLink("Details", "StudentDetails", new { id = item.sr_number }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                        @Html.ActionLink("Details", "StudentDetails", new { id = item.sr_number, calling_view = "AllStudentList" }, new { @class = "btn btn-success btn-sm please_wait" }) 
                                        
                                     </td>
                                 </tr>

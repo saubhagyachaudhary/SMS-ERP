@@ -169,7 +169,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>06/01/2019 17:48:56</publishTime>
+      <publishTime>06/04/2019 11:00:29</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -6694,7 +6694,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/15/2019 17:06:35</publishTime>
     </File>
     <File Include="Views/sr_register/AllStudentList.cshtml">
-      <publishTime>09/09/2018 14:40:35</publishTime>
+      <publishTime>06/04/2019 10:54:34</publishTime>
     </File>
     <File Include="Views/sr_register/DeleteStudent.cshtml">
       <publishTime>07/10/2016 23:42:08</publishTime>
@@ -6766,7 +6766,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>06/01/2019 17:49:00</publishTime>
+      <publishTime>06/04/2019 11:01:12</publishTime>
     </File>
   </ItemGroup>
 </Project>

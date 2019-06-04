@@ -338,7 +338,11 @@ namespace SMS.Models
                                 b.section_name,
                                 COALESCE(a.std_contact,
                                         a.std_contact1,
-                                        a.std_contact2) std_contact
+                                        a.std_contact2) std_contact,
+                                CASE
+                                    WHEN a.std_sex = 'M' THEN 'Male'
+                                    ELSE 'Female'
+                                END std_sex
                             FROM
                                 sr_register a,
                                 mst_section b,
@@ -453,8 +457,14 @@ namespace SMS.Models
 
                 int sec_id = con.Query<int>(query1, new { sr_number = std.sr_number,session = session }).SingleOrDefault();
 
+                query1 = @"SELECT 
+                                std_active
+                            FROM
+                                sr_register
+                            WHERE
+                                sr_number = @sr_number";
 
-
+                string old_active_status = con.Query<string>(query1, new { sr_number = std.sr_number}).SingleOrDefault();
 
                 string query = @"UPDATE sr_register
                                    SET std_first_name = @std_first_name
@@ -495,7 +505,7 @@ namespace SMS.Models
                 con.Execute(query, std);
 
 
-                if(!std.active)
+                if(!std.active && old_active_status == "Y")
                 {
                     out_standingMain otsd = new out_standingMain();
 
@@ -507,9 +517,8 @@ namespace SMS.Models
                 }
                  else
                 {
-                    if (pick_id != std.std_pickup_id)
+                    if (old_active_status != std.std_active)
                     {
-                        //call procedure to change the pickup point
                         var p = new DynamicParameters();
 
                         p.Add("@sr_num", std.sr_number);
@@ -522,48 +531,82 @@ namespace SMS.Models
 
                         hub.DashboardSchoolStrength();
 
+                        p = new DynamicParameters();
+
+                        p.Add("@sr_num", std.sr_number);
+
+                        con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
+
+                        string query2 = @"UPDATE sr_register 
+                                    SET 
+                                        nso_date = NULL
+                                    WHERE
+                                        sr_number = @sr_num";
+
+                       con.Execute(query2, new { sr_num = std.sr_number});
                     }
-
-                    if (class_id != std.class_id)
+                    else
                     {
-                        //call procedure to change the class
+                        if (pick_id != std.std_pickup_id && std.std_active == "Y")
+                        {
+                            //call procedure to change the pickup point
+                            var p = new DynamicParameters();
 
-                        query = @"UPDATE `mst_std_class` 
+                            p.Add("@sr_num", std.sr_number);
+
+                            p.Add("@from_month_no", std.from_month_no);
+
+                            con.Execute("StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
+
+                            DashboardHub hub = new DashboardHub();
+
+                            hub.DashboardSchoolStrength();
+
+                        }
+
+                        if (class_id != std.class_id)
+                        {
+                            //call procedure to change the class
+
+                            query = @"UPDATE `mst_std_class` 
                                     SET 
                                         `class_id` = @class_id
                                     WHERE
                                         `session` = @session
                                             AND `sr_num` = @sr_num";
 
-                        con.Execute(query, new {class_id = std.class_id, session = session ,sr_num = std.sr_number });
+                            con.Execute(query, new { class_id = std.class_id, session = session, sr_num = std.sr_number });
 
-                        var p = new DynamicParameters();
+                            if (std.std_active == "Y")
+                            {
+                                var p = new DynamicParameters();
 
-                        p.Add("@sr_num", std.sr_number);
+                                p.Add("@sr_num", std.sr_number);
 
-                        con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
+                                con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
 
+                            }
+                        }
 
-                    }
+                        if (sec_id != std.std_section_id)
+                        {
 
-                    if (sec_id != std.std_section_id)
-                    {
-
-                        query = @"UPDATE `mst_std_section` 
+                            query = @"UPDATE `mst_std_section` 
                                     SET 
                                         `section_id` = @section_id
                                     WHERE
                                         `session` = @session
                                             AND `sr_num` = @sr_num";
 
-                        con.Execute(query, new { section_id = std.std_section_id, session = session, sr_num = std.sr_number });
+                            con.Execute(query, new { section_id = std.std_section_id, session = session, sr_num = std.sr_number });
 
-                        query = @"DELETE FROM `mst_rollnumber`
+                            query = @"DELETE FROM `mst_rollnumber`
                                     WHERE session = @session
                                     and
                                     sr_num = @sr_num";
 
-                        con.Execute(query, new { sr_num = std.sr_number, session = session });
+                            con.Execute(query, new { sr_num = std.sr_number, session = session });
+                        }
                     }
                 }
             }

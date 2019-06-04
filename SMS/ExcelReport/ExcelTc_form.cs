@@ -40,6 +40,8 @@ namespace SMS.ExcelReport
 
         public string std_pass_class { get; set; }
 
+        public string std_current_class { get; set; }
+
         public int working_days { get; set; }
 
         public int present_days { get; set; }
@@ -78,68 +80,79 @@ namespace SMS.ExcelReport
             try
             {
                 string query = @"SELECT 
-                                        sr_number,
-                                        CONCAT(IFNULL(std_first_name, ''),
-                                                ' ',
-                                                IFNULL(std_last_name, '')) std_name,
-                                        std_mother_name std_mother,
-                                        std_father_name std_father,
-                                        std_nationality,
-                                        std_category,
-                                        std_admission_date,
-                                        std_admission_class,
-                                        std_dob,
-                                        (SELECT 
-                                                class_name
-                                            FROM
-                                                mst_std_Class a,
-                                                mst_class b
-                                            WHERE
-                                                sr_num = a.sr_number
-                                                    AND a.session = b.session
-                                                    AND a.class_id = b.class_id
-                                                    AND a.session != (SELECT 
-                                                        session
-                                                    FROM
-                                                        mst_session
-                                                    WHERE
-                                                        session_finalize = 'Y')
-                                            ORDER BY order_by
-                                            LIMIT 1) std_pass_class,
-                                        (SELECT 
-                                                COUNT(*)
-                                            FROM
-                                                attendance_register
-                                            WHERE
-                                                sr_num = a.sr_number
-                                                    AND session = (SELECT 
-                                                        session
-                                                    FROM
-                                                        mst_session
-                                                    WHERE
-                                                        session_finalize != 'Y'
-                                                    ORDER BY session_start_date DESC
-                                                    LIMIT 1)) working_days,
-                                        (SELECT 
-                                                COUNT(*)
-                                            FROM
-                                                attendance_register
-                                            WHERE
-                                                sr_num = a.sr_number
-                                                    AND session = (SELECT 
-                                                        session
-                                                    FROM
-                                                        mst_session
-                                                    WHERE
-                                                        session_finalize != 'Y'
-                                                    ORDER BY session_start_date DESC
-                                                    LIMIT 1)
-                                                    AND attendance = 1) present_days,
-                                        nso_date
-                                    FROM
-                                        sr_register a
-                                    WHERE
-                                        std_active = 'N' AND sr_number = @sr_number";
+                                    sr_number,
+                                    CONCAT(IFNULL(std_first_name, ''),
+                                            ' ',
+                                            IFNULL(std_last_name, '')) std_name,
+                                    std_mother_name std_mother,
+                                    std_father_name std_father,
+                                    std_nationality,
+                                    std_category,
+                                    std_admission_date,
+                                    std_admission_class,
+                                    std_dob,
+                                    (SELECT 
+                                            class_name
+                                        FROM
+                                            mst_std_Class a,
+                                            mst_class b
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND a.session = b.session
+                                                AND a.class_id = b.class_id
+                                                AND a.session != (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y')
+                                        ORDER BY order_by DESC
+                                        LIMIT 1) std_pass_class,
+                                    (SELECT 
+                                            class_name
+                                        FROM
+                                            mst_std_Class a,
+                                            mst_class b
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND a.session = b.session
+                                                AND a.class_id = b.class_id
+                                        ORDER BY order_by DESC
+                                        LIMIT 1) std_current_class,
+                                    (SELECT 
+                                            COUNT(*)
+                                        FROM
+                                            attendance_register
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize != 'Y'
+                                                ORDER BY session_start_date DESC
+                                                LIMIT 1)) working_days,
+                                    (SELECT 
+                                            COUNT(*)
+                                        FROM
+                                            attendance_register
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize != 'Y'
+                                                ORDER BY session_start_date DESC
+                                                LIMIT 1)
+                                                AND attendance = 1) present_days,
+                                    nso_date
+                                FROM
+                                    sr_register a
+                                WHERE
+                                    std_active = 'N' AND sr_number = @sr_number";
 
                 tc_details result = con.Query<tc_details>(query, new { sr_number = sr_number }).SingleOrDefault();
 
@@ -507,6 +520,18 @@ namespace SMS.ExcelReport
                 ws.Cells["B17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
+                if (result.std_pass_class == result.std_current_class)
+                {
+                    ws.Cells["G17"].Value = "Once";
+                    ws.Cells["G17"].Style.Font.Name = "Calibri";
+                    ws.Cells["G17"].Style.Font.Size = 11;
+                    ws.Cells["G17"].Style.Font.Bold = true;
+                    ws.Cells["G17"].Style.Font.UnderLine = true;
+                    ws.Cells["G17"].Style.Font.Italic = true;
+                    ws.Cells["G17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["G17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+
                 ws.Cells["A18"].Value = "11";
                 ws.Cells["A18"].Style.Font.Name = "Calibri";
                 ws.Cells["A18"].Style.Font.Size = 11;
@@ -575,17 +600,50 @@ namespace SMS.ExcelReport
                 ws.Cells["B19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
+                if (result.std_pass_class == result.std_current_class)
+                {
+                    ws.Cells["H19"].Value = "No";
+                }
+                else
+                {
+                    ws.Cells["H19"].Value = "Yes";
+                }
+                ws.Cells["H19"].Style.Font.Name = "Calibri";
+                ws.Cells["H19"].Style.Font.Size = 11;
+                ws.Cells["H19"].Style.Font.Bold = true;
+                ws.Cells["H19"].Style.Font.UnderLine = true;
+                ws.Cells["H19"].Style.Font.Italic = true;
+                ws.Cells["H19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["H19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
                 ws.Cells["B20"].Value = "If so, to which class (in figures)";
                 ws.Cells["B20"].Style.Font.Name = "Calibri";
                 ws.Cells["B20"].Style.Font.Size = 11;
                 ws.Cells["B20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                ws.Cells["G20"].Value = "(in words)";
-                ws.Cells["G20"].Style.Font.Name = "Calibri";
-                ws.Cells["G20"].Style.Font.Size = 11;
-                ws.Cells["G20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                ws.Cells["G20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                if (result.std_pass_class == result.std_current_class)
+                {
+                    ws.Cells["E20"].Value = " ";
+                }
+                else
+                {
+                    ws.Cells["E20"].Value = result.std_current_class;
+                }
+                ws.Cells["E20"].Style.Font.Name = "Calibri";
+                ws.Cells["E20"].Style.Font.Size = 11;
+                ws.Cells["E20"].Style.Font.Bold = true;
+                ws.Cells["E20"].Style.Font.UnderLine = true;
+                ws.Cells["E20"].Style.Font.Italic = true;
+                ws.Cells["E20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["E20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                //ws.Cells["G20"].Value = "(in words)";
+                //ws.Cells["G20"].Style.Font.Name = "Calibri";
+                //ws.Cells["G20"].Style.Font.Size = 11;
+                //ws.Cells["G20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //ws.Cells["G20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
                 ws.Cells["A21"].Value = "13";
                 ws.Cells["A21"].Style.Font.Name = "Calibri";
@@ -774,17 +832,17 @@ namespace SMS.ExcelReport
                 ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                ws.Cells["A30"].Value = "23";
-                ws.Cells["A30"].Style.Font.Name = "Calibri";
-                ws.Cells["A30"].Style.Font.Size = 11;
-                ws.Cells["A30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                ws.Cells["A30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["A31"].Value = "23";
+                ws.Cells["A31"].Style.Font.Name = "Calibri";
+                ws.Cells["A31"].Style.Font.Size = 11;
+                ws.Cells["A31"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A31"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                ws.Cells["B30"].Value = "Any other remarks ";
-                ws.Cells["B30"].Style.Font.Name = "Calibri";
-                ws.Cells["B30"].Style.Font.Size = 11;
-                ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["B31"].Value = "Any other remarks ";
+                ws.Cells["B31"].Style.Font.Name = "Calibri";
+                ws.Cells["B31"].Style.Font.Size = 11;
+                ws.Cells["B31"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B31"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
 
                 ws.Cells["B36"].Value = "Signature of Class Teacher";
@@ -845,68 +903,79 @@ namespace SMS.ExcelReport
             try
             {
                 string query = @"SELECT 
-                                        sr_number,
-                                        CONCAT(IFNULL(std_first_name, ''),
-                                                ' ',
-                                                IFNULL(std_last_name, '')) std_name,
-                                        std_mother_name std_mother,
-                                        std_father_name std_father,
-                                        std_nationality,
-                                        std_category,
-                                        std_admission_date,
-                                        std_admission_class,
-                                        std_dob,
-                                        (SELECT 
-                                                class_name
-                                            FROM
-                                                mst_std_Class a,
-                                                mst_class b
-                                            WHERE
-                                                sr_num = a.sr_number
-                                                    AND a.session = b.session
-                                                    AND a.class_id = b.class_id
-                                                    AND a.session != (SELECT 
-                                                        session
-                                                    FROM
-                                                        mst_session
-                                                    WHERE
-                                                        session_finalize = 'Y')
-                                            ORDER BY order_by
-                                            LIMIT 1) std_pass_class,
-                                        (SELECT 
-                                                COUNT(*)
-                                            FROM
-                                                attendance_register
-                                            WHERE
-                                                sr_num = a.sr_number
-                                                    AND session = (SELECT 
-                                                        session
-                                                    FROM
-                                                        mst_session
-                                                    WHERE
-                                                        session_finalize != 'Y'
-                                                    ORDER BY session_start_date DESC
-                                                    LIMIT 1)) working_days,
-                                        (SELECT 
-                                                COUNT(*)
-                                            FROM
-                                                attendance_register
-                                            WHERE
-                                                sr_num = a.sr_number
-                                                    AND session = (SELECT 
-                                                        session
-                                                    FROM
-                                                        mst_session
-                                                    WHERE
-                                                        session_finalize != 'Y'
-                                                    ORDER BY session_start_date DESC
-                                                    LIMIT 1)
-                                                    AND attendance = 1) present_days,
-                                        nso_date
-                                    FROM
-                                        sr_register a
-                                    WHERE
-                                        std_active = 'N' AND sr_number = @sr_number";
+                                    sr_number,
+                                    CONCAT(IFNULL(std_first_name, ''),
+                                            ' ',
+                                            IFNULL(std_last_name, '')) std_name,
+                                    std_mother_name std_mother,
+                                    std_father_name std_father,
+                                    std_nationality,
+                                    std_category,
+                                    std_admission_date,
+                                    std_admission_class,
+                                    std_dob,
+                                    (SELECT 
+                                            class_name
+                                        FROM
+                                            mst_std_Class a,
+                                            mst_class b
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND a.session = b.session
+                                                AND a.class_id = b.class_id
+                                                AND a.session != (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize = 'Y')
+                                        ORDER BY order_by DESC
+                                        LIMIT 1) std_pass_class,
+                                    (SELECT 
+                                            class_name
+                                        FROM
+                                            mst_std_Class a,
+                                            mst_class b
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND a.session = b.session
+                                                AND a.class_id = b.class_id
+                                        ORDER BY order_by DESC
+                                        LIMIT 1) std_current_class,
+                                    (SELECT 
+                                            COUNT(*)
+                                        FROM
+                                            attendance_register
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize != 'Y'
+                                                ORDER BY session_start_date DESC
+                                                LIMIT 1)) working_days,
+                                    (SELECT 
+                                            COUNT(*)
+                                        FROM
+                                            attendance_register
+                                        WHERE
+                                            sr_num = a.sr_number
+                                                AND session = (SELECT 
+                                                    session
+                                                FROM
+                                                    mst_session
+                                                WHERE
+                                                    session_finalize != 'Y'
+                                                ORDER BY session_start_date DESC
+                                                LIMIT 1)
+                                                AND attendance = 1) present_days,
+                                    nso_date
+                                FROM
+                                    sr_register a
+                                WHERE
+                                    std_active = 'N' AND sr_number = @sr_number";
 
                 tc_details result = con.Query<tc_details>(query, new { sr_number = sr_number }).SingleOrDefault();
 
@@ -916,7 +985,7 @@ namespace SMS.ExcelReport
 
 
 
-                string tc_no = tc_number.ToString().PadLeft(tc_number.ToString().Length + 3, '0');
+                string tc_no = tc_number.ToString().PadLeft(4, '0');
 
                 ExcelPackage pck = new ExcelPackage();
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("TC");
@@ -1274,6 +1343,18 @@ namespace SMS.ExcelReport
                 ws.Cells["B17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
+                if(result.std_pass_class == result.std_current_class)
+                {
+                    ws.Cells["G17"].Value = "Once";
+                    ws.Cells["G17"].Style.Font.Name = "Calibri";
+                    ws.Cells["G17"].Style.Font.Size = 11;
+                    ws.Cells["G17"].Style.Font.Bold = true;
+                    ws.Cells["G17"].Style.Font.UnderLine = true;
+                    ws.Cells["G17"].Style.Font.Italic = true;
+                    ws.Cells["G17"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["G17"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+
                 ws.Cells["A18"].Value = "11";
                 ws.Cells["A18"].Style.Font.Name = "Calibri";
                 ws.Cells["A18"].Style.Font.Size = 11;
@@ -1342,17 +1423,43 @@ namespace SMS.ExcelReport
                 ws.Cells["B19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
+                if (result.std_pass_class == result.std_current_class)
+                {
+                    ws.Cells["H19"].Value = "No";
+                }
+                else
+                {
+                    ws.Cells["H19"].Value = "Yes";
+                }
+                ws.Cells["H19"].Style.Font.Name = "Calibri";
+                ws.Cells["H19"].Style.Font.Size = 11;
+                ws.Cells["H19"].Style.Font.Bold = true;
+                ws.Cells["H19"].Style.Font.UnderLine = true;
+                ws.Cells["H19"].Style.Font.Italic = true;
+                ws.Cells["H19"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["H19"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
                 ws.Cells["B20"].Value = "If so, to which class (in figures)";
                 ws.Cells["B20"].Style.Font.Name = "Calibri";
                 ws.Cells["B20"].Style.Font.Size = 11;
                 ws.Cells["B20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                ws.Cells["G20"].Value = "(in words)";
-                ws.Cells["G20"].Style.Font.Name = "Calibri";
-                ws.Cells["G20"].Style.Font.Size = 11;
-                ws.Cells["G20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                ws.Cells["G20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                if (result.std_pass_class == result.std_current_class)
+                {
+                    ws.Cells["E20"].Value = " ";
+                }
+                else
+                {
+                    ws.Cells["E20"].Value = result.std_current_class;
+                }
+                ws.Cells["E20"].Style.Font.Name = "Calibri";
+                ws.Cells["E20"].Style.Font.Size = 11;
+                ws.Cells["E20"].Style.Font.Bold = true;
+                ws.Cells["E20"].Style.Font.UnderLine = true;
+                ws.Cells["E20"].Style.Font.Italic = true;
+                ws.Cells["E20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["E20"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
                 ws.Cells["A21"].Value = "13";
                 ws.Cells["A21"].Style.Font.Name = "Calibri";
@@ -1541,17 +1648,17 @@ namespace SMS.ExcelReport
                 ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                ws.Cells["A30"].Value = "23";
-                ws.Cells["A30"].Style.Font.Name = "Calibri";
-                ws.Cells["A30"].Style.Font.Size = 11;
-                ws.Cells["A30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                ws.Cells["A30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["A31"].Value = "23";
+                ws.Cells["A31"].Style.Font.Name = "Calibri";
+                ws.Cells["A31"].Style.Font.Size = 11;
+                ws.Cells["A31"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A31"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                ws.Cells["B30"].Value = "Any other remarks ";
-                ws.Cells["B30"].Style.Font.Name = "Calibri";
-                ws.Cells["B30"].Style.Font.Size = 11;
-                ws.Cells["B30"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                ws.Cells["B30"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["B31"].Value = "Any other remarks ";
+                ws.Cells["B31"].Style.Font.Name = "Calibri";
+                ws.Cells["B31"].Style.Font.Size = 11;
+                ws.Cells["B31"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["B31"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
 
                 ws.Cells["B36"].Value = "Signature of Class Teacher";

@@ -327,17 +327,19 @@ namespace SMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult StudentDetails(int id)
+        public ActionResult StudentDetails(int id, string calling_view)
         {
             sr_registerMain stdMain = new sr_registerMain();
 
             mst_sessionMain sess = new mst_sessionMain();
 
+            ViewData["calling_view"] = calling_view;
+
             return View(stdMain.FindStudent(id,sess.findFinal_Session()));
         }
 
         [HttpGet]
-        public ActionResult EditDetails(int id)
+        public ActionResult EditDetails(int id, string calling_view)
         {
             sr_registerMain stdMain = new sr_registerMain();
             mst_sessionMain sess = new mst_sessionMain();
@@ -357,12 +359,13 @@ namespace SMS.Controllers
                 obj.active = false;
             }
 
+            ViewData["calling_view"] = calling_view;
 
             return View(obj);
         }
 
         [HttpPost]
-        public ActionResult EditDetails(sr_register std)
+        public ActionResult EditDetails(sr_register std,string calling_view)
         {
             sr_registerMain stdMain = new sr_registerMain();
             decimal dues = 0m;
@@ -437,7 +440,7 @@ namespace SMS.Controllers
 
 
 
-            if (error != 0 && changedclassid != std.class_id)
+            if (error != 0 && changedclassid != std.class_id && calling_view == "AllStudentList")
             {
                 ModelState.AddModelError(String.Empty, "Cannot change, class fees already paid");
 
@@ -460,11 +463,20 @@ namespace SMS.Controllers
                 std.std_active = "N";
             }
 
+            
+
             stdMain.EditStudent(std);
 
+            if(calling_view == "AllStudentList")
+            {
+                return RedirectToAction(calling_view);
+            }
+            else
+            {
+                return RedirectToAction(calling_view,"GenerateTC");
+            }
 
-
-            return RedirectToAction("AllStudentList");
+            
         }
 
         [HttpGet]

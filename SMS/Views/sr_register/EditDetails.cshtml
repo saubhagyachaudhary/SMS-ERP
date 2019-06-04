@@ -109,7 +109,7 @@
 
 
                         @using (Html.BeginForm())
-                        { 
+                        {
                             @Html.AntiForgeryToken()
 
                             <div class="form-horizontal">
@@ -436,14 +436,34 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    @Html.LabelFor(model => model.active, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
-                                    <div class="col-sm-1">
+                                @if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+                                {
+                                   
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.active, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                        <div class="col-sm-1">
 
-                                        @Html.CheckBoxFor(model => model.active, new { @class = "form-control", @onclick = "confirm()", @id = "active"  })
-                                        @Html.ValidationMessageFor(model => model.active, "", new { @class = "text-danger" })
+                                            @Html.CheckBoxFor(model => model.active, new { @class = "form-control", @onclick = "confirm()", @id = "active" })
+                                            @Html.ValidationMessageFor(model => model.active, "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
-                                </div>
+
+                                }
+                                else
+                                {
+                                    if (ViewData["calling_view"].ToString() == "AllStudentList")
+                                    {
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.active, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
+                                        <div class="col-sm-1">
+
+                                            @Html.CheckBoxFor(model => model.active, new { @class = "form-control", @onclick = "confirm()", @id = "active" })
+                                            @Html.ValidationMessageFor(model => model.active, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    }
+                                }
+
 
 
 
@@ -456,7 +476,14 @@
                         }
 
                         <div>
-                            @Html.ActionLink("Back to List", "AllStudentList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                            @if (ViewData["calling_view"].ToString() == "AllStudentList")
+                            {
+                                @Html.ActionLink("Back to List", "AllStudentList", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Back to List", "all_nso_students","GenerateTC", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+                            }
                         </div>
                     </div>
                     </div>

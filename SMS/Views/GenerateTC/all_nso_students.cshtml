@@ -71,6 +71,7 @@
 
                                         <td>
                                             @Html.ActionLink("Generate TC", "GenerateTC", new { sr_number = item.sr_number, session = item.session}, new { @class = "btn btn-success btn-sm", onclick = "return confirm('Are you sure, you want to Generate TC');" })
+                                            @Html.ActionLink("Details", "StudentDetails", "sr_register" , new { id = item.sr_number, calling_view = "all_nso_students" }, new { @class = "btn btn-success btn-sm please_wait" })
                                         </td>
                                     </tr>
                                 }
