@@ -102,7 +102,7 @@
 
                                             }
                                         }
-                                        @Html.ActionLink("Details", "StudentDetails", new { id = item.sr_number }, new { @class = "btn btn-success btn-sm please_wait" }) 
+                                        @Html.ActionLink("Details", "StudentDetails", new { id = item.sr_number, calling_view = "AllStudentList" }, new { @class = "btn btn-success btn-sm please_wait" }) 
                                        
                                     </td>
                                 </tr>

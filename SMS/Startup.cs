@@ -41,15 +41,26 @@ namespace SMS
 
             IEnumerable<recurring_jobs> result = con.Query<recurring_jobs>(query);
 
-            dailyBirthdayWishMain birthday = new dailyBirthdayWishMain();
+            
 
-            duesReminderMain dues = new duesReminderMain();
+            
 #if !DEBUG
             foreach(var job in result)
             {
-               
-               RecurringJob.AddOrUpdate(job.job_name, () => birthday.SendBirthdayWish(), job.job_datetime, TimeZoneInfo.Local);
-               
+               if(job.jobtype == "Birthday Wish")
+                {
+                    dailyBirthdayWishMain birthday = new dailyBirthdayWishMain();
+
+                    RecurringJob.AddOrUpdate(job.job_name, () => birthday.SendBirthdayWish(), job.job_datetime, TimeZoneInfo.Local);
+                }
+
+                if (job.jobtype == "Dues Reminder")
+                {
+                    duesReminderMain dues = new duesReminderMain();
+
+                    RecurringJob.AddOrUpdate(job.job_name, () => dues.SendDuesReminder(), job.job_datetime, TimeZoneInfo.Local);
+                }
+
             }
 #endif
             //RecurringJob.AddOrUpdate("Birth Day Wish", () => birthday.SendBirthdayWish(), "0 6 * * *",TimeZoneInfo.Local);
@@ -64,7 +75,8 @@ namespace SMS
 
     public class recurring_jobs
     {
-       
+        public string jobtype { get; set; }
+
         public string job_name { get; set; }
 
         public string job_datetime { get; set; }
