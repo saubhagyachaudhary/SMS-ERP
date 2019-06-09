@@ -169,7 +169,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>06/04/2019 20:27:43</publishTime>
+      <publishTime>06/07/2019 15:35:14</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>

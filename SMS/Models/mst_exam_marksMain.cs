@@ -141,6 +141,7 @@ namespace SMS.Models
                                     AND b.sr_number = c.sr_num
                                     AND c.sr_num = d.sr_num
                                     AND d.sr_num = e.sr_num
+                                    AND b.std_active = 'Y'
                             ORDER BY c.roll_number";
 
             return con.Query<mst_exam_marks>(query, new { subject_id = subject_id, class_id = class_id, section_id = section_id, session = session_name,exam_id = exam_id });
@@ -179,6 +180,7 @@ namespace SMS.Models
                                     AND a.sr_number = c.sr_num
                                     AND c.sr_num = d.sr_num
                                     AND d.sr_num = e.sr_num
+                                    AND a.std_active = 'Y'
                             ORDER BY roll_no";
 
             return con.Query<mst_exam_marks>(query, new { class_id = class_id, section_id = section_id, session = session_name });

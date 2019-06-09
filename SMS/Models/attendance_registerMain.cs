@@ -162,7 +162,7 @@ namespace SMS.Models
 
         }
 
-        public async Task finalize_attendance(List<attendance_register> attendance)
+        public async Task finalize_attendance(List<attendance_register> attendance, bool send_sms)
         {
                 string query = @"UPDATE attendance_register
                                 SET
@@ -181,8 +181,8 @@ namespace SMS.Models
                                att.attendance,
                                att.sr_num
                            });
-
-                if (!att.attendance)
+#if !DEBUG
+                if (!att.attendance && send_sms)
                 {
                     sr_register std = new sr_register();
                     string phone_query = @"SELECT 
@@ -196,23 +196,26 @@ namespace SMS.Models
                                                 sr_number = @sr_number";
                     std = con.Query<sr_register>(phone_query, new { sr_number = att.sr_num }).SingleOrDefault();
 
-#if !DEBUG
-                    SMSMessage sms = new SMSMessage();
+                    
+                    
+                        SMSMessage sms = new SMSMessage();
 
-                    foreach (var item in sms.smsbody("absent"))
-                    {
-                        string body = item.Replace("#student_name#", std.std_first_name);
+                        foreach (var item in sms.smsbody("absent"))
+                        {
+                            string body = item.Replace("#student_name#", std.std_first_name);
 
-                        body = body.Replace("#current_date#", att.att_date.ToString("dd/MM/yyyy"));
+                            body = body.Replace("#current_date#", att.att_date.ToString("dd/MM/yyyy"));
 
-                        await sms.SendSMS(body, std.std_contact,true);
-                    }
-#endif
+                            await sms.SendSMS(body, std.std_contact, true);
+                        }
+                        
+                    
                 }
+#endif
             }
-                
 
-            
+
+
 
         }
     }

@@ -35,7 +35,7 @@ namespace SMS
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
             string query = @"SELECT 
-                                    job_name, job_datetime
+                                    jobtype,job_name, job_datetime
                                 FROM
                                     recurring_jobs";
 

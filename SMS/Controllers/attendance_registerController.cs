@@ -129,11 +129,11 @@ namespace SMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> finalize_class_attendance_sheet(List<attendance_register> attendance)
+        public async Task<ActionResult> finalize_class_attendance_sheet(List<attendance_register> attendance,bool send_sms)
         {
             attendance_registerMain attendanceMain = new attendance_registerMain();
 
-            await attendanceMain.finalize_attendance(attendance);
+            await attendanceMain.finalize_attendance(attendance,send_sms);
 
             return View("success");
         }
