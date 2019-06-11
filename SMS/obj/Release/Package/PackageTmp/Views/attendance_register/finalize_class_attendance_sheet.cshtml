@@ -175,42 +175,63 @@
                          <div class="container">
 
                         <div class="row">
-                            <div class="col-md-2">
-                                <button type="submit"
-                                        id="submitButton"
-                                        class="btn btn-primary"
-                                        onclick="return DisplayProgressMessage(this, 'Saving...');">
-                                    Save
-                                </button>
+                            <div class="form-group">
+                                <div class="col-md-1 col-sm-12">
+                                    <button type="submit"
+                                            id="submitButton"
+                                            class="btn btn-primary"
+                                            onclick="return DisplayProgressMessage(this, 'Saving...');">
+                                        Save
+                                    </button>
+                                 </div>
 
-                               
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <div class="col-md-7">
-                                        <label>Number of present students</label>
-                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group">
 
-                                    <div id="grandTotalPresent" class="col-md-1">
+
+                                        <div class="col-md-4">
+                                            <label>Send SMS</label>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            @Html.CheckBox("send_sms", true)
+                                        </div>
+
+
 
 
                                     </div>
                                 </div>
-                             </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <div class="col-md-7">
-                                        <label>Number of absent students </label>
+
+
+
+                                <div class="col-md-4 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            <label>Number of present students</label>
+                                        </div>
+
+                                        <div id="grandTotalPresent" class="col-md-1">
+
+
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="col-md-4 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            <label>Number of absent students </label>
+                                        </div>
 
-                                    <div id="grandTotalAbsent" class="col-md-1">
+                                        <div id="grandTotalAbsent" class="col-md-1">
 
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
+                       
                     </div>
                     }
                 </div>

@@ -130,7 +130,13 @@ namespace SMS.Models
             string query = @"SELECT 
                                 a.session,
                                 a.att_date,
-                                d.roll_number roll_no,
+                                (SELECT 
+                                        roll_number
+                                    FROM
+                                        mst_rollnumber
+                                    WHERE
+                                        session = a.session
+                                            AND sr_num = a.sr_num) roll_no,
                                 e.class_id,
                                 c.section_id,
                                 a.sr_num,
@@ -142,21 +148,18 @@ namespace SMS.Models
                                 attendance_register a,
                                 sr_register b,
                                 mst_std_section c,
-                                mst_std_class e,
-                                mst_rollnumber d
+                                mst_std_class e
                             WHERE
                                 a.sr_num = b.sr_number
                                     AND b.sr_number = c.sr_num
                                     AND c.sr_num = e.sr_num
-                                    AND e.sr_num = d.sr_num
                                     AND c.section_id = @section_id
-                                    AND a.session = d.session
                                     AND a.session = c.session
                                     AND c.session = e.session
                                     AND e.session = @session
                                     AND a.att_date = @att_date
                                     AND IFNULL(a.finalize, 0) = 0
-                            ORDER BY roll_number";
+                            ORDER BY roll_no";
 
             return con.Query<attendance_register>(query, new { section_id = section_id, session = session,att_date = att_date });
 
