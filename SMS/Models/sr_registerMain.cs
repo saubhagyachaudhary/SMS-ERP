@@ -258,7 +258,7 @@ namespace SMS.Models
                                 mst_fees
                             WHERE
                                 session = @session AND bl_onetime = 1
-                                    AND acc_id != 2
+                                    AND acc_id not in (2,1)
                                     AND class_id = @class_id";
 
                 out_standing out_std_onetime = new out_standing();
