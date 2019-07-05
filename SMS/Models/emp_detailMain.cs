@@ -11,13 +11,15 @@ namespace SMS.Models
    
     public class emp_detailMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddEmployee(emp_detail emp)
         {
 
             try
-            {       
+            {
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
                     string maxid = "select ifnull(MAX(user_id),0)+1 from emp_profile";
 
                     int id = con.ExecuteScalar<int>(maxid);
@@ -87,8 +89,8 @@ namespace SMS.Models
                                     @bioMatricNo,
                                         1)";
 
-                emp.user_id = id;
-                   
+                    emp.user_id = id;
+
                     con.Execute(query,
                             new
                             {
@@ -121,11 +123,11 @@ namespace SMS.Models
                                 emp.bank_branch,
                                 emp.designation,
                                 emp.bioMatricNo
-                                
+
                             });
 
-                   
 
+                }
 
                 
             }
@@ -137,27 +139,34 @@ namespace SMS.Models
 
         public IEnumerable<emp_detail> DDFacultyList()
         {
-            string query = @"SELECT user_id,concat(ifnull(FirstName,''),' ',ifnull(LastName,'')) user_name FROM emp_profile where emp_active = 1";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT user_id,concat(ifnull(FirstName,''),' ',ifnull(LastName,'')) user_name FROM emp_profile where emp_active = 1";
 
-            var result = con.Query<emp_detail>(query);
+                var result = con.Query<emp_detail>(query);
 
-            return result;
+                return result;
+            }
         }
 
 
         public IEnumerable<emp_detail> AllEmpList()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"select user_id,FirstName first_name,LastName last_name,Email,contact from emp_profile where emp_active = 1";
 
-            String query = @"select user_id,FirstName first_name,LastName last_name,Email,contact from emp_profile where emp_active = 1";
+                var result = con.Query<emp_detail>(query);
 
-            var result = con.Query<emp_detail>(query);
-
-            return result;
+                return result;
+            }
         }
 
         public emp_detail FindEmployee(int user_id)
         {
-            String query = @"SELECT `emp_profile`.`user_id`,
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT `emp_profile`.`user_id`,
                                 `emp_profile`.`FirstName` first_name,
                                 `emp_profile`.`LastName` last_name,
                                 `emp_profile`.`Email`,
@@ -190,14 +199,18 @@ namespace SMS.Models
                             FROM `emp_profile`
                             where user_id = @user_id";
 
-            var result = con.Query<emp_detail>(query,new { user_id = user_id }).SingleOrDefault();
+                var result = con.Query<emp_detail>(query, new { user_id = user_id }).SingleOrDefault();
 
-            return result;
+                return result;
+
+            }
         }
 
         public void EditEmp(emp_detail emp)
         {
-            string query = @"UPDATE `emp_profile`
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"UPDATE `emp_profile`
                                 SET
                                 `FirstName` = @first_Name,
                                 `LastName` = @last_Name,
@@ -230,7 +243,36 @@ namespace SMS.Models
                                 `emp_active` = @emp_active
                                 WHERE `user_id` = @user_id";
 
-            con.Execute(query, emp);
+                con.Execute(query, emp);
+
+                if(!emp.emp_active)
+                {
+                    query = @"DELETE FROM `enable_features` 
+                                WHERE
+                                    user_id = @user_id;";
+
+                    con.Execute(query, emp);
+
+                    query = @"DELETE FROM `enable_wedget` 
+                                WHERE
+                                    user_id = @user_id;";
+
+                    con.Execute(query, emp);
+
+                    query = @"DELETE FROM `mst_attendance` 
+                                WHERE
+                                    user_id = @user_id;";
+
+                    con.Execute(query, emp);
+
+                    query = @"DELETE FROM `hariti`.`users` 
+                                WHERE
+                                    user_id = @user_id;";
+
+                    con.Execute(query, emp);
+                }
+
+            }
         }
     }
 }

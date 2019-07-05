@@ -13,7 +13,7 @@ namespace SMS.Controllers
 {
     public class sr_registerController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddStudent(string sess,int reg,DateTime dt)
@@ -59,22 +59,24 @@ namespace SMS.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    if (std.std_contact == null)
+                    if (ModelState.IsValid)
                     {
-                        ModelState.AddModelError(String.Empty, "Primary contact is mandatory.");
+                        if (std.std_contact == null)
+                        {
+                            ModelState.AddModelError(String.Empty, "Primary contact is mandatory.");
 
 
-                        DDclass_name(std);
+                            DDclass_name(std);
 
-                        DDtransport_id(std);
+                            DDtransport_id(std);
 
-                        return View(std);
-                    }
-                    sr_registerMain stdMain = new sr_registerMain();
+                            return View(std);
+                        }
+                        sr_registerMain stdMain = new sr_registerMain();
 
-                    string query = @"SELECT 
+                        string query = @"SELECT 
                                     class_id
                                 FROM
                                     mst_class
@@ -87,44 +89,45 @@ namespace SMS.Controllers
                                         WHERE
                                             session_active = 'Y')";
 
-                    int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
+                        int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
-                    if (std.class_id < id)
-                    {
-                        ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
+                        if (std.class_id < id)
+                        {
+                            ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
 
 
-                        DDclass_name(std);
+                            DDclass_name(std);
 
-                        DDtransport_id(std);
+                            DDtransport_id(std);
 
-                        return View(std);
+                            return View(std);
+                        }
+
+                        if (std.std_pickup_id == null)
+                        {
+                            ModelState.AddModelError(String.Empty, "Avail Transport cannot be blank.");
+
+
+                            DDclass_name(std);
+
+                            DDtransport_id(std);
+
+                            return View(std);
+                        }
+
+                        await stdMain.AddStudent(std);
+
+
+
+                        return RedirectToAction("AllRegistrationList", "std_registration");
                     }
 
-                    if (std.std_pickup_id == null)
-                    {
-                        ModelState.AddModelError(String.Empty, "Avail Transport cannot be blank.");
+                    DDclass_name(std);
 
+                    DDtransport_id(std);
 
-                        DDclass_name(std);
-
-                        DDtransport_id(std);
-
-                        return View(std);
-                    }
-
-                    await stdMain.AddStudent(std);
-
-
-
-                    return RedirectToAction("AllRegistrationList", "std_registration");
+                    return View(std);
                 }
-
-                DDclass_name(std);
-
-                DDtransport_id(std);
-
-                return View(std);
             }
             catch
             {
@@ -134,9 +137,10 @@ namespace SMS.Controllers
 
         public JsonResult GetFees(String id)
         {
-            
 
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     fees_amount
                                 FROM
                                     mst_fees a,
@@ -153,11 +157,12 @@ namespace SMS.Controllers
                                         WHERE
                                             session_active = 'Y')";
 
-            decimal fees = con.Query<decimal>(query, new { class_name = id }).SingleOrDefault();
+                decimal fees = con.Query<decimal>(query, new { class_name = id }).SingleOrDefault();
 
 
 
-            return Json(fees);
+                return Json(fees);
+            }
 
         }
 
@@ -196,7 +201,9 @@ namespace SMS.Controllers
 
         public JsonResult GetSections(int id)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 section_id, section_name
                             FROM
                                 mst_section
@@ -211,17 +218,20 @@ namespace SMS.Controllers
 
 
 
-           var section_list = con.Query<mst_section>(query,new { class_id = id});
+                var section_list = con.Query<mst_section>(query, new { class_id = id });
 
-            IEnumerable<SelectListItem> list = new SelectList(section_list,"section_id","section_name");
+                IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
-            return Json(list);
+                return Json(list);
+            }
 
         }
 
         public void DDSections(sr_register obj)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     section_id, section_name
                                 FROM
                                     mst_section
@@ -235,20 +245,22 @@ namespace SMS.Controllers
                                             session_active = 'Y')";
 
 
-            var section_list = con.Query<mst_section>(query, new { class_id = obj.class_id});
+                var section_list = con.Query<mst_section>(query, new { class_id = obj.class_id });
 
-            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name",obj.std_section_id);
+                IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name", obj.std_section_id);
 
-            ViewData["section_id"] = list;
+                ViewData["section_id"] = list;
+            }
 
         }
 
         public void DDClassWiseSection()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-           string query = @"SELECT 
+                string query = @"SELECT 
                                 a.section_id,
                                 CONCAT(IFNULL(b.class_name, ''),
                                         ' Section ',
@@ -263,11 +275,12 @@ namespace SMS.Controllers
                             ORDER BY b.order_by";
 
 
-            var section_list = con.Query<mst_section>(query,new {session =  sess.findFinal_Session() });
+                var section_list = con.Query<mst_section>(query, new { session = sess.findFinal_Session() });
 
-            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
+                IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
-            ViewData["section_id"] = list;
+                ViewData["section_id"] = list;
+            }
 
         }
 
@@ -275,12 +288,14 @@ namespace SMS.Controllers
         [HttpGet]
         public ActionResult AllStudentList()
         {
-            sr_registerMain stdMain = new sr_registerMain();
-            sr_register sr = new sr_register();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                sr_registerMain stdMain = new sr_registerMain();
+                sr_register sr = new sr_register();
 
-            mst_sessionMain sess = new mst_sessionMain();
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 a.section_id
                             FROM
                                 mst_section a,
@@ -292,11 +307,12 @@ namespace SMS.Controllers
                             ORDER BY b.order_by 
                             LIMIT 1";
 
-            int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
+                int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
 
-            sr.sr_regi = stdMain.AllStudentList(section);
-            DDClassWiseSection();
-            return View(sr);
+                sr.sr_regi = stdMain.AllStudentList(section);
+                DDClassWiseSection();
+                return View(sr);
+            }
         }
 
         [HttpPost]
@@ -313,7 +329,9 @@ namespace SMS.Controllers
         [HttpGet]
         public ActionResult FormViewer(int id)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     adm_form_link
                                 FROM
                                     hariti.sr_register
@@ -321,9 +339,10 @@ namespace SMS.Controllers
                                     sr_number = @id AND std_active = 'Y'";
 
 
-            ViewData["link"] = con.Query<string>(query, new { id = id }).SingleOrDefault();
-            ViewData["sr_number"] = id;
-            return View();
+                ViewData["link"] = con.Query<string>(query, new { id = id }).SingleOrDefault();
+                ViewData["sr_number"] = id;
+                return View();
+            }
         }
 
         [HttpGet]
@@ -367,10 +386,12 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult EditDetails(sr_register std,string calling_view)
         {
-            sr_registerMain stdMain = new sr_registerMain();
-            decimal dues = 0m;
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                sr_registerMain stdMain = new sr_registerMain();
+                decimal dues = 0m;
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 class_id
                             FROM
                                 mst_class
@@ -384,23 +405,23 @@ namespace SMS.Controllers
                                         session_finalize = 'Y'
                                             AND session_active = 'Y')";
 
-            int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
+                int id = con.ExecuteScalar<int>(query, new { std.std_admission_class });
 
-            //if (std.class_id < id)
-            //{
-            //    ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
+                //if (std.class_id < id)
+                //{
+                //    ModelState.AddModelError(String.Empty, "Class cannot be lower than admission class");
 
 
-            //    DDclass_name(std);
+                //    DDclass_name(std);
 
-            //    DDtransport_id(std);
+                //    DDtransport_id(std);
 
-            //    DDSections(std);
+                //    DDSections(std);
 
-            //    return View(std);
-            //}
+                //    return View(std);
+                //}
 
-            query = @"SELECT 
+                query = @"SELECT 
                             class_id
                         FROM
                             sr_register a,
@@ -416,9 +437,9 @@ namespace SMS.Controllers
                                         AND session_finalize = 'Y')
                                 AND sr_number = @sr_num";
 
-            int changedclassid = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
+                int changedclassid = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
 
-             query = @"SELECT 
+                query = @"SELECT 
                             IFNULL(COUNT(CASE
                                         WHEN rmt_amount = 0.00 THEN NULL
                                         ELSE rmt_amount
@@ -436,47 +457,47 @@ namespace SMS.Controllers
                                     session_active = 'Y')
                                 AND acc_id NOT IN (1 , 2, 6)";
 
-            int error = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
+                int error = con.Query<int>(query, new { sr_num = std.sr_number }).SingleOrDefault();
 
 
 
-            if (error != 0 && changedclassid != std.class_id && calling_view == "AllStudentList")
-            {
-                ModelState.AddModelError(String.Empty, "Cannot change, class fees already paid");
+                if (error != 0 && changedclassid != std.class_id && calling_view == "AllStudentList")
+                {
+                    ModelState.AddModelError(String.Empty, "Cannot change, class fees already paid");
 
-                DDclass_name(std);
+                    DDclass_name(std);
 
-                DDtransport_id(std);
+                    DDtransport_id(std);
 
-                DDSections(std);
+                    DDSections(std);
 
-                return View(std);
+                    return View(std);
+
+                }
+
+                if (std.active)
+                {
+                    std.std_active = "Y";
+                }
+                else
+                {
+                    std.std_active = "N";
+                }
+
+
+
+                stdMain.EditStudent(std);
+
+                if (calling_view == "AllStudentList")
+                {
+                    return RedirectToAction(calling_view);
+                }
+                else
+                {
+                    return RedirectToAction(calling_view, "GenerateTC");
+                }
 
             }
-
-            if (std.active)
-            {
-                std.std_active = "Y";
-            }
-            else
-            {
-                std.std_active = "N";
-            }
-
-            
-
-            stdMain.EditStudent(std);
-
-            if(calling_view == "AllStudentList")
-            {
-                return RedirectToAction(calling_view);
-            }
-            else
-            {
-                return RedirectToAction(calling_view,"GenerateTC");
-            }
-
-            
         }
 
         [HttpGet]

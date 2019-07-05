@@ -14,7 +14,7 @@ namespace SMS.Controllers
 {
     public class GenerateTCController : Controller
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         string tc_format = ConfigurationManager.AppSettings["tc_format"].ToString();
 
         [HttpGet]
@@ -107,20 +107,22 @@ namespace SMS.Controllers
         [HttpGet]
         public ActionResult GenerateTC(int sr_number, string session)
         {
-            string query = @"select count(*) from tc_register where sr_num = @sr_number";
-
-            int check = con.Query<int>(query, new {sr_number = sr_number }).SingleOrDefault();
-
-            if (check != 0)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-               
+                string query = @"select count(*) from tc_register where sr_num = @sr_number";
 
-                ViewData["message"] = "TC already generated.";
+                int check = con.Query<int>(query, new { sr_number = sr_number }).SingleOrDefault();
 
-                return View("message");
-            }
+                if (check != 0)
+                {
 
-            if (System.DateTime.Now.Month >= 4 && System.DateTime.Now.Month <= 12)
+
+                    ViewData["message"] = "TC already generated.";
+
+                    return View("message");
+                }
+
+                if (System.DateTime.Now.Month >= 4 && System.DateTime.Now.Month <= 12)
                 {
                     query = @"SELECT 
                                         ifnull(SUM(dues),0)
@@ -270,26 +272,27 @@ namespace SMS.Controllers
 
                 if (dues != 0)
                 {
-                   
-                     ViewData["message"] = "Sorry task cannot be completed. First clear all the dues upto current month.";
-    
-                     return View("message");
-                
+
+                    ViewData["message"] = "Sorry task cannot be completed. First clear all the dues upto current month.";
+
+                    return View("message");
+
                 }
-                
-            if(tc_format == "CBSE")
-            {
-                ExcelCBSE_TC_form tc = new ExcelCBSE_TC_form();
 
-                return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
-            }
-            else
-            {
-                ExcelTc_form tc = new ExcelTc_form();
+                if (tc_format == "CBSE")
+                {
+                    ExcelCBSE_TC_form tc = new ExcelCBSE_TC_form();
 
-                return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), Request.Cookies["loginUserFullName"].Value.ToString()), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+                    return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString())), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+                }
+                else
+                {
+                    ExcelTc_form tc = new ExcelTc_form();
+
+                    return File(tc.Generate_TC(sr_number, Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), Request.Cookies["loginUserFullName"].Value.ToString()), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TC_" + sr_number + ".xlsx");
+                }
+
             }
-           
         }
     }
 
@@ -340,9 +343,10 @@ namespace SMS.Controllers
 
         public static IEnumerable<TC> AllTCList(string session)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 session,
                                 tc_no,
                                 tc_date,
@@ -366,16 +370,18 @@ namespace SMS.Controllers
                                     AND b.std_active = 'N'
                                     AND a.session = @session";
 
-            var result = con.Query<TC>(query, new { session = session });
+                var result = con.Query<TC>(query, new { session = session });
 
-            return result;
+                return result;
+            }
         }
 
         public static IEnumerable<nso_students> AllNSOList(string session)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     @session session,
                                     sr_number,
                                     CONCAT(IFNULL(std_first_name, ''),
@@ -400,9 +406,10 @@ namespace SMS.Controllers
                                         AND std_active = 'N'
                                         and ifnull(tc_generated,0) = 0";
 
-            var result = con.Query<nso_students>(query, new { session = session });
+                var result = con.Query<nso_students>(query, new { session = session });
 
-            return result;
+                return result;
+            }
         }
     }
 }

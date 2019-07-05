@@ -10,15 +10,17 @@ namespace SMS.Models
 {
     public class std_discountMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddFees(std_discount std)
         {
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                string query = @"INSERT INTO std_discount
+                    string query = @"INSERT INTO std_discount
                                    (session
                                    ,sr_num
                                    ,acc_id
@@ -57,35 +59,35 @@ namespace SMS.Models
                                    ,@bl_mar
                                    ,@std_remarks)";
 
-                std.session = sess.findActive_finalSession();
+                    std.session = sess.findActive_finalSession();
 
-                con.Execute(query, new
-                {
-                    std.session,
-                    std.sr_num,
-                    std.acc_id,
-                    std.percent,
-                    std.bl_exempt,
-                    std.bl_apr,
-                    std.bl_may,
-                    std.bl_jun,
-                    std.bl_jul,
-                    std.bl_aug,
-                    std.bl_sep,
-                    std.bl_oct,
-                    std.bl_nov,
-                    std.bl_dec,
-                    std.bl_jan,
-                    std.bl_feb,
-                    std.bl_mar,
-                    std.std_remarks
-                });
+                    con.Execute(query, new
+                    {
+                        std.session,
+                        std.sr_num,
+                        std.acc_id,
+                        std.percent,
+                        std.bl_exempt,
+                        std.bl_apr,
+                        std.bl_may,
+                        std.bl_jun,
+                        std.bl_jul,
+                        std.bl_aug,
+                        std.bl_sep,
+                        std.bl_oct,
+                        std.bl_nov,
+                        std.bl_dec,
+                        std.bl_jan,
+                        std.bl_feb,
+                        std.bl_mar,
+                        std.std_remarks
+                    });
 
-                var p = new DynamicParameters();
-                p.Add("@sr_num", std.sr_num);
-                p.Add("@ac_id", std.acc_id);
-                con.Execute("stdMiddiscount", p, commandType: System.Data.CommandType.StoredProcedure);
-
+                    var p = new DynamicParameters();
+                    p.Add("@sr_num", std.sr_num);
+                    p.Add("@ac_id", std.acc_id);
+                    con.Execute("stdMiddiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+                }
             }
             catch 
             {
@@ -95,7 +97,9 @@ namespace SMS.Models
 
         public IEnumerable<std_discount> AllStdDiscountList()
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 a.session,
                                 a.sr_num,
                                 CONCAT(ifnull(b.std_first_name,''), ' ', ifnull(b.std_last_name,'')) stdName,
@@ -127,14 +131,17 @@ namespace SMS.Models
                                         session_finalize = 'Y'
                                             AND session_active = 'Y')";
 
-            var result = con.Query<std_discount>(query);
+                var result = con.Query<std_discount>(query);
 
-            return result;
+                return result;
+            }
         }
 
         public std_discount FindDiscount(int sr_num, int ac_id)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                 sr_num,
                                 acc_id,
                                 percent,
@@ -164,9 +171,9 @@ namespace SMS.Models
                                         session_finalize = 'Y'
                                             AND session_active = 'Y')";
 
-            return con.Query<std_discount>(Query, new { sr_num = sr_num, acc_id = ac_id }).SingleOrDefault();
+                return con.Query<std_discount>(Query, new { sr_num = sr_num, acc_id = ac_id }).SingleOrDefault();
+            }
         }
-
 
 
         public void EditDiscount(std_discount mst)
@@ -174,7 +181,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE std_discount 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE std_discount 
                                     SET 
                                         acc_id = @acc_id,
                                         percent = @percent,
@@ -202,12 +211,13 @@ namespace SMS.Models
                                                 session_finalize = 'Y'
                                                     AND session_active = 'Y')";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
 
-                var p = new DynamicParameters();
-                p.Add("@sr_num", mst.sr_num);
-                p.Add("@ac_id", mst.acc_id);
-                con.Execute("stdMiddiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+                    var p = new DynamicParameters();
+                    p.Add("@sr_num", mst.sr_num);
+                    p.Add("@ac_id", mst.acc_id);
+                    con.Execute("stdMiddiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+                }
             }
             catch (Exception ex)
             {
@@ -219,7 +229,9 @@ namespace SMS.Models
         {
             try
             {
-                string Query = @"DELETE FROM std_discount 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string Query = @"DELETE FROM std_discount 
                                 WHERE
                                     sr_num = @sr_num AND acc_id = @acc_id
                                     AND session = @session";
@@ -227,12 +239,13 @@ namespace SMS.Models
 
 
 
-                con.Query<mst_fees>(Query, new { sr_num = sr_num, acc_id = acc_id, session = session }).SingleOrDefault();
+                    con.Query<mst_fees>(Query, new { sr_num = sr_num, acc_id = acc_id, session = session }).SingleOrDefault();
 
-                var p = new DynamicParameters();
-                p.Add("@sr_num", sr_num);
-                p.Add("@ac_id", acc_id);
-                con.Execute("DeleteDiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+                    var p = new DynamicParameters();
+                    p.Add("@sr_num", sr_num);
+                    p.Add("@ac_id", acc_id);
+                    con.Execute("DeleteDiscount", p, commandType: System.Data.CommandType.StoredProcedure);
+                }
             }
             catch (Exception ex)
             {

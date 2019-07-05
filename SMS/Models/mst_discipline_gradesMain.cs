@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class mst_discipline_gradesMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddDisciplineGrades(List<mst_discipline_grades> mst)
         {
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findFinal_Session();
+                    string session = sess.findFinal_Session();
 
-                string query = @"INSERT INTO `mst_discipline_grades`
+                    string query = @"INSERT INTO `mst_discipline_grades`
                                 (`session`,
                                 `sr_num`,
                                 `term_id`,
@@ -35,7 +37,7 @@ namespace SMS.Models
                                 @grade,
                                 @user_id)";
 
-                string update = @"UPDATE `mst_discipline_grades` 
+                    string update = @"UPDATE `mst_discipline_grades` 
                                     SET 
                                         `grade` = @grade,
                                         `user_id` = @user_id
@@ -45,7 +47,7 @@ namespace SMS.Models
                                             AND `term_id` = @term_id
                                             AND `discipline_id` = @discipline_id";
 
-                string query1 = @"SELECT 
+                    string query1 = @"SELECT 
                                         COUNT(*)
                                     FROM
                                         `mst_discipline_grades`
@@ -55,37 +57,38 @@ namespace SMS.Models
                                             AND `term_id` = @term_id
                                             AND `discipline_id` = @discipline_id";
 
-                foreach (var marks in mst)
-                {
-
-                    marks.session = session;
-
-                    int count = con.Query<int>(query1, new { session = marks.session, sr_num = marks.sr_num, term_id = marks.term_id, discipline_id = marks.discipline_id, class_id = marks.class_id, section_id = marks.section_id }).SingleOrDefault();
-
-                    if (count > 0)
-                    {
-                        con.Execute(update, new
-                        {
-                            marks.session,
-                            marks.sr_num,
-                            marks.term_id,
-                            marks.discipline_id,
-                            marks.grade,
-                            marks.user_id
-                        });
-                    }
-                    else
+                    foreach (var marks in mst)
                     {
 
-                        con.Execute(query, new
+                        marks.session = session;
+
+                        int count = con.Query<int>(query1, new { session = marks.session, sr_num = marks.sr_num, term_id = marks.term_id, discipline_id = marks.discipline_id, class_id = marks.class_id, section_id = marks.section_id }).SingleOrDefault();
+
+                        if (count > 0)
                         {
-                            marks.session,
-                            marks.sr_num,
-                            marks.term_id,
-                            marks.discipline_id,
-                            marks.grade,
-                            marks.user_id
-                        });
+                            con.Execute(update, new
+                            {
+                                marks.session,
+                                marks.sr_num,
+                                marks.term_id,
+                                marks.discipline_id,
+                                marks.grade,
+                                marks.user_id
+                            });
+                        }
+                        else
+                        {
+
+                            con.Execute(query, new
+                            {
+                                marks.session,
+                                marks.sr_num,
+                                marks.term_id,
+                                marks.discipline_id,
+                                marks.grade,
+                                marks.user_id
+                            });
+                        }
                     }
                 }
             }
@@ -97,11 +100,13 @@ namespace SMS.Models
 
         public IEnumerable<mst_discipline_grades> student_list_for_Discipline_Grades(int class_id, int section_id)
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findFinal_Session();
+                string session_name = sess.findFinal_Session();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 b.class_id,
                                 b.section_id,
                                 c.roll_number roll_no,
@@ -130,15 +135,18 @@ namespace SMS.Models
                                     AND f.session = @session
                             ORDER BY roll_no";
 
-            return con.Query<mst_discipline_grades>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+                return con.Query<mst_discipline_grades>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+
+            }
         }
 
         public IEnumerable<mst_discipline_grades> AllDisciplineList()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 a.session,
                                 d.class_id,
                                 a.discipline_id,
@@ -158,17 +166,20 @@ namespace SMS.Models
                                     AND c.session = d.session
                                     AND d.session = @session";
 
-            var result = con.Query<mst_discipline_grades>(query, new { session = sess.findFinal_Session() });
+                var result = con.Query<mst_discipline_grades>(query, new { session = sess.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
 
-        public IEnumerable<mst_discipline_grades> FindDisciplineGrades(int class_id, int section_id, int discipline_id,int term_id)
+        public IEnumerable<mst_discipline_grades> FindDisciplineGrades(int class_id, int section_id, int discipline_id, int term_id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"SELECT 
+                string Query = @"SELECT 
                                 d.class_id,
                                 e.section_id,
                                 b.roll_number roll_no,
@@ -198,18 +209,22 @@ namespace SMS.Models
                                      AND a.term_id = @term_id
                             ORDER BY roll_number";
 
-            return con.Query<mst_discipline_grades>(Query, new { class_id = class_id, discipline_id = discipline_id,section_id = section_id ,session = session.findFinal_Session(),term_id = term_id });
+                return con.Query<mst_discipline_grades>(Query, new { class_id = class_id, discipline_id = discipline_id, section_id = section_id, session = session.findFinal_Session(), term_id = term_id });
+            }
         }
 
         public mst_discipline_grades DeleteDisciplineGrades(int class_id, int discipline_id, string session)
         {
-            String Query = @"DELETE FROM `mst_discipline_grades`
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String Query = @"DELETE FROM `mst_discipline_grades`
                             WHERE
                             discipline_id = @discipline_id
                             and
                             session = @session";
 
-            return con.Query<mst_discipline_grades>(Query, new { class_id = class_id, discipline_id = discipline_id, session = session }).SingleOrDefault();
+                return con.Query<mst_discipline_grades>(Query, new { class_id = class_id, discipline_id = discipline_id, session = session }).SingleOrDefault();
+            }
         }
     }
 }

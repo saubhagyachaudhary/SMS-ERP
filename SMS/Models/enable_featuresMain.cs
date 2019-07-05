@@ -10,20 +10,25 @@ namespace SMS.Models
 {
     public class enable_featuresMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public IEnumerable<enable_features> AllUserList()
         {
-            String query = @"SELECT b.user_id,c.FirstName,c.LastName,b.username FROM users b,emp_profile c where b.user_id = c.user_id";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT b.user_id,c.FirstName,c.LastName,b.username FROM users b,emp_profile c where b.user_id = c.user_id";
 
-            var result = con.Query<enable_features>(query);
+                var result = con.Query<enable_features>(query);
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<enable_features> AllFeatureList(int user_id)
         {
-            String query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT 
                                     *
                                 FROM
                                     (SELECT 
@@ -47,22 +52,25 @@ namespace SMS.Models
                                                 user_id = @user_id)) v
                                 ORDER BY feature_name";
 
-            var result = con.Query<enable_features>(query,new {user_id = user_id });
+                var result = con.Query<enable_features>(query, new { user_id = user_id });
 
-            return result;
+                return result;
+            }
         }
 
         public void AddFeature(enable_features mst)
         {
             try
             {
-                string check = @"SELECT count(*) FROM enable_features where user_id = @user_id and features_id = @feature_id";
-
-                int cnt = con.Query<int>(check, new { user_id = mst.user_id, feature_id  = mst.feature_id}).SingleOrDefault();
-
-                if (cnt == 0)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    string query = @"INSERT INTO enable_features
+                    string check = @"SELECT count(*) FROM enable_features where user_id = @user_id and features_id = @feature_id";
+
+                    int cnt = con.Query<int>(check, new { user_id = mst.user_id, feature_id = mst.feature_id }).SingleOrDefault();
+
+                    if (cnt == 0)
+                    {
+                        string query = @"INSERT INTO enable_features
                                 (user_id,
                                 features_id)
                                 VALUES
@@ -70,11 +78,12 @@ namespace SMS.Models
                                 @feature_id);";
 
 
-                    con.Execute(query, new
-                    {
-                        mst.user_id,
-                        mst.feature_id
-                    });
+                        con.Execute(query, new
+                        {
+                            mst.user_id,
+                            mst.feature_id
+                        });
+                    }
                 }
             }
             catch (Exception ex)
@@ -87,17 +96,20 @@ namespace SMS.Models
         {
             try
             {
-                string query = @"DELETE FROM enable_features 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"DELETE FROM enable_features 
                                     WHERE
                                         user_id = @user_id
                                         AND features_id = @feature_id;";
 
 
-                con.Execute(query, new
-                {
-                    mst.user_id,
-                    mst.feature_id
-                });
+                    con.Execute(query, new
+                    {
+                        mst.user_id,
+                        mst.feature_id
+                    });
+                }
             }
             catch (Exception ex)
             {

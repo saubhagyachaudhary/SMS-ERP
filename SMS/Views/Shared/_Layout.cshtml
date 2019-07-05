@@ -240,6 +240,10 @@
                                         {
                                             <li class="please_wait">@Html.ActionLink("Subject Master", "AllSubjectList", "mst_subject")</li>
                                         }
+
+                                        @*<li class="please_wait">@Html.ActionLink("Subject Parameters Master", "AllParametersList", "mst_subject_parameters")</li>*@
+
+
                                         @if (list.Contains("co_scholastic_master") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("CO-Scholastic Master", "AllCoScholasticList", "mst_Co_scholastic")</li>

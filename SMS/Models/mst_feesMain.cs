@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class mst_feesMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddFees(mst_fees mst)
         {
             try
             {
-                string query = @"SELECT session FROM mst_session where session_active = 'Y'";
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"SELECT session FROM mst_session where session_active = 'Y'";
 
-                string session = con.Query<string>(query).SingleOrDefault();
+                    string session = con.Query<string>(query).SingleOrDefault();
 
-                 query = @"INSERT INTO mst_fees
+                    query = @"INSERT INTO mst_fees
                                    (session
                                    ,class_id
                                    ,acc_id
@@ -57,29 +59,30 @@ namespace SMS.Models
                                    @bl_feb,
                                    @bl_mar)";
 
-                mst.session = session;
+                    mst.session = session;
 
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.class_id,
-                    mst.acc_id,
-                    mst.fees_amount,
-                    mst.bl_onetime,
-                    mst.bl_apr,
-                    mst.bl_may,
-                    mst.bl_jun,
-                    mst.bl_jul,
-                    mst.bl_aug,
-                    mst.bl_sep,
-                    mst.bl_oct,
-                    mst.bl_nov,
-                    mst.bl_dec,
-                    mst.bl_jan,
-                    mst.bl_feb,
-                    mst.bl_mar
-                });
-                
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.class_id,
+                        mst.acc_id,
+                        mst.fees_amount,
+                        mst.bl_onetime,
+                        mst.bl_apr,
+                        mst.bl_may,
+                        mst.bl_jun,
+                        mst.bl_jul,
+                        mst.bl_aug,
+                        mst.bl_sep,
+                        mst.bl_oct,
+                        mst.bl_nov,
+                        mst.bl_dec,
+                        mst.bl_jan,
+                        mst.bl_feb,
+                        mst.bl_mar
+                    });
+
+                }
             }
             catch (Exception ex)
             {
@@ -89,8 +92,9 @@ namespace SMS.Models
 
         public IEnumerable<mst_fees> AllFeesList()
         {
-
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 a.session,
                                 a.class_id,
                                 a.acc_id,
@@ -113,14 +117,18 @@ namespace SMS.Models
                                     WHERE
                                         session_active = 'Y')";
 
-            var result = con.Query<mst_fees>(query);
+                var result = con.Query<mst_fees>(query);
 
-            return result;
+                return result;
+            }
+
         }
 
         public IEnumerable<mst_fees> FindFeesDetails(int sr_num)
         {
-            String query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT 
                                 a.class_id,
                                 a.acc_id,
                                 c.acc_name,
@@ -151,27 +159,33 @@ namespace SMS.Models
                                     AND d.sr_number = @sr_num
                                     AND bl_onetime = 0";
 
-            var result = con.Query<mst_fees>(query, new {sr_num = sr_num });
+                var result = con.Query<mst_fees>(query, new { sr_num = sr_num });
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<mst_acc_head> account_head()
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string ses = sess.findActive_Session();
+                string ses = sess.findActive_Session();
 
-            String query = "SELECT acc_id,acc_name FROM mst_acc_head where session = @session";
+                String query = "SELECT acc_id,acc_name FROM mst_acc_head where session = @session";
 
-            var result = con.Query<mst_acc_head>(query, new { session = ses });
+                var result = con.Query<mst_acc_head>(query, new { session = ses });
 
-            return result;
+                return result;
+            }
         }
 
         public mst_fees Findfees(int cls_id,int ac_id,string session)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                 a.class_id,
                                 a.acc_id,
                                 b.class_name,
@@ -203,7 +217,8 @@ namespace SMS.Models
                                     AND a.session = b.session
                                     AND b.session = c.session";
 
-            return con.Query<mst_fees>(Query, new { class_id =  cls_id, acc_id = ac_id,session = session}).SingleOrDefault();
+                return con.Query<mst_fees>(Query, new { class_id = cls_id, acc_id = ac_id, session = session }).SingleOrDefault();
+            }
         }
 
         
@@ -213,7 +228,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE mst_fees 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE mst_fees 
                                     SET 
                                         fees_amount = @fees_amount,
                                         bl_onetime = @bl_onetime,
@@ -239,7 +256,8 @@ namespace SMS.Models
                                             WHERE
                                                 session_active = 'Y')";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -249,9 +267,12 @@ namespace SMS.Models
 
         public mst_fees DeleteFees(int cls_id, int ac_id,string session)
         {
-            String Query = "DELETE FROM mst_fees WHERE class_id = @class_id and acc_id = @acc_id and session = @session";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String Query = "DELETE FROM mst_fees WHERE class_id = @class_id and acc_id = @acc_id and session = @session";
 
-            return con.Query<mst_fees>(Query, new { class_id = cls_id, acc_id = ac_id,session = session }).SingleOrDefault();
+                return con.Query<mst_fees>(Query, new { class_id = cls_id, acc_id = ac_id, session = session }).SingleOrDefault();
+            }
         }
     }
 }

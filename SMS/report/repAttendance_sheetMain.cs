@@ -18,7 +18,7 @@ namespace SMS.report
 {
     public class repAttendance_sheetMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         string Affiliation = ConfigurationManager.AppSettings["Affiliation"].ToString();
         string Address = ConfigurationManager.AppSettings["Address"].ToString();
         string SchoolName = ConfigurationManager.AppSettings["SchoolName"].ToString();
@@ -28,8 +28,9 @@ namespace SMS.report
 
         public void pdfAttendanceSheet(int class_id,int section_id,int month_no, string session)
         {
-
-            string query1 = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT 
                                     CONCAT(IFNULL(b.class_name, ''),
                                             ' Section ',
                                             IFNULL(a.section_name, '')) class_name
@@ -43,633 +44,13 @@ namespace SMS.report
                                         AND a.session = b.session
                                         AND a.session = @session";
 
-            string class_name = con.Query<string>(query1, new { section_id = section_id, session = session , class_id = class_id }).SingleOrDefault();
+                string class_name = con.Query<string>(query1, new { section_id = section_id, session = session, class_id = class_id }).SingleOrDefault();
 
-            MemoryStream ms = new MemoryStream();
-
-            HttpContext.Current.Response.ContentType = "application/pdf";
-            string name = "Att_Sheet_" + class_name + ".pdf";
-            HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + name);
-            HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-
-            //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
-            var doc = new Document(PageSize.A4.Rotate(),0,0,0,0);
-
-            // MemoryStream stream = new MemoryStream();
-            doc.SetMargins(0f, 0f, 10f, 30f);
-            try
-            {
-
-
-
-
-                PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
-
-
-
-                doc.Open();
-                // string imageURL = "E:\\HPS\\logo.jpg";
-                string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
-                Image jpg = Image.GetInstance(imageURL);
-                jpg.ScaleAbsolute(80f, 80f);
-
-
-                PdfPTable pt = new PdfPTable(10);
-
-
-                PdfPCell _cell;
-                Chunk text;
-                Phrase ph;
-                _cell = new PdfPCell(jpg);
-                _cell.Border = 0;
-
-                _cell.Border = Rectangle.NO_BORDER;
-                _cell.PaddingBottom = 5;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-
-                text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 40));
-                ph = new Phrase();
-                ph.Add(text);
-                ph.Add("\n");
-
-                text = new Chunk("("+Address+")", FontFactory.GetFont("Areal", 20));
-                ph.Add(text);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 9;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                _cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                _cell.PaddingBottom = 5;
-                //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                pt.AddCell(_cell);
-
-
-
-                mst_sessionMain sess = new mst_sessionMain();
-
-                mst_session mst = sess.getStartEndDate(session);
-
-                int year = 0;
-                if (month_no == 1 || month_no == 2 || month_no == 3)
-                {
-                    year = mst.session_end_date.Year;
-                }
-                else
-                {
-                    year = mst.session_start_date.Year;
-                }
-
-
-                doc.Add(pt);
-
-                var date_list = getAllDates(year, month_no);
-
-                pt = new PdfPTable(date_list.Count()+24);
-
-                pt.WidthPercentage = 95f;
-
-                pt.HeaderRows = 3;
-
-
-                text = new Chunk("\n");
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Border = Rectangle.NO_BORDER;
-                _cell.Colspan = 5;
-                pt.AddCell(_cell);
-
-                
-
-               
-               
-
-
-                var startOfMonth = new DateTime(year, month_no, 1);
-                var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-
-                text = new Chunk("Attendance Sheet for the month of "+ CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month_no)+" "+year.ToString() +" Class "+ class_name, FontFactory.GetFont("Areal", 12));
-                ph = new Phrase(text);
-                ph.Add("\n");
-                ph.Add("\n");
-                text.SetUnderline(0.1f, -2f);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = date_list.Count() + 24;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                _cell.Border = Rectangle.NO_BORDER;
-                pt.AddCell(_cell);
-
-
-
-
-
-          
-
-                string query = @"SELECT 
-                                        a.sr_number sr_num,
-                                        c.roll_number roll_no,
-                                        CONCAT(IFNULL(a.std_first_name, ''),
-                                                ' ',
-                                                IFNULL(std_last_name, '')) std_name
-                                    FROM
-                                        sr_register a,
-                                        mst_section b,
-                                        mst_rollnumber c,
-                                        mst_std_section d
-                                    WHERE
-                                        d.section_id = b.section_id
-                                            AND b.section_id = @section_id
-                                            AND c.sr_num = a.sr_number
-                                            AND a.sr_number = d.sr_num
-                                            AND b.session = c.session
-                                            AND c.session = d.session
-                                            AND d.session = @session
-                                    ORDER BY c.roll_number";
-
-
-                IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id,session=session});
-
-
-                ph = new Phrase();
-                text = new Chunk("Student Particulars", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 12;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Dates in the month of "+ CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month_no) + " " + year.ToString(), FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = date_list.Count();
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Student attendance summary", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 12;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Adm No.", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 2;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Roll No.", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 2;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Student Name", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 8;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                for (int i = 0; i<= date_list.Count()-1;i++)
-                {
-
-                    ph = new Phrase();
-                    text = new Chunk(date_list[i].Day.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    text = new Chunk(date_list[i].DayOfWeek.ToString().Substring(0, 1), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                }
-
-                ph = new Phrase();
-                text = new Chunk("Month W/D", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.Colspan = 2;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Month Prsnt", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.Colspan = 2;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Month Absnt", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 2;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Total W/D", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.Colspan = 2;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-
-                ph = new Phrase();
-                text = new Chunk("Total Prsnt", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.Colspan = 2;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                ph = new Phrase();
-                text = new Chunk("Total Absnt", FontFactory.GetFont("Areal", 8));
-                ph.Add(text);
-                ph.Add("\n");
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 2;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                //IEnumerable<repAttendance_sheet> check;
-
-                IEnumerable<repAttendance_sheet> check1;
-
-                IEnumerable<repAttendance_sheet> P_count;
-
-                IEnumerable<repAttendance_sheet> A_count;
-
-                IEnumerable<repAttendance_sheet> T_P_count;
-
-                IEnumerable<repAttendance_sheet> T_A_count;
-
-                query = @"SELECT 
-                                CASE
-                                    WHEN a.attendance = 1 THEN 'P'
-                                    ELSE 'A'
-                                END attendance,
-                                a.sr_num,
-                                c.roll_number roll_no,
-                                DAY(att_date) day
-                            FROM
-                                attendance_register a,
-                                mst_std_section b,
-                                mst_rollnumber c
-                            WHERE
-                                b.section_id = @section_id
-                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
-                                    AND a.session = @session
-                                    AND a.session = b.session
-                                    AND b.session = c.session
-                                    AND a.sr_num = b.sr_num
-                                    AND b.sr_num = c.sr_num";
-
-                check1 = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth});
-
-                query = @"SELECT 
-                                COUNT(*) P_count, a.sr_num
-                            FROM
-                                attendance_register a,
-                                sr_register b,
-                                mst_std_section c
-                            WHERE
-                                c.section_id = @section_id
-                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
-                                    AND a.session = @session
-                                    AND a.session = c.session
-                                    AND a.sr_num = b.sr_number
-                                    AND b.sr_number = c.sr_num
-                                    AND a.attendance = 1
-                            GROUP BY sr_num";
-
-                P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
-
-                query = @"SELECT 
-                                COUNT(*) A_count, a.sr_num
-                            FROM
-                                attendance_register a,
-                                sr_register b,
-                                mst_std_section c
-                            WHERE
-                                c.section_id = @section_id
-                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
-                                    AND a.session = @session
-                                    AND a.session = c.session
-                                    AND a.sr_num = b.sr_number
-                                    AND b.sr_number = c.sr_num
-                                    AND a.attendance = 0
-                            GROUP BY sr_num";
-
-                A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
-
-                query = @"SELECT 
-                                COUNT(*) P_count, a.sr_num
-                            FROM
-                                attendance_register a,
-                                sr_register b,
-                                mst_std_section c
-                            WHERE
-                                c.section_id = @section_id
-                                    AND att_date <= @endOfMonth
-                                    AND a.session = @session
-                                    AND a.session = c.session
-                                    AND a.sr_num = b.sr_number
-                                    AND b.sr_number = c.sr_num
-                                    AND a.attendance = 1
-                            GROUP BY sr_num";
-
-                T_P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
-
-                query = @"SELECT 
-                                COUNT(*) A_count, a.sr_num
-                            FROM
-                                attendance_register a,
-                                sr_register b,
-                                mst_std_section c
-                            WHERE
-                                c.section_id = @section_id
-                                    AND att_date <= @endOfMonth
-                                    AND a.session = @session
-                                    AND a.session = c.session
-                                    AND a.sr_num = b.sr_number
-                                    AND b.sr_number = c.sr_num
-                                    AND a.attendance = 0
-                            GROUP BY sr_num";
-
-                T_A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
-
-
-                foreach (repAttendance_sheet dtt in sr_list)
-                {
-                    ph = new Phrase();
-                    text = new Chunk(dtt.sr_num.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    ph = new Phrase();
-                    text = new Chunk(dtt.roll_no.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    ph = new Phrase();
-                    text = new Chunk(dtt.std_name, FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 8;
-                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    pt.AddCell(_cell);
-
-
-                    for (int i = 0; i <= date_list.Count() - 1; i++)
-                    {
-
-                        var check = (from e in check1 where e.day == i+1 where e.sr_num == dtt.sr_num where e.roll_no == dtt.roll_no select e).ToList();
-
-                    
-
-                        if (check.Count() > 0)
-                        {
-                           
-
-                            ph = new Phrase();
-                            if(check[0].attendance == "P")
-                            {
-                               
-                                text = new Chunk(check[0].attendance, FontFactory.GetFont("Areal", 8,BaseColor.BLACK));
-                            }
-                          
-                            else
-                            {
-                               
-                               text = new Chunk(check[0].attendance, FontFactory.GetFont("Areal", 8,BaseColor.RED));
-                            }
-                                
-                            ph.Add(text);
-                            ph.Add("\n");
-                            _cell = new PdfPCell(ph);
-                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                            pt.AddCell(_cell);
-                        }
-                        else
-                        {
-                            ph = new Phrase();
-                            text = new Chunk("", FontFactory.GetFont("Areal", 8));
-                            ph.Add(text);
-                            ph.Add("\n");
-                            _cell = new PdfPCell(ph);
-                            if (i >= int.Parse(System.DateTime.Now.ToString("dd"))-1 && month_no == int.Parse(DateTime.Now.ToString("MM")))
-                            {
-                                _cell.BackgroundColor = BaseColor.WHITE;
-                            }
-                            else
-                            {
-                                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                            }
-                            
-                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                            pt.AddCell(_cell);
-                        }
-                       
-
-                    }
-
-                
-                    var total_present = (from e in P_count where e.sr_num == dtt.sr_num select e).ToList();
-
-                    var total_absent = (from e in A_count where e.sr_num == dtt.sr_num select e).ToList();
-
-                    if(total_present.Count() == 0)
-                    {
-                       
-                        total_present.Add(new repAttendance_sheet { P_count = 0 });
-                    }
-
-                    if (total_absent.Count() == 0)
-                    {
-                        total_absent.Add(new repAttendance_sheet { A_count = 0 });
-                    }
-
-
-                    ph = new Phrase();
-                    text = new Chunk((total_present[0].P_count+total_absent[0].A_count).ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    ph = new Phrase();
-                    text = new Chunk(total_present[0].P_count.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    ph = new Phrase();
-                    text = new Chunk(total_absent[0].A_count.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    total_present = (from e in T_P_count where e.sr_num == dtt.sr_num select e).ToList();
-
-                    total_absent = (from e in T_A_count where e.sr_num == dtt.sr_num select e).ToList();
-
-                    if (total_present.Count() == 0)
-                    {
-
-                        total_present.Add(new repAttendance_sheet { P_count = 0 });
-                    }
-
-                    if (total_absent.Count() == 0)
-                    {
-                        total_absent.Add(new repAttendance_sheet { A_count = 0 });
-                    }
-
-             
-                    ph = new Phrase();
-                    text = new Chunk((total_present[0].P_count+total_absent[0].A_count).ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    ph = new Phrase();
-                    text = new Chunk(total_present[0].P_count.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                    ph = new Phrase();
-                    text = new Chunk(total_absent[0].A_count.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 2;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-                }
-          
-
-
-                doc.Add(pt);
-
-
-
-                doc.Close();
-
-                HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
-                HttpContext.Current.Response.OutputStream.Flush();
-                HttpContext.Current.Response.OutputStream.Close();
-
-
-
-
-
-            }
-
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                doc.Close();
-                ms.Flush();
-            }
-        }
-
-        public void MailAttendanceSheet(int section_id, int month_no, string session, string mail_id,DateTime att_date)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                string query1 = @"SELECT 
-                                    CONCAT(IFNULL(b.class_name, ''),
-                                            ' Section ',
-                                            IFNULL(a.section_name, '')) class_name
-                                FROM
-                                    mst_section a,
-                                    mst_class b
-                                WHERE
-                                    a.class_id = b.class_id
-                                        AND a.section_id = @section_id
-                                        AND a.session = b.session
-                                        AND a.session = (SELECT 
-                                            session
-                                        FROM
-                                            mst_session
-                                        WHERE
-                                            session_finalize = 'Y')";
-
-                string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
-
-                //MemoryStream ms = new MemoryStream();
+                MemoryStream ms = new MemoryStream();
 
                 HttpContext.Current.Response.ContentType = "application/pdf";
                 string name = "Att_Sheet_" + class_name + ".pdf";
-                HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment;filename=" + name);
+                HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + name);
                 HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
                 //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
@@ -683,9 +64,8 @@ namespace SMS.report
 
 
 
-                    PdfWriter writer = PdfWriter.GetInstance(doc,ms);
+                    PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
 
-                    writer.CloseStream = false;
 
 
                     doc.Open();
@@ -715,7 +95,7 @@ namespace SMS.report
                     ph.Add(text);
                     ph.Add("\n");
 
-                    text = new Chunk("("+Affiliation+")", FontFactory.GetFont("Areal", 20));
+                    text = new Chunk("(" + Address + ")", FontFactory.GetFont("Areal", 20));
                     ph.Add(text);
                     _cell = new PdfPCell(ph);
                     _cell.Colspan = 9;
@@ -781,6 +161,11 @@ namespace SMS.report
                     pt.AddCell(_cell);
 
 
+
+
+
+
+
                     string query = @"SELECT 
                                         a.sr_number sr_num,
                                         c.roll_number roll_no,
@@ -799,16 +184,11 @@ namespace SMS.report
                                             AND a.sr_number = d.sr_num
                                             AND b.session = c.session
                                             AND c.session = d.session
-                                            AND d.session = (SELECT 
-                                                session
-                                            FROM
-                                                mst_session
-                                            WHERE
-                                                session_finalize = 'Y')
+                                            AND d.session = @session
                                     ORDER BY c.roll_number";
 
 
-                    IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id });
+                    IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session });
 
 
                     ph = new Phrase();
@@ -1061,7 +441,6 @@ namespace SMS.report
                     T_A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
 
-
                     foreach (repAttendance_sheet dtt in sr_list)
                     {
                         ph = new Phrase();
@@ -1108,8 +487,6 @@ namespace SMS.report
                                 {
 
                                     text = new Chunk(check[0].attendance, FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
-
-                                  
                                 }
 
                                 else
@@ -1131,7 +508,15 @@ namespace SMS.report
                                 ph.Add(text);
                                 ph.Add("\n");
                                 _cell = new PdfPCell(ph);
-                                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                                if (i >= int.Parse(System.DateTime.Now.ToString("dd")) - 1 && month_no == int.Parse(DateTime.Now.ToString("MM")))
+                                {
+                                    _cell.BackgroundColor = BaseColor.WHITE;
+                                }
+                                else
+                                {
+                                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                                }
+
                                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                                 pt.AddCell(_cell);
                             }
@@ -1236,9 +621,628 @@ namespace SMS.report
 
                     doc.Close();
 
-                    ms.Position = 0;
+                    HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
+                    HttpContext.Current.Response.OutputStream.Flush();
+                    HttpContext.Current.Response.OutputStream.Close();
 
-                    query = @"SELECT 
+
+
+
+
+                }
+
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    doc.Close();
+                    ms.Flush();
+                }
+            }
+        }
+
+        public void MailAttendanceSheet(int section_id, int month_no, string session, string mail_id,DateTime att_date)
+        {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    string query1 = @"SELECT 
+                                    CONCAT(IFNULL(b.class_name, ''),
+                                            ' Section ',
+                                            IFNULL(a.section_name, '')) class_name
+                                FROM
+                                    mst_section a,
+                                    mst_class b
+                                WHERE
+                                    a.class_id = b.class_id
+                                        AND a.section_id = @section_id
+                                        AND a.session = b.session
+                                        AND a.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')";
+
+                    string class_name = con.Query<string>(query1, new { section_id = section_id }).SingleOrDefault();
+
+                    //MemoryStream ms = new MemoryStream();
+
+                    HttpContext.Current.Response.ContentType = "application/pdf";
+                    string name = "Att_Sheet_" + class_name + ".pdf";
+                    HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment;filename=" + name);
+                    HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+                    //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
+                    var doc = new Document(PageSize.A4.Rotate(), 0, 0, 0, 0);
+
+                    // MemoryStream stream = new MemoryStream();
+                    doc.SetMargins(0f, 0f, 10f, 30f);
+                    try
+                    {
+
+
+
+
+                        PdfWriter writer = PdfWriter.GetInstance(doc, ms);
+
+                        writer.CloseStream = false;
+
+
+                        doc.Open();
+                        // string imageURL = "E:\\HPS\\logo.jpg";
+                        string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                        Image jpg = Image.GetInstance(imageURL);
+                        jpg.ScaleAbsolute(80f, 80f);
+
+
+                        PdfPTable pt = new PdfPTable(10);
+
+
+                        PdfPCell _cell;
+                        Chunk text;
+                        Phrase ph;
+                        _cell = new PdfPCell(jpg);
+                        _cell.Border = 0;
+
+                        _cell.Border = Rectangle.NO_BORDER;
+                        _cell.PaddingBottom = 5;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+
+                        text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 40));
+                        ph = new Phrase();
+                        ph.Add(text);
+                        ph.Add("\n");
+
+                        text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 20));
+                        ph.Add(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 9;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        _cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        _cell.PaddingBottom = 5;
+                        //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        pt.AddCell(_cell);
+
+
+
+                        mst_sessionMain sess = new mst_sessionMain();
+
+                        mst_session mst = sess.getStartEndDate(session);
+
+                        int year = 0;
+                        if (month_no == 1 || month_no == 2 || month_no == 3)
+                        {
+                            year = mst.session_end_date.Year;
+                        }
+                        else
+                        {
+                            year = mst.session_start_date.Year;
+                        }
+
+
+                        doc.Add(pt);
+
+                        var date_list = getAllDates(year, month_no);
+
+                        pt = new PdfPTable(date_list.Count() + 24);
+
+                        pt.WidthPercentage = 95f;
+
+                        pt.HeaderRows = 3;
+
+
+                        text = new Chunk("\n");
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.Border = Rectangle.NO_BORDER;
+                        _cell.Colspan = 5;
+                        pt.AddCell(_cell);
+
+
+
+
+
+
+
+                        var startOfMonth = new DateTime(year, month_no, 1);
+                        var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+                        text = new Chunk("Attendance Sheet for the month of " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month_no) + " " + year.ToString() + " Class " + class_name, FontFactory.GetFont("Areal", 12));
+                        ph = new Phrase(text);
+                        ph.Add("\n");
+                        ph.Add("\n");
+                        text.SetUnderline(0.1f, -2f);
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = date_list.Count() + 24;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        _cell.Border = Rectangle.NO_BORDER;
+                        pt.AddCell(_cell);
+
+
+                        string query = @"SELECT 
+                                        a.sr_number sr_num,
+                                        c.roll_number roll_no,
+                                        CONCAT(IFNULL(a.std_first_name, ''),
+                                                ' ',
+                                                IFNULL(std_last_name, '')) std_name
+                                    FROM
+                                        sr_register a,
+                                        mst_section b,
+                                        mst_rollnumber c,
+                                        mst_std_section d
+                                    WHERE
+                                        d.section_id = b.section_id
+                                            AND b.section_id = @section_id
+                                            AND c.sr_num = a.sr_number
+                                            AND a.sr_number = d.sr_num
+                                            AND b.session = c.session
+                                            AND c.session = d.session
+                                            AND d.session = (SELECT 
+                                                session
+                                            FROM
+                                                mst_session
+                                            WHERE
+                                                session_finalize = 'Y')
+                                    ORDER BY c.roll_number";
+
+
+                        IEnumerable<repAttendance_sheet> sr_list = con.Query<repAttendance_sheet>(query, new { section_id = section_id });
+
+
+                        ph = new Phrase();
+                        text = new Chunk("Student Particulars", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 12;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Dates in the month of " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month_no) + " " + year.ToString(), FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = date_list.Count();
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Student attendance summary", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 12;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Adm No.", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 2;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Roll No.", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 2;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Student Name", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 8;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        for (int i = 0; i <= date_list.Count() - 1; i++)
+                        {
+
+                            ph = new Phrase();
+                            text = new Chunk(date_list[i].Day.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            text = new Chunk(date_list[i].DayOfWeek.ToString().Substring(0, 1), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                        }
+
+                        ph = new Phrase();
+                        text = new Chunk("Month W/D", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.Colspan = 2;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Month Prsnt", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.Colspan = 2;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Month Absnt", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 2;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Total W/D", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.Colspan = 2;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+
+                        ph = new Phrase();
+                        text = new Chunk("Total Prsnt", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.Colspan = 2;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk("Total Absnt", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 2;
+                        _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+                        //IEnumerable<repAttendance_sheet> check;
+
+                        IEnumerable<repAttendance_sheet> check1;
+
+                        IEnumerable<repAttendance_sheet> P_count;
+
+                        IEnumerable<repAttendance_sheet> A_count;
+
+                        IEnumerable<repAttendance_sheet> T_P_count;
+
+                        IEnumerable<repAttendance_sheet> T_A_count;
+
+                        query = @"SELECT 
+                                CASE
+                                    WHEN a.attendance = 1 THEN 'P'
+                                    ELSE 'A'
+                                END attendance,
+                                a.sr_num,
+                                c.roll_number roll_no,
+                                DAY(att_date) day
+                            FROM
+                                attendance_register a,
+                                mst_std_section b,
+                                mst_rollnumber c
+                            WHERE
+                                b.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = b.session
+                                    AND b.session = c.session
+                                    AND a.sr_num = b.sr_num
+                                    AND b.sr_num = c.sr_num";
+
+                        check1 = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+
+                        query = @"SELECT 
+                                COUNT(*) P_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 1
+                            GROUP BY sr_num";
+
+                        P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+
+                        query = @"SELECT 
+                                COUNT(*) A_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date BETWEEN @startOfMonth AND @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 0
+                            GROUP BY sr_num";
+
+                        A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+
+                        query = @"SELECT 
+                                COUNT(*) P_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date <= @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 1
+                            GROUP BY sr_num";
+
+                        T_P_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+
+                        query = @"SELECT 
+                                COUNT(*) A_count, a.sr_num
+                            FROM
+                                attendance_register a,
+                                sr_register b,
+                                mst_std_section c
+                            WHERE
+                                c.section_id = @section_id
+                                    AND att_date <= @endOfMonth
+                                    AND a.session = @session
+                                    AND a.session = c.session
+                                    AND a.sr_num = b.sr_number
+                                    AND b.sr_number = c.sr_num
+                                    AND a.attendance = 0
+                            GROUP BY sr_num";
+
+                        T_A_count = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+
+
+
+                        foreach (repAttendance_sheet dtt in sr_list)
+                        {
+                            ph = new Phrase();
+                            text = new Chunk(dtt.sr_num.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            ph = new Phrase();
+                            text = new Chunk(dtt.roll_no.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            ph = new Phrase();
+                            text = new Chunk(dtt.std_name, FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 8;
+                            _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            pt.AddCell(_cell);
+
+
+                            for (int i = 0; i <= date_list.Count() - 1; i++)
+                            {
+
+                                var check = (from e in check1 where e.day == i + 1 where e.sr_num == dtt.sr_num where e.roll_no == dtt.roll_no select e).ToList();
+
+
+
+                                if (check.Count() > 0)
+                                {
+
+
+                                    ph = new Phrase();
+                                    if (check[0].attendance == "P")
+                                    {
+
+                                        text = new Chunk(check[0].attendance, FontFactory.GetFont("Areal", 8, BaseColor.BLACK));
+
+
+                                    }
+
+                                    else
+                                    {
+
+                                        text = new Chunk(check[0].attendance, FontFactory.GetFont("Areal", 8, BaseColor.RED));
+                                    }
+
+                                    ph.Add(text);
+                                    ph.Add("\n");
+                                    _cell = new PdfPCell(ph);
+                                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                    pt.AddCell(_cell);
+                                }
+                                else
+                                {
+                                    ph = new Phrase();
+                                    text = new Chunk("", FontFactory.GetFont("Areal", 8));
+                                    ph.Add(text);
+                                    ph.Add("\n");
+                                    _cell = new PdfPCell(ph);
+                                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                    pt.AddCell(_cell);
+                                }
+
+
+                            }
+
+
+                            var total_present = (from e in P_count where e.sr_num == dtt.sr_num select e).ToList();
+
+                            var total_absent = (from e in A_count where e.sr_num == dtt.sr_num select e).ToList();
+
+                            if (total_present.Count() == 0)
+                            {
+
+                                total_present.Add(new repAttendance_sheet { P_count = 0 });
+                            }
+
+                            if (total_absent.Count() == 0)
+                            {
+                                total_absent.Add(new repAttendance_sheet { A_count = 0 });
+                            }
+
+
+                            ph = new Phrase();
+                            text = new Chunk((total_present[0].P_count + total_absent[0].A_count).ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            ph = new Phrase();
+                            text = new Chunk(total_present[0].P_count.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            ph = new Phrase();
+                            text = new Chunk(total_absent[0].A_count.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            total_present = (from e in T_P_count where e.sr_num == dtt.sr_num select e).ToList();
+
+                            total_absent = (from e in T_A_count where e.sr_num == dtt.sr_num select e).ToList();
+
+                            if (total_present.Count() == 0)
+                            {
+
+                                total_present.Add(new repAttendance_sheet { P_count = 0 });
+                            }
+
+                            if (total_absent.Count() == 0)
+                            {
+                                total_absent.Add(new repAttendance_sheet { A_count = 0 });
+                            }
+
+
+                            ph = new Phrase();
+                            text = new Chunk((total_present[0].P_count + total_absent[0].A_count).ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            ph = new Phrase();
+                            text = new Chunk(total_present[0].P_count.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                            ph = new Phrase();
+                            text = new Chunk(total_absent[0].A_count.ToString(), FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            ph.Add("\n");
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 2;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+                        }
+
+
+
+                        doc.Add(pt);
+
+
+
+                        doc.Close();
+
+                        ms.Position = 0;
+
+                        query = @"SELECT 
                                     COUNT(*) A_count
                                 FROM
                                     attendance_register a,
@@ -1254,10 +1258,10 @@ namespace SMS.report
                                         AND b.sr_number = c.sr_num
                                         AND a.attendance = 1";
 
-                    int T_P_count_day = con.Query<int>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth }).SingleOrDefault();
+                        int T_P_count_day = con.Query<int>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth }).SingleOrDefault();
 
 
-                    query = @"SELECT 
+                        query = @"SELECT 
                                     COUNT(*) A_count
                                 FROM
                                     attendance_register a,
@@ -1273,9 +1277,9 @@ namespace SMS.report
                                         AND b.sr_number = c.sr_num
                                         AND a.attendance = 0";
 
-                    int T_A_count_day = con.Query<int>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth }).SingleOrDefault();
+                        int T_A_count_day = con.Query<int>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth }).SingleOrDefault();
 
-                    query = @"SELECT 
+                        query = @"SELECT 
                                 a.sr_num,
                                 CONCAT(IFNULL(std_first_name, ''),
                                         ' ',
@@ -1295,24 +1299,24 @@ namespace SMS.report
                                     and b.sr_number = c.sr_num
                                     AND a.attendance = 0";
 
-                    IEnumerable<repAttendance_sheet> absent_details = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
+                        IEnumerable<repAttendance_sheet> absent_details = con.Query<repAttendance_sheet>(query, new { section_id = section_id, session = session, startOfMonth = startOfMonth, endOfMonth = endOfMonth });
 
 
-                    //string body = "Total number of students Present " + T_P_count_day +"<br>" + "Total number of students Absent "+T_A_count_day ;
+                        //string body = "Total number of students Present " + T_P_count_day +"<br>" + "Total number of students Absent "+T_A_count_day ;
 
 
 
-                    string body1 = @"";
+                        string body1 = @"";
 
 
-                    if (absent_details.Count() > 0)
-                    {
-                       
-                        
-                        int serial = 0;
-                        foreach (var details in absent_details)
+                        if (absent_details.Count() > 0)
                         {
-                            query = @"SELECT 
+
+
+                            int serial = 0;
+                            foreach (var details in absent_details)
+                            {
+                                query = @"SELECT 
                                             a.attendance
                                         FROM
                                             attendance_register a,
@@ -1325,25 +1329,25 @@ namespace SMS.report
                                                 AND a.sr_num = @sr_num
                                         ORDER BY att_date DESC";
 
-                            IEnumerable<int> absent_count = con.Query<int>(query, new { section_id = section_id, session = session, sr_num = details.sr_num });
+                                IEnumerable<int> absent_count = con.Query<int>(query, new { section_id = section_id, session = session, sr_num = details.sr_num });
 
-                            int serial_count = 0;
+                                int serial_count = 0;
 
-                            foreach(int cnt in absent_count)
-                            {
-                                if (cnt == 0)
+                                foreach (int cnt in absent_count)
                                 {
-                                    serial_count = serial_count + 1;
+                                    if (cnt == 0)
+                                    {
+                                        serial_count = serial_count + 1;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
                                 }
-                                else
-                                {
-                                    break;
-                                }
-                            }
 
-                            serial = serial + 1;
+                                serial = serial + 1;
 
-                            body1 = body1 + @" <tr>
+                                body1 = body1 + @" <tr>
                                     <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + serial + @"</td>
                                     <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + details.sr_num + @"</td>
                                     <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;'>" + details.std_name + @"</td>
@@ -1351,10 +1355,10 @@ namespace SMS.report
                                     <td style='border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' align='center'>" + serial_count + @"</td>
                                   </tr>";
 
-                            // body1 = body1 + details.sr_num + " " + details.std_name + " " + details.contact + Environment.NewLine;
-                        }
+                                // body1 = body1 + details.sr_num + " " + details.std_name + " " + details.contact + Environment.NewLine;
+                            }
 
-                        body1 = @"<tr>
+                            body1 = @"<tr>
                                    <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Serial No.</th>
                                    <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Admission No.</th>
                                    <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Student Name</th>
@@ -1362,13 +1366,13 @@ namespace SMS.report
                                    <th style='border-width:1px;border-style:solid;border-color:#ddd;padding-right:8px;padding-left:8px;padding-top:12px;padding-bottom:12px;text-align:left;background-color:#2d1846;color:white;'>Cont Absent Days</th>
                                    </tr>" + body1;
 
-                       
-                            
-                    }
 
-                    string Subject = "Attendance Sheet of class " + class_name + " date " + DateTime.Now.Date.ToString("dd/MM/yyyy");
 
-                    string body2 = @"<div style='margin:0;background-color:#f7f7f7'>
+                        }
+
+                        string Subject = "Attendance Sheet of class " + class_name + " date " + DateTime.Now.Date.ToString("dd/MM/yyyy");
+
+                        string body2 = @"<div style='margin:0;background-color:#f7f7f7'>
 
 <table width='100%' bgcolor='#f7f7f7' cellpadding='0' cellspacing='0' border='0' style='border-collapse:collapse;border-spacing:0'>
   <tbody><tr>
@@ -1487,7 +1491,7 @@ namespace SMS.report
                                                                     <tr>
                                                                         <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:left' height='12'>&nbsp;</td>
                                                                     </tr>
-                                                                 "+body1+ @"
+                                                                 " + body1 + @"
                                                                  </tbody>
  
                                                              </table>
@@ -1518,7 +1522,7 @@ namespace SMS.report
                                                                     </tr>
                                                                     <tr>
                                                                         <td style = 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > Total number of students Present</td>
-                                                                        <td style = 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > "+ T_P_count_day + @" </ td >
+                                                                        <td style = 'border-width:1px;border-style:solid;border-color:#ddd;padding-top:8px;padding-bottom:8px;padding-right:8px;padding-left:8px;' > " + T_P_count_day + @" </ td >
    
                                                                        </tr>
    
@@ -1632,7 +1636,7 @@ namespace SMS.report
                       <td style = 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '4' > &nbsp;</td>
                     </tr>
                     <tr>
-                      <td style = 'margin:0;padding:0;font-size:12px;text-align:left;color:#c2c2c2;line-height:18px;font-family:Arial,Helvetica,sans-serif;font-weight:normal' > "+Address+@" </td>
+                      <td style = 'margin:0;padding:0;font-size:12px;text-align:left;color:#c2c2c2;line-height:18px;font-family:Arial,Helvetica,sans-serif;font-weight:normal' > " + Address + @" </td>
                         </tr>
                   </tbody></table>
                   <table align = 'right' width= '290' border= '0' style= 'border-collapse:collapse;border-spacing:0' >
@@ -1681,33 +1685,34 @@ namespace SMS.report
 </tbody></table><div></div></div>";
 
 
-                    //body = body + @"<br><br><a href=""" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/attendance_register/finalize_class_attendance_sheet?section_id="+section_id+"&session="+ session +"&att_date="+att_date.ToString("yyyy-MM-dd")+@""">Click Here </a>to finalize attendance sheet";
+                        //body = body + @"<br><br><a href=""" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/attendance_register/finalize_class_attendance_sheet?section_id="+section_id+"&session="+ session +"&att_date="+att_date.ToString("yyyy-MM-dd")+@""">Click Here </a>to finalize attendance sheet";
 
-                    //body = body + "<br><br><a href='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/attendance_register/finalize_class_attendance_sheet?section_id=" + section_id + "&session=" + session + "&att_date=" + att_date.ToString("yyyy-MM-dd") + "'><button class='button' style='background-color:#4CAF50;border-style:none;color:white;padding-top:15px;padding-bottom:15px;padding-right:32px;padding-left:32px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin-top:4px;margin-bottom:4px;margin-right:2px;margin-left:2px;cursor:pointer;-webkit-transition-duration:0.4s;transition-duration:0.4s;box-shadow:0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);'>Finalize attendance sheet</button></a>";
-
-
-                    _sendMail(ms, mail_id, name, class_name, body2);
-
-                    //HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
-                    //HttpContext.Current.Response.OutputStream.Flush();
-                    //HttpContext.Current.Response.OutputStream.Close();
+                        //body = body + "<br><br><a href='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/attendance_register/finalize_class_attendance_sheet?section_id=" + section_id + "&session=" + session + "&att_date=" + att_date.ToString("yyyy-MM-dd") + "'><button class='button' style='background-color:#4CAF50;border-style:none;color:white;padding-top:15px;padding-bottom:15px;padding-right:32px;padding-left:32px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin-top:4px;margin-bottom:4px;margin-right:2px;margin-left:2px;cursor:pointer;-webkit-transition-duration:0.4s;transition-duration:0.4s;box-shadow:0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);'>Finalize attendance sheet</button></a>";
 
 
+                        _sendMail(ms, mail_id, name, class_name, body2);
+
+                        //HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
+                        //HttpContext.Current.Response.OutputStream.Flush();
+                        //HttpContext.Current.Response.OutputStream.Close();
 
 
 
+
+
+                    }
+
+
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        doc.Close();
+                        ms.Flush();
+                    }
                 }
-                
-
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                doc.Close();
-                ms.Flush();
-            }
             }
         }
 

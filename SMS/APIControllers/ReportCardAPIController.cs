@@ -16,20 +16,22 @@ namespace SMS.APIControllers
 {
     public class ReportCardAPIController : ApiController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
 
         [HttpGet]
         [Route("api/FileAPI/GetReportCard")]
         public HttpResponseMessage GetFile(int sr_number)
         {
-            //Create HTTP Response.
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-            
-            //Read the File into a Byte Array.
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                //Create HTTP Response.
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
 
-            repReport_cardMain rep = new repReport_cardMain();
+                //Read the File into a Byte Array.
 
-            string query = @"SELECT
+                repReport_cardMain rep = new repReport_cardMain();
+
+                string query = @"SELECT
                                     b.session
                                 FROM
                                     mst_std_class a,
@@ -40,23 +42,24 @@ namespace SMS.APIControllers
                                         AND a.sr_num = @sr_number
                                         AND CURDATE() BETWEEN b.declare_from AND b.declare_to";
 
-            string session = con.Query<string>(query, new { sr_number = sr_number }).SingleOrDefault();
+                string session = con.Query<string>(query, new { sr_number = sr_number }).SingleOrDefault();
 
-            byte[] bytes = rep.WebsiteReportCard(sr_number, session);
+                byte[] bytes = rep.WebsiteReportCard(sr_number, session);
 
-            //Set the Response Content.
-            response.Content = new ByteArrayContent(bytes);
+                //Set the Response Content.
+                response.Content = new ByteArrayContent(bytes);
 
-            //Set the Response Content Length.
-            response.Content.Headers.ContentLength = bytes.LongLength;
+                //Set the Response Content Length.
+                response.Content.Headers.ContentLength = bytes.LongLength;
 
-            //Set the Content Disposition Header Value and FileName.
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-            response.Content.Headers.ContentDisposition.FileName = "Report_Card.pdf";
+                //Set the Content Disposition Header Value and FileName.
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                response.Content.Headers.ContentDisposition.FileName = "Report_Card.pdf";
 
-            //Set the File Content Type.
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue(MimeMapping.GetMimeMapping("Report_Card.pdf"));
-            return response;
+                //Set the File Content Type.
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue(MimeMapping.GetMimeMapping("Report_Card.pdf"));
+                return response;
+            }
         }
 
 
@@ -64,14 +67,16 @@ namespace SMS.APIControllers
         [Route("api/FileAPI/GetDuesStatus")]
         public HttpResponseMessage GetDues(int sr_number)
         {
-            //Create HTTP Response.
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                //Create HTTP Response.
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
 
-            //Set the File Path.
-            //string filePath = HttpContext.Current.Server.MapPath("~/images/") + fileName;
+                //Set the File Path.
+                //string filePath = HttpContext.Current.Server.MapPath("~/images/") + fileName;
 
-            //Check whether File exists.
-           
+                //Check whether File exists.
+
                 string query = @"SELECT 
                                     website_code,
                                     b.session,
@@ -88,16 +93,16 @@ namespace SMS.APIControllers
                                         AND a.sr_num = @sr_number
                                         AND CURDATE() BETWEEN b.declare_from AND b.declare_to";
 
-                website_declare declare = con.Query<website_declare>(query,new {sr_number = sr_number }).SingleOrDefault();
+                website_declare declare = con.Query<website_declare>(query, new { sr_number = sr_number }).SingleOrDefault();
 
-            if(declare == null)
-            {
-                response.Content = new StringContent(String.Format("Report card of admission number {0} is not yet declared. Thank You", sr_number.ToString()), System.Text.Encoding.UTF8, "text/plain");
+                if (declare == null)
+                {
+                    response.Content = new StringContent(String.Format("Report card of admission number {0} is not yet declared. Thank You", sr_number.ToString()), System.Text.Encoding.UTF8, "text/plain");
 
-                return response;
-            }
+                    return response;
+                }
 
-            int month_no = declare.dues_month_no;
+                int month_no = declare.dues_month_no;
 
                 if (month_no >= 4 && month_no <= 12)
                 {
@@ -154,50 +159,52 @@ namespace SMS.APIControllers
 
                 }
 
-                decimal dues = con.Query<decimal>(query, new { sr_number = sr_number,session = declare.session }).SingleOrDefault();
+                decimal dues = con.Query<decimal>(query, new { sr_number = sr_number, session = declare.session }).SingleOrDefault();
 
-            if(dues == 0m)
-               response.Content = new StringContent("True", System.Text.Encoding.UTF8, "text/plain");
-            else
-                response.Content = new StringContent(String.Format("Note: Account of admission number {0} show's some dues kindly clear it in order to download the report card.",sr_number.ToString()), System.Text.Encoding.UTF8, "text/plain");
+                if (dues == 0m)
+                    response.Content = new StringContent("True", System.Text.Encoding.UTF8, "text/plain");
+                else
+                    response.Content = new StringContent(String.Format("Note: Account of admission number {0} show's some dues kindly clear it in order to download the report card.", sr_number.ToString()), System.Text.Encoding.UTF8, "text/plain");
 
-            return response;
-            
+                return response;
 
 
-          
+
+            }
         }
 
         [HttpGet]
         [Route("api/FileAPI/checkEnable")]
         public HttpResponseMessage checkEnable()
         {
-            //Create HTTP Response.
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                //Create HTTP Response.
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
 
-            //Set the File Path.
-            //string filePath = HttpContext.Current.Server.MapPath("~/images/") + fileName;
+                //Set the File Path.
+                //string filePath = HttpContext.Current.Server.MapPath("~/images/") + fileName;
 
-            //Check whether File exists.
+                //Check whether File exists.
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 website_declare
                             WHERE
                                 CURDATE() BETWEEN declare_from AND declare_to";
 
-            int check = con.Query<int>(query).SingleOrDefault();
-
-           
-            if (check == 0)
-                response.Content = new StringContent("False", System.Text.Encoding.UTF8, "text/plain");
-            else
-                response.Content = new StringContent("True", System.Text.Encoding.UTF8, "text/plain");
-
-            return response;
+                int check = con.Query<int>(query).SingleOrDefault();
 
 
+                if (check == 0)
+                    response.Content = new StringContent("False", System.Text.Encoding.UTF8, "text/plain");
+                else
+                    response.Content = new StringContent("True", System.Text.Encoding.UTF8, "text/plain");
+
+                return response;
+
+            }
 
 
         }

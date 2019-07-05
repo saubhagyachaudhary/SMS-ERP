@@ -13,7 +13,7 @@ namespace SMS.AcademicControllers
 {
     public class mstSubjectChapterController : Controller
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddChapter(string session,int class_id,int subject_id, int section_id)
@@ -242,7 +242,9 @@ namespace SMS.AcademicControllers
         [HttpPost]
         public ActionResult Student_Copy(copy_correction copy)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     mst_std_class a,
@@ -254,15 +256,16 @@ namespace SMS.AcademicControllers
                                         AND b.section_id = @section_id
                                         AND a.sr_num = @sr_number";
 
-            int flag = con.Query<int>(query, new { sr_number = copy.sr_number,class_id = copy.class_id, section_id = copy.section_id }).SingleOrDefault();
+                int flag = con.Query<int>(query, new { sr_number = copy.sr_number, class_id = copy.class_id, section_id = copy.section_id }).SingleOrDefault();
 
-            if (flag == 0)
-            {
-                ModelState.AddModelError(String.Empty, "Student not found.");
-                return View(copy);
-            } 
+                if (flag == 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Student not found.");
+                    return View(copy);
+                }
 
-            return RedirectToAction("AllUncheckedChapters", new { sr_number = copy.sr_number,session = copy.session, subject_id = copy.subject_id, class_id = copy.class_id, section_id = copy.section_id });
+                return RedirectToAction("AllUncheckedChapters", new { sr_number = copy.sr_number, session = copy.session, subject_id = copy.subject_id, class_id = copy.class_id, section_id = copy.section_id });
+            }
         }
 
         [HttpGet]

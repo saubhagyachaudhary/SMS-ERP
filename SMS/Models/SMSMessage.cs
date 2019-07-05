@@ -15,12 +15,14 @@ namespace SMS.Models
 {
     public class SMSMessage
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
         public IEnumerable<string> smsbody(string sms_code)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                             sms_body
                         FROM
                             sms_format
@@ -28,12 +30,15 @@ namespace SMS.Models
                             sms_code = @sms_code
                             AND enable = 1";
 
-            return con.Query<string>(query, new { sms_code = sms_code });
+                return con.Query<string>(query, new { sms_code = sms_code });
+            }
         }
 
         public string getRecentSMS(string sms_code,int sms_serial)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 sms_body
                             FROM
                                 sms_format
@@ -42,19 +47,23 @@ namespace SMS.Models
                                     AND sms_code = @sms_code
                                     AND enable = 1";
 
-            return con.Query<string>(query, new { sms_code = sms_code, sms_serial = sms_serial }).SingleOrDefault();
+                return con.Query<string>(query, new { sms_code = sms_code, sms_serial = sms_serial }).SingleOrDefault();
+            }
         }
 
         public void setRecentSMS(string sms_body,int serial,string sms_code)
         {
-            string query = @"UPDATE `sms_format` 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"UPDATE `sms_format` 
                                 SET 
                                     `sms_body` = @sms_body
                                 WHERE
                                     (`sms_serial` = @serial)
                                         AND (`sms_code` = @sms_code) AND enable = 1;";
 
-            con.Execute(query, new {sms_body = sms_body, serial = serial, sms_code = sms_code });
+                con.Execute(query, new { sms_body = sms_body, serial = serial, sms_code = sms_code });
+            }
 
         }
 
@@ -67,24 +76,60 @@ namespace SMS.Models
 
             try
             {
-                
 
-                postURL = String.Format(postURL, sendTo, smsText);
-           
-                request = (HttpWebRequest)WebRequest.Create(postURL);
-           
-
-
-                // Send the request and get a response
-                using (HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync())
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    // Read the response
-                    using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+                    postURL = String.Format(postURL, sendTo, smsText);
+
+                    request = (HttpWebRequest)WebRequest.Create(postURL);
+
+
+
+                    // Send the request and get a response
+                    using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
                     {
-                        responseMessage = srResponse.ReadToEnd();
-                        
+                        // Read the response
+                        using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+                        {
+                            responseMessage = srResponse.ReadToEnd();
+
+                        }
+
+                        string query = @"INSERT INTO sms_record
+                                    (`phoneNumber`,
+                                    `message`,
+                                    `sms_status`,
+                                      date_time)
+                                    VALUES
+                                    (@phone,
+                                    @message,
+                                    @status,
+                                   @date_time)";
+                        con.Execute(query,
+                           new
+                           {
+                               phone = sendTo,
+                               message = smsText,
+                               status = "Success",
+                               date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
+                           });
+
+
+
                     }
 
+                    if (flag)
+                    {
+                        DashboardHub hub = new DashboardHub();
+
+                        hub.SMSCreditLeft();
+                    }
+                }
+            }
+            catch (Exception objException)
+            {
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
                     string query = @"INSERT INTO sms_record
                                     (`phoneNumber`,
                                     `message`,
@@ -100,45 +145,13 @@ namespace SMS.Models
                        {
                            phone = sendTo,
                            message = smsText,
-                           status = "Success",
+                           status = "Failed",
                            date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
                        });
 
 
-
+                    throw objException;
                 }
-
-                if (flag)
-                {
-                    DashboardHub hub = new DashboardHub();
-
-                    hub.SMSCreditLeft();
-                }
-
-            }
-            catch (Exception objException)
-            {
-                string query = @"INSERT INTO sms_record
-                                    (`phoneNumber`,
-                                    `message`,
-                                    `sms_status`,
-                                      date_time)
-                                    VALUES
-                                    (@phone,
-                                    @message,
-                                    @status,
-                                   @date_time)";
-                con.Execute(query,
-                   new
-                   {
-                       phone = sendTo,
-                       message = smsText,
-                       status = "Failed",
-                        date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
-            });
-           
-
-            throw objException;
             }
         }
 
@@ -151,35 +164,38 @@ namespace SMS.Models
 
             try
             {
-
-
-                postURL = String.Format(postURL, sendTo, smsText);
-              
-                request = (HttpWebRequest)WebRequest.Create(postURL);
-            
-                // Send the request and get a response
-                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    // Read the response
-                    using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+
+                    postURL = String.Format(postURL, sendTo, smsText);
+
+                    request = (HttpWebRequest)WebRequest.Create(postURL);
+
+                    // Send the request and get a response
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     {
-                        responseMessage = srResponse.ReadToEnd();
+                        // Read the response
+                        using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+                        {
+                            responseMessage = srResponse.ReadToEnd();
+
+                        }
 
                     }
-                    
+
+                    if (flag)
+                    {
+                        DashboardHub hub = new DashboardHub();
+
+                        hub.SMSCreditLeft();
+                    }
                 }
-
-                if (flag)
-                {
-                    DashboardHub hub = new DashboardHub();
-
-                    hub.SMSCreditLeft();
-                }
-
             }
             catch (Exception objException)
             {
-                string query = @"INSERT INTO sms_record
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"INSERT INTO sms_record
                                     (`phoneNumber`,
                                     `message`,
                                     `sms_status`,
@@ -189,15 +205,15 @@ namespace SMS.Models
                                     @message,
                                     @status,
                                    @date_time)";
-                con.Execute(query,
-                   new
-                   {
-                       phone = sendTo,
-                       message = smsText,
-                       status = "Failed",
-                       date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
-                   });
-
+                    con.Execute(query,
+                       new
+                       {
+                           phone = sendTo,
+                           message = smsText,
+                           status = "Failed",
+                           date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
+                       });
+                }
 
                 throw objException;
             }
@@ -205,7 +221,9 @@ namespace SMS.Models
 
         public IEnumerable<string> getNumberByClass(int class_id)
         {
-            string query1 = @"SELECT DISTINCT
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT DISTINCT
                                     COALESCE(std_contact, std_contact1, std_contact2)
                                 FROM
                                     sr_register a,
@@ -221,16 +239,19 @@ namespace SMS.Models
                                         AND b.class_id = @class_id
                                         AND a.std_active = 'Y'";
 
-            var numberlist = con.Query<string>(query1,new { class_id = class_id });
-            //string phone = String.Join(",", numberlist);
+                var numberlist = con.Query<string>(query1, new { class_id = class_id });
+                //string phone = String.Join(",", numberlist);
 
-            return numberlist;
-            //SendMultiSms("hello", phone);
+                return numberlist;
+                //SendMultiSms("hello", phone);
+            }
         }
 
         public IEnumerable<string> getNumberByTransport(int pickup_id)
         {
-            string query1 = @"SELECT DISTINCT
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT DISTINCT
                                 COALESCE(std_contact, std_contact1, std_contact2)
                             FROM
                                 sr_register
@@ -239,16 +260,19 @@ namespace SMS.Models
                                     AND std_pickup_id != 1000
                                     AND std_active = 'Y'";
 
-            var numberlist = con.Query<string>(query1, new { pickup_id = pickup_id });
-            //string phone = String.Join(",", numberlist);
+                var numberlist = con.Query<string>(query1, new { pickup_id = pickup_id });
+                //string phone = String.Join(",", numberlist);
 
-            return numberlist;
-            //SendMultiSms("hello", phone);
+                return numberlist;
+                //SendMultiSms("hello", phone);
+            }
         }
 
         public IEnumerable<class_list> Class_Name()
         {
-            string query1 = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT 
                                     CONCAT('Class', ' ', class_name) class_name, class_id
                                 FROM
                                     mst_class
@@ -260,14 +284,17 @@ namespace SMS.Models
                                         WHERE
                                             session_finalize = 'Y')";
 
-            var class_list = con.Query<class_list>(query1 );
+                var class_list = con.Query<class_list>(query1);
 
-            return class_list;
+                return class_list;
+            }
         }
 
         public IEnumerable<pickup_list> pickup_Name()
         {
-            string query1 = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT 
                                     pickup_id, pickup_point
                                 FROM
                                     mst_transport
@@ -280,32 +307,49 @@ namespace SMS.Models
                                         WHERE
                                             session_finalize = 'Y')";
 
-            var class_list = con.Query<pickup_list>(query1);
+                var class_list = con.Query<pickup_list>(query1);
 
-            return class_list;
+                return class_list;
+            }
         }
 
         
 
         public IEnumerable<string> getNumberWholeClass()
         {
-            string query1 = @"SELECT DISTINCT
-                                    COALESCE(std_contact, std_contact1, std_contact2)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT DISTINCT
+                                    COALESCE(std_contact, std_contact1, std_contact2) std_contact
                                 FROM
-                                    sr_register
+                                    sr_register a,
+                                    mst_std_class b,
+                                    mst_std_section c
                                 WHERE
-                                    std_active = 'Y'";
+                                    a.sr_number = b.sr_num
+                                        AND b.sr_num = c.sr_num
+                                        AND b.session = c.session
+                                        AND c.session = (SELECT 
+                                            session
+                                        FROM
+                                            mst_session
+                                        WHERE
+                                            session_finalize = 'Y')
+                                        AND a.std_active = 'Y'";
 
-            var numberlist = con.Query<string>(query1);
-            //string phone = String.Join(",", numberlist);
+                var numberlist = con.Query<string>(query1);
+                //string phone = String.Join(",", numberlist);
 
-            return numberlist;
-            //SendMultiSms("hello", phone);
+                return numberlist;
+                //SendMultiSms("hello", phone);
+            }
         }
 
         public IEnumerable<string> getNumberWholeTransport()
         {
-            string query1 = @"SELECT DISTINCT
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT DISTINCT
                                     COALESCE(std_contact, std_contact1, std_contact2)
                                 FROM
                                     sr_register
@@ -313,26 +357,30 @@ namespace SMS.Models
                                     std_pickup_id != 1000
                                         AND std_active = 'Y'";
 
-            var numberlist = con.Query<string>(query1);
-            //string phone = String.Join(",", numberlist);
+                var numberlist = con.Query<string>(query1);
+                //string phone = String.Join(",", numberlist);
 
-            return numberlist;
-            //SendMultiSms("hello", phone);
+                return numberlist;
+                //SendMultiSms("hello", phone);
+            }
         }
 
         public IEnumerable<string> getNumberWholeStaff()
         {
-            string query1 = @"SELECT DISTINCT
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT DISTINCT
                                     COALESCE(contact, contact1, contact2)
                                 FROM
                                     emp_profile
                                 WHERE
                                     emp_active = 1";
 
-            var numberlist = con.Query<string>(query1);
-          
+                var numberlist = con.Query<string>(query1);
 
-            return numberlist;
+
+                return numberlist;
+            }
             
         }
 
@@ -345,31 +393,66 @@ namespace SMS.Models
 
             try
             {
-
-                postURL = String.Format(postURL, sendTo, smsText);
-
-                request = (HttpWebRequest)WebRequest.Create(postURL);
-
-
-                // Send the request and get a response
-                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
+                    postURL = String.Format(postURL, sendTo, smsText);
 
-                    // Read the response
-                    using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+                    request = (HttpWebRequest)WebRequest.Create(postURL);
+
+
+                    // Send the request and get a response
+                    using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
                     {
-                        responseMessage = srResponse.ReadToEnd();
+
+                        // Read the response
+                        using (StreamReader srResponse = new StreamReader(response.GetResponseStream()))
+                        {
+                            responseMessage = srResponse.ReadToEnd();
+                        }
+
+                        // Logic to interpret response from your gateway goes here
+                        //Response.Write(String.Format("Response from gateway: {0}", responseMessage));
+
+
+
+                        foreach (var i in phone)
+                        {
+
+
+                            string query = @"INSERT INTO sms_record
+                                    (`phoneNumber`,
+                                    `message`,
+                                    `sms_status`,
+                                      date_time)
+                                    VALUES
+                                    (@phone,
+                                    @message,
+                                    @status,
+                                   @date_time)";
+                            con.Execute(query,
+                               new
+                               {
+                                   phone = i,
+                                   message = smsText,
+                                   status = "Success",
+                                   date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
+                               });
+
+                        }
+
                     }
 
-                    // Logic to interpret response from your gateway goes here
-                    //Response.Write(String.Format("Response from gateway: {0}", responseMessage));
+                    DashboardHub hub = new DashboardHub();
 
-
-
+                    hub.SMSCreditLeft();
+                }
+            }
+            catch (Exception objException)
+            {
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
                     foreach (var i in phone)
                     {
-
-
                         string query = @"INSERT INTO sms_record
                                     (`phoneNumber`,
                                     `message`,
@@ -385,43 +468,13 @@ namespace SMS.Models
                            {
                                phone = i,
                                message = smsText,
-                               status = "Success",
+                               status = "Failed",
                                date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
                            });
 
                     }
-
+                    throw objException;
                 }
-
-                DashboardHub hub = new DashboardHub();
-
-                hub.SMSCreditLeft();
-            }
-            catch (Exception objException)
-            {
-                foreach (var i in phone)
-                {
-                    string query = @"INSERT INTO sms_record
-                                    (`phoneNumber`,
-                                    `message`,
-                                    `sms_status`,
-                                      date_time)
-                                    VALUES
-                                    (@phone,
-                                    @message,
-                                    @status,
-                                   @date_time)";
-                    con.Execute(query,
-                       new
-                       {
-                           phone = i,
-                           message = smsText,
-                           status = "Failed",
-                           date_time = System.DateTime.Now.AddMinutes(dateTimeOffSet)
-                       });
-
-                }
-                throw objException;
             }
         }
     }

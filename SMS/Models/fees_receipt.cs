@@ -49,8 +49,18 @@ namespace SMS.Models
         [Required]
         public virtual String nature { get; set; }
         [Required]
-        [Display(Name = "Fees Amount")]
+        [Display(Name = "Paid Amount")]
         public virtual decimal amount { get; set; }
+
+        [Display(Name = "Fees Amount")]
+        public virtual decimal fees { get; set; }
+
+        [Display(Name = "Fine Amount")]
+        public virtual decimal fine { get; set; }
+
+        [Display(Name = "Discount Amount")]
+        public virtual decimal discount { get; set; }
+
         [Display(Name = "Class Name")]
         public virtual String class_name { get; set; }
         [Display(Name = "Section Name")]

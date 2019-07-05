@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_exam_marksController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult addExamMarks()
@@ -62,10 +62,10 @@ namespace SMS.Controllers
 
             mst_exam_marksMain mstMain = new mst_exam_marksMain();
 
-            IEnumerable<mst_exam_marks> marks = mstMain.find_marks(mst.exam_id, mst.subject_id, mst.class_id, mst.section_id);
+            //IEnumerable<mst_exam_marks> marks = mstMain.find_marks(mst.exam_id, mst.subject_id, mst.class_id, mst.section_id);
 
-            if (marks.Count() > 0)
-            {
+            //if (marks.Count() > 0)
+            //{
                 var student_list = mstMain.student_list_for_marks_update(mst.subject_id,mst.class_id,mst.section_id,mst.exam_id);
                 exam = examMain.FindExam(mst.exam_id);
 
@@ -77,21 +77,21 @@ namespace SMS.Controllers
                 {
                     list.Add(new mst_exam_marks { present = i.present, marks = i.marks,class_id = i.class_id, exam_id = mst.exam_id, exam_name = exam.exam_name, marks_assigned_user_id = mst.marks_assigned_user_id, section_id = i.section_id, roll_no = i.roll_no, sr_num = i.sr_num, std_name = i.std_name, subject_id = mst.subject_id, subject_name = subject.subject_name, user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()) });
                 }
-            }
-            else
-            {
-                var student_list = mstMain.student_list_for_marks(mst.class_id, mst.section_id);
-                exam = examMain.FindExam(mst.exam_id);
+            //}
+            //else
+            //{
+            //    var student_list = mstMain.student_list_for_marks(mst.class_id, mst.section_id);
+            //    exam = examMain.FindExam(mst.exam_id);
 
-                ViewData["MaxMarks"] = exam.max_no;
+            //    ViewData["MaxMarks"] = exam.max_no;
 
-                subject = subjectMain.FindSubject(mst.subject_id);
+            //    subject = subjectMain.FindSubject(mst.subject_id);
 
-                foreach (var i in student_list)
-                {
-                    list.Add(new mst_exam_marks { class_id = i.class_id, exam_id = mst.exam_id, exam_name = exam.exam_name, marks_assigned_user_id = mst.marks_assigned_user_id, section_id = i.section_id, roll_no = i.roll_no, sr_num = i.sr_num, std_name = i.std_name, subject_id = mst.subject_id, subject_name = subject.subject_name, user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), present = true });
-                }
-            }
+            //    foreach (var i in student_list)
+            //    {
+            //        list.Add(new mst_exam_marks { class_id = i.class_id, exam_id = mst.exam_id, exam_name = exam.exam_name, marks_assigned_user_id = mst.marks_assigned_user_id, section_id = i.section_id, roll_no = i.roll_no, sr_num = i.sr_num, std_name = i.std_name, subject_id = mst.subject_id, subject_name = subject.subject_name, user_id = Int32.Parse(Request.Cookies["loginUserId"].Value.ToString()), present = true });
+            //    }
+            //}
 
 
           
@@ -115,10 +115,11 @@ namespace SMS.Controllers
 
         public JsonResult GetExam(int id)
         {
-           
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     b.exam_id, b.exam_name
                                 FROM
                                     mst_exam_class a,
@@ -130,19 +131,21 @@ namespace SMS.Controllers
                                         AND a.session = b.session";
 
 
-            var exam_list = con.Query<mst_exam>(query, new { class_id = id,session = sess.findFinal_Session() });
+                var exam_list = con.Query<mst_exam>(query, new { class_id = id, session = sess.findFinal_Session() });
 
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "exam_id", "exam_name");
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "exam_id", "exam_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
 
         public JsonResult GetSubject(int exam_id, int class_id, int section_id)
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 a.subject_id, b.subject_name
                             FROM
                                 mst_class_subject a,
@@ -155,31 +158,33 @@ namespace SMS.Controllers
 
 
 
-            var exam_list = con.Query<mst_subject>(query, new {class_id = class_id,session = sess.findFinal_Session() });
+                var exam_list = con.Query<mst_subject>(query, new { class_id = class_id, session = sess.findFinal_Session() });
 
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "subject_id", "subject_name");
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "subject_id", "subject_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
 
         public JsonResult GetSection(int id)
         {
-            bool flag;
-            string query;
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                bool flag;
+                string query;
 
-            if (User.IsInRole("superadmin") || User.IsInRole("principal"))
-            {
-                flag = true;
-            }
-            else
-            {
-                flag = false;
-            }
+                if (User.IsInRole("superadmin") || User.IsInRole("principal"))
+                {
+                    flag = true;
+                }
+                else
+                {
+                    flag = false;
+                }
 
-            if(flag)
-            {
-                query = @"SELECT 
+                if (flag)
+                {
+                    query = @"SELECT 
                                 section_id, section_name
                             FROM
                                 mst_section
@@ -191,10 +196,10 @@ namespace SMS.Controllers
                                         mst_session
                                     WHERE
                                         session_finalize = 'Y')";
-            }
-            else
-            {
-                query = @"SELECT DISTINCT
+                }
+                else
+                {
+                    query = @"SELECT DISTINCT
                                     *
                                 FROM
                                     (SELECT 
@@ -224,17 +229,17 @@ namespace SMS.Controllers
                                                 mst_session
                                             WHERE
                                                 session_finalize = 'Y')) a";
+                }
+
+
+
+
+                var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });
+
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
+
+                return Json(list);
             }
-
-          
-
-
-            var exam_list = con.Query<mst_section>(query, new { class_id = id, user_id = int.Parse(Request.Cookies["loginUserId"].Value.ToString()) });
-
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
-
-            return Json(list);
-
         }
     }
 }

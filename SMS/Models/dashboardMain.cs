@@ -18,9 +18,11 @@ namespace SMS.Models
 
         public int school_strength()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-            String query = @"SELECT 
+
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     sr_register a,
@@ -49,16 +51,18 @@ namespace SMS.Models
                                         AND a.std_active = 'Y'
                                 ORDER BY e.order_by";
 
-            var result = con.Query<int>(query).SingleOrDefault();
+                var result = con.Query<int>(query).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int school_Male_std()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            String query = @"SELECT 
+                String query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     sr_register a,
@@ -88,16 +92,18 @@ namespace SMS.Models
                                         and a.std_sex = 'M'
                                 ORDER BY e.order_by";
 
-            var result = con.Query<int>(query).SingleOrDefault();
+                var result = con.Query<int>(query).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int school_Female_std()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            String query = @"SELECT 
+                String query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     sr_register a,
@@ -127,65 +133,71 @@ namespace SMS.Models
                                         and a.std_sex = 'F'
                                 ORDER BY e.order_by";
 
-            var result = con.Query<int>(query).SingleOrDefault();
+                var result = con.Query<int>(query).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
       
 
         public decimal cash_received()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
-
-            string query1 = @"SELECT fin_id
+           
+                string query1 = @"SELECT fin_id
                              FROM mst_fin
                           where fin_close = 'N'";
 
-            string fin = con.Query<string>(query1).SingleOrDefault();
+                string fin = con.Query<string>(query1).SingleOrDefault();
 
-            string rect_date = System.DateTime.Now.AddMinutes(dateTimeOffSet).ToString("yyyy-MM-dd");
+                string rect_date = System.DateTime.Now.AddMinutes(dateTimeOffSet).ToString("yyyy-MM-dd");
 
-            String query = @"select ifnull(sum(amount),0)+ifnull(sum(dc_fine),0)-ifnull(sum(dc_discount),0) from fees_receipt where receipt_date = @dt and fin_id = @fin and mode_flag = 'Cash'";
+                String query = @"select ifnull(sum(amount),0)+ifnull(sum(dc_fine),0)-ifnull(sum(dc_discount),0) from fees_receipt where receipt_date = @dt and fin_id = @fin and mode_flag = 'Cash'";
 
-            var result = con.Query<decimal>(query, new { dt = rect_date, fin = fin }).SingleOrDefault();
+                var result = con.Query<decimal>(query, new { dt = rect_date, fin = fin }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public decimal bank_received()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
 
-            string query1 = @"SELECT fin_id
+                string query1 = @"SELECT fin_id
                              FROM mst_fin
                           where fin_close = 'N'";
 
-            string fin = con.Query<string>(query1).SingleOrDefault();
+                string fin = con.Query<string>(query1).SingleOrDefault();
 
-            string rect_date = System.DateTime.Now.AddMinutes(dateTimeOffSet).ToString("yyyy-MM-dd");
+                string rect_date = System.DateTime.Now.AddMinutes(dateTimeOffSet).ToString("yyyy-MM-dd");
 
-            string query = @"select ifnull(sum(amount),0)+ifnull(sum(dc_fine),0)-ifnull(sum(dc_discount),0) from fees_receipt where receipt_date = @dt and fin_id = @fin and mode_flag = 'Cheque'";
+                string query = @"select ifnull(sum(amount),0)+ifnull(sum(dc_fine),0)-ifnull(sum(dc_discount),0) from fees_receipt where receipt_date = @dt and fin_id = @fin and mode_flag = 'Cheque'";
 
-            var result = con.Query<decimal>(query, new { dt = rect_date, fin = fin }).SingleOrDefault();
+                var result = con.Query<decimal>(query, new { dt = rect_date, fin = fin }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public decimal total_cash_received()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            string query1 = @"SELECT fin_id
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT fin_id
                              FROM mst_fin
                           where fin_close = 'N'";
 
-            string fin_id = con.Query<string>(query1).SingleOrDefault();
+                string fin_id = con.Query<string>(query1).SingleOrDefault();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     IFNULL(SUM(IFNULL(amount, 0)) + SUM(IFNULL(dc_fine, 0)) - SUM(IFNULL(dc_discount, 0)),
                                             0)
                                 FROM
@@ -195,21 +207,23 @@ namespace SMS.Models
                                         AND mode_flag = 'Cash'
                                         AND IFNULL(chq_reject, 'Cleared') = 'Cleared'";
 
-            var result = con.Query<decimal>(query, new { fin_id = fin_id }).SingleOrDefault();
+                var result = con.Query<decimal>(query, new { fin_id = fin_id }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public decimal total_bank_received()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            string query1 = @"SELECT fin_id
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query1 = @"SELECT fin_id
                              FROM mst_fin
                           where fin_close = 'N'";
 
-            string fin_id = con.Query<string>(query1).SingleOrDefault();
+                string fin_id = con.Query<string>(query1).SingleOrDefault();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     IFNULL(SUM(IFNULL(amount, 0)) + SUM(IFNULL(dc_fine, 0)) - SUM(IFNULL(dc_discount, 0)),
                                             0)
                                 FROM
@@ -219,77 +233,89 @@ namespace SMS.Models
                                         AND mode_flag = 'Cheque'
                                         AND IFNULL(chq_reject, 'Cleared') = 'Cleared'";
 
-            var result = con.Query<decimal>(query, new { fin_id = fin_id }).SingleOrDefault();
+                var result = con.Query<decimal>(query, new { fin_id = fin_id }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int transport_Male_std()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            string query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y' and std_pickup_id != 1000 and std_sex = 'M'";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y' and std_pickup_id != 1000 and std_sex = 'M'";
 
-            var result = con.Query<int>(query).SingleOrDefault();
+                var result = con.Query<int>(query).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int transport_Female_std()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            string query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y' and std_pickup_id != 1000 and std_sex = 'F'";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"select ifnull(count(sr_number),0) from sr_register where std_active = 'Y' and std_pickup_id != 1000 and std_sex = 'F'";
 
-            var result = con.Query<int>(query).SingleOrDefault();
+                var result = con.Query<int>(query).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int new_admission()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_Session();
+                string session = sess.findActive_Session();
 
-            String query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session";
+                String query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session";
 
-            var result = con.Query<int>(query, new { session = session }).SingleOrDefault();
+                var result = con.Query<int>(query, new { session = session }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int new_admission_male_std()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_Session();
+                string session = sess.findActive_Session();
 
-            String query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session and std_sex = 'M'";
+                String query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session and std_sex = 'M'";
 
-            var result = con.Query<int>(query, new { session = session }).SingleOrDefault();
+                var result = con.Query<int>(query, new { session = session }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int new_admission_female_std()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_Session();
+                string session = sess.findActive_Session();
 
-            string query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session and std_sex = 'F'";
+                string query = @"select ifnull(count(sr_number),0)	 from sr_register where std_active = 'Y' and adm_session = @session and std_sex = 'F'";
 
-            var result = con.Query<int>(query, new { session = session }).SingleOrDefault();
+                var result = con.Query<int>(query, new { session = session }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public string[] school_class()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            String query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT 
                                 class_name
                             FROM
                                 mst_class
@@ -302,24 +328,26 @@ namespace SMS.Models
                                         session_finalize = 'Y')
                                         order by order_by";
 
-            var result = con.Query<string>(query);
+                var result = con.Query<string>(query);
 
-            string[] s = result.ToArray<string>();
+                string[] s = result.ToArray<string>();
 
-            return s;
+                return s;
+            }
         }
        
         public string[] school_class_for_attendance(int user_id,bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-
-            IEnumerable<string> result;
-
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+
+                IEnumerable<string> result;
+
+                if (flag)
+                {
+                    query = @"SELECT 
                                 c.class_name
                             FROM
                                 attendance_register a,
@@ -340,11 +368,11 @@ namespace SMS.Models
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
 
-                result = con.Query<string>(query);
-            }
-            else
-            {
-                query = @"SELECT 
+                    result = con.Query<string>(query);
+                }
+                else
+                {
+                    query = @"SELECT 
                                 c.class_name
                             FROM
                                 attendance_register a,
@@ -374,47 +402,51 @@ namespace SMS.Models
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
 
-                result = con.Query<string>(query,new { user_id = user_id});
+                    result = con.Query<string>(query, new { user_id = user_id });
+                }
+
+
+                string[] s = result.ToArray<string>();
+
+                return s;
             }
-             
-
-            string[] s = result.ToArray<string>();
-
-            return s;
         }
 
         public string[] session()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = "";
+                string query = "";
 
-            IEnumerable<string> result;
+                IEnumerable<string> result;
 
-            query = @"SELECT 
+                query = @"SELECT 
                             session
                         FROM
                             mst_session
                         ORDER BY session_start_date";
-            
+
 
                 result = con.Query<string>(query);
-            
 
-            string[] s = result.ToArray<string>();
 
-            return s;
+                string[] s = result.ToArray<string>();
+
+                return s;
+            }
         }
 
         public decimal[] session_dues()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = "";
+                string query = "";
 
-            IEnumerable<decimal> result;
+                IEnumerable<decimal> result;
 
-            query = @"SELECT 
+                query = @"SELECT 
                             SUM(IFNULL(outstd_amount, 0) - IFNULL(rmt_amount, 0)) dues
                         FROM
                             out_standing a,
@@ -425,25 +457,27 @@ namespace SMS.Models
                         ORDER BY b.session_start_date";
 
 
-            result = con.Query<decimal>(query);
+                result = con.Query<decimal>(query);
 
 
-            decimal[] s = result.ToArray<decimal>();
+                decimal[] s = result.ToArray<decimal>();
 
-            return s;
+                return s;
+            }
         }
 
         public string[] date_list_for_attendance(int user_id, bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-
-            IEnumerable<string> result;
-
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+
+                IEnumerable<string> result;
+
+                if (flag)
+                {
+                    query = @"SELECT 
                                 CONCAT(DAY(att_date),
                                         ' ',
                                         DATE_FORMAT(att_date, '%b'))
@@ -461,10 +495,11 @@ namespace SMS.Models
                             GROUP BY att_date
                             ORDER BY att_date";
 
-                result = con.Query<string>(query);
-            }else
-            {
-                query = @"SELECT 
+                    result = con.Query<string>(query);
+                }
+                else
+                {
+                    query = @"SELECT 
                                 CONCAT(DAY(att_date),
                                         ' ',
                                         DATE_FORMAT(att_date, '%b'))
@@ -491,23 +526,25 @@ namespace SMS.Models
                             GROUP BY att_date
                             ORDER BY att_date";
 
-                result = con.Query<string>(query,new {user_id = user_id });
+                    result = con.Query<string>(query, new { user_id = user_id });
+                }
+
+                string[] s = result.ToArray<string>();
+
+                return s;
             }
-
-            string[] s = result.ToArray<string>();
-
-            return s;
         }
 
         public IEnumerable<attendance_register> finalizer_list(int user_id,bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            IEnumerable<attendance_register> result;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                 query = @"SELECT DISTINCT
+
+                string query = "";
+                IEnumerable<attendance_register> result;
+                if (flag)
+                {
+                    query = @"SELECT DISTINCT
                             DATE_FORMAT(a.att_date, '%d') date_num,
                             DATE_FORMAT(a.att_date, '%b') month_name,
                             CONCAT('Class ',
@@ -540,11 +577,11 @@ namespace SMS.Models
                                     session_finalize = 'Y')
                         ORDER BY date_num , d.class_id";
 
-                 result = con.Query<attendance_register>(query);
-            }
-            else
-            {
-                query = @"SELECT DISTINCT
+                    result = con.Query<attendance_register>(query);
+                }
+                else
+                {
+                    query = @"SELECT DISTINCT
                                 DATE_FORMAT(a.att_date, '%d') date_num,
                                 DATE_FORMAT(a.att_date, '%b') month_name,
                                 CONCAT('Class ',
@@ -583,18 +620,20 @@ namespace SMS.Models
                                         session_finalize = 'Y')
                             ORDER BY date_num , d.class_id";
 
-                result = con.Query<attendance_register>(query,new { user_id = user_id });
+                    result = con.Query<attendance_register>(query, new { user_id = user_id });
+                }
+
+
+                return result;
             }
-
-
-            return result;
         }
 
         public int present_finalizer(string session,string date,int section_id)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     attendance_register a,
@@ -608,17 +647,19 @@ namespace SMS.Models
                                         AND attendance = 1
                                         AND IFNULL(finalize, 0) = 0";
 
-            var result = con.Query<int>(query,new { section_id = section_id, session = session, date = date }).SingleOrDefault();
+                var result = con.Query<int>(query, new { section_id = section_id, session = session, date = date }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public int absent_finalizer(string session, string date, int section_id)
         {
 
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     attendance_register a,
@@ -632,16 +673,18 @@ namespace SMS.Models
                                         AND attendance = 0
                                         AND IFNULL(finalize, 0) = 0";
 
-            var result = con.Query<int>(query, new { section_id = section_id, session = session, date = date }).SingleOrDefault();
+                var result = con.Query<int>(query, new { section_id = section_id, session = session, date = date }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public string class_teacher (int class_id, int section_id)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     CONCAT(b.FirstName, ' ', b.LastName) class_teacher
                                 FROM
                                     mst_attendance a,
@@ -651,16 +694,18 @@ namespace SMS.Models
                                         AND a.class_id = @class_id
                                         AND a.section_id = @section_id";
 
-            var result = con.Query<string>(query, new { section_id = section_id, class_id = class_id}).SingleOrDefault();
+                var result = con.Query<string>(query, new { section_id = section_id, class_id = class_id }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public string finalizer(int class_id, int section_id)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     CONCAT(b.FirstName, ' ', b.LastName) class_teacher
                                 FROM
                                     mst_attendance a,
@@ -670,20 +715,22 @@ namespace SMS.Models
                                         AND a.class_id = @class_id
                                         AND a.section_id = @section_id";
 
-            var result = con.Query<string>(query, new { section_id = section_id, class_id = class_id }).SingleOrDefault();
+                var result = con.Query<string>(query, new { section_id = section_id, class_id = class_id }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<attendance_register> att_left_classess(int user_id,bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            IEnumerable<attendance_register> result;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+                IEnumerable<attendance_register> result;
+                if (flag)
+                {
+                    query = @"SELECT 
                                 CONCAT('Class ',
                                         b.class_name,
                                         ' Section ',
@@ -719,11 +766,11 @@ namespace SMS.Models
                                                 session_finalize = 'Y'))
                             ORDER BY b.order_by";
 
-                result = con.Query<attendance_register>(query);
-            }
-            else
-            {
-                query = @"SELECT 
+                    result = con.Query<attendance_register>(query);
+                }
+                else
+                {
+                    query = @"SELECT 
                                 CONCAT('Class ',
                                         b.class_name,
                                         ' Section ',
@@ -765,22 +812,24 @@ namespace SMS.Models
                                                 session_finalize = 'Y'))
                             ORDER BY b.order_by";
 
-                result = con.Query<attendance_register>(query, new { user_id = user_id });
+                    result = con.Query<attendance_register>(query, new { user_id = user_id });
+                }
+
+
+                return result;
             }
-
-
-            return result;
         }
 
         public IEnumerable<dailyBirthdayWish> std_birthday_list(int user_id, bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            IEnumerable<dailyBirthdayWish> result;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+                IEnumerable<dailyBirthdayWish> result;
+                if (flag)
+                {
+                    query = @"SELECT 
                                 DATE_FORMAT(a.std_dob, '%d') date_num,
                                 DATE_FORMAT(a.std_dob, '%b') month_name,
                                 CONCAT(IFNULL(std_first_name, ''),
@@ -820,12 +869,12 @@ namespace SMS.Models
                                         session_finalize = 'Y')
                             ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
 
-                result = con.Query<dailyBirthdayWish>(query);
-            }
-            else
-            {
+                    result = con.Query<dailyBirthdayWish>(query);
+                }
+                else
+                {
 
-                query = @"SELECT 
+                    query = @"SELECT 
                                 DATE_FORMAT(a.std_dob, '%d') date_num,
                                 DATE_FORMAT(a.std_dob, '%b') month_name,
                                 CONCAT(IFNULL(std_first_name, ''),
@@ -866,21 +915,23 @@ namespace SMS.Models
                                         session_finalize = 'Y')
                             ORDER BY YEAR(CURDATE()) , MONTH(std_dob) , DAY(std_dob)";
 
-                result = con.Query<dailyBirthdayWish>(query, new { user_id = user_id });
+                    result = con.Query<dailyBirthdayWish>(query, new { user_id = user_id });
+                }
+
+
+                return result;
             }
-
-
-            return result;
         }
 
 
         public IEnumerable<dailyBirthdayWish> staff_birthday()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = "";
-            IEnumerable<dailyBirthdayWish> result;
-           
+                string query = "";
+                IEnumerable<dailyBirthdayWish> result;
+
                 query = @"SELECT 
                                 DATE_FORMAT(a.dob, '%d') date_num,
                                 DATE_FORMAT(a.dob, '%b') month_name,
@@ -896,28 +947,30 @@ namespace SMS.Models
                             ORDER BY YEAR(CURDATE()) , MONTH(dob) , DAY(dob)";
 
                 result = con.Query<dailyBirthdayWish>(query);
-            
-          
 
 
-            return result;
+
+
+                return result;
+            }
         }
 
         public decimal[] dues()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
-
-
-            string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
-
-            string session = con.Query<string>(query1).SingleOrDefault();
-
-            String query = "";
-
-            if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+                int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+
+
+                string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
+
+                string session = con.Query<string>(query1).SingleOrDefault();
+
+                String query = "";
+
+                if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+                {
+                    query = @"SELECT 
                                 *
                             FROM
                                 (SELECT 
@@ -958,10 +1011,10 @@ namespace SMS.Models
                                                 AND c.session = d.session
                                                 AND b.std_active = 'Y')) a
                             ORDER BY a.order_by ASC";
-            }
-            else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
-            {
-                query = @"SELECT 
+                }
+                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
+                {
+                    query = @"SELECT 
                                 *
                             FROM
                                 (SELECT 
@@ -1000,10 +1053,10 @@ namespace SMS.Models
                                                 AND c.session = d.session
                                                 AND b.std_active = 'Y')) a
                             ORDER BY a.order_by ASC";
-            }
-            else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
-            {
-                query = @"SELECT 
+                }
+                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
+                {
+                    query = @"SELECT 
                                 *
                             FROM
                                 (SELECT 
@@ -1042,10 +1095,10 @@ namespace SMS.Models
                                                 AND c.session = d.session
                                                 AND b.std_active = 'Y')) a
                             ORDER BY a.order_by ASC";
-            }
-            else
-            {
-                query = @"SELECT 
+                }
+                else
+                {
+                    query = @"SELECT 
                                 *
                             FROM
                                 (SELECT 
@@ -1082,31 +1135,33 @@ namespace SMS.Models
                                                 AND c.session = d.session
                                                 AND b.std_active = 'Y')) a
                             ORDER BY a.order_by ASC";
+                }
+
+                var result = con.Query<decimal>(query, new { session = session });
+
+
+                decimal[] s = result.ToArray<decimal>();
+
+
+                return s;
             }
-
-            var result = con.Query<decimal>(query, new { session = session });
-
-
-            decimal[] s = result.ToArray<decimal>();
-
-
-            return s;
         }
 
         public decimal[] recovered()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-            int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
-
-            string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
-
-            string session = con.Query<string>(query1).SingleOrDefault();
-
-            String query = "";
-
-            if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+                int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+
+                string query1 = @"SELECT session FROM mst_session where session_finalize = 'Y'";
+
+                string session = con.Query<string>(query1).SingleOrDefault();
+
+                String query = "";
+
+                if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+                {
+                    query = @"SELECT 
                                 amt
                             FROM
                                 (SELECT 
@@ -1148,10 +1203,10 @@ namespace SMS.Models
                                         AND a.serial = d.serial)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
-            }
-            else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
-            {
-                query = @"SELECT 
+                }
+                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
+                {
+                    query = @"SELECT 
                                 amt
                             FROM
                                 (SELECT 
@@ -1191,10 +1246,10 @@ namespace SMS.Models
                                         AND a.serial = d.serial)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
-            }
-            else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
-            {
-                query = @"SELECT 
+                }
+                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
+                {
+                    query = @"SELECT 
                                 amt
                             FROM
                                 (SELECT 
@@ -1234,10 +1289,10 @@ namespace SMS.Models
                                         AND a.serial = d.serial)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
-            }
-            else
-            {
-                query = @"SELECT 
+                }
+                else
+                {
+                    query = @"SELECT 
                                 amt
                             FROM
                                 (SELECT 
@@ -1275,23 +1330,25 @@ namespace SMS.Models
                                                 AND a.serial = d.serial)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
+                }
+                var result = con.Query<decimal>(query, new { session = session });
+
+                decimal[] s = result.ToArray<decimal>();
+
+                return s;
             }
-            var result = con.Query<decimal>(query, new { session = session });
-
-            decimal[] s = result.ToArray<decimal>();
-
-            return s;
         }
 
         public int[] thirty_day_present(int user_id,bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            int[] s;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+                int[] s;
+                if (flag)
+                {
+                    query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 attendance_register
@@ -1308,12 +1365,12 @@ namespace SMS.Models
                             GROUP BY att_date
                             ORDER BY att_date";
 
-                var result = con.Query<int>(query);
-                s = result.ToArray<int>();
-            }
-            else
-            {
-                query = @"SELECT 
+                    var result = con.Query<int>(query);
+                    s = result.ToArray<int>();
+                }
+                else
+                {
+                    query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 attendance_register a,
@@ -1339,23 +1396,25 @@ namespace SMS.Models
                             GROUP BY att_date
                             ORDER BY att_date";
 
-                var result = con.Query<int>(query,new {user_id = user_id });
-                s = result.ToArray<int>();
-            }
-            
+                    var result = con.Query<int>(query, new { user_id = user_id });
+                    s = result.ToArray<int>();
+                }
 
-            return s;
+
+                return s;
+            }
         }
 
         public int[] thirty_day_absent(int user_id, bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            int[] s;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+                int[] s;
+                if (flag)
+                {
+                    query = @"SELECT 
                             COUNT(*)
                         FROM
                             attendance_register
@@ -1372,12 +1431,12 @@ namespace SMS.Models
                         GROUP BY att_date
                         ORDER BY att_date";
 
-                var result = con.Query<int>(query);
-                s = result.ToArray<int>();
-            }
-            else
-            {
-                query = @"SELECT 
+                    var result = con.Query<int>(query);
+                    s = result.ToArray<int>();
+                }
+                else
+                {
+                    query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 attendance_register a,
@@ -1403,23 +1462,25 @@ namespace SMS.Models
                             GROUP BY att_date
                             ORDER BY att_date";
 
-                var result = con.Query<int>(query, new { user_id = user_id });
-                s = result.ToArray<int>();
+                    var result = con.Query<int>(query, new { user_id = user_id });
+                    s = result.ToArray<int>();
+                }
+
+
+                return s;
             }
-
-
-            return s;
         }
 
         public int[] absent(int user_id, bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            int[] s;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+                int[] s;
+                if (flag)
+                {
+                    query = @"SELECT 
                                 COUNT(IF(attendance = 0, 0, NULL))
                             FROM
                                 attendance_register a,
@@ -1437,12 +1498,12 @@ namespace SMS.Models
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
 
-                var result = con.Query<int>(query);
-                s = result.ToArray<int>();
-            }
-            else
-            {
-                query = @"SELECT 
+                    var result = con.Query<int>(query);
+                    s = result.ToArray<int>();
+                }
+                else
+                {
+                    query = @"SELECT 
                                 COUNT(IF(attendance = 0, 0, NULL))
                             FROM
                                 attendance_register a,
@@ -1469,23 +1530,25 @@ namespace SMS.Models
                             GROUP BY b.class_id
                             ORDER BY b.class_id";
 
-                var result = con.Query<int>(query, new { user_id = user_id });
-                s = result.ToArray<int>();
+                    var result = con.Query<int>(query, new { user_id = user_id });
+                    s = result.ToArray<int>();
+                }
+
+
+                return s;
             }
-
-
-            return s;
         }
 
         public int[] present(int user_id, bool flag)
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
-
-            string query = "";
-            int[] s;
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+
+                string query = "";
+                int[] s;
+                if (flag)
+                {
+                    query = @"SELECT 
                             COUNT(IF(attendance = 1, 1, NULL))
                         FROM
                             attendance_register a,
@@ -1503,12 +1566,12 @@ namespace SMS.Models
                         GROUP BY b.class_id
                         ORDER BY b.class_id";
 
-                var result = con.Query<int>(query);
-                s = result.ToArray<int>();
-            }
-            else
-            {
-                query = @"SELECT 
+                    var result = con.Query<int>(query);
+                    s = result.ToArray<int>();
+                }
+                else
+                {
+                    query = @"SELECT 
                             COUNT(IF(attendance = 1, 1, NULL))
                         FROM
                             attendance_register a,
@@ -1535,23 +1598,26 @@ namespace SMS.Models
                         GROUP BY b.class_id
                         ORDER BY b.class_id";
 
-                var result = con.Query<int>(query, new { user_id = user_id });
-                s = result.ToArray<int>();
+                    var result = con.Query<int>(query, new { user_id = user_id });
+                    s = result.ToArray<int>();
+                }
+
+
+                return s;
             }
-
-
-            return s;
         }
 
         public int today_consumption()
         {
-            MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string query = @"SELECT count(*) FROM sms_record where date(date_time) = curdate() and sms_status = 'Success'";
+                string query = @"SELECT count(*) FROM sms_record where date(date_time) = curdate() and sms_status = 'Success'";
 
-            var result = con.Query<int>(query).SingleOrDefault();
+                var result = con.Query<int>(query).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public string SMSCredit()

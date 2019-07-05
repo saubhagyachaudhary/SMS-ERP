@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class usersController : Controller
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddUser()
@@ -77,37 +77,42 @@ namespace SMS.Controllers
         public JsonResult Getfirstname(int id)
         {
 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"select FirstName from emp_profile where user_id = @id";
 
-            string query = @"select FirstName from emp_profile where user_id = @id";
+                string FirstName = con.Query<string>(query, new { id = id }).SingleOrDefault();
 
-            string FirstName = con.Query<string>(query, new { id = id }).SingleOrDefault();
-
-            return Json(FirstName);
+                return Json(FirstName);
+            }
 
         }
 
         public JsonResult Getlastname(int id)
         {
 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"select LastName from emp_profile where user_id = @id";
 
-            string query = @"select LastName from emp_profile where user_id = @id";
+                string LastName = con.Query<string>(query, new { id = id }).SingleOrDefault();
 
-            string LastName = con.Query<string>(query, new { id = id }).SingleOrDefault();
-
-            return Json(LastName);
+                return Json(LastName);
+            }
 
         }
 
         public JsonResult Getusername(int id)
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
+                string query = @"select Email from emp_profile where user_id = @id";
 
-            string query = @"select Email from emp_profile where user_id = @id";
+                string UserName = con.Query<string>(query, new { id = id }).SingleOrDefault();
 
-            string UserName = con.Query<string>(query, new { id = id }).SingleOrDefault();
-
-            return Json(UserName);
-
+                return Json(UserName);
+            }
         }
     }
 }

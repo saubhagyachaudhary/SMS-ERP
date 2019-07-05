@@ -52,7 +52,7 @@
                         <div class="form-group">
                             @Html.LabelFor(model => model.subject_id, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
                             <div class="col-md-10 col-xs-12 col-sm-10">
-                                @Html.DropDownList("subject_id", new SelectList(string.Empty, "subject_id", "subject_name"), "Select subject", htmlAttributes: new { @class = "form-control" })
+                                @Html.DropDownList("subject_id", new SelectList(string.Empty, "subject_id", "subject_name"), "Select Subject", htmlAttributes: new { @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.subject_id, "", new { @class = "text-danger" })
                             </div>
                         </div>

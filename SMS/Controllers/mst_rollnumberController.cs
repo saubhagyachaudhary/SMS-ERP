@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_rollnumberController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult roll_class_list()
@@ -48,7 +48,9 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult rollno_class_student_list(List<mst_rollnumber> list)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 mst_rollnumber a,
@@ -64,45 +66,46 @@ namespace SMS.Controllers
                                     AND b.class_id = @class_id
                                     AND c.section_id = @section_id";
 
-            mst_sessionMain sess = new mst_sessionMain();
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session = sess.findActive_finalSession();
-            int count = 0;
-            foreach(var roll in list)
-            {
-                count = con.Query<int>(query, new { session = session, roll_number = roll.roll_number, class_id = roll.class_id,section_id = roll.section_id }).SingleOrDefault();
-                if(count > 0)
+                string session = sess.findActive_finalSession();
+                int count = 0;
+                foreach (var roll in list)
                 {
-                    ModelState.AddModelError(String.Empty, "Roll number already assigned to other student.");
-
-                    mst_rollnumberMain attendanceMain = new mst_rollnumberMain();
-
-                    IEnumerable<mst_rollnumber> roll_no = attendanceMain.student_list_for_rollnumber(roll.class_id, roll.section_id);
-
-
-
-                    int j = attendanceMain.max_roll_number(roll.class_id, roll.section_id);
-
-                    foreach (var i in roll_no)
+                    count = con.Query<int>(query, new { session = session, roll_number = roll.roll_number, class_id = roll.class_id, section_id = roll.section_id }).SingleOrDefault();
+                    if (count > 0)
                     {
-                        j = j + 1;
+                        ModelState.AddModelError(String.Empty, "Roll number already assigned to other student.");
 
-                        i.roll_number = j;
+                        mst_rollnumberMain attendanceMain = new mst_rollnumberMain();
+
+                        IEnumerable<mst_rollnumber> roll_no = attendanceMain.student_list_for_rollnumber(roll.class_id, roll.section_id);
 
 
+
+                        int j = attendanceMain.max_roll_number(roll.class_id, roll.section_id);
+
+                        foreach (var i in roll_no)
+                        {
+                            j = j + 1;
+
+                            i.roll_number = j;
+
+
+                        }
+
+                        return View(roll_no);
                     }
-
-                    return View(roll_no);
                 }
+
+
+
+                mst_rollnumberMain rollMain = new mst_rollnumberMain();
+
+                rollMain.update_roll_no(list);
+
+                return RedirectToAction("roll_class_list");
             }
-
-            
-
-            mst_rollnumberMain rollMain = new mst_rollnumberMain();
-
-            rollMain.update_roll_no(list);
-
-            return RedirectToAction("roll_class_list");
         }
     }
 }

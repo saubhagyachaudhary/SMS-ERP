@@ -13,14 +13,16 @@ namespace SMS.job_scheduler
 {
     public class dailyBirthdayWishMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
         public async Task SendBirthdayWish()
         {
-            IEnumerable<dailyBirthdayWish> std;
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                IEnumerable<dailyBirthdayWish> std;
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 CONCAT(IFNULL(std_first_name, ''),
                                         ' ',
                                         IFNULL(std_last_name, '')) std_name,
@@ -63,6 +65,7 @@ namespace SMS.job_scheduler
 
             hub.SMSCreditLeft();
 #endif
+            }
         }
     }
 }

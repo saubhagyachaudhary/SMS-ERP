@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class mst_class_disciplineMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddClassDiscipline(mst_class_discipline mst)
         {
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
 
 
-                string query = @"INSERT INTO mst_class_discipline
+                    string query = @"INSERT INTO mst_class_discipline
                                    (session
                                    ,class_id
                                    ,discipline_id)
@@ -29,15 +31,15 @@ namespace SMS.Models
                                    @class_id,
                                    @discipline_id)";
 
-                mst.session = sess.findFinal_Session();
+                    mst.session = sess.findFinal_Session();
 
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.class_id,
-                    mst.discipline_id
-                });
-
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.class_id,
+                        mst.discipline_id
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -47,10 +49,11 @@ namespace SMS.Models
 
         public IEnumerable<mst_class_discipline> AllClassDisciplineList()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 a.session,
                                 a.class_id,
                                 a.discipline_id,
@@ -67,15 +70,18 @@ namespace SMS.Models
                                     AND b.session = a.session
                                     AND c.session = b.session";
 
-            var result = con.Query<mst_class_discipline>(query, new { session = sess.findFinal_Session() });
+                var result = con.Query<mst_class_discipline>(query, new { session = sess.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
 
         public mst_class_discipline FindDisciplineClass(int class_id, int discipline_id, string session)
         {
-            String Query = @"SELECT a.session,a.class_id,a.discipline_id,c.class_name,b.discipline_name FROM mst_class_discipline a, mst_discipline b, mst_class c
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String Query = @"SELECT a.session,a.class_id,a.discipline_id,c.class_name,b.discipline_name FROM mst_class_discipline a, mst_discipline b, mst_class c
                                 where
                                 a.class_id = c.class_id
                                 and
@@ -87,19 +93,23 @@ namespace SMS.Models
                                 and
                                 a.discipline_id = @discipline_id";
 
-            return con.Query<mst_class_discipline>(Query, new { class_id = class_id, discipline_id = discipline_id, session = session }).SingleOrDefault();
+                return con.Query<mst_class_discipline>(Query, new { class_id = class_id, discipline_id = discipline_id, session = session }).SingleOrDefault();
+            }
         }
 
         public mst_class_discipline DeleteDisciplineClass(int class_id, int discipline_id, string session)
         {
-            String Query = @"DELETE FROM `mst_class_discipline`
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String Query = @"DELETE FROM `mst_class_discipline`
                             WHERE class_id = @class_id
                             and
                             discipline_id = @discipline_id
                             and
                             session = @session";
 
-            return con.Query<mst_class_discipline>(Query, new { class_id = class_id, discipline_id = discipline_id, session = session }).SingleOrDefault();
+                return con.Query<mst_class_discipline>(Query, new { class_id = class_id, discipline_id = discipline_id, session = session }).SingleOrDefault();
+            }
         }
     }
 }

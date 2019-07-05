@@ -13,20 +13,22 @@ namespace SMS.job_scheduler
 {
     public class duesReminderMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
 
         public async Task SendDuesReminder()
         {
-            IEnumerable<duesReminder> std;
-
-            string query;
-
-            mst_sessionMain session = new mst_sessionMain();
-
-            if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                query = @"SELECT 
+                IEnumerable<duesReminder> std;
+
+                string query;
+
+                mst_sessionMain session = new mst_sessionMain();
+
+                if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
+                {
+                    query = @"SELECT 
                                 std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
@@ -70,10 +72,10 @@ namespace SMS.job_scheduler
                                             WHERE
                                                 session = @session AND enable = 1))
                             GROUP BY a.sr_number";
-            }
-            else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
-            {
-                query = @"SELECT 
+                }
+                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
+                {
+                    query = @"SELECT 
                                 std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
@@ -116,10 +118,10 @@ namespace SMS.job_scheduler
                                             WHERE
                                                 session = @session AND enable = 1))
                             GROUP BY a.sr_number";
-            }
-            else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
-            {
-                query = @"SELECT 
+                }
+                else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 2)
+                {
+                    query = @"SELECT 
                                 std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
@@ -164,10 +166,10 @@ namespace SMS.job_scheduler
                             GROUP BY a.sr_number";
 
 
-            }
-            else
-            {
-                query = @"SELECT 
+                }
+                else
+                {
+                    query = @"SELECT 
                                 std_name, sr_number, SUM(dues) dues, std_contact
                             FROM
                                 (SELECT 
@@ -209,34 +211,35 @@ namespace SMS.job_scheduler
                                             WHERE
                                                 session = @session AND enable = 1))
                             GROUP BY a.sr_number";
-            }
+                }
 
 
-            std = con.Query<duesReminder>(query, new { session = session.findFinal_Session() });
+                std = con.Query<duesReminder>(query, new { session = session.findFinal_Session() });
 
-            SMSMessage sms = new SMSMessage();
+                SMSMessage sms = new SMSMessage();
 
-            foreach (var item in std)
-            {
-                foreach (var bdy in sms.smsbody("dues_reminder"))
+                foreach (var item in std)
                 {
-                    string body = bdy.Replace("#student_name#", item.std_name);
+                    foreach (var bdy in sms.smsbody("dues_reminder"))
+                    {
+                        string body = bdy.Replace("#student_name#", item.std_name);
 
-                    body = body.Replace("#sr_number#", item.sr_number.ToString());
+                        body = body.Replace("#sr_number#", item.sr_number.ToString());
 
-                    body = body.Replace("#dues#", item.dues.ToString());
+                        body = body.Replace("#dues#", item.dues.ToString());
 
-                    body = body.Replace("#current_date#", DateTime.Now.ToString("dddd, dd MMMM yyyy"));
+                        body = body.Replace("#current_date#", DateTime.Now.ToString("dddd, dd MMMM yyyy"));
 #if !DEBUG
                     await sms.SendSMS(body, item.std_contact,false);
 #endif
+                    }
                 }
+
+                DashboardHub hub = new DashboardHub();
+
+                hub.SMSCreditLeft();
+
             }
-
-            DashboardHub hub = new DashboardHub();
-
-            hub.SMSCreditLeft();
-
         }
     }
 }

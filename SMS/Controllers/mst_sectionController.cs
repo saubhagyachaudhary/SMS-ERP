@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_sectionController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddSection()
@@ -104,9 +104,11 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult DeleteSection(int id, FormCollection collection)
         {
-            mst_sectionMain stdMain = new mst_sectionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sectionMain stdMain = new mst_sectionMain();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 sr_register a,
@@ -122,20 +124,20 @@ namespace SMS.Controllers
                                         session_finalize = 'Y'
                                             AND session_active = 'Y')";
 
-            int count = con.Query<int>(query, new { section_id = id }).SingleOrDefault();
+                int count = con.Query<int>(query, new { section_id = id }).SingleOrDefault();
 
-            if(count == 0)
-            { 
-                stdMain.DeleteSection(id);
-                return RedirectToAction("AllSectionList");
-            }
-            else
-            {
-                ModelState.AddModelError(String.Empty, "Students assigned cannot delete section");
-                return View(stdMain.FindSection(id));
+                if (count == 0)
+                {
+                    stdMain.DeleteSection(id);
+                    return RedirectToAction("AllSectionList");
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, "Students assigned cannot delete section");
+                    return View(stdMain.FindSection(id));
 
+                }
             }
-            
         }
     }
 }

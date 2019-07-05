@@ -13,7 +13,7 @@ namespace SMS.Controllers
 {
     public class attendance_registerController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult attendance_class_list()
@@ -54,12 +54,16 @@ namespace SMS.Controllers
         [HttpGet]
         public ActionResult attendance_class_student_list(int class_id,int section_id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            string sess = session.findFinal_Session();
+
+                mst_sessionMain session = new mst_sessionMain();
+
+                string sess = session.findFinal_Session();
 
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 sr_register a,
@@ -84,20 +88,20 @@ namespace SMS.Controllers
                                     WHERE
                                         session = @session)";
 
-            int count = con.Query<int>(query, new { class_id = class_id,section_id = section_id ,session = sess }).SingleOrDefault();
+                int count = con.Query<int>(query, new { class_id = class_id, section_id = section_id, session = sess }).SingleOrDefault();
 
-            if(count==0)
-            {
+                if (count == 0)
+                {
 
-                attendance_registerMain attendanceMain = new attendance_registerMain();
+                    attendance_registerMain attendanceMain = new attendance_registerMain();
 
-                return View(attendanceMain.student_list_for_attendance(class_id, section_id));
+                    return View(attendanceMain.student_list_for_attendance(class_id, section_id));
+                }
+                else
+                {
+                    return View("updateRollNo");
+                }
             }
-            else
-            {
-                return View("updateRollNo");
-            }
-
         }
 
         [HttpPost]

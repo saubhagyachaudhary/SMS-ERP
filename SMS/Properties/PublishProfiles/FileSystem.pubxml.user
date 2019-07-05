@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\Hariti ERP MySQL\Project ERP\Hariti\deploy 6</_PublishTargetUrl>
+    <_PublishTargetUrl>D:\Project ERP\deploy</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="ApplicationInsights.config">
@@ -169,7 +169,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/21/2014 06:25:46</publishTime>
     </File>
     <File Include="bin/SMS.dll">
-      <publishTime>06/26/2019 08:40:43</publishTime>
+      <publishTime>07/02/2019 19:06:22</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>11/28/2018 13:00:36</publishTime>
@@ -6310,7 +6310,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/12/2019 16:59:09</publishTime>
     </File>
     <File Include="Views/GenerateTC/all_nso_students.cshtml">
-      <publishTime>06/04/2019 19:26:59</publishTime>
+      <publishTime>04/06/2019 19:26:59</publishTime>
     </File>
     <File Include="Views/GenerateTC/all_TC_List.cshtml">
       <publishTime>05/31/2019 19:00:12</publishTime>
@@ -6502,10 +6502,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/09/2018 17:02:13</publishTime>
     </File>
     <File Include="Views/mst_exam_marks/addExamMarks.cshtml">
-      <publishTime>03/26/2019 16:50:06</publishTime>
+      <publishTime>07/02/2019 16:40:39</publishTime>
     </File>
     <File Include="Views/mst_exam_marks/studentList.cshtml">
-      <publishTime>09/16/2018 21:50:48</publishTime>
+      <publishTime>07/02/2019 16:23:34</publishTime>
     </File>
     <File Include="Views/mst_fees/AddFees.cshtml">
       <publishTime>09/09/2018 14:45:15</publishTime>
@@ -6572,6 +6572,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Views/mst_subject/EditSubject.cshtml">
       <publishTime>09/09/2018 16:24:29</publishTime>
+    </File>
+    <File Include="Views/mst_subject_parameters/AddParameters.cshtml">
+      <publishTime>06/26/2019 13:23:49</publishTime>
+    </File>
+    <File Include="Views/mst_subject_parameters/AllParametersList.cshtml">
+      <publishTime>06/26/2019 13:12:57</publishTime>
+    </File>
+    <File Include="Views/mst_subject_parameters/DeleteParameter.cshtml">
+      <publishTime>06/26/2019 13:15:17</publishTime>
     </File>
     <File Include="Views/mst_term/AddTerm.cshtml">
       <publishTime>09/09/2018 17:06:09</publishTime>
@@ -6688,13 +6697,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/09/2018 13:29:27</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>05/31/2019 20:24:33</publishTime>
+      <publishTime>07/02/2019 17:01:51</publishTime>
     </File>
     <File Include="Views/sr_register/AddStudent.cshtml">
       <publishTime>02/15/2019 17:06:35</publishTime>
     </File>
     <File Include="Views/sr_register/AllStudentList.cshtml">
-      <publishTime>06/04/2019 19:30:05</publishTime>
+      <publishTime>04/06/2019 19:30:05</publishTime>
     </File>
     <File Include="Views/sr_register/DeleteStudent.cshtml">
       <publishTime>10/07/2016 23:42:08</publishTime>
@@ -6706,7 +6715,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/01/0001 00:00:00</publishTime>
     </File>
     <File Include="Views/sr_register/StudentDetails.cshtml">
-      <publishTime>06/04/2019 20:09:55</publishTime>
+      <publishTime>04/06/2019 20:09:55</publishTime>
     </File>
     <File Include="Views/std_discount/AddDiscount.cshtml">
       <publishTime>09/09/2018 14:45:17</publishTime>
@@ -6766,7 +6775,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/07/2016 14:16:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>06/26/2019 08:40:58</publishTime>
+      <publishTime>07/02/2019 19:06:28</publishTime>
     </File>
   </ItemGroup>
 </Project>

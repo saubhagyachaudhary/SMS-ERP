@@ -16,7 +16,7 @@ namespace SMS.Controllers
 {
     public class Fees_collectController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult fees_collect(int? rcpt_no)
@@ -87,124 +87,128 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult fees_collect(fees_collect col)
         {
-            mst_finMain fin = new mst_finMain();
-            if (fin.checkFYnotExpired())
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                try
+                mst_finMain fin = new mst_finMain();
+                if (fin.checkFYnotExpired())
                 {
-                    mst_sessionMain sess = new mst_sessionMain();
-
-                    if(sess.findActive_Session() == col.session)
+                    try
                     {
-                        string query = @"SELECT 
+                        mst_sessionMain sess = new mst_sessionMain();
+
+                        if (sess.findActive_Session() == col.session)
+                        {
+
+                            string query = @"SELECT 
                                                ifnull(SUM(IFNULL(outstd_amount, 0)) - SUM(IFNULL(rmt_amount, 0)),0) amt
                                             FROM
                                                 out_standing
                                             WHERE
                                                 sr_number = @sr_number AND session != @session";
 
-                        decimal amt = con.Query<decimal>(query, new { sr_number = col.sr_num, session = col.session }).SingleOrDefault();
+                            decimal amt = con.Query<decimal>(query, new { sr_number = col.sr_num, session = col.session }).SingleOrDefault();
 
-                        if(amt != 0m)
+                            if (amt != 0m)
+                            {
+                                ModelState.AddModelError(string.Empty, "Kindly clear previous session fees first.");
+                                fees_collect fee = new fees_collect();
+
+                                sr_registerMain stdMain = new sr_registerMain();
+
+                                fee.list = stdMain.AllStudentList(GetDefaultSection());
+
+
+                                DDsession_name();
+                                DDClassWiseSection();
+
+
+
+                                return View(fee);
+                            }
+
+                        }
+
+                        if (col.sr_num > 0)
                         {
-                            ModelState.AddModelError(string.Empty, "Kindly clear previous session fees first.");
+                            sr_registerMain reg = new sr_registerMain();
+                            sr_register register = new sr_register();
+
+                            register = reg.FindStudent(col.sr_num, col.session);
+
+                            if (register == null)
+                            {
+
+                                register = reg.FindStudent(col.sr_num, sess.findFinal_Session());
+                            }
+
+                            col.std_Name = register.std_first_name + " " + register.std_last_name;
+
+                            col.std_father_name = register.std_father_name;
+
+                            col.std_mother_name = register.std_mother_name;
+
+                            col.std_contact = register.std_contact;
+
+                            col.std_Email = register.std_email;
+
+                            col.std_Class = register.class_name;
+
+                            col.std_Section = register.section_name;
+
+                            col.std_Pickup_point = register.pickup_point;
+
+                            col.std_aadhar = register.std_aadhar;
+
+                            return View("submit_fees", col);
+                        }
+                        else if (col.reg_num > 0)
+                        {
+                            std_registrationMain reg = new std_registrationMain();
+                            std_registration registration = new std_registration();
+
+
+                            registration = reg.FindRegistrationForFees(col.reg_num);
+
+
+                            col.std_Name = registration.std_first_name + " " + registration.std_last_name;
+
+                            col.std_father_name = registration.std_father_name;
+
+                            col.std_mother_name = registration.std_mother_name;
+
+                            col.std_contact = registration.std_contact;
+
+                            col.std_Email = registration.std_email;
+
+                            col.std_Class = registration.class_name;
+
+                            col.std_Section = "N/A";
+
+                            col.std_Pickup_point = "N/A";
+
+                            return View("submit_fees", col);
+                        }
+                        else
+                        {
                             fees_collect fee = new fees_collect();
 
                             sr_registerMain stdMain = new sr_registerMain();
 
-                            fee.list = stdMain.AllStudentList(GetDefaultSection());
+                            fee.list = stdMain.AllStudentList(col.section_id);
 
 
                             DDsession_name();
+
                             DDClassWiseSection();
 
 
 
                             return View(fee);
                         }
-
                     }
-
-                    if (col.sr_num > 0)
+                    catch
                     {
-                        sr_registerMain reg = new sr_registerMain();
-                        sr_register register = new sr_register();
 
-                        register = reg.FindStudent(col.sr_num, col.session);
-
-                        if (register == null)
-                        {
-                            
-                            register = reg.FindStudent(col.sr_num, sess.findFinal_Session());
-                        }
-
-                        col.std_Name = register.std_first_name + " " + register.std_last_name;
-
-                        col.std_father_name = register.std_father_name;
-
-                        col.std_mother_name = register.std_mother_name;
-
-                        col.std_contact = register.std_contact;
-
-                        col.std_Email = register.std_email;
-
-                        col.std_Class = register.class_name;
-
-                        col.std_Section = register.section_name;
-
-                        col.std_Pickup_point = register.pickup_point;
-
-                        col.std_aadhar = register.std_aadhar;
-
-                        return View("submit_fees", col);
-                    }
-                    else if(col.reg_num>0)
-                    {
-                        std_registrationMain reg = new std_registrationMain();
-                        std_registration registration = new std_registration();
-
-
-                        registration = reg.FindRegistrationForFees(col.reg_num);
-
-
-                        col.std_Name = registration.std_first_name + " " + registration.std_last_name;
-
-                        col.std_father_name = registration.std_father_name;
-
-                        col.std_mother_name = registration.std_mother_name;
-
-                        col.std_contact = registration.std_contact;
-
-                        col.std_Email = registration.std_email;
-
-                        col.std_Class = registration.class_name;
-
-                        col.std_Section = "N/A";
-
-                        col.std_Pickup_point = "N/A";
-
-                        return View("submit_fees", col);
-                    }else
-                    {
-                        fees_collect fee = new fees_collect();
-
-                        sr_registerMain stdMain = new sr_registerMain();
-
-                        fee.list = stdMain.AllStudentList(col.section_id);
-
-
-                        DDsession_name();
-
-                        DDClassWiseSection();
-
-
-
-                        return View(fee);
-                    }
-                }
-                catch
-                {
-                   
                         ModelState.AddModelError(string.Empty, "Student record not found");
                         fees_collect fee = new fees_collect();
 
@@ -219,36 +223,37 @@ namespace SMS.Controllers
 
 
                         return View(fee);
-                    
+
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Financial Year Expired cannot submit fees create new Financial  year.");
+
+                    fees_collect fee = new fees_collect();
+
+                    sr_registerMain stdMain = new sr_registerMain();
+
+                    fee.list = stdMain.AllStudentList(col.section_id);
+
+                    DDsession_name();
+
+                    DDClassWiseSection();
+
+
+
+                    return View(fee);
                 }
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Financial Year Expired cannot submit fees create new Financial  year.");
-              
-                fees_collect fee = new fees_collect();
-
-                sr_registerMain stdMain = new sr_registerMain();
-
-                fee.list = stdMain.AllStudentList(col.section_id);
-
-                DDsession_name();
-
-                DDClassWiseSection();
-
-
-
-                return View(fee);
-            }
-          
         }
 
         public void DDClassWiseSection()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     a.section_id,
                                     CONCAT(IFNULL(b.class_name, ''),
                                             ' Section ',
@@ -263,20 +268,21 @@ namespace SMS.Controllers
                                 order by b.order_by";
 
 
-            var section_list = con.Query<mst_section>(query, new { session = sess.findFinal_Session() });
+                var section_list = con.Query<mst_section>(query, new { session = sess.findFinal_Session() });
 
-            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
+                IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
-            ViewData["section_id"] = list;
-
+                ViewData["section_id"] = list;
+            }
         }
 
         public int GetDefaultSection()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 a.section_id
                             FROM
                                 mst_section a,
@@ -288,10 +294,10 @@ namespace SMS.Controllers
                             ORDER BY b.order_by 
                             LIMIT 1";
 
-            int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
+                int section = con.Query<int>(query, new { session = sess.findFinal_Session() }).SingleOrDefault();
 
-            return section;
-
+                return section;
+            }
         }
 
         [HttpPost]
@@ -388,33 +394,36 @@ namespace SMS.Controllers
 
         private IEnumerable<fees_payment> GetFeesPayment(int sr_num, string session)
         {
-            List<fees_payment> payment = new List<fees_payment>();
-            
-          
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-            out_standingMain outstd = new out_standingMain();
-            std_discount discount = new std_discount();
-            std_discountMain discountMain = new std_discountMain();
+                List<fees_payment> payment = new List<fees_payment>();
 
-            IEnumerable<out_standing> std = new List<out_standing>();
 
-            std = outstd.AllOutStanding(sr_num,session);
 
-            string query = @"SELECT 
+                out_standingMain outstd = new out_standingMain();
+                std_discount discount = new std_discount();
+                std_discountMain discountMain = new std_discountMain();
+
+                IEnumerable<out_standing> std = new List<out_standing>();
+
+                std = outstd.AllOutStanding(sr_num, session);
+
+                string query = @"SELECT 
                                     fine, start_date, upper_limit
                                 FROM
                                     mst_fine_rule
                                 WHERE
                                     session = @session AND acc_id = @acc_id and enable = 1";
 
-            string start_yr = @"SELECT 
+                string start_yr = @"SELECT 
                                 YEAR(session_start_date)
                             FROM
                                 mst_session
                             WHERE
                                 session = @session";
 
-            string end_yr = @"SELECT 
+                string end_yr = @"SELECT 
                                 YEAR(session_end_date)
                             FROM
                                 mst_session
@@ -422,47 +431,47 @@ namespace SMS.Controllers
                                 session = @session";
 
 
-            foreach (out_standing val in std)
+                foreach (out_standing val in std)
                 {
-                    decimal amt_fine =0;
+                    decimal amt_fine = 0;
                     int year = 0;
                     mst_fine_rule result = con.Query<mst_fine_rule>(query, new { acc_id = val.acc_id, session = val.session }).FirstOrDefault();
 
-                if (val.month_no >= 4 && val.month_no <= 12)
-                   {
+                    if (val.month_no >= 4 && val.month_no <= 12)
+                    {
                         year = con.Query<int>(start_yr, new { session = val.session }).FirstOrDefault();
-                        
-                   }
+
+                    }
                     else
                     {
                         year = con.Query<int>(end_yr, new { session = val.session }).FirstOrDefault();
                     }
 
-                if (result != null)
-                {
-                    DateTime dt = new DateTime(year, val.month_no, result.start_date);
-
-                    if (dt < System.DateTime.Now.AddMinutes(dateTimeOffSet))
+                    if (result != null)
                     {
+                        DateTime dt = new DateTime(year, val.month_no, result.start_date);
 
-                        amt_fine = (decimal)((System.DateTime.Now.Date - dt).TotalDays) * result.fine;
-
-                        if (amt_fine >= result.upper_limit)
+                        if (dt < System.DateTime.Now.AddMinutes(dateTimeOffSet))
                         {
-                            amt_fine = result.upper_limit;
+
+                            amt_fine = (decimal)((System.DateTime.Now.Date - dt).TotalDays) * result.fine;
+
+                            if (amt_fine >= result.upper_limit)
+                            {
+                                amt_fine = result.upper_limit;
+                            }
                         }
                     }
+                    payment.Add(new fees_payment { fine = amt_fine, acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number, session = val.session });
                 }
-                   payment.Add(new fees_payment {fine = amt_fine , acc_id = val.acc_id, Fees_type = val.acc_name, amount_to_be_paid = val.outstd_amount, due_amount = val.outstd_amount, serial = val.serial, sr_num = val.sr_number, session = val.session });
-                }
-                
-               
 
-                
-                
 
-            return payment;
 
+
+
+
+                return payment;
+            }
         }
 
         

@@ -19,7 +19,7 @@ namespace SMS.Controllers
 {
     public class reportController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
 
         [HttpGet]
@@ -123,7 +123,9 @@ namespace SMS.Controllers
 
         public JsonResult GetAccountHead(string session)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     acc_id, acc_name
                                 FROM
                                     mst_acc_head
@@ -132,12 +134,12 @@ namespace SMS.Controllers
 
 
 
-            var acc_list = con.Query<mst_acc_head>(query, new { session = session });
+                var acc_list = con.Query<mst_acc_head>(query, new { session = session });
 
-            IEnumerable<SelectListItem> list = new SelectList(acc_list, "acc_id", "acc_name");
+                IEnumerable<SelectListItem> list = new SelectList(acc_list, "acc_id", "acc_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
 
         [HttpGet]
@@ -213,32 +215,33 @@ namespace SMS.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<ActionResult> duesListNotice_students(IEnumerable<repDues_list> list)
         {
-
-          
-            repDues_listMain dues = new repDues_listMain();
-            List<repDues_list> result = new List<repDues_list>();
-
-            bool flag = false;
-
-            int font_size = 12;
-
-            foreach (repDues_list li in list)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                if (li.check)
-                {
-                    result.Add(new repDues_list { sr_number = li.sr_number, amount = li.amount, month_name = li.month_name, std_father_name = li.std_father_name, name = li.name, payment_by = li.payment_by, message = li.message });
-                    if (li.flag_sms)
-                        flag = true;
-                    else
-                        flag = false;
-                }
 
-                if(li.font_size != 0)
+                repDues_listMain dues = new repDues_listMain();
+                List<repDues_list> result = new List<repDues_list>();
+
+                bool flag = false;
+
+                int font_size = 12;
+
+                foreach (repDues_list li in list)
                 {
-                    font_size = li.font_size;
+                    if (li.check)
+                    {
+                        result.Add(new repDues_list { sr_number = li.sr_number, amount = li.amount, month_name = li.month_name, std_father_name = li.std_father_name, name = li.name, payment_by = li.payment_by, message = li.message });
+                        if (li.flag_sms)
+                            flag = true;
+                        else
+                            flag = false;
+                    }
+
+                    if (li.font_size != 0)
+                    {
+                        font_size = li.font_size;
+                    }
                 }
-            }
-            SMSMessage sms = new SMSMessage();
+                SMSMessage sms = new SMSMessage();
 #if !DEBUG
             
             sms.setRecentSMS(result.FirstOrDefault().message, 15, "fees_notice");
@@ -275,23 +278,24 @@ namespace SMS.Controllers
             }
 #endif
 
-            repDues_listMain ll = new repDues_listMain();
+                repDues_listMain ll = new repDues_listMain();
 
-            ll.pdfDuesList_notice(result, font_size);
+                ll.pdfDuesList_notice(result, font_size);
 
-           
-            string msg="";
 
-            foreach(var i in result)
-            {
-                msg = i.message;
+                string msg = "";
 
-                break;
+                foreach (var i in result)
+                {
+                    msg = i.message;
+
+                    break;
+                }
+
+                sms.setRecentSMS(msg, 15, "fees_notice");
+
+                return View(list);
             }
-
-            sms.setRecentSMS(msg, 15, "fees_notice");
-
-            return View(list);
         }
 
         [HttpGet]
@@ -364,25 +368,27 @@ namespace SMS.Controllers
         {
             try
             {
-                string query = @"select count(*) from sr_register where std_active = 'Y' and sr_number = @sr_num;";
-
-                int count = con.Query<int>(query, new { sr_num = sr_num}).SingleOrDefault();
-
-                if(count == 1)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    birth_certificateMain certificate = new birth_certificateMain();
+                    string query = @"select count(*) from sr_register where std_active = 'Y' and sr_number = @sr_num;";
 
-                    certificate.pdfStudent_BirthCertificate(sr_num);
+                    int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
 
-                    return View();
+                    if (count == 1)
+                    {
+                        birth_certificateMain certificate = new birth_certificateMain();
+
+                        certificate.pdfStudent_BirthCertificate(sr_num);
+
+                        return View();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(String.Empty, "Student not found.");
+                        return View();
+                    }
+
                 }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "Student not found.");
-                    return View();
-                }
-
-                
             }
             catch
             {
@@ -403,24 +409,27 @@ namespace SMS.Controllers
         {
             try
             {
-                string query = @"select count(*) from sr_register where std_active = 'Y' and sr_number = @sr_num;";
-
-                int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
-
-                if (count == 1)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
+                    string query = @"select count(*) from sr_register where std_active = 'Y' and sr_number = @sr_num;";
 
-                    birth_certificateMain certificate = new birth_certificateMain();
+                    int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
 
-                    certificate.pdfReimbursementCertificate(sr_num, session);
-                    DDsession_name();
-                    return View();
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "Student not found.");
-                    DDsession_name();
-                    return View();
+                    if (count == 1)
+                    {
+
+                        birth_certificateMain certificate = new birth_certificateMain();
+
+                        certificate.pdfReimbursementCertificate(sr_num, session);
+                        DDsession_name();
+                        return View();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(String.Empty, "Student not found.");
+                        DDsession_name();
+                        return View();
+                    }
                 }
             }
             catch
@@ -443,24 +452,27 @@ namespace SMS.Controllers
         {
             try
             {
-                string query = @"select count(*) from sr_register where sr_number = @sr_num;";
-
-                int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
-
-                if (count == 1)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
+                    string query = @"select count(*) from sr_register where sr_number = @sr_num;";
 
-                    student_ledgerMain ledger = new student_ledgerMain();
+                    int count = con.Query<int>(query, new { sr_num = sr_num }).SingleOrDefault();
 
-                    ledger.pdfStudent_ledger(sr_num, session);
-                    DDsession_name();
-                    return View();
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "Student not found.");
-                    DDsession_name();
-                    return View();
+                    if (count == 1)
+                    {
+
+                        student_ledgerMain ledger = new student_ledgerMain();
+
+                        ledger.pdfStudent_ledger(sr_num, session);
+                        DDsession_name();
+                        return View();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(String.Empty, "Student not found.");
+                        DDsession_name();
+                        return View();
+                    }
                 }
             }
             catch
@@ -546,7 +558,9 @@ namespace SMS.Controllers
 
         public JsonResult GetClass(string session)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 class_id, class_name
                             FROM
                                 mst_class
@@ -556,17 +570,20 @@ namespace SMS.Controllers
 
 
 
-            var class_list = con.Query<mst_section>(query, new { session = session });
+                var class_list = con.Query<mst_section>(query, new { session = session });
 
-            IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
+                IEnumerable<SelectListItem> list = new SelectList(class_list, "class_id", "class_name");
 
-            return Json(list);
+                return Json(list);
+            }
 
         }
 
         public JsonResult GetSections(int id,string session)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 section_id, section_name
                             FROM
                                 mst_section
@@ -575,11 +592,12 @@ namespace SMS.Controllers
 
 
 
-            var section_list = con.Query<mst_section>(query, new { id = id,session=session });
+                var section_list = con.Query<mst_section>(query, new { id = id, session = session });
 
-            IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
+                IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
-            return Json(list);
+                return Json(list);
+            }
 
         }
 
@@ -718,7 +736,9 @@ namespace SMS.Controllers
 
         public JsonResult GetSubject(int id,string session)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     a.subject_id,a.subject_name
                                 FROM
                                     mst_subject a,
@@ -728,14 +748,15 @@ namespace SMS.Controllers
                                         AND a.subject_id = b.subject_id
                                         AND a.session = @session
                                         AND b.class_id = @class_id";
-           
+
 
 
                 var subject_list = con.Query<mst_subject>(query, new { class_id = id, session = session });
 
                 IEnumerable<SelectListItem> list = new SelectList(subject_list, "subject_id", "subject_name");
 
-            return Json(list);
+                return Json(list);
+            }
             
         
 

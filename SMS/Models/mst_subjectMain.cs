@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class mst_subjectMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddSubject(mst_subject mst)
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string query = "INSERT INTO mst_subject (session,subject_id,subject_name) VALUES (@session,@subject_id,@subject_name)";
+                    string query = "INSERT INTO mst_subject (session,subject_id,subject_name) VALUES (@session,@subject_id,@subject_name)";
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(subject_id), 0) + 1
                                     FROM
                                         mst_subject
@@ -32,19 +34,20 @@ namespace SMS.Models
                                             WHERE
                                                 session_finalize = 'Y')";
 
-                int id = con.ExecuteScalar<int>(maxid);
+                    int id = con.ExecuteScalar<int>(maxid);
 
 
-                mst.session = session.findFinal_Session();
-                mst.subject_id = id;
-                mst.subject_name = mst.subject_name.Trim();
+                    mst.session = session.findFinal_Session();
+                    mst.subject_id = id;
+                    mst.subject_name = mst.subject_name.Trim();
 
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.subject_id,
-                    mst.subject_name
-                });
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.subject_id,
+                        mst.subject_name
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -54,26 +57,31 @@ namespace SMS.Models
 
         public IEnumerable<mst_subject> AllSubjectList()
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 subject_id, subject_name
                             FROM
                                 mst_subject
                             WHERE
                                 session = @session";
 
-            var result = con.Query<mst_subject>(query, new {session = session.findFinal_Session() });
+                var result = con.Query<mst_subject>(query, new { session = session.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
 
         public mst_subject FindSubject(int? id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"SELECT 
+                string Query = @"SELECT 
                                     subject_id, subject_name
                                 FROM
                                     mst_subject
@@ -81,7 +89,8 @@ namespace SMS.Models
                                     subject_id = @subject_id
                                         AND session = @session";
 
-            return con.Query<mst_subject>(Query, new { subject_id = id,session = session.findFinal_Session() }).SingleOrDefault();
+                return con.Query<mst_subject>(Query, new { subject_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+            }
         }
 
         public void EditSubject(mst_subject mst)
@@ -89,18 +98,21 @@ namespace SMS.Models
 
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                mst.session = session.findActive_finalSession();
+                    mst.session = session.findActive_finalSession();
 
-                string query = @"UPDATE mst_subject 
+                    string query = @"UPDATE mst_subject 
                                     SET
                                         subject_name = @subject_name
                                     WHERE
                                         subject_id = @subject_id
                                             AND session = @session";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -112,14 +124,17 @@ namespace SMS.Models
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string Query = @"DELETE FROM mst_subject 
+                    string Query = @"DELETE FROM mst_subject 
                                     WHERE
                                         subject_id = @subject_id
                                         AND session = @session";
 
-                return con.Query<mst_subject>(Query, new { subject_id = id,session=session.findFinal_Session() }).SingleOrDefault();
+                    return con.Query<mst_subject>(Query, new { subject_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {

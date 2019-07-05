@@ -13,18 +13,16 @@ namespace SMS.Models
 {
     public class sr_registerMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public async Task AddStudent(sr_register std)
         {
 
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
-
-               
-
-                   
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
                     string maxid = @"SELECT 
                                             IFNULL(MAX(sr_number), 0) + 1
@@ -114,7 +112,7 @@ namespace SMS.Models
 
 
 
-                   
+
                     std.std_active = "Y";
                     std.sr_number = id;
                     std.std_admission_date = DateTime.Parse(std.std_admission_date_str);
@@ -196,7 +194,7 @@ namespace SMS.Models
 
                             });
 
-                  query = @"INSERT INTO `mst_std_class`
+                    query = @"INSERT INTO `mst_std_class`
                             (`session`,
                             `sr_num`,
                             `class_id`)
@@ -205,9 +203,9 @@ namespace SMS.Models
                             @sr_num,
                             @class_id)";
 
-                    
 
-                    await con.ExecuteAsync(query,new{session = sess.findActive_Session() ,sr_num = std.sr_number, class_id = std.class_id});
+
+                    await con.ExecuteAsync(query, new { session = sess.findActive_Session(), sr_num = std.sr_number, class_id = std.class_id });
 
                     query = @"INSERT INTO `mst_std_section`
                             (`session`,
@@ -243,7 +241,7 @@ namespace SMS.Models
 
                     out_std.acc_id = 2;
                     out_std.outstd_amount = std.fees_amount;
-                   
+
 
                     out_standingMain out_stdMain = new out_standingMain();
 
@@ -252,7 +250,7 @@ namespace SMS.Models
 
                     out_stdMain.AddOutStanding(out_std);
 
-                query = @"SELECT 
+                    query = @"SELECT 
                                 acc_id, fees_amount outstd_amount
                             FROM
                                 mst_fees
@@ -261,20 +259,20 @@ namespace SMS.Models
                                     AND acc_id not in (2,1)
                                     AND class_id = @class_id";
 
-                out_standing out_std_onetime = new out_standing();
+                    out_standing out_std_onetime = new out_standing();
 
-                out_std_onetime = con.Query<out_standing>(query, new {session = sess.findActive_Session(), class_id = std.class_id }).SingleOrDefault();
+                    out_std_onetime = con.Query<out_standing>(query, new { session = sess.findActive_Session(), class_id = std.class_id }).SingleOrDefault();
 
-                if(out_std_onetime != null)
-                {
-                    out_std_onetime.sr_number = std.sr_number;
+                    if (out_std_onetime != null)
+                    {
+                        out_std_onetime.sr_number = std.sr_number;
 
-                    out_std_onetime.class_id = std.class_id;
+                        out_std_onetime.class_id = std.class_id;
 
-                    out_stdMain.AddOutStanding(out_std_onetime);
-                }
-                
-                out_std.reg_num = std.reg_no;
+                        out_stdMain.AddOutStanding(out_std_onetime);
+                    }
+
+                    out_std.reg_num = std.reg_no;
 
                     out_std.dt_date = std.reg_date;
 
@@ -317,7 +315,7 @@ namespace SMS.Models
                     DashboardHub hub = new DashboardHub();
 
                     hub.DashboardSchoolStrength();
-
+                }
                 
             }
             catch (Exception ex)
@@ -329,7 +327,9 @@ namespace SMS.Models
        
         public IEnumerable<sr_register> AllStudentList(int section_id)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 sr_number,
                                 std_first_name,
                                 std_last_name,
@@ -363,16 +363,19 @@ namespace SMS.Models
                                     AND b.section_id = @section_id
                                     AND a.std_active = 'Y'";
 
-            var result = con.Query<sr_register>(query,new { section_id = section_id });
+                var result = con.Query<sr_register>(query, new { section_id = section_id });
 
-            return result;
+                return result;
+            }
         }
 
-     
 
-        public sr_register FindStudent(int? id,string session)
+
+        public sr_register FindStudent(int? id, string session)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                             sr_number,
                             std_first_name,
                             std_last_name,
@@ -432,41 +435,44 @@ namespace SMS.Models
                                 AND e.session = @session
                                 AND IFNULL(a.std_pickup_id, 0) = d.pickup_id
                                 AND a.sr_number = @sr_number";
-          
-            return con.Query<sr_register>(Query, new { sr_number = id,session = session }).SingleOrDefault();
+
+                return con.Query<sr_register>(Query, new { sr_number = id, session = session }).SingleOrDefault();
+            }
         }
 
         public void EditStudent(sr_register std)
         {
-            
+
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findActive_finalSession();
+                    string session = sess.findActive_finalSession();
 
-                string query1 = @"select std_pickup_id from sr_register where sr_number = @sr_number";
+                    string query1 = @"select std_pickup_id from sr_register where sr_number = @sr_number";
 
-                int pick_id = con.Query<int>(query1, new { sr_number = std.sr_number }).SingleOrDefault();
+                    int pick_id = con.Query<int>(query1, new { sr_number = std.sr_number }).SingleOrDefault();
 
-                query1 = @"select class_id from mst_std_class where sr_num = @sr_number and session = @session";
+                    query1 = @"select class_id from mst_std_class where sr_num = @sr_number and session = @session";
 
-                int class_id = con.Query<int>(query1, new { sr_number = std.sr_number, session = session }).SingleOrDefault();
+                    int class_id = con.Query<int>(query1, new { sr_number = std.sr_number, session = session }).SingleOrDefault();
 
-                query1 = @"select section_id from mst_std_section where sr_num = @sr_number and session = @session";
+                    query1 = @"select section_id from mst_std_section where sr_num = @sr_number and session = @session";
 
-                int sec_id = con.Query<int>(query1, new { sr_number = std.sr_number,session = session }).SingleOrDefault();
+                    int sec_id = con.Query<int>(query1, new { sr_number = std.sr_number, session = session }).SingleOrDefault();
 
-                query1 = @"SELECT 
+                    query1 = @"SELECT 
                                 std_active
                             FROM
                                 sr_register
                             WHERE
                                 sr_number = @sr_number";
 
-                string old_active_status = con.Query<string>(query1, new { sr_number = std.sr_number}).SingleOrDefault();
+                    string old_active_status = con.Query<string>(query1, new { sr_number = std.sr_number }).SingleOrDefault();
 
-                string query = @"UPDATE sr_register
+                    string query = @"UPDATE sr_register
                                    SET std_first_name = @std_first_name
                                       ,std_last_name = @std_last_name
                                       ,std_father_name = @std_father_name
@@ -502,54 +508,23 @@ namespace SMS.Models
                                       ,adm_form_link = @adm_form_link
                                         WHERE sr_number = @sr_number";
 
-                con.Execute(query, std);
+                    con.Execute(query, std);
 
 
-                if(!std.active && old_active_status == "Y")
-                {
-                    out_standingMain otsd = new out_standingMain();
-
-                    otsd.markStdNSO(std.sr_number);
-
-                    DashboardHub hub = new DashboardHub();
-
-                    hub.DashboardSchoolStrength();
-                }
-                 else
-                {
-                    if (old_active_status != std.std_active)
+                    if (!std.active && old_active_status == "Y")
                     {
-                        var p = new DynamicParameters();
+                        out_standingMain otsd = new out_standingMain();
 
-                        p.Add("@sr_num", std.sr_number);
-
-                        p.Add("@from_month_no", std.from_month_no);
-
-                        con.Execute("StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
+                        otsd.markStdNSO(std.sr_number);
 
                         DashboardHub hub = new DashboardHub();
 
                         hub.DashboardSchoolStrength();
-
-                        p = new DynamicParameters();
-
-                        p.Add("@sr_num", std.sr_number);
-
-                        con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
-
-                        string query2 = @"UPDATE sr_register 
-                                    SET 
-                                        nso_date = NULL
-                                    WHERE
-                                        sr_number = @sr_num";
-
-                       con.Execute(query2, new { sr_num = std.sr_number});
                     }
                     else
                     {
-                        if (pick_id != std.std_pickup_id && std.std_active == "Y")
+                        if (old_active_status != std.std_active)
                         {
-                            //call procedure to change the pickup point
                             var p = new DynamicParameters();
 
                             p.Add("@sr_num", std.sr_number);
@@ -562,50 +537,82 @@ namespace SMS.Models
 
                             hub.DashboardSchoolStrength();
 
+                            p = new DynamicParameters();
+
+                            p.Add("@sr_num", std.sr_number);
+
+                            con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
+
+                            string query2 = @"UPDATE sr_register 
+                                    SET 
+                                        nso_date = NULL
+                                    WHERE
+                                        sr_number = @sr_num";
+
+                            con.Execute(query2, new { sr_num = std.sr_number });
                         }
-
-                        if (class_id != std.class_id)
+                        else
                         {
-                            //call procedure to change the class
+                            if (pick_id != std.std_pickup_id && std.std_active == "Y")
+                            {
+                                //call procedure to change the pickup point
+                                var p = new DynamicParameters();
 
-                            query = @"UPDATE `mst_std_class` 
+                                p.Add("@sr_num", std.sr_number);
+
+                                p.Add("@from_month_no", std.from_month_no);
+
+                                con.Execute("StdMidSessionTransportChange", p, commandType: System.Data.CommandType.StoredProcedure);
+
+                                DashboardHub hub = new DashboardHub();
+
+                                hub.DashboardSchoolStrength();
+
+                            }
+
+                            if (class_id != std.class_id)
+                            {
+                                //call procedure to change the class
+
+                                query = @"UPDATE `mst_std_class` 
                                     SET 
                                         `class_id` = @class_id
                                     WHERE
                                         `session` = @session
                                             AND `sr_num` = @sr_num";
 
-                            con.Execute(query, new { class_id = std.class_id, session = session, sr_num = std.sr_number });
+                                con.Execute(query, new { class_id = std.class_id, session = session, sr_num = std.sr_number });
 
-                            if (std.std_active == "Y")
-                            {
-                                var p = new DynamicParameters();
+                                if (std.std_active == "Y")
+                                {
+                                    var p = new DynamicParameters();
 
-                                p.Add("@sr_num", std.sr_number);
+                                    p.Add("@sr_num", std.sr_number);
 
-                                con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
+                                    con.Execute("stdMidSessionMonthlyCharge", p, commandType: System.Data.CommandType.StoredProcedure);
 
+                                }
                             }
-                        }
 
-                        if (sec_id != std.std_section_id)
-                        {
+                            if (sec_id != std.std_section_id)
+                            {
 
-                            query = @"UPDATE `mst_std_section` 
+                                query = @"UPDATE `mst_std_section` 
                                     SET 
                                         `section_id` = @section_id
                                     WHERE
                                         `session` = @session
                                             AND `sr_num` = @sr_num";
 
-                            con.Execute(query, new { section_id = std.std_section_id, session = session, sr_num = std.sr_number });
+                                con.Execute(query, new { section_id = std.std_section_id, session = session, sr_num = std.sr_number });
 
-                            query = @"DELETE FROM `mst_rollnumber`
+                                query = @"DELETE FROM `mst_rollnumber`
                                     WHERE session = @session
                                     and
                                     sr_num = @sr_num";
 
-                            con.Execute(query, new { sr_num = std.sr_number, session = session });
+                                con.Execute(query, new { sr_num = std.sr_number, session = session });
+                            }
                         }
                     }
                 }
@@ -618,9 +625,12 @@ namespace SMS.Models
 
         public sr_register DeleteStudent(int id)
         {
-            String Query = "DELETE FROM sr_register WHERE sr_number = @sr_number";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String Query = "DELETE FROM sr_register WHERE sr_number = @sr_number";
 
-            return con.Query<sr_register>(Query, new { sr_number = id }).SingleOrDefault();
+                return con.Query<sr_register>(Query, new { sr_number = id }).SingleOrDefault();
+            }
         }
 
     }

@@ -10,15 +10,17 @@ namespace SMS.Models
 {
     public class mst_transportMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddTransport(mst_transport mst)
         {
             try
             {
-                string query = "INSERT INTO mst_transport (session,pickup_id,pickup_point,transport_fees,transport_number,bl_apr,bl_may,bl_jun,bl_jul,bl_aug,bl_sep,bl_oct,bl_nov,bl_dec,bl_jan,bl_feb,bl_mar) VALUES (@session,@pickup_id,@pickup_point,@transport_fees,@transport_number,@bl_apr,@bl_may,@bl_jun,@bl_jul,@bl_aug,@bl_sep,@bl_oct,@bl_nov,@bl_dec,@bl_jan,@bl_feb,@bl_mar)";
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = "INSERT INTO mst_transport (session,pickup_id,pickup_point,transport_fees,transport_number,bl_apr,bl_may,bl_jun,bl_jul,bl_aug,bl_sep,bl_oct,bl_nov,bl_dec,bl_jan,bl_feb,bl_mar) VALUES (@session,@pickup_id,@pickup_point,@transport_fees,@transport_number,@bl_apr,@bl_may,@bl_jun,@bl_jul,@bl_aug,@bl_sep,@bl_oct,@bl_nov,@bl_dec,@bl_jan,@bl_feb,@bl_mar)";
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(pickup_id), 0) + 1
                                     FROM
                                         mst_transport
@@ -30,51 +32,52 @@ namespace SMS.Models
                                             WHERE
                                                     session_active = 'Y')";
 
-                //                var id = con.Query<mst_section>(maxid).ToString().Trim();
+                    //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
-                int id = con.ExecuteScalar<int>(maxid);
+                    int id = con.ExecuteScalar<int>(maxid);
 
-                if (id == 1)
-                {
-                    id = 1000;
-                }
+                    if (id == 1)
+                    {
+                        id = 1000;
+                    }
 
-                mst.pickup_id = id;
-                mst.pickup_point = mst.pickup_point.Trim();
+                    mst.pickup_id = id;
+                    mst.pickup_point = mst.pickup_point.Trim();
 
-              
 
-                string query1 = @"SELECT 
+
+                    string query1 = @"SELECT 
                                         session
                                     FROM
                                         mst_session
                                     WHERE
                                         session_active = 'Y'";
 
-                mst.session = con.Query<string>(query1).SingleOrDefault();
+                    mst.session = con.Query<string>(query1).SingleOrDefault();
 
-                //mst.session = sess.findActive_finalSession();
+                    //mst.session = sess.findActive_finalSession();
 
-                con.Execute(query, new
-                {   
-                    mst.session,
-                    mst.pickup_id,
-                    mst.pickup_point,
-                    mst.transport_fees,
-                    mst.transport_number,
-                    mst.bl_apr,
-                    mst.bl_may,
-                    mst.bl_jun,
-                    mst.bl_jul,
-                    mst.bl_aug,
-                    mst.bl_sep,
-                    mst.bl_oct,
-                    mst.bl_nov,
-                    mst.bl_dec,
-                    mst.bl_jan,
-                    mst.bl_feb,
-                    mst.bl_mar
-                });
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.pickup_id,
+                        mst.pickup_point,
+                        mst.transport_fees,
+                        mst.transport_number,
+                        mst.bl_apr,
+                        mst.bl_may,
+                        mst.bl_jun,
+                        mst.bl_jul,
+                        mst.bl_aug,
+                        mst.bl_sep,
+                        mst.bl_oct,
+                        mst.bl_nov,
+                        mst.bl_dec,
+                        mst.bl_jan,
+                        mst.bl_feb,
+                        mst.bl_mar
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -84,7 +87,9 @@ namespace SMS.Models
 
         public IEnumerable<mst_transport> AllTransportList()
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     session,
                                     pickup_id,
                                     pickup_point,
@@ -100,14 +105,17 @@ namespace SMS.Models
                                         WHERE
                                             session_active = 'Y')";
 
-            var result = con.Query<mst_transport>(query);
+                var result = con.Query<mst_transport>(query);
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<mst_transport> AllTransportNumber()
         {
-            string query = @"SELECT DISTINCT
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT DISTINCT
                                 transport_number
                             FROM
                                 mst_transport
@@ -121,14 +129,17 @@ namespace SMS.Models
                                     AND transport_number IS NOT NULL
                                     AND transport_number != ''";
 
-            var result = con.Query<mst_transport>(query);
+                var result = con.Query<mst_transport>(query);
 
-            return result;
+                return result;
+            }
         }
 
-        public mst_transport FindTransport(int? id,string session)
+        public mst_transport FindTransport(int? id, string session)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                 session,
                                 pickup_id,
                                 pickup_point,
@@ -157,12 +168,15 @@ namespace SMS.Models
                                     WHERE
                                         session_active = 'Y')";
 
-            return con.Query<mst_transport>(Query, new { pickup_id = id, session = session }).SingleOrDefault();
+                return con.Query<mst_transport>(Query, new { pickup_id = id, session = session }).SingleOrDefault();
+            }
         }
 
         public mst_transport FindTransportBySr(int id)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                 a.session,
                                 pickup_id,
                                 pickup_point,
@@ -194,7 +208,8 @@ namespace SMS.Models
                                         session_finalize = 'Y'
                                             AND session_active = 'Y')";
 
-            return con.Query<mst_transport>(Query, new { sr_num = id }).SingleOrDefault();
+                return con.Query<mst_transport>(Query, new { sr_num = id }).SingleOrDefault();
+            }
         }
 
         public void EditTransport(mst_transport mst)
@@ -202,7 +217,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE mst_transport 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE mst_transport 
                                     SET
                                         pickup_point = @pickup_point,
                                         transport_fees = @transport_fees,
@@ -223,7 +240,8 @@ namespace SMS.Models
                                         pickup_id = @pickup_id
                                             AND session = @session";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -235,12 +253,15 @@ namespace SMS.Models
         {
             try
             {
-                string Query = @"DELETE FROM mst_transport 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string Query = @"DELETE FROM mst_transport 
                                     WHERE
                                         pickup_id = @pickup_id
                                         AND session = @session";
 
-                return con.Query<mst_transport>(Query, new { pickup_id = id , session = session}).SingleOrDefault();
+                    return con.Query<mst_transport>(Query, new { pickup_id = id, session = session }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {

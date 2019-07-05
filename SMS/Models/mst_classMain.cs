@@ -10,18 +10,20 @@ namespace SMS.Models
 {
     public class mst_classMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddClass(mst_class mst)
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
-                string sess = session.findActive_Session();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
+                    string sess = session.findActive_Session();
 
-                string query = "INSERT INTO mst_class (session,class_id,class_name) VALUES (@session,@class_id,@class_name)";
+                    string query = "INSERT INTO mst_class (session,class_id,class_name) VALUES (@session,@class_id,@class_name)";
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(class_id), 0) + 1
                                     FROM
                                         mst_class
@@ -33,20 +35,21 @@ namespace SMS.Models
                                             WHERE
                                                 session_active = 'Y')";
 
-                //                var id = con.Query<mst_section>(maxid).ToString().Trim();
+                    //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
-                int id = con.ExecuteScalar<int>(maxid);
-               
-                               
-                mst.class_id = id;
-                mst.class_name = mst.class_name.Trim();
+                    int id = con.ExecuteScalar<int>(maxid);
 
-                con.Execute(query, new
-                {
-                    session = sess,
-                    mst.class_id,
-                    mst.class_name
-                });
+
+                    mst.class_id = id;
+                    mst.class_name = mst.class_name.Trim();
+
+                    con.Execute(query, new
+                    {
+                        session = sess,
+                        mst.class_id,
+                        mst.class_name
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -56,24 +59,28 @@ namespace SMS.Models
 
         public IEnumerable<mst_class> AllClassList(string session)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 class_id, class_name
                             FROM
                                 mst_class
                             WHERE
                                 session = @session";
 
-            var result = con.Query<mst_class>(query,new {session = session });
+                var result = con.Query<mst_class>(query, new { session = session });
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<mst_class> AllClassListByTeacher(int user_id,bool flag)
         {
-
-            if (flag)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                string query = @"SELECT DISTINCT
+                if (flag)
+                {
+                    string query = @"SELECT DISTINCT
                                         class_id, class_name
                                     FROM
                                         mst_class
@@ -86,12 +93,12 @@ namespace SMS.Models
                                                 session_finalize = 'Y')
                                     ORDER BY class_id";
 
-                var result = con.Query<mst_class>(query);
-                return result;
-            }
-            else
-            {
-                string query = @"SELECT DISTINCT
+                    var result = con.Query<mst_class>(query);
+                    return result;
+                }
+                else
+                {
+                    string query = @"SELECT DISTINCT
                                         *
                                     FROM
                                         (SELECT 
@@ -121,15 +128,17 @@ namespace SMS.Models
                                                     session_finalize = 'Y')) a
                                     ORDER BY a.class_id";
 
-                var result = con.Query<mst_class>(query, new { user_id = user_id });
-                return result;
+                    var result = con.Query<mst_class>(query, new { user_id = user_id });
+                    return result;
+                }
             }
-            
         }
 
         public IEnumerable<mst_class> AllClassListWithSection(string session)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 b.section_id class_id,
                                 CONCAT(IFNULL(a.class_name, ''),
                                         ' Section ',
@@ -143,14 +152,17 @@ namespace SMS.Models
                                     AND a.class_id = b.class_id
                             ORDER BY class_name";
 
-            var result = con.Query<mst_class>(query, new { session = session });
+                var result = con.Query<mst_class>(query, new { session = session });
 
-            return result;
+                return result;
+            }
         }
         
         public mst_class FindClass(int? id)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                     class_id, class_name
                                 FROM
                                     mst_class
@@ -163,7 +175,8 @@ namespace SMS.Models
                                         WHERE
                                             session_active = 'Y')";
 
-            return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
+                return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
+            }
         }
 
         public void EditClass(mst_class mst)
@@ -171,7 +184,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE mst_class 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE mst_class 
                                     SET
                                         class_name = @class_name
                                     WHERE
@@ -183,7 +198,8 @@ namespace SMS.Models
                                             WHERE
                                                 session_active = 'Y')";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -195,7 +211,9 @@ namespace SMS.Models
         {
             try
             {
-                string Query = @"DELETE FROM mst_class 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string Query = @"DELETE FROM mst_class 
                                 WHERE
                                     class_id = @class_id
                                     AND session = (SELECT
@@ -207,7 +225,8 @@ namespace SMS.Models
                                         session_finalize = 'Y'
                                         AND session_active = 'Y')";
 
-                return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
+                    return con.Query<mst_class>(Query, new { class_id = id }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {

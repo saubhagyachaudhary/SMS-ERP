@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class teacher_exam_remarkController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddRemarks()
@@ -125,8 +125,9 @@ namespace SMS.Controllers
         public JsonResult GetSection(int id)
         {
 
-
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 a.section_id, b.section_name
                             FROM
                                 mst_attendance a,
@@ -142,12 +143,12 @@ namespace SMS.Controllers
                                         session_finalize = 'Y')";
 
 
-            var exam_list = con.Query<mst_section>(query, new { class_id = id });
+                var exam_list = con.Query<mst_section>(query, new { class_id = id });
 
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
 
     }

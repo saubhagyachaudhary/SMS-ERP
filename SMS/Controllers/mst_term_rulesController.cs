@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_term_rulesController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddTermRules()
@@ -49,7 +49,9 @@ namespace SMS.Controllers
 
         public JsonResult GetExam(int id)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 b.exam_id, b.exam_name
                             FROM
                                 mst_exam_class a,
@@ -65,11 +67,12 @@ namespace SMS.Controllers
                                         session_finalize = 'Y')";
 
 
-            var exam_list = con.Query<mst_exam>(query, new { class_id = id });
+                var exam_list = con.Query<mst_exam>(query, new { class_id = id });
 
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "exam_id", "exam_name");
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "exam_id", "exam_name");
 
-            return Json(list);
+                return Json(list);
+            }
 
         }
 

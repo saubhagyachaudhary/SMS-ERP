@@ -10,15 +10,17 @@ namespace SMS.Models
 {
     public class mst_co_scholasticMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddCoScholastic(mst_co_scholastic mst)
         {
             try
             {
-                string query = "INSERT INTO mst_co_scholastic (session,co_scholastic_id,co_scholastic_name) VALUES (@session,@co_scholastic_id,@co_scholastic_name)";
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = "INSERT INTO mst_co_scholastic (session,co_scholastic_id,co_scholastic_name) VALUES (@session,@co_scholastic_id,@co_scholastic_name)";
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(co_scholastic_id), 0) + 1
                                     FROM
                                         mst_co_scholastic
@@ -30,20 +32,21 @@ namespace SMS.Models
                                             WHERE
                                                 session_finalize = 'Y')";
 
-                int id = con.ExecuteScalar<int>(maxid);
+                    int id = con.ExecuteScalar<int>(maxid);
 
-                mst_sessionMain session = new mst_sessionMain();
+                    mst_sessionMain session = new mst_sessionMain();
 
-                mst.session = session.findActive_finalSession();
-                mst.co_scholastic_id = id;
-                mst.co_scholastic_name = mst.co_scholastic_name.Trim();
+                    mst.session = session.findActive_finalSession();
+                    mst.co_scholastic_id = id;
+                    mst.co_scholastic_name = mst.co_scholastic_name.Trim();
 
-                con.Execute(query, new
-                {
-                    mst.co_scholastic_id,
-                    mst.co_scholastic_name,
-                    mst.session
-                });
+                    con.Execute(query, new
+                    {
+                        mst.co_scholastic_id,
+                        mst.co_scholastic_name,
+                        mst.session
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -53,26 +56,31 @@ namespace SMS.Models
 
         public IEnumerable<mst_co_scholastic> AllCoScholasticList()
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     co_scholastic_id, co_scholastic_name
                                 FROM
                                     mst_co_scholastic
                                 WHERE
                                     session = @session";
 
-            var result = con.Query<mst_co_scholastic>(query,new {session = session.findFinal_Session() });
+                var result = con.Query<mst_co_scholastic>(query, new { session = session.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
 
         public mst_co_scholastic FindCoScholastic(int? id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"SELECT 
+                string Query = @"SELECT 
                                 co_scholastic_id, co_scholastic_name
                             FROM
                                 mst_co_scholastic
@@ -80,7 +88,8 @@ namespace SMS.Models
                                 co_scholastic_id = @co_scholastic_id
                                     AND session = @session";
 
-            return con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id ,session = session.findFinal_Session()}).SingleOrDefault();
+                return con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+            }
         }
 
         public void EditCoScholastic(mst_co_scholastic mst)
@@ -88,18 +97,21 @@ namespace SMS.Models
 
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                mst.session = session.findFinal_Session();
+                    mst.session = session.findFinal_Session();
 
-                string query = @"UPDATE mst_co_scholastic 
+                    string query = @"UPDATE mst_co_scholastic 
                                     SET
                                         co_scholastic_name = @co_scholastic_name
                                     WHERE
                                         co_scholastic_id = @co_scholastic_id
                                             AND session = @session";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -111,14 +123,17 @@ namespace SMS.Models
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain(); 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string Query = @"DELETE FROM mst_co_scholastic 
+                    string Query = @"DELETE FROM mst_co_scholastic 
                                     WHERE
                                         co_scholastic_id = @co_scholastic_id
                                         AND session = @session";
 
-                con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id,session = session.findFinal_Session()}).SingleOrDefault();
+                    con.Query<mst_co_scholastic>(Query, new { co_scholastic_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {

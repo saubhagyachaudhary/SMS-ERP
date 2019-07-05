@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class teacher_exam_remarkMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddRemark(List<teacher_exam_remark> mst)
         {
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findFinal_Session();
+                    string session = sess.findFinal_Session();
 
-                string query = @"INSERT INTO `teacher_exam_remark`
+                    string query = @"INSERT INTO `teacher_exam_remark`
                                 (`session`,
                                 `term_id`,
                                 `sr_number`,
@@ -33,7 +35,7 @@ namespace SMS.Models
                                 @remark,
                                 @user_id)";
 
-                string update = @"UPDATE `teacher_exam_remark` 
+                    string update = @"UPDATE `teacher_exam_remark` 
                                     SET 
                                         `user_id` = @user_id,
                                         `remark` = @remark
@@ -42,7 +44,7 @@ namespace SMS.Models
                                             AND `term_id` = @term_id
                                             AND `sr_number` = @sr_number";
 
-                string query1 = @"SELECT 
+                    string query1 = @"SELECT 
                                         COUNT(*)
                                     FROM
                                         `teacher_exam_remark`
@@ -51,38 +53,38 @@ namespace SMS.Models
                                             AND `term_id` = @term_id
                                             AND `sr_number` = @sr_number";
 
-                foreach (var remark in mst)
-                {
-
-                    remark.session = session;
-
-                    int count = con.Query<int>(query1, new { session = remark.session, sr_number = remark.sr_number, term_id = remark.term_id, class_id = remark.class_id, section_id = remark.section_id }).SingleOrDefault();
-
-                    if (count > 0)
-                    {
-                        con.Execute(update, new
-                        {
-                            remark.session,
-                            remark.sr_number,
-                            remark.term_id,
-                            remark.remark,
-                            remark.user_id
-                        });
-                    }
-                    else
+                    foreach (var remark in mst)
                     {
 
-                        con.Execute(query, new
+                        remark.session = session;
+
+                        int count = con.Query<int>(query1, new { session = remark.session, sr_number = remark.sr_number, term_id = remark.term_id, class_id = remark.class_id, section_id = remark.section_id }).SingleOrDefault();
+
+                        if (count > 0)
                         {
-                            remark.session,
-                            remark.term_id,
-                            remark.sr_number,
-                            remark.remark,
-                            remark.user_id
-                        });
+                            con.Execute(update, new
+                            {
+                                remark.session,
+                                remark.sr_number,
+                                remark.term_id,
+                                remark.remark,
+                                remark.user_id
+                            });
+                        }
+                        else
+                        {
+
+                            con.Execute(query, new
+                            {
+                                remark.session,
+                                remark.term_id,
+                                remark.sr_number,
+                                remark.remark,
+                                remark.user_id
+                            });
+                        }
                     }
                 }
-               
             }
             catch (Exception ex)
             {
@@ -92,11 +94,13 @@ namespace SMS.Models
 
         public IEnumerable<teacher_exam_remark> student_list_for_remark(int class_id, int section_id)
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findActive_finalSession();
+                string session_name = sess.findActive_finalSession();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 b.class_id,
                                 b.section_id,
                                 c.roll_number roll_no,
@@ -127,14 +131,17 @@ namespace SMS.Models
                                     AND a.std_active = 'Y'
                             ORDER BY roll_no";
 
-            return con.Query<teacher_exam_remark>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+                return con.Query<teacher_exam_remark>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+            }
         }
 
         public IEnumerable<teacher_exam_remark> FindRemarks(int class_id, int section_id, int term_id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"SELECT 
+                string Query = @"SELECT 
                                     *
                                 FROM
                                     (SELECT 
@@ -195,7 +202,8 @@ namespace SMS.Models
                                                     AND c.section_id = @section_id)) a
                                 ORDER BY a.roll_no";
 
-            return con.Query<teacher_exam_remark>(Query, new { class_id = class_id, term_id = term_id, session = session.findFinal_Session(), section_id = section_id });
+                return con.Query<teacher_exam_remark>(Query, new { class_id = class_id, term_id = term_id, session = session.findFinal_Session(), section_id = section_id });
+            }
         }
     }
 }

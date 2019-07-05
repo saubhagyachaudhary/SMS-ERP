@@ -10,20 +10,25 @@ namespace SMS.Models
 {
     public class enable_wedgetMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public IEnumerable<enable_wedget> AllUserList()
         {
-            String query = @"SELECT b.user_id,c.FirstName,c.LastName,b.username FROM users b,emp_profile c where b.user_id = c.user_id";
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT b.user_id,c.FirstName,c.LastName,b.username FROM users b,emp_profile c where b.user_id = c.user_id";
 
-            var result = con.Query<enable_wedget>(query);
+                var result = con.Query<enable_wedget>(query);
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<enable_wedget> AllWedgetList(int user_id)
         {
-            String query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String query = @"SELECT 
                                 *
                             FROM
                                 (SELECT 
@@ -55,22 +60,25 @@ namespace SMS.Models
                                             user_id = @user_id)) v
                             ORDER BY wedget_name";
 
-            var result = con.Query<enable_wedget>(query, new { user_id = user_id });
+                var result = con.Query<enable_wedget>(query, new { user_id = user_id });
 
-            return result;
+                return result;
+            }
         }
 
         public void AddWedget(enable_wedget mst)
         {
             try
             {
-                string check = @"SELECT count(*) FROM enable_wedget where user_id = @user_id and wedget_id = @wedget_id";
-
-                int cnt = con.Query<int>(check, new { user_id = mst.user_id, wedget_id = mst.wedget_id }).SingleOrDefault();
-
-                if (cnt == 0)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    string query = @"INSERT INTO enable_wedget
+                    string check = @"SELECT count(*) FROM enable_wedget where user_id = @user_id and wedget_id = @wedget_id";
+
+                    int cnt = con.Query<int>(check, new { user_id = mst.user_id, wedget_id = mst.wedget_id }).SingleOrDefault();
+
+                    if (cnt == 0)
+                    {
+                        string query = @"INSERT INTO enable_wedget
                                 (user_id,
                                 wedget_id)
                                 VALUES
@@ -78,11 +86,12 @@ namespace SMS.Models
                                 @wedget_id);";
 
 
-                    con.Execute(query, new
-                    {
-                        mst.user_id,
-                        mst.wedget_id
-                    });
+                        con.Execute(query, new
+                        {
+                            mst.user_id,
+                            mst.wedget_id
+                        });
+                    }
                 }
             }
             catch (Exception ex)
@@ -95,17 +104,20 @@ namespace SMS.Models
         {
             try
             {
-                string query = @"DELETE FROM enable_wedget
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"DELETE FROM enable_wedget
                                     WHERE
                                         user_id = @user_id
                                         AND wedget_id = @wedget_id;";
 
 
-                con.Execute(query, new
-                {
-                    mst.user_id,
-                    mst.wedget_id
-                });
+                    con.Execute(query, new
+                    {
+                        mst.user_id,
+                        mst.wedget_id
+                    });
+                }
             }
             catch (Exception ex)
             {

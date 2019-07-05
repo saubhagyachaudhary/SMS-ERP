@@ -21,7 +21,7 @@ namespace SMS.report
 {
     public class repFees_receipt
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         string shortfirstname = ConfigurationManager.AppSettings["ShortFirstName"].ToString();
         string shortlastname = ConfigurationManager.AppSettings["ShortLastName"].ToString();
         string Affiliation = ConfigurationManager.AppSettings["Affiliation"].ToString();
@@ -30,25 +30,26 @@ namespace SMS.report
 
         public void pdf(int receipt_no)
         {
-
-
-            MemoryStream ms = new MemoryStream();
-
-            HttpContext.Current.Response.ContentType = "application/pdf";
-            string name = "receiptno_" + receipt_no + ".pdf";
-            HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + name);
-            HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-
-            //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
-            var doc = new Document(PageSize.A6);
-
-            // MemoryStream stream = new MemoryStream();
-            doc.SetMargins(0f, 0f, 10f, 70f);
-            try
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-               
 
-                string query = @"SELECT 
+                MemoryStream ms = new MemoryStream();
+
+                HttpContext.Current.Response.ContentType = "application/pdf";
+                string name = "receiptno_" + receipt_no + ".pdf";
+                HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + name);
+                HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+                //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
+                var doc = new Document(PageSize.A6);
+
+                // MemoryStream stream = new MemoryStream();
+                doc.SetMargins(0f, 0f, 10f, 70f);
+                try
+                {
+
+
+                    string query = @"SELECT 
                                         mode_flag,
                                         chq_no,
                                         chq_date,
@@ -56,6 +57,9 @@ namespace SMS.report
                                         fees_name,
                                         sr_number,
                                         class_id,
+                                        amount fees,
+                                        dc_fine fine,
+                                        dc_discount discount,
                                         amount + dc_fine - dc_discount amount,
                                         reg_no,
                                         reg_date,
@@ -64,21 +68,21 @@ namespace SMS.report
                                         fees_receipt
                                     WHERE
                                         fin_id = (SELECT 
-                                        fin_id
-                                    FROM
-                                        mst_fin
-                                    WHERE
-                                        fin_close = 'N')
+                                                fin_id
+                                            FROM
+                                                mst_fin
+                                            WHERE
+                                                fin_close = 'N')
                                             AND receipt_no = @receipt_no";
 
 
-                IEnumerable<fees_receipt> result = con.Query<fees_receipt>(query, new { receipt_no = receipt_no });
+                    IEnumerable<fees_receipt> result = con.Query<fees_receipt>(query, new { receipt_no = receipt_no });
 
-                rep_fees rep = new rep_fees();
+                    rep_fees rep = new rep_fees();
 
-                if (result.First<fees_receipt>().sr_number == 0)
-                {
-                    query = @"SELECT 
+                    if (result.First<fees_receipt>().sr_number == 0)
+                    {
+                        query = @"SELECT 
                                 reg_no num,
                                 CONCAT(IFNULL(std_first_name, ''),
                                         ' ',
@@ -100,11 +104,11 @@ namespace SMS.report
                                     WHERE
                                         session_active = 'Y')";
 
-                    rep = con.Query<rep_fees>(query, new { reg_no = result.First<fees_receipt>().reg_no, reg_date = result.First<fees_receipt>().reg_date }).SingleOrDefault();
-                }
-                else
-                {
-                    query = @"SELECT 
+                        rep = con.Query<rep_fees>(query, new { reg_no = result.First<fees_receipt>().reg_no, reg_date = result.First<fees_receipt>().reg_date }).SingleOrDefault();
+                    }
+                    else
+                    {
+                        query = @"SELECT 
                                     sr_number num,
                                     CONCAT(ifnull(std_first_name,''), ' ',ifnull(std_last_name,'')) name,
                                     std_father_name father_name,
@@ -127,401 +131,457 @@ namespace SMS.report
                                         AND d.session = e.session
                                         AND e.session = @session";
 
-                    rep = con.Query<rep_fees>(query, new { sr_number = result.First<fees_receipt>().sr_number, session = result.First<fees_receipt>().session }).SingleOrDefault();
-                }
+                        rep = con.Query<rep_fees>(query, new { sr_number = result.First<fees_receipt>().sr_number, session = result.First<fees_receipt>().session }).SingleOrDefault();
+                    }
 
-                rep.receipt_no = receipt_no;
-                rep.receipt_date = result.First<fees_receipt>().receipt_date.ToString("yyyy-MM-dd");
-                //rep.fees_name = result.fees_name;
-                //rep.amount = result.amount;
-
-
-
-                PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
+                    rep.receipt_no = receipt_no;
+                    rep.receipt_date = result.First<fees_receipt>().receipt_date.ToString("yyyy-MM-dd");
+                    //rep.fees_name = result.fees_name;
+                    //rep.amount = result.amount;
 
 
 
-                doc.Open();
-                // string imageURL = "E:\\HPS\\logo.jpg";
-
-                PdfPTable pt = new PdfPTable(6);
-                PdfPCell _cell;
-                Chunk text;
-                Phrase ph;
-
-                if (int.Parse(rcptHead) == 0)
-                {
-
-                    string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
-                    Image jpg = Image.GetInstance(imageURL);
-                    jpg.ScaleAbsolute(50f, 50f);
+                    PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
 
 
 
-                    _cell = new PdfPCell(jpg);
-                    _cell.Border = 0;
-                    _cell.Colspan = 2;
-                    _cell.Border = Rectangle.BOTTOM_BORDER;
-                    _cell.PaddingBottom = 5;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
+                    doc.Open();
+                    // string imageURL = "E:\\HPS\\logo.jpg";
+
+                    PdfPTable pt = new PdfPTable(6);
+                    PdfPCell _cell;
+                    Chunk text;
+                    Phrase ph;
+
+                    if (int.Parse(rcptHead) == 0)
+                    {
+
+                        string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                        Image jpg = Image.GetInstance(imageURL);
+                        jpg.ScaleAbsolute(50f, 50f);
 
 
-                    text = new Chunk(shortfirstname, FontFactory.GetFont("Areal", 18));
-                    ph = new Phrase();
-                    ph.Add(text);
-                    ph.Add("\n");
-                    text = new Chunk(shortlastname, FontFactory.GetFont("Areal", 12));
-                    //ph = new Phrase();
-                    ph.Add(text);
-                    /* _cell = new PdfPCell(ph);
-                     _cell.Colspan = 3;
-                     _cell.HorizontalAlignment = Element.ALIGN_CENTER;*/
 
-                    //  _cell.Border = 0;
-                    // pt.AddCell(_cell);
-                    //ph.Add("\n");
-                    //text = new Chunk("Nh-24 Village Ballia, Dhaneta, Meerganj Bareilly-243504", FontFactory.GetFont("Areal", 08));
-                    //ph.Add(text);
+                        _cell = new PdfPCell(jpg);
+                        _cell.Border = 0;
+                        _cell.Colspan = 2;
+                        _cell.Border = Rectangle.BOTTOM_BORDER;
+                        _cell.PaddingBottom = 5;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
 
-                    ph.Add("\n");
-                    text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 08));
-                    ph.Add(text);
 
+                        text = new Chunk(shortfirstname, FontFactory.GetFont("Areal", 18));
+                        ph = new Phrase();
+                        ph.Add(text);
+                        ph.Add("\n");
+                        text = new Chunk(shortlastname, FontFactory.GetFont("Areal", 12));
+                        //ph = new Phrase();
+                        ph.Add(text);
+                        /* _cell = new PdfPCell(ph);
+                         _cell.Colspan = 3;
+                         _cell.HorizontalAlignment = Element.ALIGN_CENTER;*/
+
+                        //  _cell.Border = 0;
+                        // pt.AddCell(_cell);
+                        //ph.Add("\n");
+                        //text = new Chunk("Nh-24 Village Ballia, Dhaneta, Meerganj Bareilly-243504", FontFactory.GetFont("Areal", 08));
+                        //ph.Add(text);
+
+                        ph.Add("\n");
+                        text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 08));
+                        ph.Add(text);
+
+
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 4;
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = Rectangle.BOTTOM_BORDER;
+                        _cell.PaddingBottom = 5;
+                        //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+
+
+                        pt.AddCell(_cell);
+
+                        doc.Add(pt);
+                    }
+                    else
+                    {
+                        string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                        Image jpg = Image.GetInstance(imageURL);
+                        jpg.ScaleAbsolute(30f, 30f);
+
+
+                        _cell = new PdfPCell(jpg);
+                        _cell.Border = 0;
+                        _cell.Border = Rectangle.BOTTOM_BORDER;
+                        _cell.PaddingBottom = 5;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        pt.AddCell(_cell);
+
+
+                        text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 16));
+                        ph = new Phrase();
+                        ph.Add(text);
+                        ph.Add("\n");
+
+
+
+                        text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 5;
+                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        _cell.Border = Rectangle.BOTTOM_BORDER;
+                        _cell.PaddingBottom = 5;
+                        //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        pt.AddCell(_cell);
+
+                        doc.Add(pt);
+                    }
+                    pt = new PdfPTable(4);
+
+                    text = new Chunk("Fees Receipt", FontFactory.GetFont("Areal", 10));
+                    text.SetUnderline(0.1f, -1f);
+                    ph = new Phrase(text);
 
                     _cell = new PdfPCell(ph);
                     _cell.Colspan = 4;
-                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    _cell.Border = Rectangle.BOTTOM_BORDER;
-                    _cell.PaddingBottom = 5;
-                    //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-
-
-                    pt.AddCell(_cell);
-
-                    doc.Add(pt);
-                }else
-                {
-                    string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
-                    Image jpg = Image.GetInstance(imageURL);
-                    jpg.ScaleAbsolute(30f, 30f);
-
-
-                    _cell = new PdfPCell(jpg);
-                    _cell.Border = 0;
-                    _cell.Border = Rectangle.BOTTOM_BORDER;
-                    _cell.PaddingBottom = 5;
                     _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    pt.AddCell(_cell);
-
-
-                    text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 16));
-                    ph = new Phrase();
-                    ph.Add(text);
-                    ph.Add("\n");
-                   
-
-
-                    text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    _cell = new PdfPCell(ph);
-                    _cell.Colspan = 5;
-                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    _cell.Border = Rectangle.BOTTOM_BORDER;
-                    _cell.PaddingBottom = 5;
-                    //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                    pt.AddCell(_cell);
-
-                    doc.Add(pt);
-                }
-                pt = new PdfPTable(4);
-
-                text = new Chunk("Fees Receipt", FontFactory.GetFont("Areal", 10));
-                text.SetUnderline(0.1f, -1f);
-                ph = new Phrase(text);
-
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 4;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk("\n");
-                ph = new Phrase(text);
-
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 4;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-
-                text = new Chunk("Receipt No:", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk(rep.receipt_no.ToString(), FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk("Receipt Date:", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk(DateTime.ParseExact(rep.receipt_date, "yyyy-MM-dd", null).ToString("dd-MMM-yyyy"), FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                if (result.First<fees_receipt>().sr_number == 0)
-                {
-                    text = new Chunk("Registration No:", FontFactory.GetFont("Areal", 8));
-                    ph = new Phrase(text);
-                    _cell = new PdfPCell(ph);
-                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     _cell.Border = 0;
                     pt.AddCell(_cell);
-                }
-                else
-                {
-                    text = new Chunk("Admission No:", FontFactory.GetFont("Areal", 8));
+
+                    text = new Chunk("\n");
                     ph = new Phrase(text);
+
                     _cell = new PdfPCell(ph);
-                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Colspan = 4;
                     _cell.Border = 0;
                     pt.AddCell(_cell);
-                }
-                text = new Chunk(rep.num.ToString(), FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
 
-                if (result.First<fees_receipt>().sr_number == 0)
-                {
-                    text = new Chunk("Reg Class: ", FontFactory.GetFont("Areal", 8));
-                    ph = new Phrase(text);
-                    _cell = new PdfPCell(ph);
-                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    _cell.Border = 0;
-                    pt.AddCell(_cell);
-                }
-                else
-                {
-                    text = new Chunk("Class: ", FontFactory.GetFont("Areal", 8));
-                    ph = new Phrase(text);
-                    _cell = new PdfPCell(ph);
-                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    _cell.Border = 0;
-                    pt.AddCell(_cell);
-                }
 
-                text = new Chunk(rep.class_name, FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                if (result.First<fees_receipt>().mode_flag != "Cash")
-                {
-                    text = new Chunk("Inst No:", FontFactory.GetFont("Areal", 8));
+                    text = new Chunk("Receipt No:", FontFactory.GetFont("Areal", 8));
                     ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
                     _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     _cell.Border = 0;
                     pt.AddCell(_cell);
 
-                    text = new Chunk(result.First<fees_receipt>().chq_no, FontFactory.GetFont("Areal", 8));
+                    text = new Chunk(rep.receipt_no.ToString(), FontFactory.GetFont("Areal", 8));
                     ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
                     _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     _cell.Border = 0;
                     pt.AddCell(_cell);
 
-                    text = new Chunk("Inst Date:", FontFactory.GetFont("Areal", 8));
+                    text = new Chunk("Receipt Date:", FontFactory.GetFont("Areal", 8));
                     ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
                     _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     _cell.Border = 0;
                     pt.AddCell(_cell);
 
-                    text = new Chunk(result.First<fees_receipt>().chq_date.Value.ToString("dd-MMM-yyyy"), FontFactory.GetFont("Areal", 8));
+                    text = new Chunk(DateTime.ParseExact(rep.receipt_date, "yyyy-MM-dd", null).ToString("dd-MMM-yyyy"), FontFactory.GetFont("Areal", 8));
                     ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
                     _cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     _cell.Border = 0;
                     pt.AddCell(_cell);
 
-                }
+                    if (result.First<fees_receipt>().sr_number == 0)
+                    {
+                        text = new Chunk("Registration No:", FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+                    }
+                    else
+                    {
+                        text = new Chunk("Admission No:", FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+                    }
+                    text = new Chunk(rep.num.ToString(), FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = 0;
+                    pt.AddCell(_cell);
+
+                    if (result.First<fees_receipt>().sr_number == 0)
+                    {
+                        text = new Chunk("Reg Class: ", FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+                    }
+                    else
+                    {
+                        text = new Chunk("Class: ", FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+                    }
+
+                    text = new Chunk(rep.class_name, FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = 0;
+                    pt.AddCell(_cell);
+
+                    if (result.First<fees_receipt>().mode_flag != "Cash")
+                    {
+                        text = new Chunk("Inst No:", FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+
+                        text = new Chunk(result.First<fees_receipt>().chq_no, FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+
+                        text = new Chunk("Inst Date:", FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+
+                        text = new Chunk(result.First<fees_receipt>().chq_date.Value.ToString("dd-MMM-yyyy"), FontFactory.GetFont("Areal", 8));
+                        ph = new Phrase(text);
+                        _cell = new PdfPCell(ph);
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        _cell.Border = 0;
+                        pt.AddCell(_cell);
+
+                    }
 
 
-                text = new Chunk("Name:", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
+                    text = new Chunk("Name:", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = 0;
+                    pt.AddCell(_cell);
 
-                text = new Chunk(rep.name, FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 3;
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-
-
-                text = new Chunk("Father's Name:", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk(rep.father_name, FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 3;
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk("\n");
-                ph = new Phrase(text);
-
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 4;
-                _cell.Border = 0;
-                pt.AddCell(_cell);
-
-                text = new Chunk("Particulars", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 3;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                text = new Chunk("Amount", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                decimal total = 0;
-
-                foreach (var fee in result)
-                {
-
-                    ph = new Phrase();
-                    text = new Chunk(fee.fees_name, FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
-                    ph.Add("\n");
-
+                    text = new Chunk(rep.name, FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
                     _cell.Colspan = 3;
-                    _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
-
                     _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = 0;
                     pt.AddCell(_cell);
 
-                    ph = new Phrase();
-                    text = new Chunk(fee.amount.ToString(), FontFactory.GetFont("Areal", 8));
-                    ph.Add(text);
 
-                    ph.Add("\n");
+
+                    text = new Chunk("Father's Name:", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
                     _cell = new PdfPCell(ph);
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = 0;
+                    pt.AddCell(_cell);
 
-                    _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
+                    text = new Chunk(rep.father_name, FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 3;
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    _cell.Border = 0;
+                    pt.AddCell(_cell);
 
+                    text = new Chunk("\n");
+                    ph = new Phrase(text);
+
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 4;
+                    _cell.Border = 0;
+                    pt.AddCell(_cell);
+
+                    doc.Add(pt);
+
+                    pt = new PdfPTable(7);
+
+                    pt.WidthPercentage = 90f;
+
+                    text = new Chunk("Particulars", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 3;
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                     _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     pt.AddCell(_cell);
 
-                    total = total + fee.amount;
+                    text = new Chunk("Fees", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+                    text = new Chunk("Fine", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+                    text = new Chunk("Dis.", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+                    text = new Chunk("Paid", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+                    decimal total = 0;
+
+                    foreach (var fee in result)
+                    {
+
+                        ph = new Phrase();
+                        text = new Chunk(fee.fees_name, FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Colspan = 3;
+                        _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
+                        _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk(fee.fees.ToString(), FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
+                        _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk(fee.fine.ToString(), FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
+                        _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk(fee.discount.ToString(), FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
+                        _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                        pt.AddCell(_cell);
+
+                        ph = new Phrase();
+                        text = new Chunk(fee.amount.ToString(), FontFactory.GetFont("Areal", 8));
+                        ph.Add(text);
+                        ph.Add("\n");
+                        _cell = new PdfPCell(ph);
+                        _cell.Border = Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER;
+                        _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                        pt.AddCell(_cell);
+
+                        total = total + fee.amount;
+                    }
+                    
+
+                    text = new Chunk("Total amount paid", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 6;
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pt.AddCell(_cell);
+
+                    text = new Chunk(total.ToString(), FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 1;
+                    _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    pt.AddCell(_cell);
+
+                    doc.Add(pt);
+
+                    //_cell.FixedHeight = 150;
+                    pt = new PdfPTable(4);
+
+                    text = new Chunk("Received with thanks: ", FontFactory.GetFont("Areal", 8));
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Border = 0;
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    pt.AddCell(_cell);
+
+                    text = new Chunk(NumbersToWords(Decimal.ToInt32(total)) + " Only", FontFactory.GetFont("Areal", 8));
+                    text.SetUnderline(0.1f, -1f);
+
+                    ph = new Phrase(text);
+                    _cell = new PdfPCell(ph);
+                    _cell.Colspan = 3;
+                    _cell.Border = 0;
+                    _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    pt.AddCell(_cell);
+
+
+                    doc.Add(pt);
+
+
+
+                    doc.Close();
+
+                    HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
+                    HttpContext.Current.Response.OutputStream.Flush();
+                    HttpContext.Current.Response.OutputStream.Close();
+
+
+
+
+
                 }
 
-                //_cell.FixedHeight = 150;
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
 
-                text = new Chunk("Total", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 3;
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                text = new Chunk(total.ToString(), FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                pt.AddCell(_cell);
-
-                text = new Chunk("Received with thanks: ", FontFactory.GetFont("Areal", 8));
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Border = 0;
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                pt.AddCell(_cell);
-
-                text = new Chunk(NumbersToWords(Decimal.ToInt32(total)) + " Only", FontFactory.GetFont("Areal", 8));
-                text.SetUnderline(0.1f, -1f);
-
-                ph = new Phrase(text);
-                _cell = new PdfPCell(ph);
-                _cell.Colspan = 3;
-                _cell.Border = 0;
-                _cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                pt.AddCell(_cell);
-
-
-                doc.Add(pt);
-
-
-
-                doc.Close();
-
-                HttpContext.Current.Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
-                HttpContext.Current.Response.OutputStream.Flush();
-                HttpContext.Current.Response.OutputStream.Close();
-
-
-             
-
-
-            }
-
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            //catch (DocumentException dex)
-            //{
-            //    throw (dex);
-            //}
-            //catch (IOException io)
-            //{
-            //    throw (io);
-            //}
-            finally
-            {
-                doc.Close();
-                ms.Flush();
+                //catch (DocumentException dex)
+                //{
+                //    throw (dex);
+                //}
+                //catch (IOException io)
+                //{
+                //    throw (io);
+                //}
+                finally
+                {
+                    doc.Close();
+                    ms.Flush();
+                }
             }
         }
 
@@ -620,7 +680,7 @@ namespace SMS.report
             Chunk text;
             Phrase ph = new Phrase();
 
-            text = new Chunk("This is computer generated receipt no need of signature.", FontFactory.GetFont("Areal", 8));
+            text = new Chunk("This is a computer generated receipt.", FontFactory.GetFont("Areal", 8));
             ph.Add(text);
             ph.Add("\n");
             ph.Add("\n");

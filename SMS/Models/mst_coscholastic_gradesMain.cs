@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class mst_coscholastic_gradesMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddCoscholasticGrades(List<mst_coscholastic_grades> mst)
         {
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                string session = sess.findFinal_Session();
+                    string session = sess.findFinal_Session();
 
-                string query = @"INSERT INTO `mst_coscholastic_grades`
+                    string query = @"INSERT INTO `mst_coscholastic_grades`
                                 (`session`,
                                 `sr_num`,
                                 `term_id`,
@@ -35,7 +37,7 @@ namespace SMS.Models
                                 @grade,
                                 @user_id)";
 
-                string update = @"UPDATE `mst_coscholastic_grades` 
+                    string update = @"UPDATE `mst_coscholastic_grades` 
                                     SET 
                                         `grade` = @grade,
                                         `user_id` = @user_id
@@ -45,7 +47,7 @@ namespace SMS.Models
                                             AND `term_id` = @term_id
                                             AND `co_scholastic_id` = @co_scholastic_id";
 
-                string query1 = @"SELECT 
+                    string query1 = @"SELECT 
                                         COUNT(*)
                                     FROM
                                         `mst_coscholastic_grades`
@@ -55,38 +57,39 @@ namespace SMS.Models
                                             AND `term_id` = @term_id
                                             AND `co_scholastic_id` = @co_scholastic_id";
 
-                foreach (var marks in mst)
-                {
-
-                    marks.session = session;
-
-                    int count = con.Query<int>(query1, new {session = marks.session,sr_num = marks.sr_num,term_id = marks.term_id, co_scholastic_id = marks.co_scholastic_id,class_id = marks.class_id,section_id = marks.section_id }).SingleOrDefault();
-
-                    if (count > 0)
+                    foreach (var marks in mst)
                     {
-                        con.Execute(update, new
+
+                        marks.session = session;
+
+                        int count = con.Query<int>(query1, new { session = marks.session, sr_num = marks.sr_num, term_id = marks.term_id, co_scholastic_id = marks.co_scholastic_id, class_id = marks.class_id, section_id = marks.section_id }).SingleOrDefault();
+
+                        if (count > 0)
                         {
-                            marks.session,
-                            marks.sr_num,
-                            marks.term_id,
-                            marks.co_scholastic_id,
-                            marks.grade,
-                            marks.user_id
-                        });
-                    }
-                    else
-                    {
-                        con.Execute(query, new
+                            con.Execute(update, new
+                            {
+                                marks.session,
+                                marks.sr_num,
+                                marks.term_id,
+                                marks.co_scholastic_id,
+                                marks.grade,
+                                marks.user_id
+                            });
+                        }
+                        else
                         {
-                            marks.session,
-                            marks.sr_num,
-                            marks.term_id,
-                            marks.co_scholastic_id,
-                            marks.grade,
-                            marks.user_id
-                        });
+                            con.Execute(query, new
+                            {
+                                marks.session,
+                                marks.sr_num,
+                                marks.term_id,
+                                marks.co_scholastic_id,
+                                marks.grade,
+                                marks.user_id
+                            });
+                        }
+
                     }
-                  
                 }
             }
             catch (Exception ex)
@@ -97,11 +100,13 @@ namespace SMS.Models
 
         public IEnumerable<mst_coscholastic_grades> student_list_for_Coscholastic_Grades(int class_id, int section_id)
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findFinal_Session();
+                string session_name = sess.findFinal_Session();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 b.class_id,
                                 b.section_id,
                                 c.roll_number roll_no,
@@ -131,7 +136,8 @@ namespace SMS.Models
                                     AND a.sr_number = c.sr_num
                             ORDER BY roll_no";
 
-            return con.Query<mst_coscholastic_grades>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+                return con.Query<mst_coscholastic_grades>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+            }
         }
 
         //public IEnumerable<mst_coscholastic_grades> AllCoscholasticGradesList()
@@ -153,11 +159,13 @@ namespace SMS.Models
         //}
 
 
-        public IEnumerable<mst_coscholastic_grades> FindCoscholasticGrades(int class_id,int section_id ,int co_scholastic_id)
+        public IEnumerable<mst_coscholastic_grades> FindCoscholasticGrades(int class_id, int section_id, int co_scholastic_id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = @"SELECT 
+                string Query = @"SELECT 
                                 d.class_id,
                                 e.section_id,
                                 b.roll_number roll_no,
@@ -186,18 +194,21 @@ namespace SMS.Models
                                     AND a.co_scholastic_id = @co_scholastic_id
                             ORDER BY roll_number";
 
-            return con.Query<mst_coscholastic_grades>(Query, new { class_id = class_id, co_scholastic_id = co_scholastic_id, session = session.findFinal_Session(), section_id = section_id });
+                return con.Query<mst_coscholastic_grades>(Query, new { class_id = class_id, co_scholastic_id = co_scholastic_id, session = session.findFinal_Session(), section_id = section_id });
+            }
         }
-
         public mst_coscholastic_grades DeleteCoscholasticGrades(int class_id, int co_scholastic_id, string session)
         {
-            String Query = @"DELETE FROM `mst_coscholastic_grades`
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                String Query = @"DELETE FROM `mst_coscholastic_grades`
                             WHERE 
                             co_scholastic_id = @co_scholastic_id
                             and
                             session = @session";
 
-            return con.Query<mst_coscholastic_grades>(Query, new { class_id = class_id, co_scholastic_id = co_scholastic_id, session = session }).SingleOrDefault();
+                return con.Query<mst_coscholastic_grades>(Query, new { class_id = class_id, co_scholastic_id = co_scholastic_id, session = session }).SingleOrDefault();
+            }
         }
     }
 }

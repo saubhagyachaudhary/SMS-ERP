@@ -10,17 +10,19 @@ namespace SMS.Models
 {
     public class mst_disciplineMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddDiscipline(mst_discipline mst)
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string query = "INSERT INTO mst_discipline (session,discipline_id,discipline_name) VALUES (@session,@discipline_id,@discipline_name)";
+                    string query = "INSERT INTO mst_discipline (session,discipline_id,discipline_name) VALUES (@session,@discipline_id,@discipline_name)";
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                     IFNULL(MAX(discipline_id), 0) + 1
                                 FROM
                                     mst_discipline
@@ -32,18 +34,19 @@ namespace SMS.Models
                                         WHERE
                                             session_finalize = 'Y')";
 
-                int id = con.ExecuteScalar<int>(maxid);
+                    int id = con.ExecuteScalar<int>(maxid);
 
-                mst.session = session.findFinal_Session();
-                mst.discipline_id = id;
-                mst.discipline_name = mst.discipline_name.Trim();
+                    mst.session = session.findFinal_Session();
+                    mst.discipline_id = id;
+                    mst.discipline_name = mst.discipline_name.Trim();
 
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.discipline_id,
-                    mst.discipline_name
-                });
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.discipline_id,
+                        mst.discipline_name
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -53,23 +56,29 @@ namespace SMS.Models
 
         public IEnumerable<mst_discipline> AllDisciplineList()
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string query = "SELECT discipline_id,discipline_name FROM mst_discipline where session = @session";
+                string query = "SELECT discipline_id,discipline_name FROM mst_discipline where session = @session";
 
-            var result = con.Query<mst_discipline>(query,new {session = session.findFinal_Session() });
+                var result = con.Query<mst_discipline>(query, new { session = session.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
 
         public mst_discipline FindDiscipline(int? id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = "SELECT discipline_id,discipline_name FROM mst_discipline where discipline_id = @discipline_id and session = @session";
+                string Query = "SELECT discipline_id,discipline_name FROM mst_discipline where discipline_id = @discipline_id and session = @session";
 
-            return con.Query<mst_discipline>(Query, new { discipline_id = id,session = session.findFinal_Session() }).SingleOrDefault();
+                return con.Query<mst_discipline>(Query, new { discipline_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+            }
         }
 
         public void EditDiscipline(mst_discipline mst)
@@ -77,13 +86,16 @@ namespace SMS.Models
 
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string query = "UPDATE mst_discipline SET discipline_name = @discipline_name WHERE discipline_id = @discipline_id and session = @session";
+                    string query = "UPDATE mst_discipline SET discipline_name = @discipline_name WHERE discipline_id = @discipline_id and session = @session";
 
-                mst.session = session.findFinal_Session();
+                    mst.session = session.findFinal_Session();
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -95,11 +107,14 @@ namespace SMS.Models
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string Query = "DELETE FROM mst_discipline WHERE discipline_id = @discipline_id and session = @session";
+                    string Query = "DELETE FROM mst_discipline WHERE discipline_id = @discipline_id and session = @session";
 
-                return con.Query<mst_discipline>(Query, new { discipline_id = id,session = session.findFinal_Session() }).SingleOrDefault();
+                    return con.Query<mst_discipline>(Query, new { discipline_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {

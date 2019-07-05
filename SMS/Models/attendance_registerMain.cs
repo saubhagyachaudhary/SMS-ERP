@@ -12,27 +12,29 @@ namespace SMS.Models
 {
     public class attendance_registerMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
         string SchoolName = ConfigurationManager.AppSettings["SchoolName"].ToString();
 
         public async Task mark_attendance(List<attendance_register> attendance,int user_id)
         {
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string session_name = sess.findFinal_Session();
-
-            int class_id = 0;
-
-            int section_id = 0;
-
-            int month_no = 0;
-
-            DateTime att_date = DateTime.Now.Date;
-
-            if (sess.checkSessionNotExpired())
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                string query = @"INSERT INTO attendance_register
+                mst_sessionMain sess = new mst_sessionMain();
+
+                string session_name = sess.findFinal_Session();
+
+                int class_id = 0;
+
+                int section_id = 0;
+
+                int month_no = 0;
+
+                DateTime att_date = DateTime.Now.Date;
+
+                if (sess.checkSessionNotExpired())
+                {
+                    string query = @"INSERT INTO attendance_register
                                 (`session`,
                                 `user_id`,
                                 `att_date`,
@@ -44,29 +46,29 @@ namespace SMS.Models
                                 @att_date,
                                 @sr_num,
                                 @attendance)";
-                foreach (attendance_register att in attendance)
-                {
-                    att.session = session_name;
-                    att.user_id = user_id;
-                    att.att_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
-                    await con.ExecuteAsync(query,
-                               new
-                               {
-                                   att.session,
-                                   att.user_id,
-                                   att.att_date,
-                                   att.sr_num,
-                                   att.attendance
-                               });
-                    class_id = att.class_id;
-                    section_id = att.section_id;
-                    month_no = att.att_date.Month;
-                    att_date = att.att_date.Date;
-                }
+                    foreach (attendance_register att in attendance)
+                    {
+                        att.session = session_name;
+                        att.user_id = user_id;
+                        att.att_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
+                        await con.ExecuteAsync(query,
+                                   new
+                                   {
+                                       att.session,
+                                       att.user_id,
+                                       att.att_date,
+                                       att.sr_num,
+                                       att.attendance
+                                   });
+                        class_id = att.class_id;
+                        section_id = att.section_id;
+                        month_no = att.att_date.Month;
+                        att_date = att.att_date.Date;
+                    }
 
-                repAttendance_sheetMain sendAttSheet = new repAttendance_sheetMain();
+                    repAttendance_sheetMain sendAttSheet = new repAttendance_sheetMain();
 
-                 query = @"select c.Email from mst_attendance a,emp_profile b,emp_profile c
+                    query = @"select c.Email from mst_attendance a,emp_profile b,emp_profile c
                             where
                             a.user_id = b.user_id
                             and
@@ -78,20 +80,22 @@ namespace SMS.Models
                             and
                             a.finalizer = c.user_id";
 
-                string email_id = con.Query<string>(query, new { class_id = class_id,user_id = user_id,section_id = section_id }).SingleOrDefault();
+                    string email_id = con.Query<string>(query, new { class_id = class_id, user_id = user_id, section_id = section_id }).SingleOrDefault();
 
-                sendAttSheet.MailAttendanceSheet(section_id, month_no, session_name, email_id, att_date);
+                    sendAttSheet.MailAttendanceSheet(section_id, month_no, session_name, email_id, att_date);
+                }
             }
-
         }
 
         public IEnumerable<attendance_register> student_list_for_attendance(int class_id,int section_id)
         {
-            mst_sessionMain sess = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            string session_name = sess.findFinal_Session();
+                string session_name = sess.findFinal_Session();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 b.class_id,
                                 b.section_id,
                                 c.roll_number roll_no,
@@ -122,12 +126,16 @@ namespace SMS.Models
                                     AND a.std_active = 'Y'
                             ORDER BY roll_no";
 
-            return con.Query<attendance_register>(query, new { class_id = class_id, section_id= section_id,session = session_name });
+                return con.Query<attendance_register>(query, new { class_id = class_id, section_id = section_id, session = session_name });
+            }
         }
 
         public IEnumerable<attendance_register> find_attendance_sheet_for_finalize(int section_id, DateTime att_date, string session)
         {
-            string query = @"SELECT 
+
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 a.session,
                                 a.att_date,
                                 (SELECT 
@@ -161,29 +169,31 @@ namespace SMS.Models
                                     AND IFNULL(a.finalize, 0) = 0
                             ORDER BY roll_no";
 
-            return con.Query<attendance_register>(query, new { section_id = section_id, session = session,att_date = att_date });
-
+                return con.Query<attendance_register>(query, new { section_id = section_id, session = session, att_date = att_date });
+            }
         }
 
         public async Task finalize_attendance(List<attendance_register> attendance, bool send_sms)
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
                 string query = @"UPDATE attendance_register
                                 SET
                                 `attendance` = @attendance,
                                 `finalize` = 1
                                 WHERE `session` = @session AND `att_date` = @att_date and sr_num = @sr_num";
 
-            foreach (attendance_register att in attendance)
-            {
+                foreach (attendance_register att in attendance)
+                {
 
-                await con.ExecuteAsync(query,
-                           new
-                           {
-                               att.session,
-                               att.att_date,
-                               att.attendance,
-                               att.sr_num
-                           });
+                    await con.ExecuteAsync(query,
+                               new
+                               {
+                                   att.session,
+                                   att.att_date,
+                                   att.attendance,
+                                   att.sr_num
+                               });
 #if !DEBUG
                 if (!att.attendance && send_sms)
                 {
@@ -215,10 +225,10 @@ namespace SMS.Models
                     
                 }
 #endif
+                }
+
+
             }
-
-
-
 
         }
     }

@@ -255,6 +255,7 @@
     <Compile Include="Controllers\mst_sectionController.cs" />
     <Compile Include="Controllers\mst_sessionController.cs" />
     <Compile Include="Controllers\mst_subjectController.cs" />
+    <Compile Include="Controllers\mst_subject_parametersController.cs" />
     <Compile Include="Controllers\mst_termController.cs" />
     <Compile Include="Controllers\mst_term_rulesController.cs" />
     <Compile Include="Controllers\mst_transportController.cs" />
@@ -325,6 +326,8 @@
     <Compile Include="Models\mst_staffMain.cs" />
     <Compile Include="Models\mst_subject.cs" />
     <Compile Include="Models\mst_subjectMain.cs" />
+    <Compile Include="Models\mst_subject_parameters.cs" />
+    <Compile Include="Models\mst_subject_parametersMain.cs" />
     <Compile Include="Models\mst_term.cs" />
     <Compile Include="Models\mst_termMain.cs" />
     <Compile Include="Models\mst_term_rules.cs" />
@@ -2573,6 +2576,9 @@
     <Content Include="Views\GenerateTC\all_TC_List.cshtml" />
     <Content Include="Views\GenerateTC\all_nso_students.cshtml" />
     <Content Include="Views\GenerateTC\message.cshtml" />
+    <Content Include="Views\mst_subject_parameters\AddParameters.cshtml" />
+    <Content Include="Views\mst_subject_parameters\AllParametersList.cshtml" />
+    <Content Include="Views\mst_subject_parameters\DeleteParameter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_discipline_gradesController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddDisciplineGrades()
@@ -101,10 +101,11 @@ namespace SMS.Controllers
 
         public JsonResult GetDiscipline(int id, int term_id)
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                 b.discipline_id, b.discipline_name
                             FROM
                                 mst_class_discipline a,
@@ -116,12 +117,12 @@ namespace SMS.Controllers
                                     AND a.session = b.session";
 
 
-            var exam_list = con.Query<mst_discipline>(query, new { class_id = id, session = sess.findFinal_Session(), term_id = term_id });
+                var exam_list = con.Query<mst_discipline>(query, new { class_id = id, session = sess.findFinal_Session(), term_id = term_id });
 
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "discipline_id", "discipline_name");
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "discipline_id", "discipline_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
 
    
@@ -129,8 +130,9 @@ namespace SMS.Controllers
         public JsonResult GetSection(int id)
         {
 
-
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 a.section_id, b.section_name
                             FROM
                                 mst_attendance a,
@@ -146,12 +148,12 @@ namespace SMS.Controllers
                                         session_finalize = 'Y')";
 
 
-            var exam_list = con.Query<mst_section>(query, new { class_id = id });
+                var exam_list = con.Query<mst_section>(query, new { class_id = id });
 
-            IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
+                IEnumerable<SelectListItem> list = new SelectList(exam_list, "section_id", "section_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
     }
 }

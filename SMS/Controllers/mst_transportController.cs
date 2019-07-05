@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_transportController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddTransport()

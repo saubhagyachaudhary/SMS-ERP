@@ -11,13 +11,14 @@ namespace SMS.Models
 {
     public class uncleared_chequeMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public IEnumerable<uncleared_cheque> AllUnclearedChequeList()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
 
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     bnk_name,
                                     chq_no,
                                     chq_date,
@@ -28,9 +29,10 @@ namespace SMS.Models
                                     clear_flag = 0 AND chq_reject IS NULL
                                 GROUP BY bnk_name , chq_date , chq_no";
 
-            var result = con.Query<uncleared_cheque>(query);
+                var result = con.Query<uncleared_cheque>(query);
 
-            return result;
+                return result;
+            }
         }
 
         public async Task Updatefees_Bounce(uncleared_cheque unclear)
@@ -38,7 +40,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE fees_receipt 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE fees_receipt 
                                     SET 
                                         chq_reject = @chq_reject,
                                         nt_clear_reason = @narration,
@@ -49,11 +53,11 @@ namespace SMS.Models
                                             AND chq_no = @chq_no
                                             AND clear_flag = 0";
 
-                con.Execute(query, unclear);
+                    con.Execute(query, unclear);
 
-                // fees_receipt fee = new fees_receipt();
+                    // fees_receipt fee = new fees_receipt();
 
-                query = @"SELECT DISTINCT
+                    query = @"SELECT DISTINCT
                                 serial, session, amount, dc_fine, dc_discount
                             FROM
                                 fees_receipt
@@ -62,13 +66,13 @@ namespace SMS.Models
                                     AND chq_date = DATE_FORMAT(@chq_date, '%Y-%m-%d')
                                     AND chq_no = @chq_no";
 
-                var result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
+                    var result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
 
 
 
-                foreach (uncleared_cheque val in result)
-                {
-                    query = @"UPDATE out_standing 
+                    foreach (uncleared_cheque val in result)
+                    {
+                        query = @"UPDATE out_standing 
                                 SET 
                                     rmt_amount = rmt_amount - @rmt_amount,
                                     dc_fine = dc_fine - @dc_fine,
@@ -76,12 +80,12 @@ namespace SMS.Models
                                 WHERE
                                     serial = @serial AND session = @session";
 
-                    con.Execute(query, new { rmt_amount = val.amount,dc_fine = val.dc_fine,dc_discount = val.dc_discount ,serial = val.serial,session = val.session });
-                }
+                        con.Execute(query, new { rmt_amount = val.amount, dc_fine = val.dc_fine, dc_discount = val.dc_discount, serial = val.serial, session = val.session });
+                    }
 
-                if (unclear.bnk_charges != 0)
-                {
-                    query = @"SELECT DISTINCT
+                    if (unclear.bnk_charges != 0)
+                    {
+                        query = @"SELECT DISTINCT
                                     sr_number, session, reg_no, class_id
                                 FROM
                                     fees_receipt
@@ -90,26 +94,26 @@ namespace SMS.Models
                                         AND chq_date = DATE_FORMAT(@chq_date, '%Y-%m-%d')
                                         AND chq_no = @chq_no";
 
-                    result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
+                        result = con.Query<uncleared_cheque>(query, new { bnk_name = unclear.bnk_name, chq_date = unclear.chq_date, chq_no = unclear.chq_no });
 
 
 
-                    out_standing std = new out_standing();
-                    out_standingMain outstd = new out_standingMain();
+                        out_standing std = new out_standing();
+                        out_standingMain outstd = new out_standingMain();
 
-                    std.acc_id = 3;
-                    std.clear_flag = false;
-                    std.outstd_amount = (unclear.bnk_charges) / result.Count();
+                        std.acc_id = 3;
+                        std.clear_flag = false;
+                        std.outstd_amount = (unclear.bnk_charges) / result.Count();
 
-                    foreach (uncleared_cheque val in result)
-                    {
+                        foreach (uncleared_cheque val in result)
+                        {
 
-                        std.sr_number = val.sr_number;
-                        std.reg_num = val.reg_no;
-                        std.class_id = val.class_id;
-                        std.session = val.session;
-                        outstd.AddOutStanding(std);
-                    }
+                            std.sr_number = val.sr_number;
+                            std.reg_num = val.reg_no;
+                            std.class_id = val.class_id;
+                            std.session = val.session;
+                            outstd.AddOutStanding(std);
+                        }
 #if !DEBUG
                     if (unclear.chq_reject == "Bounce")
                     {
@@ -132,10 +136,11 @@ namespace SMS.Models
 
                     }
 #endif
-                }
+                    }
 
-               
-                
+
+
+                }
             }
             catch (Exception ex)
             {
@@ -149,7 +154,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE fees_receipt 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE fees_receipt 
                                     SET 
                                         chq_reject = @chq_reject,
                                         clear_flag = 1,
@@ -160,9 +167,10 @@ namespace SMS.Models
                                             AND chq_no = @chq_no
                                             AND clear_flag = 0";
 
-                con.Execute(query, unclear);
+                    con.Execute(query, unclear);
 
 
+                }
             }
             catch (Exception ex)
             {

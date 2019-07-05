@@ -13,56 +13,58 @@ namespace SMS.Models
 {
     public class std_registrationMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
         public async Task AddRegistration(std_registration std)
         {
             try
             {
-                mst_fin fin = new mst_fin();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_fin fin = new mst_fin();
 
-                string query1 = @"SELECT fin_id
+                    string query1 = @"SELECT fin_id
                               ,fin_start_date
                               ,fin_end_date
                               ,fin_close
                           FROM mst_fin
                           where fin_close = 'N'";
 
-                fin = con.Query<mst_fin>(query1).SingleOrDefault();
+                    fin = con.Query<mst_fin>(query1).SingleOrDefault();
 
-                if (std.reg_date > fin.fin_start_date && std.reg_date < fin.fin_end_date)
-                {
-                    string sess = @"SELECT 
+                    if (std.reg_date > fin.fin_start_date && std.reg_date < fin.fin_end_date)
+                    {
+                        string sess = @"SELECT 
                                         session
                                     FROM
                                         mst_session
                                     WHERE
                                         session_active = 'Y'";
 
-                    string session = con.ExecuteScalar<string>(sess);
+                        string session = con.ExecuteScalar<string>(sess);
 
-                    string maxid = @"SELECT 
+                        string maxid = @"SELECT 
                                             IFNULL(MAX(reg_no), 0) + 1
                                         FROM
                                             sr_register
                                         WHERE
                                             adm_session = @adm_session";
 
-                    int id = con.Query<int>(maxid, new { adm_session = session }).SingleOrDefault();
+                        int id = con.Query<int>(maxid, new { adm_session = session }).SingleOrDefault();
 
-                    string max = @"SELECT 
+                        string max = @"SELECT 
                                         IFNULL(MAX(reg_no), 0) + 1
                                     FROM
                                         std_registration
                                     WHERE
                                         session = @adm_session";
 
-                    int id1 = con.Query<int>(max, new { adm_session = session }).SingleOrDefault();
+                        int id1 = con.Query<int>(max, new { adm_session = session }).SingleOrDefault();
 
 
 
 
-                    string query = @"INSERT INTO std_registration
+                        string query = @"INSERT INTO std_registration
            (session
            ,reg_no
            ,reg_date
@@ -103,75 +105,75 @@ namespace SMS.Models
            ,@std_email
            ,@std_class_id)";
 
-                    std.session = session;
+                        std.session = session;
 
-                    if (id1 < id)
-                    {
-                        std.reg_no = id;
-                    }
-                    else
-                    {
-                        std.reg_no = id1;
-                    }
-                    std.reg_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
-
-
-
-                    await con.ExecuteAsync(query,
-                            new
-                            {
-                                std.session
-                               ,
-                                std.reg_no
-                               ,
-                                std.reg_date
-                               ,
-                                std.std_first_name
-                               ,
-                                std.std_last_name
-                               ,
-                                std.std_father_name
-                               ,
-                                std.std_mother_name
-                               ,
-                                std.std_address
-                               ,
-                                std.std_address1
-                               ,
-                                std.std_address2
-                               ,
-                                std.std_district
-                               ,
-                                std.std_state
-                               ,
-                                std.std_country
-                               ,
-                                std.std_pincode
-                               ,
-                                std.std_contact
-                               ,
-                                std.std_contact1
-                               ,
-                                std.std_contact2
-                               ,
-                                std.std_email
-                               ,
-                                std.std_class_id
-                                
-
-                            });
-
-                    out_standing out_std= new out_standing();
-
-                    out_std.acc_id = 1;
-                    out_std.outstd_amount = std.fees_amount;
-                    out_std.reg_num = std.reg_no;
-
-                    out_standingMain out_stdMain = new out_standingMain();
+                        if (id1 < id)
+                        {
+                            std.reg_no = id;
+                        }
+                        else
+                        {
+                            std.reg_no = id1;
+                        }
+                        std.reg_date = System.DateTime.Now.AddMinutes(dateTimeOffSet);
 
 
 
-                    out_stdMain.AddOutStanding(out_std);
+                        await con.ExecuteAsync(query,
+                                new
+                                {
+                                    std.session
+                                   ,
+                                    std.reg_no
+                                   ,
+                                    std.reg_date
+                                   ,
+                                    std.std_first_name
+                                   ,
+                                    std.std_last_name
+                                   ,
+                                    std.std_father_name
+                                   ,
+                                    std.std_mother_name
+                                   ,
+                                    std.std_address
+                                   ,
+                                    std.std_address1
+                                   ,
+                                    std.std_address2
+                                   ,
+                                    std.std_district
+                                   ,
+                                    std.std_state
+                                   ,
+                                    std.std_country
+                                   ,
+                                    std.std_pincode
+                                   ,
+                                    std.std_contact
+                                   ,
+                                    std.std_contact1
+                                   ,
+                                    std.std_contact2
+                                   ,
+                                    std.std_email
+                                   ,
+                                    std.std_class_id
+
+
+                                });
+
+                        out_standing out_std = new out_standing();
+
+                        out_std.acc_id = 1;
+                        out_std.outstd_amount = std.fees_amount;
+                        out_std.reg_num = std.reg_no;
+
+                        out_standingMain out_stdMain = new out_standingMain();
+
+
+
+                        out_stdMain.AddOutStanding(out_std);
 #if !DEBUG
                     SMSMessage sms = new SMSMessage();
 
@@ -209,8 +211,9 @@ namespace SMS.Models
 
                     //sms.SendSMS(text, std.std_contact);
 #endif
+                    }
+
                 }
-                
             }
 
             catch (Exception ex)
@@ -221,7 +224,9 @@ namespace SMS.Models
 
         public IEnumerable<std_registration> AllRegistrationList()
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 a.session,
                                 reg_no,
                                 reg_date,
@@ -243,14 +248,17 @@ namespace SMS.Models
                                         session_active = 'Y')
                             ORDER BY reg_date DESC";
 
-            var result = con.Query<std_registration>(query);
+                var result = con.Query<std_registration>(query);
 
-            return result;
+                return result;
+            }
         }
 
         public std_registration FindRegistration(string sess, int reg, DateTime reg_dt)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                 a.session,
                                 reg_no,
                                 reg_date,
@@ -281,12 +289,15 @@ namespace SMS.Models
                                     AND a.reg_date = @reg_date
                                     AND a.session = c.session";
 
-            return con.Query<std_registration>(Query, new { session = sess, reg_no = reg , reg_date = reg_dt }).SingleOrDefault();
+                return con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
+            }
         }
 
         public std_registration FindRegistrationForFees(int reg)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                 std_first_name,
                                 std_last_name,
                                 std_father_name,
@@ -308,7 +319,8 @@ namespace SMS.Models
                                     WHERE
                                         session_active = 'Y')";
 
-            return con.Query<std_registration>(Query, new {reg_no = reg}).SingleOrDefault();
+                return con.Query<std_registration>(Query, new { reg_no = reg }).SingleOrDefault();
+            }
         }
 
         public void EditRegistration(std_registration std)
@@ -316,7 +328,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE std_registration 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE std_registration 
                                     SET 
                                         std_first_name = @std_first_name,
                                         std_last_name = @std_last_name,
@@ -338,7 +352,8 @@ namespace SMS.Models
                                         session = @session AND reg_no = @reg_no
                                             AND reg_date = @reg_date";
 
-                con.Execute(query, std);
+                    con.Execute(query, std);
+                }
             }
             catch (Exception ex)
             {
@@ -348,14 +363,16 @@ namespace SMS.Models
 
         public void DeleteRegistration(string sess, int reg, DateTime reg_dt)
         {
-            string Query = @"DELETE FROM std_registration 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"DELETE FROM std_registration 
                             WHERE
                                 session = @session AND reg_no = @reg_no
                                 AND reg_date = @reg_date";
 
-            con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
+                con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
 
-            Query = @"DELETE FROM out_standing 
+                Query = @"DELETE FROM out_standing 
                         WHERE
                             reg_num = @reg AND rmt_amount = 0
                             AND session = @session
@@ -364,18 +381,21 @@ namespace SMS.Models
                             AND IFNULL(sr_number, 0) = 0
                             AND dt_date = @dt_date";
 
-            con.Query<std_registration>(Query, new { session = sess, reg = reg ,dt_date = reg_dt }).SingleOrDefault();
+                con.Query<std_registration>(Query, new { session = sess, reg = reg, dt_date = reg_dt }).SingleOrDefault();
+            }
         }
 
         public void DeleteRegistrationOnly(string sess, int reg, DateTime reg_dt)
         {
-            string Query = @"DELETE FROM std_registration 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"DELETE FROM std_registration 
                             WHERE
                                 session = @session AND reg_no = @reg_no
                                 AND reg_date = @reg_date";
 
-            con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
-
+                con.Query<std_registration>(Query, new { session = sess, reg_no = reg, reg_date = reg_dt }).SingleOrDefault();
+            }
            
         }
     }

@@ -14,7 +14,7 @@ namespace SMS.Controllers
 {
     public class std_registrationController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddRegistration()
@@ -74,7 +74,9 @@ namespace SMS.Controllers
 
         public JsonResult GetFees(int id)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 fees_amount
                             FROM
                                 mst_fees
@@ -88,11 +90,12 @@ namespace SMS.Controllers
                                         session_active = 'Y')";
 
 
-            decimal fees = con.Query<decimal>(query, new { class_id = id }).SingleOrDefault();
+                decimal fees = con.Query<decimal>(query, new { class_id = id }).SingleOrDefault();
 
-            
 
-            return Json(fees);
+
+                return Json(fees);
+            }
 
         }
 
@@ -136,32 +139,34 @@ namespace SMS.Controllers
         {
             try
             {
-                string query = @"select count(*) from out_standing where reg_num = @reg and rmt_amount = 0 and session = @session";
-
-                int count = con.Query<int>(query, new { reg = reg,session = sess }).SingleOrDefault();
-
-                if(count > 0)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    std_registrationMain stdMain = new std_registrationMain();
+                    string query = @"select count(*) from out_standing where reg_num = @reg and rmt_amount = 0 and session = @session";
 
-                    stdMain.DeleteRegistration(sess, reg, dt);
+                    int count = con.Query<int>(query, new { reg = reg, session = sess }).SingleOrDefault();
 
-                    return RedirectToAction("AllRegistrationList");
+                    if (count > 0)
+                    {
+                        std_registrationMain stdMain = new std_registrationMain();
+
+                        stdMain.DeleteRegistration(sess, reg, dt);
+
+                        return RedirectToAction("AllRegistrationList");
+
+                    }
+                    else
+                    {
+                        //ModelState.AddModelError(String.Empty, "Payment made cannot delete the registration.");
+
+                        //std_registrationMain stdMain = new std_registrationMain();
+
+                        //ViewBag.message = "Payment made cannot delete the registration.";
+
+                        return View("cannotdelete");
+                    }
+
 
                 }
-                else
-                {
-                    //ModelState.AddModelError(String.Empty, "Payment made cannot delete the registration.");
-
-                    //std_registrationMain stdMain = new std_registrationMain();
-
-                    //ViewBag.message = "Payment made cannot delete the registration.";
-
-                    return View("cannotdelete");
-                }
-
-
-               
             }
             catch (Exception ex)
             {

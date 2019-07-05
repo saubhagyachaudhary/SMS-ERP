@@ -10,18 +10,19 @@ namespace SMS.Models
 {
     public class mst_rollnumberMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+
 
         public IEnumerable<mst_rollnumber> student_list_for_rollnumber(int class_id, int section_id)
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            mst_sessionMain session = new mst_sessionMain();
-
-            string sess = session.findActive_finalSession();
+                string sess = session.findActive_finalSession();
 
 
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     c.class_id,
                                     b.section_id,
                                     a.sr_number sr_num,
@@ -50,17 +51,19 @@ namespace SMS.Models
                                         AND a.std_active = 'Y'
                                 ORDER BY std_name";
 
-          
-            return con.Query<mst_rollnumber>(query, new { class_id = class_id, section_id = section_id,session =sess });
-        }
 
+                return con.Query<mst_rollnumber>(query, new { class_id = class_id, section_id = section_id, session = sess });
+            }
+        }
         public int max_roll_number(int class_id,int section_id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string sess = session.findActive_finalSession();
+                string sess = session.findActive_finalSession();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     IFNULL(MAX(roll_number), 0)
                                 FROM
                                     mst_rollnumber a,
@@ -75,18 +78,21 @@ namespace SMS.Models
                                         AND b.class_id = @class_id
                                         AND c.section_id = @section_id";
 
-            var result = con.Query<int>(query, new { class_id = class_id,session = sess,section_id=section_id }).SingleOrDefault();
+                var result = con.Query<int>(query, new { class_id = class_id, session = sess, section_id = section_id }).SingleOrDefault();
 
-            return result;
+                return result;
+            }
         }
 
         public IEnumerable<mst_attendance> assign_class_list(int user_id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string sess = session.findActive_finalSession();
+                string sess = session.findActive_finalSession();
 
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     b.class_id, b.class_name, a.section_id, c.section_name
                                 FROM
                                     mst_attendance a,
@@ -112,23 +118,26 @@ namespace SMS.Models
                                                 FROM
                                                     mst_rollnumber where session = @session))";
 
-            var result = con.Query<mst_attendance>(query, new { user_id = user_id,session = sess });
+                var result = con.Query<mst_attendance>(query, new { user_id = user_id, session = sess });
 
-            return result;
+                return result;
+            }
         }
 
         public void update_roll_no(List<mst_rollnumber> list)
         {
-            string query = "";
-
-            mst_sessionMain session = new mst_sessionMain();
-
-            string sess = session.findActive_finalSession();
-
-           
-
-            foreach (var li in list)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
+                string query = "";
+
+                mst_sessionMain session = new mst_sessionMain();
+
+                string sess = session.findActive_finalSession();
+
+
+
+                foreach (var li in list)
+                {
                     query = @"INSERT INTO `mst_rollnumber`
                             (`session`,
                             `sr_num`,
@@ -137,14 +146,14 @@ namespace SMS.Models
                             (@session,
                             @sr_num,
                             @roll_number)";
-               
 
 
-                con.Query<mst_rollnumber>(query, new {session = sess,sr_num = li.sr_num,roll_number=li.roll_number,class_id = li.class_id,section_id=li.section_id });
+
+                    con.Query<mst_rollnumber>(query, new { session = sess, sr_num = li.sr_num, roll_number = li.roll_number, class_id = li.class_id, section_id = li.section_id });
+
+                }
 
             }
-
-
 
         }
 

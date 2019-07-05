@@ -12,48 +12,54 @@ namespace SMS.Controllers
 {
     public class mst_finController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddFin()
         {
-            String query = "select count(*) from mst_fin where fin_close = 'N'";
-
-            int id = con.ExecuteScalar<int>(query);
-
-            if (id > 0)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                ModelState.AddModelError(String.Empty, "Financial Year is already open");
+                String query = "select count(*) from mst_fin where fin_close = 'N'";
+
+                int id = con.ExecuteScalar<int>(query);
+
+                if (id > 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Financial Year is already open");
+                    return View();
+                }
+
                 return View();
             }
-
-            return View();
         }
 
         [HttpPost]
         public ActionResult AddFin(mst_fin mst)
         {
-            String query = "select count(*) from mst_fin where fin_close = 'N'";
-
-            int id = con.ExecuteScalar<int>(query);
-
-            if (id > 0)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                ModelState.AddModelError(String.Empty, "Financial Year is already open");
-                return View();
+                String query = "select count(*) from mst_fin where fin_close = 'N'";
+
+                int id = con.ExecuteScalar<int>(query);
+
+                if (id > 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Financial Year is already open");
+                    return View();
+                }
+
+                if (mst.fin_end_date < System.DateTime.Now.AddMinutes(dateTimeOffSet) && mst.fin_close == "N")
+                {
+                    ModelState.AddModelError(String.Empty, "You cannot open financial year in previous year");
+                    return View(mst);
+                }
+
+                mst_finMain mstMain = new mst_finMain();
+
+                mstMain.AddFin(mst);
+
+                return RedirectToAction("AllFinList");
             }
-
-            if (mst.fin_end_date < System.DateTime.Now.AddMinutes(dateTimeOffSet) && mst.fin_close == "N")
-            {
-                ModelState.AddModelError(String.Empty, "You cannot open financial year in previous year");
-                return View(mst);
-            }
-
-            mst_finMain mstMain = new mst_finMain();
-
-            mstMain.AddFin(mst);
-
-            return RedirectToAction("AllFinList");
         }
 
         [HttpGet]

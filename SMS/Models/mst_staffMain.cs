@@ -10,12 +10,13 @@ namespace SMS.Models
 {
     public class mst_staffMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public IEnumerable<mst_staff> mentor_list()
         {
-
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     user_id staff_id,
                                     CONCAT(FirstName, ' ', LastName) staff_name
                                 FROM
@@ -23,9 +24,10 @@ namespace SMS.Models
                                 WHERE
                                     emp_active = 1";
 
-            var result = con.Query<mst_staff>(query);
+                var result = con.Query<mst_staff>(query);
 
-            return result;
+                return result;
+            }
         }
     }
 }

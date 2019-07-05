@@ -12,48 +12,54 @@ namespace SMS.Controllers
 {
     public class mst_sessionController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult AddSession()
         {
-            String query = "select count(*) from mst_session where session_active = 'Y'";
-
-            int id = con.ExecuteScalar<int>(query);
-
-            if (id > 0)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                ModelState.AddModelError(String.Empty, "Admission is already open in other session");
+                String query = "select count(*) from mst_session where session_active = 'Y'";
+
+                int id = con.ExecuteScalar<int>(query);
+
+                if (id > 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Admission is already open in other session");
+                    return View();
+                }
+
                 return View();
             }
-
-            return View();
         }
 
         [HttpPost]
         public ActionResult AddSession(mst_session mst)
         {
-            String query = "select count(*) from mst_session where session_active = 'Y'";
-
-            int id = con.ExecuteScalar<int>(query);
-
-            if (id > 0)
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                ModelState.AddModelError(String.Empty, "Admission is already open in other session");
-                return View();
+                String query = "select count(*) from mst_session where session_active = 'Y'";
+
+                int id = con.ExecuteScalar<int>(query);
+
+                if (id > 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Admission is already open in other session");
+                    return View();
+                }
+
+                if (mst.session_end_date < System.DateTime.Now.AddMinutes(dateTimeOffSet) && mst.session_active == "Y")
+                {
+                    ModelState.AddModelError(String.Empty, "You cannot open admission in expired session");
+                    return View(mst);
+                }
+
+                mst_sessionMain mstMain = new mst_sessionMain();
+
+                mstMain.AddSession(mst);
+
+                return RedirectToAction("AllSessionList");
             }
-
-            if (mst.session_end_date < System.DateTime.Now.AddMinutes(dateTimeOffSet) && mst.session_active == "Y") 
-            {
-                ModelState.AddModelError(String.Empty, "You cannot open admission in expired session");
-                return View(mst);
-            }
-
-            mst_sessionMain mstMain = new mst_sessionMain();
-
-            mstMain.AddSession(mst);
-
-            return RedirectToAction("AllSessionList");
         }
 
         [HttpGet]
@@ -75,30 +81,31 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult EditSession(mst_session mst)
         {
-
-            string query = "select session_finalize from mst_session where session = @session";
-
-            string id1 = con.ExecuteScalar<string>(query, new { session = mst.session });
-
-            if (id1 != mst.session_finalize && id1 == "Y")
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
             {
-                ModelState.AddModelError(String.Empty, "Session already finalized cannot change.");
-                mst.session_finalize = "Y";
-                return View(mst);
-            }
+                string query = "select session_finalize from mst_session where session = @session";
 
-             query = "select session_active from mst_session where session = @session";
+                string id1 = con.ExecuteScalar<string>(query, new { session = mst.session });
 
-             id1 = con.ExecuteScalar<string>(query,new {session = mst.session });
+                if (id1 != mst.session_finalize && id1 == "Y")
+                {
+                    ModelState.AddModelError(String.Empty, "Session already finalized cannot change.");
+                    mst.session_finalize = "Y";
+                    return View(mst);
+                }
 
-            if (id1 != mst.session_finalize && id1 == "N")
-            {
-                ModelState.AddModelError(String.Empty, "Session already closed cannot change.");
-                mst.session_active = "N";
-                return View(mst);
-            }
+                query = "select session_active from mst_session where session = @session";
 
-            if (mst.session_end_date < System.DateTime.Now.AddMinutes(dateTimeOffSet) && mst.session_active == "Y")
+                id1 = con.ExecuteScalar<string>(query, new { session = mst.session });
+
+                if (id1 != mst.session_finalize && id1 == "N")
+                {
+                    ModelState.AddModelError(String.Empty, "Session already closed cannot change.");
+                    mst.session_active = "N";
+                    return View(mst);
+                }
+
+                if (mst.session_end_date < System.DateTime.Now.AddMinutes(dateTimeOffSet) && mst.session_active == "Y")
                 {
                     ModelState.AddModelError(String.Empty, "Session " + mst.session + " already expire you cannot change");
                     return View(mst);
@@ -108,7 +115,7 @@ namespace SMS.Controllers
                 stdMain.EditSession(mst);
 
                 return RedirectToAction("AllSessionList");
-           
+            }
         }
 
         [HttpGet]
@@ -124,23 +131,26 @@ namespace SMS.Controllers
         {
             try
             {
-                mst_sessionMain stdMain = new mst_sessionMain();
-
-                String query = "select ifnull(count(*),0) from mst_session where session_active = 'Y' and session_finalize = 'Y'";
-
-                int id1 = con.ExecuteScalar<int>(query);
-
-                if (id1 > 0)
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
-                    ModelState.AddModelError(String.Empty, "Session already finalized cannot Delete.");
-                    return View(stdMain.FindSession(id));
+                    mst_sessionMain stdMain = new mst_sessionMain();
+
+                    String query = "select ifnull(count(*),0) from mst_session where session_active = 'Y' and session_finalize = 'Y'";
+
+                    int id1 = con.ExecuteScalar<int>(query);
+
+                    if (id1 > 0)
+                    {
+                        ModelState.AddModelError(String.Empty, "Session already finalized cannot Delete.");
+                        return View(stdMain.FindSession(id));
+                    }
+
+
+
+                    stdMain.DeleteSession(id);
+
+                    return RedirectToAction("AllSessionList");
                 }
-
-                
-
-                stdMain.DeleteSession(id);
-
-                return RedirectToAction("AllSessionList");
             }
             catch (Exception ex)
             {

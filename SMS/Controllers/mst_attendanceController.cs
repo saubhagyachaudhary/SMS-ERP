@@ -12,7 +12,7 @@ namespace SMS.Controllers
 {
     public class mst_attendanceController : BaseController
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         [HttpGet]
         public ActionResult list()
@@ -36,7 +36,9 @@ namespace SMS.Controllers
 
         public JsonResult GetSections(int id)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 section_id, section_name
                             FROM
                                 mst_section
@@ -49,18 +51,20 @@ namespace SMS.Controllers
                                     WHERE
                                         session_finalize = 'Y')";
 
-            var section_list = con.Query<mst_section>(query,new { class_id = id});
+                var section_list = con.Query<mst_section>(query, new { class_id = id });
 
-            IEnumerable<SelectListItem> list = new SelectList(section_list,"section_id","section_name");
+                IEnumerable<SelectListItem> list = new SelectList(section_list, "section_id", "section_name");
 
-            return Json(list);
-
+                return Json(list);
+            }
         }
 
         [HttpPost]
         public ActionResult Assign_faculty(mst_attendance mst)
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                 COUNT(*)
                             FROM
                                 mst_attendance
@@ -68,37 +72,37 @@ namespace SMS.Controllers
                                 class_id = @class_id
                                     AND section_id = @section_id";
 
-            int count = con.Query<int>(query, new { class_id = mst.class_id,section_id = mst.section_id }).SingleOrDefault();
+                int count = con.Query<int>(query, new { class_id = mst.class_id, section_id = mst.section_id }).SingleOrDefault();
 
-            if(mst.class_id == 0 || mst.section_id == 0)
-            {
-                ModelState.AddModelError(String.Empty, "Class and section cannot be blank.");
-                DDFacultyList();
+                if (mst.class_id == 0 || mst.section_id == 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Class and section cannot be blank.");
+                    DDFacultyList();
 
-                DDclass_name();
-                return View(mst);
+                    DDclass_name();
+                    return View(mst);
+                }
+
+                if (count == 0)
+                {
+                    mst_attendanceMain att = new mst_attendanceMain();
+
+                    att.Assign_faculty(mst);
+
+                    return RedirectToAction("list");
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, "Class already assigned to other faculty.");
+                    DDFacultyList();
+
+                    DDclass_name();
+                    return View(mst);
+                }
+
+
+
             }
-
-            if(count==0)
-            {
-                mst_attendanceMain att = new mst_attendanceMain();
-
-                att.Assign_faculty(mst);
-
-                return RedirectToAction("list");
-            }
-            else
-            {
-                ModelState.AddModelError(String.Empty, "Class already assigned to other faculty.");
-                DDFacultyList();
-
-                DDclass_name();
-                return View(mst);
-            }
-
-           
-
-            
         }
 
         public void DDFacultyList()

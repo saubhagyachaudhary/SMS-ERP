@@ -10,20 +10,23 @@ namespace SMS.Models
 {
     public class change_passwordMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void changePassword(change_password password)
         {
             try
             {
-                string query = @"UPDATE users 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE users 
                                 SET 
                                     password = @new_password
                                 WHERE
                                     user_id = @user_id
                                         AND username = @username";
 
-                con.Execute(query, password);
+                    con.Execute(query, password);
+                }
             }
             catch
             {
@@ -35,7 +38,9 @@ namespace SMS.Models
         {
             try
             {
-                string query = @"SELECT 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"SELECT 
                                     COUNT(*)
                                 FROM
                                     users
@@ -43,7 +48,8 @@ namespace SMS.Models
                                     password = @old_password AND user_id = user_id
                                         AND username = username";
 
-                return con.Query<int>(query, password).SingleOrDefault();
+                    return con.Query<int>(query, password).SingleOrDefault();
+                }
             }
             catch
             {

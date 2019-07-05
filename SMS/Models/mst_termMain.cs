@@ -10,18 +10,19 @@ namespace SMS.Models
 {
     public class mst_termMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddTerm(mst_term mst)
         {
             try
             {
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                mst_sessionMain sess = new mst_sessionMain();
+                    string query = "INSERT INTO mst_term (session,term_id,term_name) VALUES (@session,@term_id,@term_name)";
 
-                string query = "INSERT INTO mst_term (session,term_id,term_name) VALUES (@session,@term_id,@term_name)";
-
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(term_id), 0) + 1
                                     FROM
                                         mst_term
@@ -33,20 +34,21 @@ namespace SMS.Models
                                             WHERE
                                                 session_finalize = 'Y')";
 
-                //                var id = con.Query<mst_section>(maxid).ToString().Trim();
+                    //                var id = con.Query<mst_section>(maxid).ToString().Trim();
 
-                int id = con.ExecuteScalar<int>(maxid);
+                    int id = con.ExecuteScalar<int>(maxid);
 
 
-                mst.term_id = id;
-                mst.term_name = mst.term_name.Trim();
-                mst.session = sess.findFinal_Session();
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.term_id,
-                    mst.term_name
-                });
+                    mst.term_id = id;
+                    mst.term_name = mst.term_name.Trim();
+                    mst.session = sess.findFinal_Session();
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.term_id,
+                        mst.term_name
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -56,7 +58,9 @@ namespace SMS.Models
 
         public IEnumerable<mst_term> AllTermList()
         {
-            string query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string query = @"SELECT 
                                     term_id, term_name
                                 FROM
                                     mst_term
@@ -68,15 +72,18 @@ namespace SMS.Models
                                         WHERE
                                             session_finalize = 'Y')";
 
-            var result = con.Query<mst_term>(query);
+                var result = con.Query<mst_term>(query);
 
-            return result;
+                return result;
+            }
         }
 
 
         public mst_term FindTerm(int? id)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                     term_id, term_name
                                 FROM
                                     mst_term
@@ -89,7 +96,8 @@ namespace SMS.Models
                                         WHERE
                                             session_finalize = 'Y')";
 
-            return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
+                return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
+            }
         }
 
         public void EditTerm(mst_term mst)
@@ -97,7 +105,9 @@ namespace SMS.Models
 
             try
             {
-                string query = @"UPDATE mst_term 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string query = @"UPDATE mst_term 
                                     SET
                                         term_name = @term_name
                                     WHERE
@@ -109,7 +119,8 @@ namespace SMS.Models
                                             WHERE
                                                 session_finalize = 'Y')";
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -121,7 +132,9 @@ namespace SMS.Models
         {
             try
             {
-                string Query = @"DELETE FROM mst_term 
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    string Query = @"DELETE FROM mst_term 
                                     WHERE
                                         term_id = @term_id
                                         AND session = (SELECT
@@ -132,7 +145,8 @@ namespace SMS.Models
                                         WHERE
                                             session_finalize = 'Y')";
 
-                return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
+                    return con.Query<mst_term>(Query, new { term_id = id }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {

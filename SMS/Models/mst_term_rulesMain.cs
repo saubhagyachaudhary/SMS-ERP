@@ -11,24 +11,26 @@ namespace SMS.Models
     public class mst_term_rulesMain
     {
 
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddTermRule(mst_term_rules mst)
         {
             try
             {
-                mst_sessionMain sess = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain sess = new mst_sessionMain();
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(evaluation_id), 0) + 1
                                     FROM
                                         mst_term_rules
                                     WHERE
                                         session = @session";
 
-                int id = con.Query<int>(maxid,new {session = sess.findFinal_Session() }).SingleOrDefault();
+                    int id = con.Query<int>(maxid, new { session = sess.findFinal_Session() }).SingleOrDefault();
 
-                string query = @"INSERT INTO `mst_term_rules`
+                    string query = @"INSERT INTO `mst_term_rules`
                                 (`session`,
                                 `evaluation_id`,
                                 `term_id`,
@@ -47,22 +49,22 @@ namespace SMS.Models
                                 @exam_id2,
                                 @rule)";
 
-                mst.session = sess.findFinal_Session();
+                    mst.session = sess.findFinal_Session();
 
-                mst.evaluation_id = id;
+                    mst.evaluation_id = id;
 
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.evaluation_id,
-                    mst.term_id,
-                    mst.class_id,
-                    mst.evaluation_name,
-                    mst.exam_id1,
-                    mst.exam_id2,
-                    mst.rule
-                });
-
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.evaluation_id,
+                        mst.term_id,
+                        mst.class_id,
+                        mst.evaluation_name,
+                        mst.exam_id1,
+                        mst.exam_id2,
+                        mst.rule
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -72,10 +74,11 @@ namespace SMS.Models
 
         public IEnumerable<mst_term_rules> AllTermRuleList()
         {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain sess = new mst_sessionMain();
 
-            mst_sessionMain sess = new mst_sessionMain();
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                                     a.session,
                                     a.term_id,
                                     a.class_id,
@@ -106,14 +109,17 @@ namespace SMS.Models
                                         AND c.session = d.session
                                         AND a.exam_id1 = d.exam_id";
 
-            var result = con.Query<mst_term_rules>(query, new { session = sess.findFinal_Session() });
+                var result = con.Query<mst_term_rules>(query, new { session = sess.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
         public mst_term_rules FindTermRule(int class_id, int term_id, string session, int evaluation_id)
         {
-            string Query = @"SELECT 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"SELECT 
                                     evaluation_name, session, term_id, evaluation_id, class_id
                                 FROM
                                     mst_term_rules
@@ -123,19 +129,23 @@ namespace SMS.Models
                                         AND term_id = @term_id
                                         AND evaluation_id = @evaluation_id";
 
-            return con.Query<mst_term_rules>(Query, new { class_id = class_id, term_id = term_id, session = session, evaluation_id = evaluation_id }).SingleOrDefault();
+                return con.Query<mst_term_rules>(Query, new { class_id = class_id, term_id = term_id, session = session, evaluation_id = evaluation_id }).SingleOrDefault();
+            }
         }
 
         public mst_term_rules DeleteTermRule(mst_term_rules rule)
         {
-            string Query = @"DELETE FROM `mst_term_rules` 
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                string Query = @"DELETE FROM `mst_term_rules` 
                                 WHERE
                                     `session` = @session
                                     AND `evaluation_id` = @evaluation_id
                                     AND `term_id` = @term_id
                                     AND `class_id` = @class_id";
 
-            return con.Query<mst_term_rules>(Query, rule).SingleOrDefault();
+                return con.Query<mst_term_rules>(Query, rule).SingleOrDefault();
+            }
         }
 
     }

@@ -10,15 +10,17 @@ namespace SMS.Models
 {
     public class mst_examMain
     {
-        MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        
 
         public void AddExam(mst_exam mst)
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string query = @"INSERT INTO `mst_exam`
+                    string query = @"INSERT INTO `mst_exam`
                                 (session,
                                 `exam_id`,
                                 `exam_name`,
@@ -31,7 +33,7 @@ namespace SMS.Models
                                 @max_no,
                                 @convert_to)";
 
-                string maxid = @"SELECT 
+                    string maxid = @"SELECT 
                                         IFNULL(MAX(exam_id), 0) + 1
                                     FROM
                                         mst_exam
@@ -45,20 +47,21 @@ namespace SMS.Models
 
 
 
-                int id = con.ExecuteScalar<int>(maxid);
+                    int id = con.ExecuteScalar<int>(maxid);
 
-                mst.session = session.findFinal_Session();
-                mst.exam_id = id;
-                mst.exam_name = mst.exam_name.Trim();
+                    mst.session = session.findFinal_Session();
+                    mst.exam_id = id;
+                    mst.exam_name = mst.exam_name.Trim();
 
-                con.Execute(query, new
-                {
-                    mst.session,
-                    mst.exam_id,
-                    mst.exam_name,
-                    mst.max_no,
-                    mst.convert_to
-                });
+                    con.Execute(query, new
+                    {
+                        mst.session,
+                        mst.exam_id,
+                        mst.exam_name,
+                        mst.max_no,
+                        mst.convert_to
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -68,23 +71,29 @@ namespace SMS.Models
 
         public IEnumerable<mst_exam> AllExamList()
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string query = "SELECT * FROM mst_exam where session = @session;";
+                string query = "SELECT * FROM mst_exam where session = @session;";
 
-            var result = con.Query<mst_exam>(query,new {session = session.findFinal_Session() });
+                var result = con.Query<mst_exam>(query, new { session = session.findFinal_Session() });
 
-            return result;
+                return result;
+            }
         }
 
 
         public mst_exam FindExam(int? id)
         {
-            mst_sessionMain session = new mst_sessionMain();
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+                mst_sessionMain session = new mst_sessionMain();
 
-            string Query = "SELECT * FROM mst_exam where exam_id = @exam_id and session = @session ";
+                string Query = "SELECT * FROM mst_exam where exam_id = @exam_id and session = @session ";
 
-            return con.Query<mst_exam>(Query, new { exam_id = id, session= session.findFinal_Session() }).SingleOrDefault();
+                return con.Query<mst_exam>(Query, new { exam_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+            }
         }
 
         public void EditExam(mst_exam mst)
@@ -92,13 +101,16 @@ namespace SMS.Models
 
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string query = "UPDATE mst_exam SET exam_name = @exam_name,max_no = @max_no,convert_to = @convert_to WHERE exam_id = @exam_id and session = @session ";
+                    string query = "UPDATE mst_exam SET exam_name = @exam_name,max_no = @max_no,convert_to = @convert_to WHERE exam_id = @exam_id and session = @session ";
 
-                mst.session = session.findFinal_Session();
+                    mst.session = session.findFinal_Session();
 
-                con.Execute(query, mst);
+                    con.Execute(query, mst);
+                }
             }
             catch (Exception ex)
             {
@@ -110,11 +122,14 @@ namespace SMS.Models
         {
             try
             {
-                mst_sessionMain session = new mst_sessionMain();
+                using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+                {
+                    mst_sessionMain session = new mst_sessionMain();
 
-                string Query = "DELETE FROM mst_exam WHERE exam_id = @exam_id and session = @session";
+                    string Query = "DELETE FROM mst_exam WHERE exam_id = @exam_id and session = @session";
 
-                return con.Query<mst_exam>(Query, new { exam_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+                    return con.Query<mst_exam>(Query, new { exam_id = id, session = session.findFinal_Session() }).SingleOrDefault();
+                }
             }
             catch (Exception ex)
             {
