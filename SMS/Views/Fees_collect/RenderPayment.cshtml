@@ -90,7 +90,9 @@
                         </td>
                         <td>
                             <div class="form-group">
-                                @Html.EditorFor(model => model[i].fine, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "fin" + i.ToString() } })
+                                @Html.EditorFor(model => model[i].fine, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "fin" + i.ToString() , @disabled = "disabled" } })
+                                @Html.HiddenFor(model => model[i].fine)
+                            
                             </div>
                         </td>
                         <td>
@@ -288,7 +290,7 @@
                         {
                             alert("Amount cannot be greater then Payable amount");
                             document.getElementById("c"+i.toString()).checked = false;
-                        } if (parseFloat(due) < parseFloat(dis))
+                        } if (parseFloat(due)+parseFloat(fin) < parseFloat(dis))
                         {
                             alert("Discount cannot be greater then Payable amount");
                             document.getElementById("c"+i.toString()).checked = false;
