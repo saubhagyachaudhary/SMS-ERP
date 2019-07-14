@@ -6,90 +6,150 @@
 <div class="right_col" role="main">
 
     <div class="row">
+        <div class="container">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <h2>Student Half Day Log</h2>
                 <div class="x_title">
-                    
+
 
                     @using (Html.BeginForm())
                     {
                         @Html.AntiForgeryToken()
 
                         <div class="form-horizontal">
-                           
                             <hr />
-                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.sr_number, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    @Html.EditorFor(model => model.sr_number, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.sr_number, "", new { @class = "text-danger" })
+                            <div class="col-md-3 col-sm-3 col-xs-12">
+                                <div class="form-group">
+                                    <div class="col-md-12 col-xs-12 col-sm-12">
+                                        
+                                            @*<img id="Userpic" src="@ViewBag.pic" style="width: 280px; height: 240px;" />
+                                            <br />
+                                            <div class="col-md-offset-5 col-sm-offset-5 col-xm-offset-5">
+                                                <input type="button" id="btnSave" value="Take Photo" onclick="ShowPopUp();" />
+                                            </div>*@
+                                                
+                                        <div style="float: left; border: 4px solid #ccc; padding: 5px">
+                                            <img id="Userpic" style="width: 280px; height: 240px;" src="@ViewBag.pic" />
+                                           
+                                            @Html.HiddenFor(model => model.Userpic)
+                                            <br>
+                                            <br>
+                                            <div class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4">
+                                                <input type="button" id="btnSave" value="Take Photo" onclick="ShowPopUp();" />
+                                            </div>
+                                        </div>
+                                            
+                                        
+                                    </div>
                                 </div>
                             </div>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2">Student Name</label>
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="text" id="std_name" class="form-control" disabled = "disabled"/>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.sr_number, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                           
+                                            @Html.EditorFor(model => model.sr_number, new { htmlAttributes = new { @class = "form-control" } })
+                                            
+                                            @Html.ValidationMessageFor(model => model.sr_number, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Student Name</label>
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            <input type="text" id="std_name" class="form-control" disabled="disabled" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Student Father's Name</label>
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            <input type="text" id="std_father_name" class="form-control" disabled="disabled" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Class</label>
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            <input type="text" id="std_class" class="form-control" disabled="disabled" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Contact Number</label>
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            <input type="text" id="std_number" class="form-control" disabled="disabled" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.escorter_name, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+
+                                            @Html.EditorFor(model => model.escorter_name, new { htmlAttributes = new { @class = "form-control" , @required = "required" } })
+
+                                            @Html.ValidationMessageFor(model => model.escorter_name, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.std_relation, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+
+                                            @Html.EditorFor(model => model.std_relation, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+
+                                            @Html.ValidationMessageFor(model => model.std_relation, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.escorter_address, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            @Html.TextAreaFor(model => model.escorter_address, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.escorter_address, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.reason, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            @Html.TextAreaFor(model => model.reason, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.reason, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" style="display: none;" id="lbl">Enter 4 digit OTP</label>
+                                        <div class="col-md-9 col-xs-12 col-sm-9">
+                                            <input type="password" id="std_otp" class="form-control" style="display: none;" />
+                                            <input type="hidden" id="otp" />
+
+                                            <input type="hidden" id="count" />
+
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3 col-sm-offset-3 col-md-10 col-sm-10">
+                                            <input type="submit" value="Generate Gate Pass" id="submit_form" class="btn btn-default" disabled/>
+                                            <input type="button" value="Send OTP" class="btn btn-success" id="send_otp" disabled/>
+                                        </div>
+
+                                    </div>
+
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2">Student Father's Name</label>
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="text" id="std_father_name" class="form-control" disabled="disabled" />
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2">Class</label>
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="text" id="std_class" class="form-control" disabled="disabled" />
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2">Contact Number</label>
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="text" id="std_number" class="form-control" disabled="disabled" />
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.reason, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2" })
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    @Html.TextAreaFor(model => model.reason, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.reason, "", new { @class = "text-danger" })
-
-                                   
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2" style="display: none;" id="lbl">Enter 4 digit OTP</label>
-                                <div class="col-md-10 col-xs-12 col-sm-10">
-                                    <input type="password" id="std_otp" class="form-control" style="display: none;" />
-                                    <input type="hidden" id="otp" />
-                                </div>
-                            </div>
-
-                            
-
-                            <div class="form-group">
-                                <div class="col-md-offset-2 col-sm-offset-2 col-md-10 col-sm-10">
-                                    <input type="submit" value="Submit" class="btn btn-default" />
-                                    <input type="button" value="Send OTP" class="btn btn-success" id="send_otp" />
-                                </div>
-                                
-                            </div>
-
-                           
-                        </div>
                     }
 
-                 
+                </div>
                     </div>
                 </div>
             </div>
@@ -97,6 +157,15 @@
     </div>
 <script src="~/vendors/jquery/dist/jquery.min.js"></script>
 
+<script type="text/javascript">
+
+    function ShowPopUp() {
+
+        window.open('/std_halfday_log/Index/', "wndPopUp", 'width=720,height=400,left=100,top=100,resizable=no');
+
+    }
+
+</script>
 
 
     <script type="text/javascript">
@@ -105,41 +174,52 @@
 
             $("form").submit(function () {
 
-                var sr_number = document.getElementById("sr_number");
-                var otp = document.getElementById("otp");
-                var std_otp = document.getElementById("std_otp");
-                var reason = document.getElementById("reason");
+                var count = document.getElementById("count");
+                if (count.value == 0) {
+                    var sr_number = document.getElementById("sr_number");
+                    var otp = document.getElementById("otp");
+                    var std_otp = document.getElementById("std_otp");
+                    var reason = document.getElementById("reason");
+                    var escorter_address = document.getElementById("escorter_address");
 
-                if (sr_number.value == '') {
-                    alert("Please enter admission number");
-                    return false;
+
+
+                    if (sr_number.value == '') {
+                        alert("Please enter admission number");
+                        return false;
+                    }
+
+                    if (escorter_address.value == '') {
+                        alert("Please write the address of a person.");
+                        return false;
+                    }
+
+                    if (reason.value == '') {
+                        alert("Please write the reason");
+                        return false;
+                    }
+
+                    if (otp.value == '') {
+                        alert("Please generate OTP");
+                        return false;
+                    }
+
+
+                    if (otp.value == std_otp.value) {
+
+                        $("#submit_form").attr("disabled", true);
+                        $("#send_otp").attr("disabled", true);
+
+                        return true;
+                    }
+                    else {
+                        alert("Please enter a valid 4 digit OTP");
+                        return false;
+                    }
                 }
 
-                if (reason.value == '') {
-                    alert("Please write the reason");
-                    return false;
-                }
-                 
-                if (otp.value == '') {
-                    alert("Please generate OTP");
-                    return false;
-                }
-
-                
-                if (otp.value == std_otp.value)
-                {
-                    
-                    return true;
-                }
-                else
-                {
-                    alert("Please enter a valid 4 digit OTP");
-                    return false;
-                }
-                
-               
             });
-            
+
             $("#send_otp").click(function () {
 
                 var sr_number = document.getElementById("sr_number");
@@ -166,8 +246,55 @@
                     });
                 }
                 });
-            
+
             $("#sr_number").change(function () {
+
+                $.ajax({
+
+                    type: 'POST',
+
+                    url: '@Url.Action("GetGatePass")', dataType: 'json', data: { id: $("#sr_number").val() }, success: function (count) {
+
+                        if (count != 0)
+                        {
+                            $("#count").val(1);
+
+                            $("#send_otp").attr("disabled", true);
+
+                            $("#escorter_name").attr("disabled", true);
+
+                            $("#std_relation").attr("disabled", true);
+
+                            $("#escorter_address").attr("disabled", true);
+
+                            $("#reason").attr("disabled", true);
+                            
+                            $("#submit_form").val("Download Gate Pass");
+                        }else
+                        {
+                            $("#count").val(0);
+
+                            $("#send_otp").attr("disabled", false);
+
+                            $("#escorter_name").attr("disabled", false);
+
+                            $("#std_relation").attr("disabled", false);
+
+                            $("#escorter_address").attr("disabled", false);
+
+                            $("#reason").attr("disabled", false);
+
+                            $("#send_otp").attr("disabled", false);
+
+                            $("#submit_form").val("Generate Gate Pass");
+                        }
+
+                        $("#submit_form").attr("disabled", false);
+
+                    }
+
+
+                });
 
                 $.ajax({
 
@@ -221,9 +348,9 @@
 
 
             });
-        
 
-       
+
+
 
 
     </script>

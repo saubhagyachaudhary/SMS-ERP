@@ -345,7 +345,7 @@ namespace SMS.VisitorsControllers
                 using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
                 {
                     string query = @"SELECT 
-                                            MAX(IFNULL(gate_pass_no, 0)) + 1
+                                            IFNULL(MAX(gate_pass_no), 0) + 1
                                         FROM
                                             std_halfday_log
                                         WHERE
