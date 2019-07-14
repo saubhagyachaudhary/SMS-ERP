@@ -270,6 +270,7 @@
     <Compile Include="Controllers\usersController.cs" />
     <Compile Include="ExcelReport\ExcelClass_Wise_Std_ListMain.cs" />
     <Compile Include="ExcelReport\ExcelDaily_reportMain.cs" />
+    <Compile Include="ExcelReport\ExcelGatePassMain.cs" />
     <Compile Include="ExcelReport\ExcelTc_form.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -445,6 +446,7 @@
     <Content Include="images\favicon.ico" />
     <Content Include="images\load.gif" />
     <Content Include="images\logo.jpg" />
+    <Content Include="images\person.png" />
     <Content Include="js\bootstrap.min.js" />
     <Content Include="js\jquery-1.10.2.js" />
     <Content Include="js\jquery.min.js" />
@@ -471,6 +473,10 @@
     <Content Include="Scripts\jquery.min.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
+    <Content Include="Scripts\jquery.webcam.js" />
+    <Content Include="Scripts\jquery.webcam.min.js" />
+    <Content Include="Scripts\jscam.swf" />
+    <Content Include="Scripts\jscam_canvas_only.swf" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\odometer-theme-default.css" />
     <Content Include="Scripts\odometer.js" />
@@ -2579,6 +2585,8 @@
     <Content Include="Views\mst_subject_parameters\AddParameters.cshtml" />
     <Content Include="Views\mst_subject_parameters\AllParametersList.cshtml" />
     <Content Include="Views\mst_subject_parameters\DeleteParameter.cshtml" />
+    <Content Include="Views\Shared\_webcamLayout.cshtml" />
+    <Content Include="Views\std_halfday_log\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
