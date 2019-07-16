@@ -1162,47 +1162,49 @@ namespace SMS.Models
                 if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month >= 4 && System.DateTime.Now.AddMinutes(dateTimeOffSet).Month <= 12)
                 {
                     query = @"SELECT 
-                                amt
-                            FROM
-                                (SELECT 
-                                    IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0) amt,
-                                        order_by
+                                    amt
                                 FROM
-                                    out_standing a, sr_register b, fees_receipt d, mst_std_class c, mst_class e
-                                WHERE
-                                    a.month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
-                                        AND a.month_no BETWEEN 4 AND 12
-                                        AND a.sr_number = b.sr_number
-                                        AND b.sr_number = c.sr_num
-                                        AND c.sr_num = d.sr_number
-                                        AND c.class_id = e.class_id
-                                        AND c.session = a.session
-                                        AND b.std_active = 'Y'
-                                        AND a.session = @session
-                                        AND a.serial = d.serial
-                                GROUP BY e.order_by UNION ALL SELECT 
-                                    0 amt, order_by
-                                FROM
-                                    mst_class
-                                WHERE
-                                    session = @session
-                                        AND class_id NOT IN (SELECT 
-                                    e.class_id
-                                FROM
-                                    out_standing a, sr_register b, fees_receipt d, mst_std_class c, mst_class e
-                                WHERE
-                                    a.month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
-                                        AND a.month_no BETWEEN 4 AND 12
-                                        AND a.sr_number = b.sr_number
-                                        AND b.sr_number = c.sr_num
-                                        AND c.sr_num = d.sr_number
-                                        AND c.class_id = e.class_id
-                                        AND c.session = a.session
-                                        AND b.std_active = 'Y'
-                                        AND a.session = @session
-                                        AND a.serial = d.serial)
-                                        AND session = @session) f
-                            ORDER BY f.order_by;";
+                                    (SELECT 
+                                        IFNULL(SUM(d.amount), 0) - IFNULL(SUM(d.dc_discount), 0) amt,
+                                            order_by
+                                    FROM
+                                        out_standing a, sr_register b, fees_receipt d, mst_std_class c, mst_class e
+                                    WHERE
+                                        a.month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
+                                            AND a.month_no BETWEEN 4 AND 12
+                                            AND a.sr_number = b.sr_number
+                                            AND b.sr_number = c.sr_num
+                                            AND c.sr_num = d.sr_number
+                                            AND c.class_id = e.class_id
+                                            AND c.session = a.session
+                                            AND b.std_active = 'Y'
+                                            AND a.session = @session
+                                            AND a.session = e.session
+                                            AND a.serial = d.serial
+                                    GROUP BY e.order_by UNION ALL SELECT 
+                                        0 amt, order_by
+                                    FROM
+                                        mst_class
+                                    WHERE
+                                        session = @session
+                                            AND class_id NOT IN (SELECT 
+                                                e.class_id
+                                            FROM
+                                                out_standing a, sr_register b, fees_receipt d, mst_std_class c, mst_class e
+                                            WHERE
+                                                a.month_no <= MONTH(DATE(DATE_ADD(NOW(), INTERVAL '00:00' HOUR_MINUTE)))
+                                                    AND a.month_no BETWEEN 4 AND 12
+                                                    AND a.sr_number = b.sr_number
+                                                    AND b.sr_number = c.sr_num
+                                                    AND c.sr_num = d.sr_number
+                                                    AND c.class_id = e.class_id
+                                                    AND c.session = a.session
+                                                    AND b.std_active = 'Y'
+                                                    AND a.session = @session
+                                                    AND a.serial = d.serial
+                                                    AND a.session = e.session)
+                                            AND session = @session) f
+                                ORDER BY f.order_by;";
                 }
                 else if (System.DateTime.Now.AddMinutes(dateTimeOffSet).Month == 1)
                 {
@@ -1224,6 +1226,7 @@ namespace SMS.Models
                                         AND b.std_active = 'Y'
                                         AND a.session = @session
                                         AND a.serial = d.serial
+                                        AND a.session = e.session
                                 GROUP BY e.order_by UNION ALL SELECT 
                                     0 amt, order_by
                                 FROM
@@ -1243,7 +1246,8 @@ namespace SMS.Models
                                         AND c.session = a.session
                                         AND b.std_active = 'Y'
                                         AND a.session = @session
-                                        AND a.serial = d.serial)
+                                        AND a.serial = d.serial
+                                        AND a.session = e.session)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
                 }
@@ -1267,6 +1271,7 @@ namespace SMS.Models
                                         AND b.std_active = 'Y'
                                         AND a.session = @session
                                         AND a.serial = d.serial
+                                        AND a.session = e.session
                                 GROUP BY e.order_by UNION ALL SELECT 
                                     0 amt, order_by
                                 FROM
@@ -1286,7 +1291,8 @@ namespace SMS.Models
                                         AND c.session = a.session
                                         AND b.std_active = 'Y'
                                         AND a.session = @session
-                                        AND a.serial = d.serial)
+                                        AND a.serial = d.serial
+                                        AND a.session = e.session)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
                 }
@@ -1309,6 +1315,7 @@ namespace SMS.Models
                                         AND b.std_active = 'Y'
                                         AND a.session = @session
                                         AND a.serial = d.serial
+                                        AND a.session = e.session
                                 GROUP BY e.order_by UNION ALL SELECT 
                                     0 amt, order_by
                                 FROM
@@ -1327,7 +1334,8 @@ namespace SMS.Models
                                                 AND c.session = a.session
                                                 AND b.std_active = 'Y'
                                                 AND a.session = @session
-                                                AND a.serial = d.serial)
+                                                AND a.serial = d.serial
+                                                AND a.session = e.session)
                                         AND session = @session) f
                             ORDER BY f.order_by;";
                 }
