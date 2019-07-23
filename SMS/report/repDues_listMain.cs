@@ -655,6 +655,11 @@ namespace SMS.report
             }
         }
 
+        string shortfirstname = ConfigurationManager.AppSettings["ShortFirstName"].ToString();
+        string shortlastname = ConfigurationManager.AppSettings["ShortLastName"].ToString();
+        string rcptHead = ConfigurationManager.AppSettings["RcptHead"].ToString();
+
+
         public void pdfDuesList_notice(IEnumerable<repDues_list> list, int font_size)
         {
             using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
@@ -669,17 +674,17 @@ namespace SMS.report
                 HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
                 //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
-                var doc = new Document(PageSize.A4);
+                var doc = new Document(PageSize.A6);
 
                 // MemoryStream stream = new MemoryStream();
-                doc.SetMargins(40f, 40f, 30f, 70f);
+                doc.SetMargins(20f, 20f, 10f, 70f);
                 try
                 {
 
 
 
 
-                    PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
+                    PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream);
 
 
 
@@ -688,47 +693,131 @@ namespace SMS.report
 
 
 
-                    PdfPTable pt;
-
-
-                    PdfPCell _cell;
-                    Chunk text;
-                    Phrase ph;
                     foreach (var li in list)
                     {
-                        pt = new PdfPTable(9);
-                        pt.WidthPercentage = 90;
-                        // string imageURL = "E:\\HPS\\logo.jpg";
-                        string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
-                        Image jpg = Image.GetInstance(imageURL);
-                        jpg.ScaleAbsolute(60f, 60f);
+                        PdfPTable pt = new PdfPTable(6);
+                        PdfPCell _cell;
+                        Chunk text;
+                        Phrase ph;
+                        pt.WidthPercentage = 90f;
 
-                        _cell = new PdfPCell(jpg);
-                        _cell.Border = 0;
+                        if (int.Parse(rcptHead) == 0)
+                        {
 
-                        _cell.Border = Rectangle.NO_BORDER;
-                        _cell.PaddingBottom = 5;
-
-                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                        pt.AddCell(_cell);
+                            string imageURL1 = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                            Image jpg1 = Image.GetInstance(imageURL1);
+                            jpg1.ScaleAbsolute(50f, 50f);
 
 
-                        text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 24));
-                        ph = new Phrase();
-                        ph.Add(text);
-                        ph.Add("\n");
-                        ph.Add("\n");
-                        text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 12));
-                        ph.Add(text);
-                        _cell = new PdfPCell(ph);
-                        _cell.Colspan = 8;
-                        _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                        _cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                        _cell.PaddingBottom = 5;
-                        //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                        pt.AddCell(_cell);
 
-                        doc.Add(pt);
+                            _cell = new PdfPCell(jpg1);
+                            _cell.Border = 0;
+                            _cell.Colspan = 2;
+                            _cell.Border = Rectangle.BOTTOM_BORDER;
+                            _cell.PaddingBottom = 5;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+
+                            text = new Chunk(shortfirstname, FontFactory.GetFont("Areal", 18));
+                            ph = new Phrase();
+                            ph.Add(text);
+                            ph.Add("\n");
+                            text = new Chunk(shortlastname, FontFactory.GetFont("Areal", 12));
+                            //ph = new Phrase();
+                            ph.Add(text);
+                            /* _cell = new PdfPCell(ph);
+                             _cell.Colspan = 3;
+                             _cell.HorizontalAlignment = Element.ALIGN_CENTER;*/
+
+                            //  _cell.Border = 0;
+                            // pt.AddCell(_cell);
+                            //ph.Add("\n");
+                            //text = new Chunk("Nh-24 Village Ballia, Dhaneta, Meerganj Bareilly-243504", FontFactory.GetFont("Areal", 08));
+                            //ph.Add(text);
+
+                            ph.Add("\n");
+                            text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 08));
+                            ph.Add(text);
+
+
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 4;
+                            _cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            _cell.Border = Rectangle.BOTTOM_BORDER;
+                            _cell.PaddingBottom = 5;
+                            //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+
+
+                            pt.AddCell(_cell);
+
+                            doc.Add(pt);
+                        }
+                        else
+                        {
+                            string imageURL1 = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                            Image jpg1 = Image.GetInstance(imageURL1);
+                            jpg1.ScaleAbsolute(30f, 30f);
+
+
+                            _cell = new PdfPCell(jpg1);
+                            _cell.Border = 0;
+                            _cell.Border = Rectangle.BOTTOM_BORDER;
+                            _cell.PaddingBottom = 5;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            pt.AddCell(_cell);
+
+
+                            text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 16));
+                            ph = new Phrase();
+                            ph.Add(text);
+                            ph.Add("\n");
+
+
+
+                            text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 8));
+                            ph.Add(text);
+                            _cell = new PdfPCell(ph);
+                            _cell.Colspan = 5;
+                            _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            _cell.Border = Rectangle.BOTTOM_BORDER;
+                            _cell.PaddingBottom = 5;
+                            //_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                            pt.AddCell(_cell);
+
+                            doc.Add(pt);
+                        }
+
+                        //string imageURL = System.Web.Hosting.HostingEnvironment.MapPath("/images/logo.jpg");
+                        //Image jpg = Image.GetInstance(imageURL);
+                        //jpg.ScaleAbsolute(50f, 50f);
+
+                        //_cell = new PdfPCell(jpg);
+                        //_cell.Border = 0;
+
+                        //_cell.Border = Rectangle.NO_BORDER;
+                        //_cell.PaddingBottom = 5;
+
+                        //_cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        //pt.AddCell(_cell);
+
+
+                        //text = new Chunk(SchoolName, FontFactory.GetFont("Areal", 12));
+                        //ph = new Phrase();
+                        //ph.Add(text);
+                        //ph.Add("\n");
+                        //ph.Add("\n");
+                        //text = new Chunk("(" + Affiliation + ")", FontFactory.GetFont("Areal", 8));
+                        //ph.Add(text);
+                        //_cell = new PdfPCell(ph);
+                        //_cell.Colspan = 8;
+                        //_cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        //_cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        //_cell.PaddingBottom = 5;
+                        ////_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        //pt.AddCell(_cell);
+
+                        //doc.Add(pt);
 
                         text = new Chunk("\n", FontFactory.GetFont("Times New Roman", font_size));
                         Paragraph para = new Paragraph(text);

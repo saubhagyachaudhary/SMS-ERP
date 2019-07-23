@@ -1723,30 +1723,37 @@ namespace SMS.report
             string ToMail = mail_id;
             string Subject = "Attendance Sheet of class "+ class_name + " date "+DateTime.Now.Date.ToString("dd/MM/yyyy");
             string Body = body;
+            if(ToMail == null)
+            {
+                ToMail = ConfigurationManager.AppSettings["bcc1"].ToString();
+            }
             string bcc;
             int bccNumber = Int16.Parse(ConfigurationManager.AppSettings["bccNumber"]);
 
-            using (Attachment att =
-              new Attachment(ms, pdf_name, MediaTypeNames.Application.Pdf))
+            if (ToMail != null)
             {
-                using (MailMessage mm = new MailMessage(
-                  FromMail, ToMail, Subject, Body))
+                using (Attachment att =
+                  new Attachment(ms, pdf_name, MediaTypeNames.Application.Pdf))
                 {
-                    mm.Attachments.Add(att);
-                    mm.IsBodyHtml = true;
-                    for(int i=1;i<= bccNumber; i++)
+                    using (MailMessage mm = new MailMessage(
+                      FromMail, ToMail, Subject, Body))
                     {
-                        bcc = ConfigurationManager.AppSettings["bcc"+i].ToString();
-                        mm.Bcc.Add(bcc);
+                        mm.Attachments.Add(att);
+                        mm.IsBodyHtml = true;
+                        for (int i = 1; i <= bccNumber; i++)
+                        {
+                            bcc = ConfigurationManager.AppSettings["bcc" + i].ToString();
+                            mm.Bcc.Add(bcc);
+                        }
+
+                        SmtpClient smtp = new SmtpClient();
+                        NetworkCredential networkCredential = new NetworkCredential(FromMail, donotreplyMailPassword);
+                        smtp.Credentials = networkCredential;
+                        smtp.EnableSsl = true;
+                        smtp.Host = "smtp.gmail.com";
+                        smtp.Port = 587;
+                        smtp.Send(mm);
                     }
-                    
-                    SmtpClient smtp = new SmtpClient();
-                    NetworkCredential networkCredential = new NetworkCredential(FromMail, donotreplyMailPassword);
-                    smtp.Credentials = networkCredential;
-                    smtp.EnableSsl = true;
-                    smtp.Host = "smtp.gmail.com";
-                    smtp.Port = 587;
-                    smtp.Send(mm);
                 }
             }
         }

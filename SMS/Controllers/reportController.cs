@@ -184,7 +184,7 @@ namespace SMS.Controllers
 
             model.payment_by = DateTime.Now;
 
-            model.font_size = 12;
+            model.font_size = 8;
 
             return View(model);
         }
@@ -223,7 +223,7 @@ namespace SMS.Controllers
 
                 bool flag = false;
 
-                int font_size = 12;
+                int font_size = 8;
 
                 foreach (repDues_list li in list)
                 {

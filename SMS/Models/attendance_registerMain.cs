@@ -82,7 +82,8 @@ namespace SMS.Models
 
                     string email_id = con.Query<string>(query, new { class_id = class_id, user_id = user_id, section_id = section_id }).SingleOrDefault();
 
-                    sendAttSheet.MailAttendanceSheet(section_id, month_no, session_name, email_id, att_date);
+                   
+                        sendAttSheet.MailAttendanceSheet(section_id, month_no, session_name, email_id, att_date);
                 }
             }
         }
