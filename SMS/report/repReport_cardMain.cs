@@ -1015,7 +1015,7 @@ namespace SMS.report
                         pt.AddCell(_cell);
 
                         ph = new Phrase();
-                        text = new Chunk("Date: " + System.DateTime.Now.Date.ToString("dd/MM/yyyy"), FontFactory.GetFont("Areal", 10));
+                        text = new Chunk("Date: ");//+ System.DateTime.Now.Date.ToString("dd/MM/yyyy"), FontFactory.GetFont("Areal", 10));
                         ph.Add(text);
 
                         _cell = new PdfPCell(ph);

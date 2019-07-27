@@ -1678,6 +1678,11 @@ namespace SMS.report
     
                     <td style= 'line-height:0;font-size:0;vertical-align:top;padding:0px;text-align:center' height= '24' > &nbsp;</td>
               </tr>
+ <tr>
+                          <div style='margin: 0 auto; '>
+                                <img width = '600px' title = '' src = '" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/receiptedge.png' alt = '' class='CToWUd'>
+                          </div>
+                      </tr>       
             </tbody></table></td>
         </tr>
       </tbody></table></td>
