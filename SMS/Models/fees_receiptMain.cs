@@ -13,6 +13,8 @@ using System.Web.Routing;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using SMS.Hubs;
+using System.Net.Mime;
+using System.Net.Mail;
 
 namespace SMS.Models
 {
@@ -20,6 +22,9 @@ namespace SMS.Models
     {
         
         int dateTimeOffSet = Convert.ToInt32(ConfigurationManager.AppSettings["DateTimeOffSet"]);
+        string donotreplyMail = ConfigurationManager.AppSettings["donotreplyMail"].ToString();
+        string donotreplyMailPassword = ConfigurationManager.AppSettings["donotreplyMailPassword"].ToString();
+
         public int AddReceipt(List<fees_receipt> fees)
         {
             string phone;
@@ -59,6 +64,8 @@ namespace SMS.Models
                         myCommand.Connection = con;
 
                         myCommand.Transaction = myTrans;
+
+                        string sess="";
 
                         try
                         {
@@ -239,6 +246,7 @@ namespace SMS.Models
 
 
                                 sr_num = fee.sr_number;
+                                sess = fee.session;
 
                                 amount = amount + fee.amount;
                                 amount = amount + fee.dc_fine;
@@ -249,6 +257,220 @@ namespace SMS.Models
 
                             }
                             myTrans.Commit();
+
+                            query1 = @"SELECT 
+                                            std_email
+                                        FROM
+                                            sr_register
+                                        WHERE
+                                            sr_number = @sr_number";
+
+                            string email_id = con.Query<string>(query1, new { sr_number = sr_num }).SingleOrDefault();
+
+                            if (email_id != null && email_id.Trim() !="")
+                            {
+                                query1 = @"SELECT 
+                                    sr_number num,
+                                    CONCAT(ifnull(std_first_name,''), ' ',ifnull(std_last_name,'')) name,
+                                    std_father_name father_name,
+                                    CONCAT(c.class_name, ' Sec. ', b.section_name) class_name
+                                FROM
+                                    sr_register a,
+                                    mst_section b,
+                                    mst_class c,
+                                    mst_std_section d,
+                                    mst_std_class e
+                                WHERE
+                                    d.section_id = b.section_id
+                                        AND b.class_id = c.class_id
+                                        AND e.class_id = b.class_id
+                                        AND a.sr_number = d.sr_num
+                                        AND d.sr_num = e.sr_num
+                                        AND a.sr_number = @sr_number
+                                        AND b.session = c.session
+                                        AND c.session = d.session
+                                        AND d.session = e.session
+                                        AND e.session = @session";
+
+                                var rep = con.Query<rep_fees>(query1, new { sr_number = sr_num, session = sess }).SingleOrDefault();
+
+                                query1 = @"SELECT 
+                                        mode_flag,
+                                        chq_no,
+                                        chq_date,
+                                        receipt_date,
+                                        fees_name,
+                                        sr_number,
+                                        class_id,
+                                        amount fees,
+                                        dc_fine fine,
+                                        dc_discount discount,
+                                        amount + dc_fine - dc_discount amount,
+                                        reg_no,
+                                        reg_date,
+                                        session
+                                    FROM
+                                        fees_receipt
+                                    WHERE
+                                        fin_id = (SELECT 
+                                                fin_id
+                                            FROM
+                                                mst_fin
+                                            WHERE
+                                                fin_close = 'N')
+                                            AND receipt_no = @receipt_no";
+
+
+                                IEnumerable<fees_receipt> result = con.Query<fees_receipt>(query1, new { receipt_no = rect_no });
+
+                                string fees_Table = "";
+
+                                decimal total = 0;
+
+                                foreach (var fee in result)
+                                {
+                                    fees_Table = fees_Table + @" <tr>
+                                <td>
+                                <div style='border-radius:2px;font-size:12px;color:#999;float:left;width:100%;border:solid 1px #f4f4f4'>
+                                <ul style='list-style:none;width:96%;float:left;border-bottom:1px solid #e2e2e2;padding:2%;margin:0'>
+                                <li style='float:left;width:40%;text-align:center;margin-left: 0px;'>
+                                    " + fee.fees_name + @"
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    " + fee.fees + @"
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    " + fee.fine + @"
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    " + fee.discount + @"
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    " + fee.amount + @"
+                                </li>
+
+                            </ul>
+                        </div>
+                    </td>
+                </tr>";
+
+                                    total = total + fee.amount;
+                                }
+
+                                string Affiliation = ConfigurationManager.AppSettings["Affiliation"].ToString();
+                                string SchoolName = ConfigurationManager.AppSettings["SchoolName"].ToString();
+
+
+                                string body = @"<div style='width:584px;margin:0 auto;border:#ececec solid 1px'>
+    <div style='padding:22px 34px 15px 34px'>
+        <div style='float:left'><img title='Institute Logo' src='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/logo.jpg' alt='Institute Logo' width='100px' class='CToWUd'></div>
+        <div style='float:right; font:bold 30px Arial,Helvetica,sans-serif;margin-top:20px'>" + SchoolName + @"</div>
+        <div style='float:right; font:12px Arial,Helvetica,sans-serif;margin-top:5px'>(" + Affiliation + @")</div>
+    </div>
+    <div style='clear:both'></div>
+    <div style='float:left;color:#333333;font:normal 14px Arial,Helvetica,sans-serif;width:250px'>
+        
+        <!--<div>Order no: #8846417200 <br>  2019-07-27T07:13:42.000Z </div>-->
+        <div style='padding-top:10px'></div>
+    </div>
+    
+    <div style='clear:both'> </div>
+</div>
+<div style='width:584px;background-color:#ffffff;border:#e8e7e7 solid 1px;padding:27px 0;margin:0 auto;border-bottom:0'>
+    <div style='border-bottom:#717171 dotted 1px;font:normal 14px Arial,Helvetica,sans-serif;color:#666666;padding:0px 33px 10px'>
+        
+        <table style='width:100%' border='0' cellspacing='0' cellpadding='2'>
+            <tbody>
+                <tr>
+                    <td width='450px'>Receipt No:</td>
+                    <td width='450px'>" + rect_no + @"</td>
+                    <td width='450px'>Receipt Date:</td>
+                    <td width='450px'>" + result.First().receipt_date.ToString("dd-MMM-yyyy") + @"</td>
+                </tr>
+                <tr>
+                    <td width='450px'>Admission No:</td>
+                    <td width='450px'>" + rep.num + @"</td>
+                    <td width='450px'>Class:</td>
+                    <td width='450px'>" + rep.class_name + @"</td>
+                </tr>
+                <tr>
+                    <td width='450px'>Name:</td>
+                    <td width='450px'>" + rep.name + @"</td>
+                    
+                </tr>
+                <tr>
+                    <td width='450px'>Father's Name: </td>
+                    <td width='450px'>" + rep.father_name + @"</td>
+                   
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style='border-bottom:#717171 dotted 1px;font:normal 14px Arial,Helvetica,sans-serif;color:#666666;padding:10px 33px 10px'>
+        <br>
+        <table style='width:100%' border='0' cellspacing='0' cellpadding='2'>
+            <tbody>
+
+                <tr>
+                    <td>
+                        <div style='border-radius:2px;font-size:12px;color:#999;float:left;width:100%;border:solid 1px #f4f4f4'>
+
+                            <ul style='list-style:none;width:96%;float:left;border-bottom:1px solid #e2e2e2;padding:2%;margin:0'>
+                                <li style='float:left;width:40%;text-align:center;margin-left: 0px;'>
+                                    Particulars
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    Fees
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    Fine
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    Discount
+                                </li>
+                                <li style='float:left;width:15%;text-align:center;margin-left: 0px;'>
+                                    Paid
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                            " + fees_Table + @"
+            </tbody>
+        </table>
+
+        <div style='border-bottom:#717171 dotted 1px;font:600 14px Arial,Helvetica,sans-serif;color:#333333;padding:17px 33px 17px'>
+            <table style='width:100%' border='0' cellspacing='0' cellpadding='2'>
+                <tbody>
+                    <tr>
+                        <td width='450px'>Amount Paid</td>
+                        <td width='313px' style='text-align:right'>Rs." + total + @"</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style='border-bottom:#717171 dotted 1px;font:normal 14px Arial,Helvetica,sans-serif;color:#666666;padding:10px 33px 10px'>
+        <br>
+        <table style='width:100%' border='0' cellspacing='0' cellpadding='2'>
+            <tbody>
+                <tr>
+                    <td colspan='2'>
+                        Received with thanks:
+                    </td>
+                    <td colspan='2'>
+                        " + repFees_receipt.NumbersToWords(Decimal.ToInt32(total)) + @"
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style='margin:0 auto;width:594px'><img title='' src='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/fee_receipt.png' alt='' class='CToWUd'></div>";
+
+                                _sendMail(email_id,rect_no.ToString(), result.First().receipt_date.ToString("dd-MMM-yyyy"), body);
+
+                            }
                         }
                         catch (Exception e)
                         {
@@ -374,7 +596,32 @@ namespace SMS.Models
             }
         }
 
-        
+        private void _sendMail(string mail_id, string receipt_no, string receipt_date, string body)
+        {
+            string FromMail = donotreplyMail;
+            string ToMail = mail_id;
+            string Subject = "Thanks For The Payment. Your Receipt No: " + receipt_no; //"Attendance Sheet of class " + class_name + " date " + DateTime.Now.Date.ToString("dd/MM/yyyy");
+            string Body = body;
+
+            if (ToMail != null)
+            {
+               
+                    using (MailMessage mm = new MailMessage(
+                      FromMail, ToMail, Subject, Body))
+                    {
+                        mm.IsBodyHtml = true;
+                        SmtpClient smtp = new SmtpClient();
+                        NetworkCredential networkCredential = new NetworkCredential(FromMail, donotreplyMailPassword);
+                        smtp.Credentials = networkCredential;
+                        smtp.EnableSsl = true;
+                        smtp.Host = "smtp.gmail.com";
+                        smtp.Port = 587;
+                        smtp.Send(mm);
+                    }
+                
+            }
+        }
+
 
         public void updateReceipt(fees_receipt fees)
         {
