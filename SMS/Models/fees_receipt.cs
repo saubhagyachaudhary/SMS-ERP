@@ -96,5 +96,7 @@ namespace SMS.Models
         public int user_id{ get; set; }
         public decimal due_amount { get; set; }
 
+        public string secret_code { get; set; }
+
     }
 }

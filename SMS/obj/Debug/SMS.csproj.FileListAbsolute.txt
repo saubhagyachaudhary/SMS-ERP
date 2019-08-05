@@ -831,6 +831,6 @@ D:\Project ERP\SMS.cancelled\SMS\bin\Newtonsoft.Json.xml
 D:\Project ERP\SMS.cancelled\SMS\bin\es\Hangfire.Core.resources.dll
 D:\Project ERP\SMS.cancelled\SMS\bin\zh\Hangfire.Core.resources.dll
 D:\Project ERP\SMS.cancelled\SMS\bin\zh-TW\Hangfire.Core.resources.dll
-D:\Project ERP\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache
 D:\Project ERP\SMS.cancelled\SMS\obj\Debug\SMS.dll
 D:\Project ERP\SMS.cancelled\SMS\obj\Debug\SMS.pdb
+D:\Project ERP\SMS.cancelled\SMS\obj\Debug\SMS.csprojResolveAssemblyReference.cache

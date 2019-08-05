@@ -2120,21 +2120,21 @@ namespace SMS.report
 
                             doc.Add(pt);
 
-                            string remark_query = @"SELECT 
-                                                remark
-                                            FROM
-                                                teacher_exam_remark a,
-                                                mst_std_section b,
-                                                mst_std_class c
-                                            WHERE
-                                                term_id = @term_id
-                                                    AND c.class_id = @class_id
-                                                    AND b.section_id = @section_id
-                                                    AND a.sr_number = @sr_number
-                                                    AND a.sr_number = b.sr_num
-                                                    AND b.sr_num = c.sr_num
-                                                    AND a.session = @session
-                                                    AND a.session = b.session";
+                           //string remark_query = @"SELECT 
+                           //                     remark
+                           //                 FROM
+                           //                     teacher_exam_remark a,
+                           //                     mst_std_section b,
+                           //                     mst_std_class c
+                           //                 WHERE
+                           //                     term_id = @term_id
+                           //                         AND c.class_id = @class_id
+                           //                         AND b.section_id = @section_id
+                           //                         AND a.sr_number = @sr_number
+                           //                         AND a.sr_number = b.sr_num
+                           //                         AND b.sr_num = c.sr_num
+                           //                         AND a.session = @session
+                           //                         AND a.session = b.session";
 
                             pt = new PdfPTable(8);
 

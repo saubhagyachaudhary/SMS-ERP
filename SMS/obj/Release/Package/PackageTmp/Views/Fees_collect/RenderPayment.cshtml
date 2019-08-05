@@ -97,14 +97,29 @@
                         </td>
                         <td>
                             <div class="form-group">
-                                @if (Model[i].discount == 0)
+
+                                @{
+                                    string feature = Request.Cookies["features"].Value.ToString();
+                                    var list = feature.Split(',');
+                                }
+
+                                @if (list.Contains("discount_master") || User.IsInRole("superadmin"))
+                                {
+                                    @Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })
+                                }
+                                else
+                                {
+                                    @Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString(), @disabled = "disabled" } })
+                                }
+
+                                @*@if (Model[i].discount == 0)
                                 {
                                     @Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })
                                 }
                                 else
                                 {
                                     @Html.TextBoxFor(model => model[i].discount, new { @class = "form-control", @onchange = "recalculate()", @readonly = "readonly", @id = "dis" + i.ToString() })
-                                }
+                                }*@
                                 @*@Html.EditorFor(model => model[i].discount, new { htmlAttributes = new { @class = "form-control", @onchange = "recalculate()", @id = "dis" + i.ToString() } })*@
                             </div>
                         </td>

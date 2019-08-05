@@ -221,6 +221,7 @@
     <Compile Include="AcademicControllers\class_subject_teacherController.cs" />
     <Compile Include="AcademicControllers\mstSubjectChapterController.cs" />
     <Compile Include="AcademicReport\repClassAssignments.cs" />
+    <Compile Include="APIControllers\Fees_ReceiptController.cs" />
     <Compile Include="APIControllers\ReportCardAPIController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\mst_acc_headController.cs" />
     <Compile Include="Controllers\mst_attendanceController.cs" />
+    <Compile Include="Controllers\mst_bankController.cs" />
     <Compile Include="Controllers\mst_classController.cs" />
     <Compile Include="Controllers\mst_class_coscholasticController.cs" />
     <Compile Include="Controllers\mst_class_disciplineController.cs" />
@@ -370,6 +372,8 @@
     <Compile Include="Models\users.cs" />
     <Compile Include="Models\usersMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\bank_master.cs" />
+    <Compile Include="Models\bank_masterMain.cs" />
     <Compile Include="report\birth_certificateMain.cs" />
     <Compile Include="report\comparative_result_analysis.cs" />
     <Compile Include="report\repAttendance_sheet.cs" />
@@ -2586,6 +2590,10 @@
     <Content Include="Views\mst_subject_parameters\DeleteParameter.cshtml" />
     <Content Include="Views\Shared\_webcamLayout.cshtml" />
     <Content Include="Views\std_halfday_log\Index.cshtml" />
+    <Content Include="Views\mst_bank\AddBank.cshtml" />
+    <Content Include="Views\mst_bank\AllBankList.cshtml" />
+    <Content Include="Views\mst_bank\EditBank.cshtml" />
+    <Content Include="Views\mst_bank\DeleteBank.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

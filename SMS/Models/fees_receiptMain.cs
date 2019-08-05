@@ -67,9 +67,16 @@ namespace SMS.Models
 
                         string sess="";
 
+                        decimal total_amount = 0;
+
                         try
                         {
                             foreach (fees_receipt fee in fees)
+                            {
+                                total_amount = total_amount + fee.amount;
+                            }
+
+                             foreach (fees_receipt fee in fees)
                             {
 
                                 query1 = @"SELECT 
@@ -190,7 +197,8 @@ namespace SMS.Models
                                ,chq_date
                                ,mode_flag
                                ,clear_flag
-                                ,user_id)
+                                ,user_id
+                                ,secret_code)
                          VALUES
                                ('{0}'
                                 ,'{1}'
@@ -214,7 +222,7 @@ namespace SMS.Models
                                ,{19}
                                ,'{20}'
                                ,{21}
-                                ,{22})", fee.fin_id,
+                                ,{22},reverse(concat(unix_timestamp(),'-',base64_encode({2}),'-',base64_encode({6}),'-',base64_encode({23}))));", fee.fin_id,
                                             fee.session,
                                             fee.receipt_no,
                                             fee.receipt_date.ToString("yyyy-MM-dd"),
@@ -236,7 +244,8 @@ namespace SMS.Models
                                             chq_date,
                                             fee.mode_flag,
                                             fee.clear_flag,
-                                            fee.user_id);
+                                            fee.user_id,
+                                            total_amount);
 
 
                                 myCommand.CommandText = query;
@@ -468,7 +477,8 @@ namespace SMS.Models
 </div>
 <div style='margin:0 auto;width:594px'><img title='' src='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/fee_receipt.png' alt='' class='CToWUd'></div>";
 
-                                _sendMail(email_id,rect_no.ToString(), result.First().receipt_date.ToString("dd-MMM-yyyy"), body);
+                                if(total != 0)
+                                    _sendMail(email_id,rect_no.ToString(), result.First().receipt_date.ToString("dd-MMM-yyyy"), body);
 
                             }
                         }

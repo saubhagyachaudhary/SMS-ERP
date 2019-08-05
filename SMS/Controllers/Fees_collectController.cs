@@ -72,6 +72,25 @@ namespace SMS.Controllers
             ViewData["session"] = list1;
         }
 
+        public void DDbank_name()
+        {
+            using (MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString()))
+            {
+
+                string query = @"SELECT 
+                                        bank_name
+                                    FROM
+                                        bank_master;";
+
+                IEnumerable<string> bank_list = con.Query<string>(query);
+
+                IEnumerable<SelectListItem> list1 = new SelectList(bank_list, "bank_name");
+
+                ViewData["bank_name"] = list1;
+            }
+        }
+
+
         [HttpGet]
         public void FeesStatement(int rcpt_no)
         {
@@ -548,6 +567,7 @@ namespace SMS.Controllers
 
         public PartialViewResult RenderPayment(int sr_num, int reg_num,string session)
         {
+            DDbank_name();
             if (sr_num > 0)
             {
                 return PartialView(GetFeesPayment(sr_num,session));

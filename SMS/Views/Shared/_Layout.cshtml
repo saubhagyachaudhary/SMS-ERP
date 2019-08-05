@@ -178,6 +178,11 @@
                                             <li class="please_wait">@Html.ActionLink("Fees Master", "AllFeesList", "mst_fees")</li>
                                          }
 
+                                         @if (list.Contains("bank_master") || User.IsInRole("superadmin"))
+                                         {
+                                             <li class="please_wait">@Html.ActionLink("Bank Master", "AllBankList", "mst_bank")</li>
+                                         }
+
                                          @if (list.Contains("discount_master") || User.IsInRole("superadmin"))
                                          {
                                             <li class="please_wait">@Html.ActionLink("Discount Master", "AllStdDiscountList", "std_discount")</li>
