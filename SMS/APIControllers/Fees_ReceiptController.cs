@@ -30,11 +30,11 @@ namespace SMS.APIControllers
 
                 string query = @"select convert(base64_decode(SUBSTRING_INDEX(substr(reverse(secret_code),length(SUBSTRING_INDEX(reverse(secret_code),'-',1))+2,length(reverse(secret_code))),'-',1)) using utf8) from fees_Receipt where secret_code = @secret_code;";
 
-                int receipt_no = con.Query<int>(query, new { secret_code = code }).SingleOrDefault();
+                int receipt_no = con.Query<int>(query, new { secret_code = code }).First();
 
                 query = @"select date(FROM_UNIXTIME(SUBSTRING_INDEX(reverse(secret_code),'-',1))) from fees_receipt where secret_code = @secret_code;";
 
-                DateTime receipt_date = con.Query<DateTime>(query, new { secret_code = code }).SingleOrDefault();
+                DateTime receipt_date = con.Query<DateTime>(query, new { secret_code = code }).First();
 
                 byte[] bytes = rep.pdf_bytes(receipt_no, receipt_date);
 
