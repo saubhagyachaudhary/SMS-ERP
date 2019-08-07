@@ -1,0 +1,63 @@
+﻿@model IEnumerable<SMS.Models.bank_master>
+
+@{
+    ViewBag.Title = "AllBankList";
+}
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+@*<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">*@
+@*<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">*@
+@*<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">*@
+@*<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">*@
+<div class="right_col" role="main">
+    <p>
+        @Html.ActionLink("Add New Bank", "AddBank", new { area = "" }, new { @class = "btn btn-primary please_wait" })
+    </p>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title" style="overflow-x:auto;">
+
+                    <h2>List of all Banks</h2>
+
+
+
+                    <table id="datatable" class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.bank_name)
+                                </th>
+                                <th>
+                                    Control Panel
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.bank_name)
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "EditBank", new { id = item.bank_id }, new { @class = "btn btn-success btn-sm please_wait" })
+                                        @Html.ActionLink("Delete", "DeleteBank", new { id = item.bank_id }, new { @class = "btn btn-success btn-sm please_wait" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+                        $('#datatable').dataTable();
+    </script>
+}

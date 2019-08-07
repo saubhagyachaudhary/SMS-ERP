@@ -208,7 +208,8 @@
 
                                 <div class="form-group">
                                     <label>Bank Name</label>
-                                    <input type="text" class="form-control" name="bank_name" id="bnk_name" placeholder="Bank Name">
+                                    @Html.DropDownList("bank_name", ViewData["bank_name"] as IEnumerable<SelectListItem>, "Select Bank", htmlAttributes: new { @class = "form-control", @id = "bnk_name"})
+                                    @*<input type="text" class="form-control" name="bank_name" id="bnk_name" placeholder="Bank Name">*@
 
                                 </div>
 

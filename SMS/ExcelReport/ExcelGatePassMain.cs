@@ -44,41 +44,45 @@ namespace SMS.ExcelReport
                 {
                     
                     string query = @"SELECT 
-                                        a.session,
-                                        gate_pass_no,
-                                        b.sr_number,
-                                        date_time,
-                                        std_relation,
-                                        escorter_name,
-                                        escorter_address,
-                                        reason,
-                                        CONCAT(IFNULL(std_first_name, ''),
-                                                ' ',
-                                                IFNULL(std_last_name, '')) std_name,
-                                        CONCAT(IFNULL(class_name, ''),
-                                                ' ',
-                                                IFNULL(section_name, '')) std_class,
-                                        std_father_name,
-                                        COALESCE(std_contact, std_contact1, std_contact2) contact_no
-                                    FROM
-                                        std_halfday_log a,
-                                        sr_register b,
-                                        mst_std_class c,
-                                        mst_std_section d,
-                                        mst_class e,
-                                        mst_section f
-                                    WHERE
-                                        a.session = @session
-                                            AND a.session = c.session
-                                            AND c.session = d.session
-                                            AND d.session = e.session
-                                            AND e.session = f.session
-                                            AND a.sr_number = b.sr_number
-                                            AND b.sr_number = c.sr_num
-                                            AND c.sr_num = d.sr_num
-                                            AND c.class_id = e.class_id
-                                            AND d.section_id = f.section_id
-                                            AND a.gate_pass_no = @gate_pass_no";
+                                    a.session,
+                                    gate_pass_no,
+                                    b.sr_number,
+                                    date_time,
+                                    std_relation,
+                                    escorter_name,
+                                    escorter_address,
+                                    reason,
+                                    CONCAT(IFNULL(std_first_name, ''),
+                                            ' ',
+                                            IFNULL(std_last_name, '')) std_name,
+                                    CONCAT(IFNULL(class_name, ''),
+                                            ' ',
+                                            IFNULL(section_name, '')) std_class,
+                                    std_father_name,
+                                    COALESCE(std_contact, std_contact1, std_contact2) contact_no,
+                                    g.pickup_point
+                                FROM
+                                    std_halfday_log a,
+                                    sr_register b,
+                                    mst_std_class c,
+                                    mst_std_section d,
+                                    mst_class e,
+                                    mst_section f,
+                                    mst_transport g
+                                WHERE
+                                    a.session = @session
+                                        AND a.session = c.session
+                                        AND c.session = d.session
+                                        AND d.session = e.session
+                                        AND e.session = f.session
+                                        AND f.session = g.session
+                                        AND a.sr_number = b.sr_number
+                                        AND b.sr_number = c.sr_num
+                                        AND c.sr_num = d.sr_num
+                                        AND c.class_id = e.class_id
+                                        AND d.section_id = f.section_id
+                                        AND g.pickup_id = b.std_pickup_id
+                                        AND a.gate_pass_no = @gate_pass_no";
 
                     var result = con.Query<ExcelGatePass>(query, new { session = session, gate_pass_no = gate_pass_no }).SingleOrDefault();
 
@@ -329,26 +333,42 @@ namespace SMS.ExcelReport
                     ws.Cells["B11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                     ws.Cells["B11"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    ws.Cells["A15"].Value = "Parents Sign ";
-                    ws.Cells["A15"].Style.Font.Name = "Calibri";
-                    ws.Cells["A15"].Style.Font.Size = 11;
-                    ws.Cells["A15"].Style.Font.Bold = true;
-                    ws.Cells["A15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                    ws.Cells["A15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    ws.Cells["A12"].Value = "Transport ";
+                    ws.Cells["A12"].Style.Font.Name = "Calibri";
+                    ws.Cells["A12"].Style.Font.Size = 11;
+                    ws.Cells["A12"].Style.Font.Bold = true;
+                    ws.Cells["A12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["A12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    ws.Cells["D15"].Value = "Auth Sign. ";
-                    ws.Cells["D15"].Style.Font.Name = "Calibri";
-                    ws.Cells["D15"].Style.Font.Size = 11;
-                    ws.Cells["D15"].Style.Font.Bold = true;
-                    ws.Cells["D15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                    ws.Cells["D15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    ws.Cells["B12"].Value = result.pickup_point;
+                    ws.Cells["B12"].Style.Font.Name = "Calibri";
+                    ws.Cells["B12"].Style.Font.Size = 11;
+                    ws.Cells["B12"].Style.Font.UnderLine = true;
+                    ws.Cells["B12"].Style.Font.Italic = true;
+                    ws.Cells["B12"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["B12"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    ws.Cells["H15"].Value = "Incharge Sign. ";
-                    ws.Cells["H15"].Style.Font.Name = "Calibri";
-                    ws.Cells["H15"].Style.Font.Size = 11;
-                    ws.Cells["H15"].Style.Font.Bold = true;
-                    ws.Cells["H15"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                    ws.Cells["H15"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                    ws.Cells["A16"].Value = "Parents Sign ";
+                    ws.Cells["A16"].Style.Font.Name = "Calibri";
+                    ws.Cells["A16"].Style.Font.Size = 11;
+                    ws.Cells["A16"].Style.Font.Bold = true;
+                    ws.Cells["A16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["A16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                    ws.Cells["D16"].Value = "Auth Sign. ";
+                    ws.Cells["D16"].Style.Font.Name = "Calibri";
+                    ws.Cells["D16"].Style.Font.Size = 11;
+                    ws.Cells["D16"].Style.Font.Bold = true;
+                    ws.Cells["D16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["D16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                    ws.Cells["H16"].Value = "Incharge Sign. ";
+                    ws.Cells["H16"].Style.Font.Name = "Calibri";
+                    ws.Cells["H16"].Style.Font.Size = 11;
+                    ws.Cells["H16"].Style.Font.Bold = true;
+                    ws.Cells["H16"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells["H16"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
 
                     return pck.GetAsByteArray();
@@ -388,6 +408,8 @@ namespace SMS.ExcelReport
         public string std_father_name { get; set; }
 
         public string contact_no { get; set; }
+
+        public string pickup_point { get; set; }
 
     }
 }
