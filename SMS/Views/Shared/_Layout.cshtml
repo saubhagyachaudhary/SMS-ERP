@@ -389,6 +389,11 @@
                                             <li class="please_wait">@Html.ActionLink("All Student List", "school_strength", "report")</li>
                                         }
 
+                                        @if (list.Contains("StudentSummary") || User.IsInRole("superadmin"))
+                                        {
+                                            <li class="please_wait">@Html.ActionLink("Category Wise Class report", "StudentSummary", "report")</li>
+                                        }
+
                                         @if (list.Contains("session_new_admission") || User.IsInRole("superadmin"))
                                         {
                                             <li class="please_wait">@Html.ActionLink("New Student List", "session_new_admission", "report")</li>

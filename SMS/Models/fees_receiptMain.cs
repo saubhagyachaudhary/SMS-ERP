@@ -477,8 +477,12 @@ namespace SMS.Models
 </div>
 <div style='margin:0 auto;width:594px'><img title='' src='" + HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + @"/images/fee_receipt.png' alt='' class='CToWUd'></div>";
 
-                                if(total != 0)
-                                    _sendMail(email_id,rect_no.ToString(), result.First().receipt_date.ToString("dd-MMM-yyyy"), body);
+                                repFees_receipt rep_byte = new repFees_receipt();
+
+                                byte[] bytes = rep_byte.pdf_bytes(rect_no, result.First().receipt_date);
+
+                                if (total != 0)
+                                    _sendMail(bytes,email_id,rect_no.ToString(), result.First().receipt_date.ToString("dd-MMM-yyyy"), body);
 
                             }
                         }
@@ -606,12 +610,19 @@ namespace SMS.Models
             }
         }
 
-        private void _sendMail(string mail_id, string receipt_no, string receipt_date, string body)
+        private void _sendMail(byte[] receipt,string mail_id, string receipt_no, string receipt_date, string body)
         {
             string FromMail = donotreplyMail;
             string ToMail = mail_id;
             string Subject = "Thanks For The Payment. Your Receipt No: " + receipt_no; //"Attendance Sheet of class " + class_name + " date " + DateTime.Now.Date.ToString("dd/MM/yyyy");
             string Body = body;
+
+            var memStream = new MemoryStream(receipt);
+            memStream.Position = 0;
+            var contentType = new System.Net.Mime.ContentType(System.Net.Mime.MediaTypeNames.Application.Pdf);
+            var reportAttachment = new Attachment(memStream, contentType);
+            reportAttachment.ContentDisposition.FileName = "Fees_receipt.pdf";
+            
 
             if (ToMail != null)
             {
@@ -619,6 +630,8 @@ namespace SMS.Models
                     using (MailMessage mm = new MailMessage(
                       FromMail, ToMail, Subject, Body))
                     {
+                        mm.Attachments.Add(reportAttachment);
+                    //mm.Attachments.Add(new Attachment(new MemoryStream(receipt), "Fees_Receipt.pdf", MediaTypeNames.Application.Pdf));
                         mm.IsBodyHtml = true;
                         SmtpClient smtp = new SmtpClient();
                         NetworkCredential networkCredential = new NetworkCredential(FromMail, donotreplyMailPassword);

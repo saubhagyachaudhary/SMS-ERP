@@ -270,6 +270,7 @@
     <Compile Include="Controllers\teacher_exam_remarkController.cs" />
     <Compile Include="Controllers\uncleared_chequeController.cs" />
     <Compile Include="Controllers\usersController.cs" />
+    <Compile Include="ExcelReport\ExcelClassSummaryReportMain.cs" />
     <Compile Include="ExcelReport\ExcelClass_Wise_Std_ListMain.cs" />
     <Compile Include="ExcelReport\ExcelDaily_reportMain.cs" />
     <Compile Include="ExcelReport\ExcelGatePassMain.cs" />
@@ -2594,6 +2595,7 @@
     <Content Include="Views\mst_bank\AllBankList.cshtml" />
     <Content Include="Views\mst_bank\EditBank.cshtml" />
     <Content Include="Views\mst_bank\DeleteBank.cshtml" />
+    <Content Include="Views\report\StudentSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

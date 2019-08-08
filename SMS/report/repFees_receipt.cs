@@ -44,7 +44,7 @@ namespace SMS.report
                 var doc = new Document(PageSize.A6);
 
                 // MemoryStream stream = new MemoryStream();
-                doc.SetMargins(0f, 0f, 10f, 40f);
+                doc.SetMargins(10f, 10f, 20f, 60f);
                 try
                 {
 
@@ -143,7 +143,7 @@ namespace SMS.report
 
 
 
-                    PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
+                    PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter(result.First().secret_code);
 
 
 
@@ -648,14 +648,14 @@ namespace SMS.report
 
                 using (MemoryStream ms = new MemoryStream())
                 {
-
+                   
 
                     //string path = "E:\\HPS" + "\\" + receipt_no.ToString()+"("+receipt_date.ToString("dd-MM-yyyy")+")"+ ".pdf";
                     using (Document doc = new Document(PageSize.A6))
                     {
 
                         // MemoryStream stream = new MemoryStream();
-                        doc.SetMargins(0f, 0f, 10f, 40f);
+                        doc.SetMargins(10f, 10f, 20f, 60f);
                         try
                         {
 
@@ -753,11 +753,14 @@ namespace SMS.report
                             //rep.fees_name = result.fees_name;
                             //rep.amount = result.amount;
 
+                           
 
+                            //PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter(result.First().secret_code);
 
-                            PdfWriter.GetInstance(doc, HttpContext.Current.Response.OutputStream).PageEvent = new PDFFooter();
+                            PdfWriter writer = PdfWriter.GetInstance(doc, ms);
 
-
+                            writer.CloseStream = false;
+                            writer.PageEvent = new PDFFooter(result.First().secret_code);
 
                             doc.Open();
                             // string imageURL = "E:\\HPS\\logo.jpg";
@@ -1308,7 +1311,13 @@ namespace SMS.report
     {
         string Address = ConfigurationManager.AppSettings["Address"].ToString();
         string MaiLSite = ConfigurationManager.AppSettings["MaiLSite"].ToString();
-      
+        private string secret_code;
+
+        public PDFFooter(string secret_code)
+        {
+            this.secret_code = secret_code;
+        }
+
         // write on top of document
         public override void OnOpenDocument(PdfWriter writer, Document document)
         {
@@ -1332,13 +1341,12 @@ namespace SMS.report
             Chunk text;
             Phrase ph = new Phrase();
 
-            //text = new Chunk("This is a computer generated receipt.", FontFactory.GetFont("Areal", 8));
-            //ph.Add(text);
-            //ph.Add("\n");
-            //cell = new PdfPCell(ph);
-            //cell.HorizontalAlignment = Element.ALIGN_CENTER;
-            //cell.Border = 0;
-            //tabFot.AddCell(cell);
+            text = new Chunk(secret_code, FontFactory.GetFont("Areal", 8));
+            ph.Add(text);
+            cell = new PdfPCell(ph);
+            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+            cell.Border = 0;
+            tabFot.AddCell(cell);
 
             text = new Chunk(Address, FontFactory.GetFont("Areal", 8));
             ph = new Phrase();

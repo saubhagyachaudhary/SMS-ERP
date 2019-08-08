@@ -148,7 +148,7 @@ namespace SMS.ExcelReport
                             var excelImage = ws.Drawings.AddPicture("Picture", img);
 
                             //add the image to row 20, column E
-                            excelImage.SetPosition(3, 0, 5, 0);
+                            excelImage.SetPosition(3, 0, 4, 0);
 
                             excelImage.SetSize(233, 134);
                         }
@@ -160,7 +160,7 @@ namespace SMS.ExcelReport
                         var excelImage = ws.Drawings.AddPicture("Picture", img);
 
                         //add the image to row 20, column E
-                        excelImage.SetPosition(3, 0, 5, 0);
+                        excelImage.SetPosition(3, 0, 4, 0);
 
                         excelImage.SetSize(233, 134);
                     }

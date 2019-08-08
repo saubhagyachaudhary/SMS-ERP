@@ -712,6 +712,24 @@ namespace SMS.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult StudentSummary()
+        {
+
+            DDsession_name();
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult StudentSummary(string session)
+        { 
+
+            ExcelClassSummaryReportMain.ExcelClassSummary(session);
+            DDsession_name();
+            return View();
+        }
+
         //trach tranport
         [HttpGet]
         public ActionResult track_vehicle()
